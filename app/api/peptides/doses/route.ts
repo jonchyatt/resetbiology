@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
 import { getUserFromSession } from '@/lib/getUserFromSession'
-import { syncUserDataForDate } from '@/lib/google-drive'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -168,10 +168,8 @@ export async function POST(request: Request) {
       }
     })
 
-    // Sync to Google Drive (non-blocking)
-    syncUserDataForDate(user.id, new Date()).catch(err => {
-      console.error('Drive sync failed:', err)
-    })
+    // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
+    await enqueueDriveSync(user.id, new Date(), ['peptides']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

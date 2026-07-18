@@ -7,20 +7,20 @@
     "Methylene blue",
     "methylene Blue"
   ],
-  "category": "Uncategorized",
+  "category": "Mitochondrial & Energy",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 30,
+        "mention_count": 130,
         "top_doses": [
           {
             "dose": "10 mg",
-            "count": 30
+            "count": 33
           },
           {
             "dose": "250 micrograms",
-            "count": 14
+            "count": 16
           },
           {
             "dose": "1 mg",
@@ -28,26 +28,38 @@
           },
           {
             "dose": "100 micrograms",
-            "count": 4
+            "count": 5
           },
           {
-            "dose": "1000 mg",
-            "count": 2
+            "dose": "2 mg",
+            "count": 5
           },
           {
-            "dose": "20 mg",
-            "count": 2
+            "dose": "200 micrograms",
+            "count": 5
           },
           {
-            "dose": "60 mg",
-            "count": 2
+            "dose": "1200 milligram",
+            "count": 5
           },
           {
-            "dose": "300 mg",
-            "count": 1
+            "dose": "170 milligram",
+            "count": 5
           }
         ],
         "top_sources": [
+          {
+            "source_id": "the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54",
+            "source_type": "library-video",
+            "source_title": "The Truth About Methylene Blue Benefits Risks My Results",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54.json",
+            "mention_count": 36,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today is going to be the methylene blue video. So funny story about doing this video, um, in my planning for the week. Um, well, first I'll say this. Thank you to you guys because I have such an amazing audience now. As I am brainstorming and planning my content, maybe I do a video about this one day if there's enough other creators or whatever of like how they do stuff. But I kind of pull from a bunch of different sources. So I obviously pull the video topic suggestions.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today is going to be the methylene blue video. So funny story about doing this video, um, in my planning for the week. Um, well, first I'll say this. Thank you to you guys because I have such an amazing audience now. As I am brainstorming and planning my content, maybe I do a video about this one day if there's enough other creators or whatever of like how they do stuff. But I kind of pull from a bunch of different sources. So I obviously pull the video topic suggestions. I pull just from feedback we get in our communities and obviously from people that I've coached or I'm coaching. And then also too, I use a tool called vidIQ. There's a lot of other softwares out there like this Kind of give you insights into keywords. So for instance, I wanted to make a video on BPC-157. It would give me an insight like what are people searching for on bpc-137? Promises will make sense. And so I was brainstorming videos and I kind of like, usually I have a ton of video ideas and it's like I don't have enough time in the day to like get",
+            "first_timestamp": "0:10"
+          },
           {
             "source_id": "1951b186f118d478",
             "source_type": "email",
@@ -56,9 +68,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-18-methylene-blue-deep-dive.md",
             "mention_count": 11,
-            "top_snippet": "search compiling ideas and info around new video topics every week. One of the tools I use is called Vidiq, which shows me how many people are searching for any given keyword. Well, last week, in my p",
-            "top_context": "search compiling ideas and info around new video topics every week. One of the tools I use is called Vidiq, which shows me how many people are searching for any given keyword. Well, last week, in my planning, I discovered that **over 3,700 people per month** are searching for “Hunter Williams Methylene Blue”—**and I don’t even have a video published on it!** That’s when I knew it was time to **dive deep** into everything methylene blue does and why it might be one of the most powerful mitochondrial enhancers available. So today, we’re breaking it all down. Here’s the link to the video: Yo",
+            "top_snippet": "f research compiling ideas and info around new video topics every week. One of the tools I use is called Vidiq, which shows me how many people are searching for any given keyword. Well, last week, in ",
+            "top_context": "f research compiling ideas and info around new video topics every week. One of the tools I use is called Vidiq, which shows me how many people are searching for any given keyword. Well, last week, in my planning, I discovered that **over 3,700 people per month** are searching for “Hunter Williams Methylene Blue”—**and I don’t even have a video published on it!** That’s when I knew it was time to **dive deep** into everything methylene blue does and why it might be one of the most powerful mitochondrial enhancers available. So today, we’re breaking it all down. Here’s the link to the video: Youtube: T",
             "first_timestamp": null
+          },
+          {
+            "source_id": "mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3",
+            "source_type": "library-video",
+            "source_title": "Mitochondria Overload The Hidden Dangers Of Your Favorite Peptides",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3.json",
+            "mention_count": 11,
+            "top_snippet": "want to be on guard. So how does this even happen? Where do we, where do, we uh go to even cause this? So the first way is going to through excessive elective or excuse me, excess of electron transport chain activity. So high doses of mitochondrial enhancers like SLU, PP332, MOTC, SS31, methylene blue, or even high dose CoQ10 can accelerate ATP production beyond the cell's needs. In a lot of cases, this is what we're doing actually. And this why, you know, typically more athletic people actually need less of a dose than more unhealthy people of these.",
+            "top_context": "Cause it's probably not something people are searching for. So I think this is probably gonna be one for the algo as they say. But hey, let's see what it does. It's basically a term that describes a state in which the mitochondria, which are your cells powerhouses are overactive leading to excessive ATP production and ultimately metabolic stress. Um, so it can be triggered by various factors, but for us in particular, most likely it is going to be for mitochondrial stimulants. Um, excessive calorie intake, uh, certain drugs can do this or even aggressive other biohacking inventions. Um. And when I say that there's probably some like, you know, actual devices out there that are good at doing this, but it's just something that we'd also want to be on guard. So how does this even happen? Where do we, where do, we uh go to even cause this? So the first way is going to through excessive elective or excuse me, excess of electron transport chain activity. So high doses of mitochondrial enhancers like SLU, PP332, MOTC, SS31, methylene blue, or even high dose CoQ10 can accelerate ATP production beyond the cell's needs. In a lot of cases, this is what we're doing actually. And this why, you know, typically more athletic people actually need less of a dose than more unhealthy people of these. For instance, like a sick person can take SL you at like two milligrams, which is a And they'll need that much to get things going, whereas an athlete would never be able to take that, much because it would just be too much, because their mitochondria are already functioning at a high level. So it's kind of beyond what sox needs. This increases mitochondrial respiration, but also raises reactive oxygen species, otherwise known as ROS, which can damage cellular structure. What are ROS? Because that was one thing I know when I was, you know, years ago learning about all this stuff that I like, like you hear a lot of people on podcasts,",
+            "first_timestamp": "4:42"
           },
           {
             "source_id": "4igc2UpFr7Q",
@@ -73,55 +97,91 @@
             "first_timestamp": "00:27:26.640"
           },
           {
-            "source_id": "E7GPNidicqY",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk 4/18/26",
-            "source_date": "2026-04-18",
-            "source_url": "https://youtu.be/E7GPNidicqY",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
-            "mention_count": 4,
-            "top_snippet": "Yeah, methylene blue while traveling.",
-            "top_context": "There's not anything in the literature There's not anything in the literature that demonstrates that. that demonstrates that. that demonstrates that. And so that question, the answer is like And so that question, the answer is like And so that question, the answer is like clinically speaking, we don't know. I clinically speaking, we don't know. I clinically speaking, we don't know. I don't see any reason why it would be. don't see any reason why it would be. don't see any reason why it would be. But I don't think it's bad. I've been But I don't think it's bad. I've been But I don't think it's bad. I've been using it consistently without cycling using it consistently without cycling using it consistently without cycling off for the last 6 months. off for the last 6 months. off for the last 6 months. 6 or 9 months, but I don't think it's 6 or 9 months, but I don't think it's 6 or 9 months, but I don't think it's bad. bad. bad. bad. I don't see any reason why it would bad. I don't see any reason why it would bad. I don't see any reason why it would be. Yeah. be. Yeah. be. Yeah. You keep freezing. You keep freezing. You keep freezing. Your camera? Both. Your camera? Both. Your camera? Both. Or Or Or &gt;&gt; know. It looks like it's like kind of &gt;&gt; know. It looks like it's like kind of &gt;&gt; know. It looks like it's like kind of Yeah, that's what I was saying. It Yeah, that's what I was saying. It Yeah, that's what I was saying. It seemed like it was choppy earlier, but seemed like it was choppy earlier, but seemed like it was choppy earlier, but like on my computer it's like smooth like on my computer it's like smooth like on my computer it's like smooth right now. Okay. Is yours choppy? right now. Okay. Is yours choppy? right now. Okay. Is yours choppy? It was a minute ago. Yeah. I don't know It was a minute ago. Yeah. I don't know It was a minute ago. Yeah. I don't know if it's like the internet or Yeah, if it's like the internet or Yeah, if it's like the internet or Yeah, hopefully it's just not for you guys. hopefully it's just not for you guys. hopefully it's just not for you guys. Sorry if it is. Yeah, methylene blue while traveling. Yeah, methylene blue while traveling. I've heard that's good. Could be a good I've heard that's good. Could be a good I've heard that's good. Could be a good antiviral. antiviral. antiviral. I purchased 10 vials of ACE-031. I'm a I purchased 10 vials of ACE-031. I'm a I purchased 10 vials of ACE-031. I'm a postmenopausal woman and want to combat postmenopausal woman and want to combat postmenopausal woman and want to combat muscle loss in my thighs. I can't seem muscle loss in my thighs. I can't seem muscle loss in my thighs. I can't seem to find any real world protocols. Do you to find any real world protocols. Do you to find any real world protocols. Do you have any suggestion? Thank you very have any suggestion? Thank you very have any suggestion? Thank you very much. Yeah, so ACE-031 has a pretty long much. Yeah, so ACE-031 has a pretty long much. Yeah, so ACE-031 has a pretty long half-life, like 15 days. And if you have half-life, like 15 days. And if you have half-life, like 15 days. And if you have 10 vials, they're probably 1 mg vials. 10 vials, they're probably 1 mg vials. 10 vials, they're probably 1 mg vials. For a postmenopausal woman, I would do For a postmenopausal woman, I would do For a postmenopausal woman, I would do 100 This is what I would start with is 100 This is what I would start with is 100 This is what I would start with is like 100 micrograms like 100 micrograms like 100 micrograms three times per week. So I would do 100 three times per week. So I would do 100 three times per week. So I would do 100 micrograms on my training days micrograms on my training days micrograms on my training days pre or post workout and I would run that pre or post workout and I would run that pre or post workout and I would run that for a little while and see how you do. for a little while and see how you do. for a little while and see how you do. There was a clinical trial with There was a clinical trial with There was a clinical trial with postmenopausal women. Now, they were postmenopausal women. Now, they were postmenopausal women. Now, they were giving them 300 mg",
-            "first_timestamp": "01:23:47.510"
+            "source_id": "saturday-morning-coffee-talk-51626--2ce3e83c",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk 5/16/26",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-51626--2ce3e83c.json",
+            "mention_count": 8,
+            "top_snippet": "That's actually what's delaying it from getting FDA approved because they've had issues with people having heart palpitations. Can you take methylene blue and test of things together? I would stay away from that because they're both, uh, psychoactive in the sense, cause methylenol blue is, um, MAOI inhibitor, testofensines and SNDRI. Um, so yeah, I wouldn't do those together. Just keep those apart if you're wanting to do them. I will just use one.",
+            "top_context": "That has massively helped my sleep. Not that I slept bad before. So I'll say you can get some pregnanolones, quick dissolve tabs. Neutropix Depot has a good formulation. I will try that first because a lot You dampen pregnenol and signaling upstream with exogenous testosterone, and that can help with sleep. So that would be the first thing rather than changing the dose. Yeah. A lot of people get the increase in heart rate on Reta. I'm wondering, I've heard, this is just a rumor. That's actually what's delaying it from getting FDA approved because they've had issues with people having heart palpitations. Can you take methylene blue and test of things together? I would stay away from that because they're both, uh, psychoactive in the sense, cause methylenol blue is, um, MAOI inhibitor, testofensines and SNDRI. Um, so yeah, I wouldn't do those together. Just keep those apart if you're wanting to do them. I will just use one. What are your thoughts on A-H-K-C-U as opposed to G-h-k-c-u? I think is what they meant to say. Herd is even more helpful for hair. Yes, it is much more specific to helping with hair, so I guess it's great now. What I just don't know is, is it better to inject sub-q? Definitely would try to microneedle the A.H.K. or use it in the serum instead of injecting subq. Any more thoughts? would use it just topically on the scalp.",
+            "first_timestamp": "41:50"
           },
           {
-            "source_id": "194e2a2d4a43fc03",
-            "source_type": "email",
-            "source_title": "The Dark Side Of Mitochondrial Peptides",
-            "source_date": "2025-02-07",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-07-the-dark-side-of-mitochondrial-peptides.md",
-            "mention_count": 3,
-            "top_snippet": "ink of it like exhaust from your car. Having a car is great, but if too many cars are driving around, they create smog, which can choke everyone to death. **The 5 Biggest Mitochondrial Mistakes People",
-            "top_context": "ink of it like exhaust from your car. Having a car is great, but if too many cars are driving around, they create smog, which can choke everyone to death. **The 5 Biggest Mitochondrial Mistakes People Make** If you’re using mitochondrial stimulants like **SLU-PP-332, SS-31, MOTS-C, and/or methylene blue,** here are the most common mistakes you to avoid: **1. Going too hard on stimulants** – If you’re stacking multiple mitochondrial activators at high doses, you’re asking for trouble in the long run. **2. Ignoring oxidative stress** – High-functioning mitochondria create more ROS, which leads",
-            "first_timestamp": null
+            "source_id": "peptide-qa-april-2024--24f0cd10",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · April 2024",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2024--24f0cd10/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-april-2024--24f0cd10.json",
+            "mention_count": 5,
+            "top_snippet": "Next question, so question number two, thoughts on methylene blue. Methylene blue is amazing to be 100% frank. Have I used methylened blue? If I have, it's been in the past that I don't really remember it doing anything. I would like to revisit it and just give you my thoughts, but methyline blue was amazing. It's an amazing antioxidant that, I think, Given all the oxidative stress that we have now, it could be very, very helpful to people, especially if you're suffering from a lot of inflammation or oxidated stress from different things in the environment, or just not being in a healthy estate possible.",
+            "top_context": "uh, organ and purpose and you can't go anywhere to do it. So I like giving actual advice. I will probably hold off on doing those into the future. Um but that being said, you know, Jay Campbell has a lot of stuff on bi regulators on his blog website, jaycambell.com. and as much as we can get access to them I will give you my reviews but for now I can't really give anything specific and to be honest I just don't have access myself so pretty much everything I talk about I'm going to at least have my own user experience I could give to you guys. Next question, so question number two, thoughts on methylene blue. Methylene blue is amazing to be 100% frank. Have I used methylened blue? If I have, it's been in the past that I don't really remember it doing anything. I would like to revisit it and just give you my thoughts, but methyline blue was amazing. It's an amazing antioxidant that, I think, Given all the oxidative stress that we have now, it could be very, very helpful to people, especially if you're suffering from a lot of inflammation or oxidated stress from different things in the environment, or just not being in a healthy estate possible. So I think probably one of the ones that will have in our arsenal going into the future, but I need more experimentation on my own self before I give you my personal experience. Question number three. Great question here. question number 3, gonaderelin versus kisspeptin-10. To that, I would say, what is your purpose? So, gonadareline is oftentimes prescribed because there's been a movement away from HCG in pharmaceutical practice. I'm not sure exactly the extent to that but HCGs are a lot harder to come by than it has been.",
+            "first_timestamp": "3:54"
           },
           {
-            "source_id": "0TyW-wlJMxo",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
-            "source_date": "2026-03-28",
-            "source_url": "https://youtu.be/0TyW-wlJMxo",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
-            "mention_count": 1,
-            "top_snippet": "glutathione alpha lipoic acid methylene blue with full body red light therapy to",
-            "top_context": "&gt;&gt; stroking my ego. No. &gt;&gt; stroking my ego. No. No, it was just No, it was just No, it was just &gt;&gt; probably, yeah, in the past. Yeah, I &gt;&gt; probably, yeah, in the past. Yeah, I &gt;&gt; probably, yeah, in the past. Yeah, I would say that. Yeah. And just let would say that. Yeah. And just let would say that. Yeah. And just let people run over you, but um Not anymore, people run over you, but um Not anymore, people run over you, but um Not anymore, though. I'm on enclomiphene have dutasteride to I'm on enclomiphene have dutasteride to acne surface, but I'm fortunate that acne surface, but I'm fortunate that acne surface, but I'm fortunate that none has surfaced 7 weeks. Yeah, I would none has surfaced 7 weeks. Yeah, I would none has surfaced 7 weeks. Yeah, I would not use the dutasteride personally with not use the dutasteride personally with not use the dutasteride personally with um um um do with that will, but do with that will, but do with that will, but I wouldn't. I wouldn't. I wouldn't. Yeah. Christie said zero brain without Yeah. Christie said zero brain without Yeah. Christie said zero brain without injectable testosterone. It's crazy like injectable testosterone. It's crazy like injectable testosterone. It's crazy like if women just knew what it was like for if women just knew what it was like for if women just knew what it was like for the brain. You can take all the other the brain. You can take all the other the brain. You can take all the other benefits off just for the brain health benefits off just for the brain health benefits off just for the brain health alone. alone. alone. Yeah. Yeah. Yeah. Yeah. Love combining NAD+ vitamin C Love combining NAD+ vitamin C glutathione alpha lipoic acid methylene glutathione alpha lipoic acid methylene glutathione alpha lipoic acid methylene blue with full body red light therapy to blue with full body red light therapy to blue with full body red light therapy to clear inflammation. Bam, there you go. &gt;&gt; You do that like in an hour and you'll &gt;&gt; You do that like in an hour and you'll be like be like be like ready to run through a wall. Thank you, Christie. Yeah, we did the Thank you, Christie. Yeah, we did the thyroid presentation in the group. thyroid presentation in the group. thyroid presentation in the group. &gt;&gt; Yeah. Um yeah, and now we've got I made &gt;&gt; Yeah. Um yeah, and now we've got I made &gt;&gt; Yeah. Um yeah, and now we've got I made it easier to like I set up a little it easier to like I set up a little it easier to like I set up a little website for people like groups they website for people like groups they website for people like groups they don't have to like go through the feed don't have to like go through the feed don't have to like go through the feed just to like watch all the just to like watch all the just to like watch all the presentations. presentations. presentations. Then I when I did that yesterday I Then I when I did that yesterday I Then I when I did that yesterday I realized that all of them ones were realized that all of them ones were realized that all of them ones were password protected, so even when they password protected, so even when they password protected, so even when they clicked on the link inside of the clicked on the link inside of the clicked on the link inside of the library website, [clears throat] so I library website, [clears throat] so I library website, [clears throat] so I had to manually go in and turn the had to manually go in and turn the had to manually go in and turn the password off for the from Zoom, not from password off for the from Zoom, not from password off for the from Zoom, not from the website from Zoom, but now it works, the website from Zoom, but now it works, the website from Zoom, but now it works, so. so. so. Anybody can go back.",
-            "first_timestamp": "01:59:50.360"
+            "source_id": "peptide-qa-february-2026--cba19117",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-february-2026--cba19117.json",
+            "mention_count": 5,
+            "top_snippet": "So that's kind of what I would do. Methylene blue, can you stack it with C-max link P-21 daily or use cycling? I probably wouldn't because I think it, methylene blue is an MAOI inhibitor. And so I could probably interact with some of those things, at least in a way that I personally wouldn' t want to do. So you probably could, I just wouldn t do that. I would keep it separately from all those other nootropic peptides, and then I'd definitely cycle it if you're going to use it.",
+            "top_context": "And you. Do that for like 30 days. Um, if you go to cerebralliason.com, You can actually click on the prescribing information and actually look at the prescribed dosages for the certain events on there. And on there, you're going to notice that all the prescribed reasons are stroke, TBI, brain injury, things of that nature, or excuse me, Parkinson's or Alzheimer's. And so I think for some of those acute issues, yeah, definitely do the higher dose. But I Think for people, uh, it seems to be really, really popular right now. People wanting to get their hands on cerebral isin. So that's kind of what I would do. Methylene blue, can you stack it with C-max link P-21 daily or use cycling? I probably wouldn't because I think it, methylene blue is an MAOI inhibitor. And so I could probably interact with some of those things, at least in a way that I personally wouldn' t want to do. So you probably could, I just wouldn t do that. I would keep it separately from all those other nootropic peptides, and then I'd definitely cycle it if you're going to use it. Bioregulators, oral versus injectable. What's different? When is oral enough and can they be stacked with peptides? They definitely can be stack with peptides. Absolutely. I would say that oral are going to be much more mild and kind of have a systemic long-term, probably positive effect, but you might not feel them. Whereas to me, the injectible bioregunators seem to go really far in terms of how they feel. Some of them you won't feel if you don't necessarily have an issue. But I think a lot of then can used really well, you know, cartilax, Vessagen, Velon, Prostomax, some of these work really well.",
+            "first_timestamp": "36:57"
           },
           {
-            "source_id": "1980afbb6ab263cf",
-            "source_type": "email",
-            "source_title": "Tesofensine Is A Wild Card",
-            "source_date": "2025-07-14",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-14-tesofensine-is-a-wild-card.md",
-            "mention_count": 1,
-            "top_snippet": "high blood pressure, severe cardiovascular disease, or arrhythmia. * Those prone to anxiety, mania, or untreated psychiatric conditions. * Pregnant or breastfeeding women (obviously). * People on othe",
-            "top_context": "high blood pressure, severe cardiovascular disease, or arrhythmia. * Those prone to anxiety, mania, or untreated psychiatric conditions. * Pregnant or breastfeeding women (obviously). * People on other serotonergic drugs or strong stimulants (risk of serotonin syndrome). * People using methylene blue (risk of serotonin syndrome). Always check with a qualified provider before adding Tesofensine or any neuroactive compound to your regimen. ——————————————————————————— **Dosing Recommendations** Okay, let’s get to the nuts and bolts. My standard protocol for Tesofensine is: * **250 m",
-            "first_timestamp": null
+            "source_id": "saturday-morning-coffee-talk-102525--d6c5a922",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 10/25/25",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-102525--d6c5a922/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-102525--d6c5a922.json",
+            "mention_count": 5,
+            "top_snippet": "but like nicotine is like going viral right now. Really? Yes. I've been getting a lot of, not so much from our followers or maybe more newer people getting into the biohacking space, But like, nicotin is the hot topic right. Kind of like remember when methylene blue was like the Hot Topic. Everybody was talking about methyline blue. Now everybody is talking. The methylenine blue chatter seems to have quieted down. Yeah. I'm not against methylene blue. I not like the hugest proponent of it.",
+            "top_context": "So that's the only thing I don't like when it gets colder. But fortunately, it's not super cool where we're at yet. I like it. Like the change of weather, I liked the scenery, especially where you live. And then also I love that it is football season and especially with family members and stuff that I still get to vicariously live through them through their football careers, which is fun too. Actually, one topic is what I'm doing right now, Which I feel like are this is like Old news, I feel like for the people that follow us, but like nicotine is like going viral right now. Really? Yes. I've been getting a lot of, not so much from our followers or maybe more newer people getting into the biohacking space, But like, nicotin is the hot topic right. Kind of like remember when methylene blue was like the Hot Topic. Everybody was talking about methyline blue. Now everybody is talking. The methylenine blue chatter seems to have quieted down. Yeah. I'm not against methylene blue. I not like the hugest proponent of it. It can do good things, but I don't think relative to like some of the things that we talk about that is this powerful. For people that are in more of like a normal supplement realm, methylenine blue does a lot of good thing. But if you understand peptides, you use peptide. People, I think, especially like people on this call will say, yeah, like methyline blue compared to a red true tide for like what it will do for your overall health and longevity is not even close. But yeah, nicotine, obviously, too. That's actually a good point. I would probably be a cool deep dive video to do like As if I need another thing to get my content like, you know, put at risk of being deleted or whatever.",
+            "first_timestamp": "6:50"
           }
         ],
-        "acute_signals": [],
+        "acute_signals": [
+          {
+            "snippet": "So that's kind of what I would do. Methylene blue, can you stack it with C-max link P-21 daily or use cycling? I probably wouldn't because I think it, methylene blue is an MAOI inhibitor. And so I could probably interact with some of those things, at least in a way that I personally wouldn' t want to do. So you probably could, I just wouldn t do that. I would keep it separately from all those other nootropic peptides, and then I'd definitely cycle it if you're going to use it.",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "timestamp": "36:57",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/"
+          },
+          {
+            "snippet": "So that's kind of what I would do. Methylene blue, can you stack it with C-max link P-21 daily or use cycling? I probably wouldn't because I think it, methylene blue is an MAOI inhibitor. And so I could probably interact with some of those things, at least in a way that I personally wouldn' t want to do. So you probably could, I just wouldn t do that. I would keep it separately from all those other nootropic peptides, and then I'd definitely cycle it if you're going to use it.",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "timestamp": "36:57",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/"
+          },
+          {
+            "snippet": "re's a lyophilized version now in 60 mg vials. Use 20 mg per day, five days on, two days off. For the ampoule version, 1 ml per day for maintenance is good. Higher doses (5 to 10 ml) are for acute iss",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/"
+          },
+          {
+            "snippet": "per day, five days on, two days off. For the ampoule version, 1 ml per day for maintenance is good. Higher doses (5 to 10 ml) are for acute issues like stroke, TBI, Parkinson's, or Alzheimer's. Check ",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/"
+          },
+          {
+            "snippet": "tenance is good. Higher doses (5 to 10 ml) are for acute issues like stroke, TBI, Parkinson's, or Alzheimer's. Check the prescribing info on cerebrolysin.com. Methylene blue with C-Max, Selank, or P-2",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/"
+          }
+        ],
         "chronic_signals": [
           {
             "snippet": "All right. I'm interested in methylene blue and",
@@ -473,33 +533,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Trevor's newer low-dose chronic frame as the operative ceiling: Trevor (7Pz8i1D4MJE 00:32:01.679): \"5 milligrams is a therapeutic sweet spot\" and Trevor (7Pz8i1D4MJE 00:32:04.000): \"1 milligram is really all you need\" — markedly below Hunter's 2025 deep-dive ranges. We'd ask the prescribing physician to weigh route, redox-cycling cofactors, and cycling cadence because Trevor (7Pz8i1D4MJE 00:31:39.519): \"one month off every two months\" frames mandatory off-time, while serotonin-syndrome and G6PD risks make this a screen-before-prescribe compound, not a self-experiment.",
-    "caveats": "- SSRI / SNRI / MAOI co-administration: Trevor (ICbMnq3E-jo 00:30:23.520): \"methylene blue is not for everybody either SSRI MAI users methylene blue is a weak mao inhibitor you combine that with an SSRI and you risk something called serotonin syndrome which by the way is potentially fatal let's not do it\"; Hunter email threadId 1951b186f118d478 (2025-02-18): \"do NOT combine with SSRIs, as it can cause serotonin syndrome\" and lists \"People on SSRIs, SNRIs, or MAOIs (risk of serotonin syndrome)\" under who should avoid.\n- G6PD deficiency: Trevor (ICbMnq3E-jo 00:30:34.880): \"how about G6PD deficiency it's a genetic condition that affects It's red blood cells. Methylene blue triggers hemolytic anemia in these people about 70% of the time. Not worth the risk\"; Hunter email threadId 1951b186f118d478 (2025-02-18): \"Those with G6PD deficiency\" must avoid.\n- Pregnancy / breastfeeding: Trevor (ICbMnq3E-jo 00:30:47.120): \"if you're pregnant, if you're breastfeeding, no. Absolutely not. This stuff isn't candy. This is pharmaceutical… molecular compound with real effects\"; Hunter email threadId 1951b186f118d478 (2025-02-18): \"Pregnant or breastfeeding women\" must avoid.\n- Chronic high-dose pro-oxidant flip: Trevor (ICbMnq3E-jo 00:29:13.120): \"Chronic high doses methylene blue can become prooxidant instead of an antioxidant\" and (ICbMnq3E-jo 00:29:21.360): \"continuous highdose methylene blue reduces glut glutathione primary antioxidant from your liver and increases oxidative stress.\"\n- Discontinuation crash at high chronic dose: Trevor (7Pz8i1D4MJE 00:31:18.480): \"people who took methylene blue at high doses. Now, these guys were taking 30 to 40 milligrams daily for extended periods experienced a crash when they stopped. Similar… to an SSRI discontinuation.\"\n- Dye-grade vs USP/pharmaceutical-grade purity: Trevor (ICbMnq3E-jo 00:10:24.000): \"why this dark blue these guys are all putting dyes in it\" — quality matters.\n- Hunter's own dose-range ambiguity: Hunter email threadId 1951b186f118d478 (2025-02-18) lists \"Low Dose (5-20mg/day)\" and \"Moderate Dose (40-60mg/day)\" but Hunter email threadId 194e2a2d4a43fc03 (2025-02-07) recommends \"Methylene Blue (0.5-2mg per day at LOW doses)\" as a recovery-phase mitochondrial uncoupler — same author, two very different floors.",
-    "cross_expert_consensus": "All three experts agree methylene blue supports mitochondrial / electron-transport-chain function and that it is not a casual supplement. Trevor (ICbMnq3E-jo 00:00:02.480): \"a lot of you guys have been asking me about methylene blue. So, I'm going to do a deep dive into methylene blue\" and Trevor (7Pz8i1D4MJE 00:00:10.080): \"one of the most popular compounds I think ever and one of the most effective things you can use. Methylene blue.\" Hunter email threadId 1951b186f118d478 (2025-02-18): methylene blue \"acts as an electron donor in the electron transport chain, enhancing ATP production\" and \"directly supports your body's ability to create energy at the cellular level.\" Taylor's only protocol-relevant mention is in passing — Taylor (Cg7JtpnfRY4 01:23:47.520): \"Yeah, methylene blue while traveling, I've heard that's good. Could be a good antiviral.\" SSRI/MAOI contraindication is also a consensus point: Trevor (ICbMnq3E-jo 00:30:23.520): \"methylene blue is a weak mao inhibitor you combine that with an SSRI and you risk something called serotonin syndrome\"; Hunter email threadId 1951b186f118d478 (2025-02-18): \"do NOT combine with SSRIs, as it can cause serotonin syndrome.\"",
-    "cross_expert_disagreement": "Dose floor differs sharply, and Trevor's own newer content overrides his older content. Older Trevor (45GyV3eeL-c 00:21:47.679): \"I would be running my experiment beginning at 15 mg split twice throughout the day in two doses, A.M. and P.M., and I'd make sure I had food in my stomach\" and (45GyV3eeL-c 00:21:56.400): \"15 to 30 milligs is about all your experiment needs total with food.\" Newer Trevor (ICbMnq3E-jo 00:10:14.720): \"methylene blue at low doses we're talking 1 milligram you guys taking 10 20 30 milligrams\" — framing higher doses as the mistake people make — and Trevor (ICbMnq3E-jo 00:13:26.959): \"showed one single dose one single dose of methylene blue 1 milligram at 10% improved memory consolidation and retrieval in healthy humans by 10%.\" Newer Trevor (7Pz8i1D4MJE 00:32:01.679): \"5 milligrams is a therapeutic sweet spot\" and Trevor (7Pz8i1D4MJE 00:32:04.240): \"1 milligram is really all you need.\" Hunter's deep-dive email threadId 1951b186f118d478 (2025-02-18) sits much higher — \"Low Dose (5-20mg/day): General cognitive benefits and mitochondrial support\" and \"Moderate Dose (40-60mg/day): Mitochondrial enhancement and neuroprotection\" — overlapping the very dose range Trevor's newer content frames as crash-risk: Trevor (7Pz8i1D4MJE 00:31:21.679): \"30 to 40 milligrams daily for extended periods experienced a crash when they stopped.\" Cycling also differs: Hunter email threadId 194e2a2d4a43fc03 (2025-02-07) treats methylene blue as a Month-4 recovery-phase uncoupler at 0.5-2mg/day inside a rotating year-long stack; Trevor (7Pz8i1D4MJE 00:31:37.840): \"this one month off every two months, so the third month take it off… month one to two active take it all the time. Month three total break full month off every quarter\"; Hunter (4igc2UpFr7Q 00:27:51.640): \"then methylene blue, you know, methylene blue can be good… but it just wouldn't be my first choice.\" Route: Hunter email threadId 1951b186f118d478 (2025-02-18): \"Oral (capsules or liquid) or sublingual\" and \"Topical use for wound healing and skin benefits\" — the experts' top-source content discusses methylene blue primarily as an oral/sublingual compound, with no clean injectable consensus surfaced.",
+    "recommendation": "Reset Biology suggests asking the prescribing practitioner to weigh Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 11:54, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"when we look at a low dose, it's going to be closer to five to 20 milligrams per day for low-dose cognitive benefits\" and \"mitochondrial enhancement, neuroprotection. It's gonna be close to 40, 60 milligrams a day.\" Hunter (2026-03-29, mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3 19:14, https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/): \"low-dose methylene blue. So 0.5 to two milligrams per day. Again, a very low dos.\" Trevor (2026-04-07, 7Pz8i1D4MJE 00:32:01.679, https://youtu.be/7Pz8i1D4MJE): \"5 milligrams is a therapeutic sweet spot\"; Trevor (2026-04-07, 7Pz8i1D4MJE 00:32:04.240, https://youtu.be/7Pz8i1D4MJE): \"1 milligram is really all you need.\" Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 12:59, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"start low and go slow.\"",
+    "caveats": "- Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 15:37, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"Do not combine with SSRIs, SNRI's, MAOIs or MDMA.\"\n- Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 16:11, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"Methylene blue can trigger hemolysis or red blood cell destruction in these people. Just be careful.\"\n- Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 16:11, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"In doses exceeding five milligram per kilogram, It can induce excessive oxidative distress.\"\n- Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 16:48, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"if you're pregnant or breastfeeding, just avoid, because we don't really know what's going on or interacting there yet.\"\n- Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 14:35, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"if you're doing the higher doses, just be cautious when we talk about Mozi SS 31 and SLU of overloading.\"\n- Hunter (2026-03-30, peptide-qa-february-2026--cba19117 36:57, https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/): \"I would keep it separately from all those other nootropic peptides, and then I'd definitely cycle it if you're going to use it.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": "Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 11:54, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"five to 20 milligrams per day for low-dose cognitive benefits\" and \"40, 60 milligrams a day.\" Hunter (2026-03-29, mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3 19:14, https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/): \"0.5 to two milligrams per day. Again, a very low dos.\" Trevor (2025-09-13, 45GyV3eeL-c 00:21:47.679, https://youtu.be/45GyV3eeL-c): \"I would be running my experiment beginning at 15 mg split twice throughout the day in two doses, A.M. and P.M.\" Trevor (2025-09-13, 45GyV3eeL-c 00:21:56.400, https://youtu.be/45GyV3eeL-c): \"15 to 30 milligs is about all your experiment needs total with food.\" Trevor (2026-01-19, ICbMnq3E-jo 00:10:14.720, https://youtu.be/ICbMnq3E-jo): \"methylene blue at low doses we're talking 1 milligram you guys taking 10 20 30 milligrams.\" Trevor (2026-04-07, 7Pz8i1D4MJE 00:32:01.679, https://youtu.be/7Pz8i1D4MJE): \"5 milligrams is a therapeutic sweet spot\"; Trevor (2026-04-07, 7Pz8i1D4MJE 00:32:04.240, https://youtu.be/7Pz8i1D4MJE): \"1 milligram is really all you need.\"",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Trevor (ICbMnq3E-jo 00:13:26.959): \"showed one single dose one single dose of methylene blue 1 milligram at 10% improved memory consolidation and retrieval in healthy humans by 10%.\"",
-        "route": "Trevor (45GyV3eeL-c 00:21:54.480): \"I'd make sure I had food in my stomach\" — oral with food.",
-        "frequency": "Trevor (ICbMnq3E-jo 00:13:41.200): \"One dose one one we're not talking a week of this.\"",
+        "dose": "Trevor (2026-01-19, ICbMnq3E-jo 00:13:23.839, https://youtu.be/ICbMnq3E-jo): \"showed one single dose one single dose of methylene blue 1 milligram at 10% improved memory consolidation and retrieval in healthy humans by 10%.\"",
+        "route": null,
+        "frequency": "Trevor (2026-01-19, ICbMnq3E-jo 00:13:41.200, https://youtu.be/ICbMnq3E-jo): \"One dose one one we're not talking a week of this.\"",
         "duration": null,
-        "verbatim_citation": "Trevor (ICbMnq3E-jo 00:13:23.839): \"showed one single dose one single dose of methylene blue 1 milligram at 10% improved memory consolidation and retrieval in healthy humans by 10%.\"",
+        "verbatim_citation": "Trevor (2026-01-19, ICbMnq3E-jo 00:13:23.839, https://youtu.be/ICbMnq3E-jo): \"showed one single dose one single dose of methylene blue 1 milligram at 10% improved memory consolidation and retrieval in healthy humans by 10%.\"",
         "episode_url": "https://youtu.be/ICbMnq3E-jo",
         "timestamp": "00:13:23.839; 00:13:41.200"
       },
       "chronic": {
-        "dose": "Trevor (7Pz8i1D4MJE 00:32:01.679): \"5 milligrams is a therapeutic sweet spot\" and Trevor (7Pz8i1D4MJE 00:32:04.240): \"1 milligram is really all you need.\" Hunter email threadId 194e2a2d4a43fc03 (2025-02-07): \"Methylene Blue (0.5-2mg per day at LOW doses)\" — recovery-phase floor.",
-        "route": "Hunter email threadId 1951b186f118d478 (2025-02-18): \"Oral (capsules or liquid) or sublingual.\"",
-        "frequency": "Trevor (7Pz8i1D4MJE 00:26:52.880): \"NAD+ 25 to 50 milligrams every day hypothetically would work great, especially if it was married to MS C at 1 milligram\" — daily framing for the redox stack including methylene blue.",
-        "duration": "Trevor (7Pz8i1D4MJE 00:31:37.840): \"this one month off every two months, so the third month take it off. I would just month one to two active take it all the time. Month three total break full month off every quarter. That's going to ensure that your mitochondria don't become dependent on external electron shuttling.\"",
-        "verbatim_citation": "Trevor (7Pz8i1D4MJE 00:32:01.679): \"5 milligrams is a therapeutic sweet spot\"; Trevor (7Pz8i1D4MJE 00:32:04.240): \"1 milligram is really all you need\"; Trevor (7Pz8i1D4MJE 00:31:37.840): \"this one month off every two months… Month three total break full month off every quarter.\"",
-        "episode_url": "https://youtu.be/7Pz8i1D4MJE",
-        "timestamp": "00:31:37.840; 00:32:01.679; 00:32:04.240"
+        "dose": "Hunter (2026-03-29, mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3 19:14, https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/): \"low-dose methylene blue. So 0.5 to two milligrams per day. Again, a very low dos.\" Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 11:54, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"five to 20 milligrams per day for low-dose cognitive benefits\" and \"40, 60 milligrams a day.\" Trevor (2026-04-07, 7Pz8i1D4MJE 00:32:01.679, https://youtu.be/7Pz8i1D4MJE): \"5 milligrams is a therapeutic sweet spot\"; Trevor (2026-04-07, 7Pz8i1D4MJE 00:32:04.240, https://youtu.be/7Pz8i1D4MJE): \"1 milligram is really all you need.\"",
+        "route": "Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 13:33, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"administration can do oral, sublingual, There is IV used in clinical settings, but you don't really need to get into that. And then topical for wound healing.\"",
+        "frequency": "Hunter (2026-03-30, peptide-qa-february-2026--cba19117 36:57, https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/): \"I'd definitely cycle it if you're going to use it.\"",
+        "duration": "Hunter (2026-03-29, mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3 19:47, https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/): \"repeat that cycle two times a year because that ends up in 12 months.\"",
+        "verbatim_citation": "Hunter (2026-03-29, mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3 19:14, https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/): \"low-dose methylene blue. So 0.5 to two milligrams per day. Again, a very low dos.\" Hunter (2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 11:54, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/): \"five to 20 milligrams per day for low-dose cognitive benefits\" and \"40, 60 milligrams a day.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/; https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/",
+        "timestamp": "19:14; 11:54; 36:57; 19:47"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:06:59.098Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T07:42:49.901Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.916Z"
+  "generated_at": "2026-07-17T10:59:07.289Z",
+  "mentions_fingerprint": "ffcc4793d97c"
 }

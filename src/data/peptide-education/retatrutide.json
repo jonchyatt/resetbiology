@@ -8,46 +8,47 @@
     "Reta",
     "GLP-3",
     "glp-3",
-    "RETA"
+    "RETA",
+    "RetaTruTide"
   ],
-  "category": "Uncategorized",
+  "category": "Fat Loss",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 508,
+        "mention_count": 1244,
         "top_doses": [
           {
             "dose": "2.5 mg",
-            "count": 122
-          },
-          {
-            "dose": "10 mg",
-            "count": 94
+            "count": 144
           },
           {
             "dose": "1 mg",
-            "count": 84
+            "count": 139
           },
           {
             "dose": "2 mg",
-            "count": 40
+            "count": 126
           },
           {
-            "dose": "8 mg",
-            "count": 23
+            "dose": "10 mg",
+            "count": 120
           },
           {
             "dose": "12 mg",
-            "count": 13
+            "count": 89
           },
           {
-            "dose": "250 micrograms",
-            "count": 10
+            "dose": "8 mg",
+            "count": 75
           },
           {
-            "dose": "5 mg",
-            "count": 9
+            "dose": "4 mg",
+            "count": 44
+          },
+          {
+            "dose": "0.5 mg",
+            "count": 41
           }
         ],
         "top_sources": [
@@ -64,6 +65,42 @@
             "first_timestamp": "00:35:14.680"
           },
           {
+            "source_id": "retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d",
+            "source_type": "library-video",
+            "source_title": "Retatrutide Masterclass | Dosing, Side Effects, and the Framework Most People Get Wrong",
+            "source_date": "2026-05-25",
+            "source_url": "https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d.json",
+            "mention_count": 44,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about read a true side. So what I'm doing right now, I actually secretly behind the scenes working on a book and what i'm And what I thought it would be cool alongside the book is for me to actually do kind of like a master class on each individual peptide and just cover everything that I know about it. So if you want a definitive guide on BPC or TB 500, or in today's case, Reta TruTide, one exists.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be all about read a true side. So what I'm doing right now, I actually secretly behind the scenes working on a book and what i'm And what I thought it would be cool alongside the book is for me to actually do kind of like a master class on each individual peptide and just cover everything that I know about it. So if you want a definitive guide on BPC or TB 500, or in today's case, Reta TruTide, one exists. And I'm sure as time goes along, I will need to update these. and it's probably been about a year or year and a half since I've done more or less a long form video on RETA Truetide. And so what I want to do today is condense down everything that I knew about Reddit True Tide, everything, that, I could potentially research about red true tide and put that into a format that you understand and can walk away with pretty much my understanding of how to use it, whether it's on yourself or your coaching clients or you're patients or whoever it is.",
+            "first_timestamp": "0:00"
+          },
+          {
+            "source_id": "peptide-qa-march-2026--dd9aa173",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · March 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-march-2026--dd9aa173.json",
+            "mention_count": 34,
+            "top_snippet": "But honestly, It really is only going to happen as the medication clears out of your system. So fortunately, you're kind of stuck with that. Now, fortunately the good part is it usually takes like three or four days for most people to kind have that get out their system Next question, I ran Reta at one milligram twice a week last year with no issues. Restarted six weeks ago at the same dose and now I'm getting nausea almost every evening. What change and should I drop to 250 micrograms as a longevity dose? I'd say for anyone that is getting Naja, the dose is probably too high, meaning that you may have just had more sensitivity to it.",
+            "top_context": "But I wouldn't want someone to go from 15 milligrams of TERS to 15 mg of redda, just because I think the red is going to be a lot stronger, in a lotta cases that might not be the best thing for that person. Next question. Rettus shuts down my gut after just two doses a week. Burping, food sitting in my stomach, dry heaving. Is there any fix for this? Unfortunately, for people that have that, really the only fix is to kind of let it get out of your system. And again, this is really relative to dose, but some people can have this happen at a pretty low dose. So I'm sure there's nausea medication that you can take and things like that. But honestly, It really is only going to happen as the medication clears out of your system. So fortunately, you're kind of stuck with that. Now, fortunately the good part is it usually takes like three or four days for most people to kind have that get out their system Next question, I ran Reta at one milligram twice a week last year with no issues. Restarted six weeks ago at the same dose and now I'm getting nausea almost every evening. What change and should I drop to 250 micrograms as a longevity dose? I'd say for anyone that is getting Naja, the dose is probably too high, meaning that you may have just had more sensitivity to it. It's not uncommon now that we're seeing that people are actually increasing the number of GLP-1 receptors on their cell from using GLPs. So going off and coming back on, you might be a little bit more sensitive to it than you were the first time, although that's not going to be the case for everyone. But I would say for someone that has restarted it and is more sensitivity to, it you may need to go down on the dose. And again, that could just come from improving your health over the long term. and seeing the benefits of the RETA carryover to where you might not need it. So it's going to be different for everyone. But I would say if you're experiencing nausea and you are doing everything intelligently from a dosing standpoint, it is not the worst thing to drop down",
+            "first_timestamp": "3:44"
+          },
+          {
+            "source_id": "is-retatrutide-the-king-of-fat-loss-latest-news-study-breakdown--3e62e829",
+            "source_type": "library-video",
+            "source_title": "Is Retatrutide the King of Fat Loss? Latest News & Study Breakdown",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/is-retatrutide-the-king-of-fat-loss-latest-news-study-breakdown--3e62e829/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/is-retatrutide-the-king-of-fat-loss-latest-news-study-breakdown--3e62e829.json",
+            "mention_count": 33,
+            "top_snippet": "I'll also make sure to include a link to the study. in this video, which I think you can see the summary of. You probably have to pay for the whole study because I know I paid for this study to look through and compile all the slides and everything. But that'll be down there. And then as always, check out Fully Optimized Health for The Best Private Community on the Planet to talk about topics such as these. So without further ado, I'm gonna turn my screen and today we're gonna find out some more data about All right, I'm Hunter Williams, and today we're gonna be looking at this study, which was called the effects of Reta-Trutide on body composition in type 2 diabetes.",
+            "top_context": "So, spoiler alert, it was better. Well, in terms of, the amount of muscle loss, It was about the same, but there was greater total weight loss from red true type. So retrotide so far has shown the most total weight loss when it's stacked up against any other therapy, but it did not cause any more muscle loss than any therapy did. So pretty interesting, and that's what we'll go into and look into some of the numbers today. As always, check out the peptide cheat sheet down in the description of this video. I'll also make sure to include a link to the study. in this video, which I think you can see the summary of. You probably have to pay for the whole study because I know I paid for this study to look through and compile all the slides and everything. But that'll be down there. And then as always, check out Fully Optimized Health for The Best Private Community on the Planet to talk about topics such as these. So without further ado, I'm gonna turn my screen and today we're gonna find out some more data about All right, I'm Hunter Williams, and today we're gonna be looking at this study, which was called the effects of Reta-Trutide on body composition in type 2 diabetes. So this was a phase two, double-blind, parallel group, placebo-controlled, randomized trial by Eli Lilly and company evaluating how RETA-TRUTIDE affects body competition in people with type two diabetes, so let's look at the background of this. Obviously, obesity is a significant health concern linked to worse outcomes in many disease states, including type-2 diabetes Weight reduction is key in diabetes management as it improves cardiovascular risk factors. You know what's interesting about type 2 diabetes is almost always it is reversible.",
+            "first_timestamp": "1:40"
+          },
+          {
             "source_id": "E7GPNidicqY",
             "source_type": "podcast",
             "source_title": "Saturday Morning Coffee Talk 4/18/26",
@@ -76,109 +113,73 @@
             "first_timestamp": "01:15:25.120"
           },
           {
-            "source_id": "1963b87657ac7e4a",
-            "source_type": "email",
-            "source_title": "Retatruitde + Cagrilintide",
-            "source_date": "2025-04-15",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-15-retatruitde-cagrilintide.md",
-            "mention_count": 24,
-            "top_snippet": "FYI, I just dropped a new YouTube video today about MOTS-c vs. SS-31 if you want to check it out. Youtube: MOTS-c Vs. SS-31 | Which Mitochondria Peptide Is Right For You? (https://youtu.be/AvkubuhXA0I",
-            "top_context": "FYI, I just dropped a new YouTube video today about MOTS-c vs. SS-31 if you want to check it out. Youtube: MOTS-c Vs. SS-31 | Which Mitochondria Peptide Is Right For You? (https://youtu.be/AvkubuhXA0I) ——————————————————————————— You’ve probably heard me rave non-stop about **retatrutide aka GLP-3**, the groundbreaking triple-agonist peptide that’s completely reshaping the fat-loss landscape. But lately, I’ve received some messages asking: “**“Hunter, why am I still hungry—or even hungrier—on retatrutide, when everyone else seems to effortlessly melt fat without even thinkin",
-            "first_timestamp": null
+            "source_id": "tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841",
+            "source_type": "library-video",
+            "source_title": "Tirzepatide to Retatrutide The Ultimate Transition Guide Dosing Protocols",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/tirzepatide-to-retatrutide-the-ultimate-transition-guide-dosing-protocols--9f1b0841.json",
+            "mention_count": 28,
+            "top_snippet": "Again, in week 36, people had already lost like 16 to 17% of their body mass. So aside from that, both drugs improve blood pressure, cholesterol, and fatty liver measures. But Reta-Trutide's glucagon activity might give it an edge, especially in the liver fat reduction category. So in patients with fatty liver retrotide led to greater than 80% relative reduction in liver fat content on average at 24 to 48 weeks with many patients liver, fat completely clearing on MRI scans. And I think that's cool.",
+            "top_context": "Now turns out I lowered a 1c by around 2.4 to 2 point 5 percentage points in 40 weeks and then read a true tide at 12 milligrams lower to HBA 1C by 2% on average by 24 weeks So doses of 8 to 12 Milligrams read at true Tide bought 80 brought 82 percent of patients to an a1c of less than 6.5 percent and I think on Average the average starting age a one C was around 8.1 percent which is pretty cool so This also came alongside major weight loss in patients. Again, in week 36, people had already lost like 16 to 17% of their body mass. So aside from that, both drugs improve blood pressure, cholesterol, and fatty liver measures. But Reta-Trutide's glucagon activity might give it an edge, especially in the liver fat reduction category. So in patients with fatty liver retrotide led to greater than 80% relative reduction in liver fat content on average at 24 to 48 weeks with many patients liver, fat completely clearing on MRI scans. And I think that's cool. We don't have data points that show that dramatic reduction interest appetite around liver. Fat and obviously people who are fat, people that are diabetic have non-alcoholic fatty, liver disease where their liver is trashed from them being so fat. So Retatrutide, I think from that standpoint as a longevity molecule to help people aging is far and away better than retatutide. So again, the glucagon agonism really, really brings in the effect of helping the liver out. For weight loss, all things else being equal, retratutite is obviously better. Obviously you can get good results with both of them, but Reddit True Tide is going to be better.",
+            "first_timestamp": "9:42"
           },
           {
-            "source_id": "1983433d8a4c3655",
-            "source_type": "email",
-            "source_title": "Landmark New Retatrutide Study",
-            "source_date": "2025-07-22",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-22-landmark-new-retatrutide-study.md",
-            "mention_count": 24,
-            "top_snippet": "Happy Tuesday! Today, I’m bringing you a bombshell new clinical trial, published in June 2025, that gives us _hard data_ on how the most exciting peptide in the world (retatrutide) actually changes yo",
-            "top_context": "Happy Tuesday! Today, I’m bringing you a bombshell new clinical trial, published in June 2025, that gives us _hard data_ on how the most exciting peptide in the world (retatrutide) actually changes your body composition. But as always, I’m not here to hype up pharma for pharma’s sake. I want you to _win_, and that means taking your peptide stack to the next level. So we’ll break down what this 2025 Lancet D&E study actually found, how it compares to the other “big",
-            "first_timestamp": null
+            "source_id": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352",
+            "source_type": "library-video",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352.json",
+            "mention_count": 26,
+            "top_snippet": "milligram from milligram, probably less. However, a lot of people can get dopamine issues with all three of them. So really comes down to a person. I think the GLP-1 receptor in my experience is what is causing most of the dopamine down regulation in people that end up having issues. Some people, that's actually a really good thing because it keeps them from being addicted to whatever they're addicted But when we talk about dopamine, it seems like Reta seems to be the least affecting of dopamine. Although still affecting it, TERS a little bit more, and obviously semen glutide the most. But I've talked to people that have taken all three that had issues.",
+            "top_context": "So that would be my recommendation there. This is a good question from Dan. He says, when we look at dopamine and reward pathway effects across red aterus and sema, are there differences? In my opinion, what it seems like is that the GLP-1 pathway seems to be modulating the dopamine the most. And so higher doses of semaglutide, because obviously that's just GLp-one, seem like they are going to cause more of the issues with dopamine. Thus higher doses of turzapetide seem like it would cause less than semaglutide milligram for milligram and retrutide, same thing, milligram from milligram, probably less. However, a lot of people can get dopamine issues with all three of them. So really comes down to a person. I think the GLP-1 receptor in my experience is what is causing most of the dopamine down regulation in people that end up having issues. Some people, that's actually a really good thing because it keeps them from being addicted to whatever they're addicted But when we talk about dopamine, it seems like Reta seems to be the least affecting of dopamine. Although still affecting it, TERS a little bit more, and obviously semen glutide the most. But I've talked to people that have taken all three that had issues. So you kind of have to use it. And then when Dopamine and what we can do, like if you want to stay on the GLP, we could obviously use something like a tesofensine to help. There's actually L-tyrosine that could help, 5-HTP could be beneficial, 9-MeBC could beneficial. So there are things that are dopamine increasing type supplements that you can use. Next question from El or Eli, excuse me, is RETTA the best GLPs for fit and carnivore protein heavy trainees doing body recomp?",
+            "first_timestamp": "5:57"
           },
           {
-            "source_id": "196b1f8cc84d1e15",
-            "source_type": "email",
-            "source_title": "Why Retatrutide Increases Heart Rate",
-            "source_date": "2025-05-08",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-05-08-why-retatrutide-increases-heart-rate.md",
-            "mention_count": 18,
-            "top_snippet": "* 100–200 mg L-Theanine (optional based on stress levels) Give this regimen 4–6 weeks, and you’ll very likely notice your resting heart rate drop back into a comfortable range (often a 2–6 bpm reducti",
-            "top_context": "* 100–200 mg L-Theanine (optional based on stress levels) Give this regimen 4–6 weeks, and you’ll very likely notice your resting heart rate drop back into a comfortable range (often a 2–6 bpm reduction). ——————————————————————————— **Final Thoughts ** Remember, the heart-rate bump from Retatrutide is typically mild and transient, but your comfort and cardiovascular health matter. Using the protocol above, you’ll mitigate this minor downside and reap the substantial benefits from Retatrutide, like: * Massive fat loss * Improved metabolism * Enhanced longevity markers Still, al",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "dSuf-_Bgb_8",
-            "source_type": "podcast",
-            "source_title": "Tirz + RETA Stack Actually Safe? #fitness #health #supplements",
-            "source_date": "2026-04-21",
-            "source_url": "https://youtu.be/dSuf-_Bgb_8",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-21-tirz-reta-stack-actually-safe-fitness-health-supplements-dSuf-_Bgb_8.en.vtt",
-            "mention_count": 15,
-            "top_snippet": "different influencers talking about tirz and reta being combined being dangerous.",
-            "top_context": "Why is combining tirz and retatide Why is combining tirz and retatide dangerous? Can you explain why this dangerous? Can you explain why this dangerous? Can you explain why this stack is safer than people think? I stack is safer than people think? I stack is safer than people think? I guess there was a meme going around or guess there was a meme going around or guess there was a meme going around or different influencers talking about tirz different influencers talking about tirz different influencers talking about tirz and reta being combined being dangerous. and reta being combined being dangerous. and reta being combined being dangerous. I've personally done this for several I've personally done this for several I've personally done this for several months at a time and got really good months at a time and got really good months at a time and got really good results. If it's dangerous, I didn't see results. If it's dangerous, I didn't see results. If it's dangerous, I didn't see any reason why it would have been any reason why it would have been any reason why it would have been dangerous. I didn't see anything in my dangerous. I didn't see anything in my dangerous. I didn't see anything in my blood work to reflect that or anything blood work to reflect that or anything blood work to reflect that or anything like that. I guess it makes good like that. I guess it makes good like that. I guess it makes good clickbait if you talk about combining clickbait if you talk about combining clickbait if you talk about combining tirz and reta, but no, I think it's it's tirz and reta, but no, I think it's it's tirz and reta, but no, I think it's it's a perfectly feasible strategy to do. And a perfectly feasible strategy to do. And a perfectly feasible strategy to do. And the reason that you would do that is you the reason that you would do that is you the reason that you would do that is you basically are bringing down the basically are bringing down the basically are bringing down the proportion of the glucagon agonism. And proportion of the glucagon agonism. And proportion of the glucagon agonism. And so if the glucagon agonism, to my best so if the glucagon agonism, to my best so if the glucagon agonism, to my best guess, is around like 20% of the guess, is around like 20% of the guess, is around like 20% of the component of reta is the glucagon piece. component of reta is the glucagon piece. component of reta is the glucagon piece. If we introduce tirzepatide on top of If we introduce tirzepatide on top of If we introduce tirzepatide on top of that, we're getting more GLP and we're that, we're getting more GLP and we're that, we're getting more GLP and we're getting more GIP. And so we now maybe getting more GIP. And so we now maybe getting more GIP. And so we now maybe bring down that glucagon from like 20% bring down that glucagon from like 20% bring down that glucagon from like 20% of the peptide to maybe down to like 5% of the peptide to maybe down to like 5% of the peptide to maybe down to like 5% of the peptide. And for a lot of people, of the peptide. And for a lot of people, of the peptide. And for a lot of people, one, that's going to reduce the hunger",
-            "first_timestamp": "00:00:07.960"
-          },
-          {
-            "source_id": "195bac3e140a033c",
-            "source_type": "email",
-            "source_title": "Transitioning From Tirz to Reta",
-            "source_date": "2025-03-21",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-21-transitioning-from-tirz-to-reta.md",
-            "mention_count": 15,
-            "top_snippet": "your question or [video suggestion here.](https://hunterwilliamsvideotopic.carrd.co/) Youtube: March 2025 Peptides Q&A (https://youtu.be/_unLMWqe0cE?si=7hWBwDH4kT9DDeqr) ——————————————————————————— On",
-            "top_context": "your question or [video suggestion here.](https://hunterwilliamsvideotopic.carrd.co/) Youtube: March 2025 Peptides Q&A (https://youtu.be/_unLMWqe0cE?si=7hWBwDH4kT9DDeqr) ——————————————————————————— One of the more common questions I am seeing is about how to transition from tirzepatide to retatrutide. In my opinion, retatrutide is vastly superior to tirzepatide, and within the next two years, we will see many people transition over to reta from tirz. Today, I'm sharing a detailed and easy-to-follow strategy for transitioning from tirzepatide to retatrutide. Whether your goal is enhan",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "1967e6f0ec9241dc",
-            "source_type": "email",
-            "source_title": "Retatrutide Vs. Alcohol",
-            "source_date": "2025-04-28",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-28-retatrutide-vs-alcohol.md",
-            "mention_count": 14,
-            "top_snippet": "d metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a groundbreaking new study that puts t",
-            "top_context": "d metaphysically. Ironically enough, GLP-1 peptides seem to reduce interest and cravings for alcohol dramatically. And today, I’m sharing with you my insights on a groundbreaking new study that puts this concept to the test. If you thought GLP-1 peptides like semaglutide, tirzepatide, and retatrutide were just about shredding body fat, buckle up—because we’re about to see just how powerful these compounds can be for the brain, addiction, and specifically alcohol cravings! ——————————————————————————— **GLP-1s and Alcohol** You’ve probably seen the headlines—GLP-1 agonists like semag",
-            "first_timestamp": null
+            "source_id": "peptide-qa-january-2026--7994649b",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · January 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-january-2026--7994649b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-january-2026--7994649b.json",
+            "mention_count": 26,
+            "top_snippet": "Next question, I want to try a GLP-1 was suggested to get RETA. I wanted to a three month protocol combining Reta with muscle preserving peptides like CJC and IPA, am on testosterone therapy, needs no timing, dosing escalation monitoring. How do you suggest doing this? I get confused with the mixing and I'm not looking to stay on a GOP1 long-term if I don't have to. Well, first I would dispel the notion that you don' want be on GOPs long term. They're great just for longevity. Now, do you want to be on a high dose long-term? I would say probably not. I don't know that we would want do that once we get to our goal weight.",
+            "top_context": "Next question, HGH, I've been taking it consistently for at least a year. Am I supposed to cycle it also in the morning or evening? 62 year old female, 62 or female I would just stay on it. Just do it five days on two days off and you'll probably be fine. I don't really cycle my HGH that much. If I do I'm cycling with peptides, but I mean, honestly you could, you can do at all year and not really, don' see any downside of doing it all years. So if you wanted to, stop it, if your doing low dose you should be fun. Next question, I want to try a GLP-1 was suggested to get RETA. I wanted to a three month protocol combining Reta with muscle preserving peptides like CJC and IPA, am on testosterone therapy, needs no timing, dosing escalation monitoring. How do you suggest doing this? I get confused with the mixing and I'm not looking to stay on a GOP1 long-term if I don't have to. Well, first I would dispel the notion that you don' want be on GOPs long term. They're great just for longevity. Now, do you want to be on a high dose long-term? I would say probably not. I don't know that we would want do that once we get to our goal weight. However, I think it's okay to stay on it long term. But if someone's on testosterone therapy, a low dose of RETA, it starting at two milligrams a week, working your way up to two, four, five, six, whatever it ends up being that you need to beat, that's fine. And also too, just with every GLP, we should throw in a growth hormone peptide or growth on itself along side of it. If you're on Testosterone, why not go ahead and start Growth Hormone at a Low Dose 2-I-U, something that'd be good. but you could use tessameralin, you can use iprameraline, CJC, could tessemeral and ipraline. I love using growth hormone peptides in conjunction with the RETA because it just makes the muscle maintenance that's that much easier in a calorie deficit,",
+            "first_timestamp": "5:21"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "e—I’m burning calories rapidly here!” This reactive hunger spike can feel frustrating because you’re supposed to feel less hungry, yet your metabolism is firing on all cylinders, urging you to eat mor",
+            "snippet": "feed me—I’m burning calories rapidly here!” This reactive hunger spike can feel frustrating because you’re supposed to feel less hungry, yet your metabolism is firing on all cylinders, urging you to e",
             "source_title": "Retatruitde + Cagrilintide",
             "source_date": "2025-04-15",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "n emergency. It kicks in survival mechanisms, increasing hunger hormones like ghrelin to protect you from losing too much stored energy. You end up with hunger spikes as your body tries to maintain it",
+            "snippet": "its as an emergency. It kicks in survival mechanisms, increasing hunger hormones like ghrelin to protect you from losing too much stored energy. You end up with hunger spikes as your body tries to mai",
             "source_title": "Retatruitde + Cagrilintide",
             "source_date": "2025-04-15",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "p metabolic benefits and extreme hunger control. ——————————————————————————— **Who Benefits Most From Combining Retatrutide + Cagrilintide?** This is where things get really exciting. Most peptides or",
+            "snippet": "both deep metabolic benefits and extreme hunger control. ——————————————————————————— **Who Benefits Most From Combining Retatrutide + Cagrilintide?** This is where things get really exciting. Most pep",
             "source_title": "Retatruitde + Cagrilintide",
             "source_date": "2025-04-15",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "he subjective feeling of alcohol intoxication using a method called operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distinguishin",
+            "snippet": "ze the subjective feeling of alcohol intoxication using a method called operant drug discrimination. Basically, they taught the rats to push a specific lever after feeling alcohol’s effects, distingui",
             "source_title": "Retatrutide Vs. Alcohol",
             "source_date": "2025-04-28",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "ration/products/electrashred), Redmond sea salt, or a DIY mix of salt and potassium) instantly upgrades their energy. Hydration is non-negotiable; 80–100 ounces of water a day is a bare minimum. —————",
+            "snippet": "ions/hydration/products/electrashred), Redmond sea salt, or a DIY mix of salt and potassium) instantly upgrades their energy. Hydration is non-negotiable; 80–100 ounces of water a day is a bare minimu",
             "source_title": "Why Am I So Tired on Retatrutide?",
             "source_date": "2025-06-02",
             "timestamp": null,
@@ -577,33 +578,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Retatrutide as a weekly subcutaneous triple-agonist anchored to its 144-hour half-life rather than as a microdosed daily peptide: Trevor (PZtKV9DjRxQ 00:14:19.280): \"You cannot microdose this. You cannot,\" because (PZtKV9DjRxQ 00:15:08.560): \"retatrutide has what's called a terminal half-life of about It's approximately 144 hours,\" and Trevor (igkOl7DpTs0 00:38:53.119): \"clinical sweet spot 4 to 6 milligrams a week.\" We'd ask the prescribing physician to weigh a slow weekly titration starting at 0.5 mg, doubling every two weeks per Trevor (igkOl7DpTs0 00:37:09.440): \"Weeks 1 and two, 0.5. Weeks three and four, titrate up. Double the dose,\" and to weigh whether the patient is a candidate for chronic maintenance per Trevor (LGO11qnrSb8 00:24:59.679): \"maintenance dose 0.1 mg every 7 days\" up to (LGO11qnrSb8 00:25:08.080): \"as high as 1.5 mg per week after reaching their target goal weight.\"",
-    "caveats": "- Pregnancy / breastfeeding contraindication: Trevor (6eZTiUoEpcM 00:00:27.519): \"this is read a true tide and pregnancy and breastfeeding and why that is easily the biggest gamble with your child's life\"; Trevor (6eZTiUoEpcM 00:01:23.680): \"the fact that women are taking it while pregnant and breastfeeding, are you out of your freaking mind?\"\n- Heart-rate bump: Hunter email threadId 196b1f8cc84d1e15 (2025-05-08): \"Average resting heart rate increases by around 5-7 bpm, peaking around the 24-week mark and slightly tapering off afterward,\" mitigated by Hunter's HR Reduction Protocol (\"3-6 grams EPA + DHA total\" \"With meals AM & PM\" / \"Taurine\" \"5 grams, twice per day\" / \"Magnesium (glycinate or taurate)\" \"400-600 mg elemental per day\" / \"L-Theanine\" \"200-400 mg, 1–2 times/day\").\n- Reactive hunger spike: Hunter email threadId 1963b87657ac7e4a (2025-04-15): \"sometimes glucagon receptor activation can temporarily make you feel hungrier\" because \"your body is suddenly burning through calories at a faster rate, your brain senses a deficit and triggers hunger signals.\"\n- Microdosing is pharmacologically void: Trevor (PZtKV9DjRxQ 00:00:22.880): \"microdosing retatrutide. Are you out of your mind?\" and (PZtKV9DjRxQ 00:16:08.480): \"about 24 to 30 days. Days, not microdosing. Just to get to the level where it is doing all its magic\"; Trevor (PZtKV9DjRxQ 00:16:42.440): \"if you microdose, you don't even get there.\"\n- Microdosing is dose-dependent, not frequency-dependent: Trevor (LGO11qnrSb8 00:24:36.720): \"micro doing which means micro doing is not a small dose. Micro doing is a bunch of small doses throughout the week\" and (LGO11qnrSb8 00:24:53.120): \"It is dose dependent not frequency dependent.\"\n- Don't combine with tirzepatide indiscriminately — Hunter and Taylor both note the receptor-balance trade-off: Hunter (0TyW-wlJMxo 00:36:39.200): \"add in Tirzepatide to the Retatrutide to which what you will be doing is skewing the balance to have more GLP-1 and GIP than glucagon\"; Taylor (Cg7JtpnfRY4 00:50:01.720): \"I would come off of all GLP's for 4 weeks\" before rotating compounds.\n- Storage hedge: Trevor (igkOl7DpTs0 00:42:27.920): \"It's stable forever. Stop listening to it's only 28 days. No, it's not. It'll last significantly longer than that.\"",
-    "cross_expert_consensus": "All three experts converge on weekly subcutaneous injection of retatrutide as a triple-agonist (GLP-1 / GIP / glucagon) and the 2.5 mg weekly dose as a real-world working dose for someone established on the peptide. Hunter (0TyW-wlJMxo 00:35:14.680) reads back a member's protocol: \"Retatrutide 2.5 mg HRT including testosterone. Lost 30 lbs on Tirz before that\" and recommends (0TyW-wlJMxo 00:36:29.320): \"increase the Retatrutide. Add in Cagrilintide. Add in Orforglipron if you wanted to.\" Taylor (G27dIPBJUSs 00:36:29.320) gives the identical \"increase the Reta, add in Cagrilintide\" answer in her parallel coffee talk. Trevor (igkOl7DpTs0 00:38:16.480): \"People find their sweet spot between 2.5 and 4 milligrams a week\" and (igkOl7DpTs0 00:38:53.119): \"clinical sweet spot 4 to 6 milligrams a week\"; Hunter email threadId 1983433d8a4c3655 (2025-07-22) cites the 2025 Lancet trial: \"weekly injections of retatrutide (at various doses, with 8 mg being the key 'sweet spot') and were tracked for 36 weeks\" producing \"a staggering 26.1% of their total fat mass\" loss. All three frame retatrutide as triple-agonist: Hunter (1963b87657ac7e4a 2025-04-15): \"GLP-1 receptors\" \"GIP receptors\" \"Glucagon receptors\"; Trevor (6eZTiUoEpcM 00:01:13.119): \"GLP1 gip glucagon receptor agonist.\" All three flag the heart-rate bump (Hunter quantifies it; Trevor ties it to glucagon thermogenesis indirectly via the same physiology).",
-    "cross_expert_disagreement": "Microdosing camp vs. proper-titration camp — sharpest split. Trevor is unequivocal: (PZtKV9DjRxQ 00:00:22.880): \"microdosing retatrutide. Are you out of your mind?\" and (PZtKV9DjRxQ 00:14:19.280): \"You cannot microdose this. You cannot,\" with the pharmacokinetic explanation (PZtKV9DjRxQ 00:15:08.560): \"terminal half-life of about It's approximately 144 hours\" and (PZtKV9DjRxQ 00:15:57.120): \"It takes four to five half-lives to reach 94 to 97% of steady-state concentration.\" Taylor takes the OPPOSITE position for off-label vascular indications — (JC1poI1OEog 01:35:07.480): \"typically when you see macular degeneration it's a vascular issue to which a microdose of a GLP will help.\" Both can be true (Trevor is talking about weight-loss / metabolic targets requiring steady-state; Taylor is talking about a microvascular nudge), but the surface message to a patient sounds contradictory and must be disambiguated by goal. Target-dose ceiling: Trevor's masterclass (igkOl7DpTs0 00:38:53.119) says \"clinical sweet spot 4 to 6 milligrams a week,\" while the Lancet trial Hunter cites (1983433d8a4c3655 2025-07-22) used 8 mg as the \"sweet spot\" — newer trial data (2025) sits HIGHER than Trevor's typical practitioner ceiling. Forever vs. cycle: Trevor (WyUgRv8oRik 00:36:46.640): \"It's not a cycle. It is a forever peptide for one simple reason. It restores homeostasis,\" and (LGO11qnrSb8 00:24:28.559): \"when you maintain reatrite at a maintenance dose\" indefinitely. Taylor (Cg7JtpnfRY4 00:49:59.600): \"I would come off of all GLP's for 4 weeks\" before resuming or rotating to Tesofensine — i.e., she's open to defined off-cycles that Trevor explicitly rejects.",
+    "recommendation": "Reset Biology suggests asking the prescribing clinician to weigh Hunter Williams's 2026-05-25 goal split: \"These people are going be the ones that need higher doses with full titration up to those higher dosage, and they're going on it for longer periods\" and \"This is where we're going to see the lower doses often micro dose.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 3:45; 4:50; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/). Hunter's 2026-05-25 starting statement is: \"Start at two milligrams weekly or even one milligram if you're a lean user. Hold for those first four weeks and then assess. Do not rush titration.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 40:52; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/).",
+    "caveats": "- Hunter Williams (2026-05-25): \"As of time of me filming this, it is May 2026. Red True Tide is not FDA approved.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 2:44; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/)\n- Hunter Williams (2026-06-17): \"stop the GLP once you get pregnant.\" (may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352, 3:19; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/)\n- Hunter Williams (2026-05-25): \"So for most users, eight milligrams is the right ceiling, 12 milligrams as the rate ceiling for severe obesity or non-response at lower doses\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 21:03; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/)\n- Hunter Williams (2026-05-25): \"resting heartrate goes up from five to 10 beats per minute at higher doses\" and \"A persistent resting heart rate over 100 warrants positive evaluation.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 30:11; 31:16; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/)\n- Hunter Williams (2026-05-25): \"combining with high dose stimulant fat burners because of the cardiac risk and the increased heart rate I think is dangerous\" and \"oral contraceptives, again, efficacy may be reduced during titration and dose escalation.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 35:06; 36:43; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/)",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": "Newer Hunter Williams (2026-05-25): \"This is where we're going to see the lower doses often micro dose.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 4:50; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/). Older Trevor Bachmeyer (2025-10-15): \"You cannot microdose this. You cannot,\" (PZtKV9DjRxQ, 00:14:19.280; https://youtu.be/PZtKV9DjRxQ).",
     "acute_chronic_split": {
-      "acute": {
-        "dose": "Trevor (igkOl7DpTs0 00:37:09.440): \"Weeks 1 and two, 0.5. Weeks three and four, titrate up. Double the dose. Titrate up. That's what it means. Double the dose. So now you're taking 1 millig.\" Trevor (igkOl7DpTs0 00:37:33.920): \"Weeks seven and eight, 2 milligrams.\" Trevor (igkOl7DpTs0 00:38:16.480): \"People find their sweet spot between 2.5 and 4 milligrams a week.\"",
-        "route": "Subcutaneous injection only. Trevor (PZtKV9DjRxQ 00:00:34.480): \"I bet oral peptides work for you, too. It doesn't work and I'll explain exactly why.\"",
-        "frequency": "Trevor (PZtKV9DjRxQ 00:16:21.000): \"The weekly dosing interval is not arbitrary, you guys. It is is pharma pharmacological genius because the 7-day injection perfectly reinforces the plasma concentration just as it begins to decline from the previous dose.\"",
-        "duration": "Trevor (igkOl7DpTs0 00:37:09.440) titration spans roughly 12+ weeks to reach therapeutic range; Trevor (igkOl7DpTs0 00:38:12.480): \"Look at week 9 to 10. Now you're in that serious therapeutic range\"; Trevor (igkOl7DpTs0 00:38:30.400): \"Week 13 plus. Look at your own.\"",
-        "verbatim_citation": "Trevor (igkOl7DpTs0 00:37:08.160): \"Weeks 1 and two, 0.5. Weeks three and four, titrate up. Double the dose.\" Trevor (igkOl7DpTs0 00:38:53.119): \"clinical sweet spot 4 to 6 milligrams a week.\"",
-        "episode_url": "https://youtu.be/igkOl7DpTs0",
-        "timestamp": "00:37:08.160; 00:38:16.480; 00:38:53.119; weekly cadence PZtKV9DjRxQ 00:16:21.000"
-      },
+      "acute": null,
       "chronic": {
-        "dose": "Trevor (LGO11qnrSb8 00:24:59.679): \"maintenance dose 0.1 mg every 7 days\" up to (LGO11qnrSb8 00:25:08.080): \"they've gone as high as 1.5 mg per week after reaching their target goal weight.\"",
-        "route": "Trevor (PZtKV9DjRxQ 00:00:34.480): \"I bet oral peptides work for you, too. It doesn't work and I'll explain exactly why\" — same subcutaneous-only route as acute.",
-        "frequency": "Trevor (LGO11qnrSb8 00:24:59.679): \"every 7 days.\" Trevor (LGO11qnrSb8 00:24:53.120): \"It is dose dependent not frequency dependent.\"",
-        "duration": "Trevor (WyUgRv8oRik 00:36:46.640): \"It's not a cycle. It is a forever peptide for one simple reason. It restores homeostasis. It doesn't force an artificial state whatsoever.\" Trevor (WyUgRv8oRik 00:36:38.880): \"This is also a lifetime peptide longevity if you use it correctly with it's week the weekly pharmacocinetics.\"",
-        "verbatim_citation": "Trevor (LGO11qnrSb8 00:24:28.559): \"when you maintain reatrite at a maintenance dose. Now I always say 0.1 milligrams per week.\" Trevor (LGO11qnrSb8 00:25:18.159): \"It's not supposed to do anything that you're aware of\" — i.e., a maintenance dose is intentionally sub-perceptual.",
-        "episode_url": "https://youtu.be/LGO11qnrSb8",
-        "timestamp": "00:24:28.559; 00:24:59.679; 00:25:08.080; lifetime frame WyUgRv8oRik 00:36:46.640"
+        "dose": "Hunter Williams (2026-05-25): \"a four milligram maintenance dose was studied as a long-term at lower burden option\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 15:03; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/). Hunter Williams (2026-05-25): \"taper to two milligram or one milligram once weekly, or excuse me, twice weekly\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 25:23; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/). Hunter Williams (2026-05-25): \"Many lean users never go above two to four milligrams per week.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 26:27; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/). Hunter Williams (2026-04-30): \"there is a lot of people that can get an ancellary benefit of Reta at even 100 micrograms per week.\" (peptide-qa-march-2026--dd9aa173, 4:54; https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/) Hunter Williams (2026-05-25): \"Weeks 5 to 8, if they need to, they can increase to four milligrams. Weeks nine to 12, if they needed to they could increase the six milligrams and then weeks 13 to 17, If the need two, you can go up to 8, 9 milligrams And then 12 milligrams\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 14:33; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/). Hunter Williams (2026-06-17): \"the eight, 10, 12 milligram dosing. This would be the appropriate use case for those.\" (may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352, 9:44; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/)",
+        "route": null,
+        "frequency": "Hunter Williams (2026-05-25): \"once weekly, dosing is what is studied pharmaceutically. So we don't really have anything around split dosage from a clinical study perspective\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 5:22; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/). Hunter Williams (2026-05-25): \"you could do twice weekly\" and \"Three times though would be the, for me is usually the max that I do it.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 16:07; 19:25; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/)",
+        "duration": "Hunter Williams (2026-05-25): \"chronic use, which is indefinite\"; \"six to 12 month cycles followed by a maintenance dose tapers\"; \"12 to 24 week protocols for specific metabolic goals.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 22:40; 23:14; 23:46; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/)",
+        "verbatim_citation": "Hunter Williams (2026-05-25): \"I like starting at one milligrams a week, not two milligrams, which is the standard clinical trial dose.\" (retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d, 26:27; https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/)",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/retatrutide-masterclass-dosing-side-effects-and-the-framework-most-people-get-wr--1ab9831d/; https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/",
+        "timestamp": "14:33; 15:03; 25:23; 26:27; 4:54; 9:44"
       }
     },
-    "female_specific_notes": "Pregnancy / breastfeeding: Trevor (6eZTiUoEpcM 00:00:27.519): \"read a true tide and pregnancy and breastfeeding and why that is easily the biggest gamble with your child's life\"; Trevor (6eZTiUoEpcM 00:01:23.680): \"the fact that women are taking it while pregnant and breastfeeding, are you out of your freaking mind?\" Female practitioner case Hunter / Taylor address (Jacqueline, on testosterone HRT) — Hunter (0TyW-wlJMxo 00:35:14.680): \"Retatrutide 2.5 mg HRT including testosterone. Lost 30 lbs on Tirz before that\" with food noise issue, recommendation (0TyW-wlJMxo 00:36:29.320): \"increase the Retatrutide. Add in Cagrilintide. Add in Orforglipron if you wanted to.\" Taylor's parallel response (G27dIPBJUSs 00:36:29.320): \"increase the Reta, add in Cagrilintide.\" Off-label vascular use: Taylor (JC1poI1OEog 01:35:07.480): \"typically when you see macular degeneration it's a vascular issue to which a microdose of a GLP will help.\" Receptor-rotation off-cycle: Taylor (Cg7JtpnfRY4 00:49:59.600): \"I would come off of all GLP's for 4 weeks\" before reintroducing Retatrutide or rotating to Tesofensine.",
-    "distilled_at": "2026-04-27T05:08:11.771Z",
-    "distilled_by": "claude"
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T06:26:37.6093613Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.836Z"
+  "generated_at": "2026-07-17T10:59:06.423Z",
+  "mentions_fingerprint": "266e36f9a60d"
 }

@@ -1,0 +1,187 @@
+{
+  "peptide": "Vesilute",
+  "slug": "vesilute",
+  "aliases": [
+    "Vesilute",
+    "vesilute"
+  ],
+  "category": "Bioregulators",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 46,
+        "top_doses": [
+          {
+            "dose": "2 mg",
+            "count": 17
+          },
+          {
+            "dose": "20 mg",
+            "count": 9
+          },
+          {
+            "dose": "1 mg",
+            "count": 3
+          },
+          {
+            "dose": "5 mg",
+            "count": 3
+          },
+          {
+            "dose": "10 mg",
+            "count": 2
+          },
+          {
+            "dose": "0 mg",
+            "count": 1
+          },
+          {
+            "dose": "100 mg",
+            "count": 1
+          },
+          {
+            "dose": "200 mg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "19b484ebf234d2f0",
+            "source_type": "email",
+            "source_title": "The Bladder Peptide",
+            "source_date": "2025-12-22",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-12-22-the-bladder-peptide.md",
+            "mention_count": 27,
+            "top_snippet": "inseparable.** You can optimize the prostate all day long, but if bladder signaling, smooth muscle tone, and epithelial regeneration are impaired, symptoms don’t fully resolve. Urinary urgency, weak s",
+            "top_context": "inseparable.** You can optimize the prostate all day long, but if bladder signaling, smooth muscle tone, and epithelial regeneration are impaired, symptoms don’t fully resolve. Urinary urgency, weak stream, nocturia, and incomplete emptying are all prostate–bladder axis problems. This is where Vesilute comes in. Vesilute is a bladder-specific bioregulator peptide that has quietly existed in Eastern European medicine for years, yet remains virtually unknown in Western peptide conversations. In my view, it plays the same role for the bladder that Prostamax plays for the prostate, and the two tog",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19ba501471b219ea",
+            "source_type": "email",
+            "source_title": "The Bladder Peptide (Vesilute)",
+            "source_date": "2026-01-09",
+            "source_url": "https://open.spotify.com/episode/329Sf9YfFJKXh7v44dGshT",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-01-09-vesilute-bladder-peptide.md",
+            "mention_count": 8,
+            "top_snippet": "lly; benefits sustained after treatment | | **2013 women's study** | Ages ~48-80, OAB symptoms | Significant reductions in urinary frequency + incontinence; strong safety profile | | **Newer study** |",
+            "top_context": "lly; benefits sustained after treatment | | **2013 women's study** | Ages ~48-80, OAB symptoms | Significant reductions in urinary frequency + incontinence; strong safety profile | | **Newer study** | BPH + OAB symptom overlap men | Peptide add-on outperformed standard therapy alone | ## ⭐ DOSING (Vesilute) — Hunter's protocol ### Hunter's preferred (daily low-dose, broader exposure) - **1-2 mg/day subQ** - **Duration: 30-60 days** ### Russian literature alternative - 5 mg IM, 3x per week - Shorter, punchier course ### Frequency - **2-3 courses per year** — heavy nocturia/urgency/frequency struggl",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "vesilute-a-bioregulator-peptide-for-bladder-health--afadea85",
+            "source_type": "library-article",
+            "source_title": "Vesilute: A Bioregulator Peptide for Bladder Health",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/vesilute-a-bioregulator-peptide-for-bladder-health--afadea85/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/vesilute-a-bioregulator-peptide-for-bladder-health--afadea85.json",
+            "mention_count": 6,
+            "top_snippet": "Today I want to talk about a Russian bioregulator peptide called Vesilute. It pairs really well with Prostamax for men, but it also works for women dealing with overactive bladder. This one won't chan",
+            "top_context": "Today I want to talk about a Russian bioregulator peptide called Vesilute. It pairs really well with Prostamax for men, but it also works for women dealing with overactive bladder. This one won't change your life unless bladder issues are part of your daily reality. If they are, this is worth your attention. What Vesilute Actually Is Vesilute is a synthetic dipeptide,",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352",
+            "source_type": "library-video",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352.json",
+            "mention_count": 2,
+            "top_snippet": "and ACE083, which I've used them for, and those seem to work pretty well for myostatin inhibition. All right, just going through some of these miscellaneous ones. I always get asked about teens and peptides. We're actually going to talk about that on a Reader Mailbag episode, so stay tuned for that, that Taylor and I are going release very soon. Can you stack ters and reddit at microdoses? Yes, absolutely. Kelly says, peptide for prostate issues, I like one to two milligrams per day of Vesilute, V-E-S-I-L-U-T- E.",
+            "top_context": "And so I would love to see more people that have used it, tell me about it. I don''t need to use it and right now fertility is important to me. circumspect in that regard around my testes and what is going on down there. But if you're daring enough to go get it, I would love to hear your feedback on it and how it's working. I do know it is being studied in humans right now. We just don't know because the biotech company that is making it which I believe is the same one that made ACE031, which is a myostatin inhibitor, and ACE083, which I've used them for, and those seem to work pretty well for myostatin inhibition. All right, just going through some of these miscellaneous ones. I always get asked about teens and peptides. We're actually going to talk about that on a Reader Mailbag episode, so stay tuned for that, that Taylor and I are going release very soon. Can you stack ters and reddit at microdoses? Yes, absolutely. Kelly says, peptide for prostate issues, I like one to two milligrams per day of Vesilute, V-E-S-I-L-U-T- E. and one to two milligrams per day of Prostomax. I've actually used those just myself, and I don't have any prostate issues, but I will say my bladder flow and just overall how you feel when you urinate as a man was very much improved from doing those. So fortunately for me, PSA is really low, prostate volume, all that's good for when I had it measured. But I would say there was improved bladder-flow enhancement for those, so I think for guys that do have BPH or things of that nature,",
+            "first_timestamp": "45:35"
+          },
+          {
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 2,
+            "top_snippet": "n exposure activates it well. If you're very pale, you'll need some UV exposure. Sitting inside all day won't tan you unless you have a tanning bed. Prostate health with peptides For BPH, large prosta",
+            "top_context": "n exposure activates it well. If you're very pale, you'll need some UV exposure. Sitting inside all day won't tan you unless you have a tanning bed. Prostate health with peptides For BPH, large prostate, or general prostate inflammation, my protocol is 2mg per day of Prostamax and 2mg per day of Vesilute for 30 to 60 days. Add 5 to 10mg of Cialis daily. If you try this and it works, drop a comment and let people know. I'm collecting field reports. Hashimoto's and chronic immune issues First thing always, testosterone. Then thymosin alpha-1, then thymogen or thymalin. If budget allows, add BPC, T",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "199c5dfd3c4bba79",
+            "source_type": "email",
+            "source_title": "TRT vs. Prostate Cancer",
+            "source_date": "2025-10-08",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-08-trt-vs-prostate-cancer.md",
+            "mention_count": 1,
+            "top_snippet": "’ve seen work anecdotally as an adjunctive 8–12-week peptide protocol: * **KPV **— 1 mg per day. Powerful anti-inflammatory signaling to calm local prostate irritation. * **Prostamax** — 2 mg per day.",
+            "top_context": "’ve seen work anecdotally as an adjunctive 8–12-week peptide protocol: * **KPV **— 1 mg per day. Powerful anti-inflammatory signaling to calm local prostate irritation. * **Prostamax** — 2 mg per day. A prostate-specific bioregulator that may normalize tissue architecture and PSA expression. * **Vesilute** — 2 mg per day. Targets the bladder and urinary tract for smoother flow and reduced residual volume. * **Thymosin Alpha-1 (TA1)** — 1 mg per day. Immune-modulating and protective against chronic inflammation that can drive PSA volatility. When combined with lifestyle optimization, they can help",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [],
+        "chronic_signals": [
+          {
+            "snippet": "’ve seen work anecdotally as an adjunctive 8–12-week peptide protocol: * **KPV **— 1 mg per day. Powerful anti-inflammatory signaling to calm local prostate irritation. * **Prostamax** — 2 mg per day.",
+            "source_title": "TRT vs. Prostate Cancer",
+            "source_date": "2025-10-08",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "is not to “stimulate” in a pharmacologic sense, but to restore proper cellular communication in aging or stressed tissue. Vesilute is targeted specifically at bladder tissue, including: * Bladder epit",
+            "source_title": "The Bladder Peptide",
+            "source_date": "2025-12-22",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "or * Local neuro-muscular signaling pathways Historically, Vesilute has been used in Eastern European clinical settings for conditions associated with: * Functional bladder disorders * Urinary frequen",
+            "source_title": "The Bladder Peptide",
+            "source_date": "2025-12-22",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "nction associated with chronic prostatitis or BPH Importantly, Vesilute is not a diuretic, not an anticholinergic, and not an alpha-blocker. It operates in a completely different category than standar",
+            "source_title": "The Bladder Peptide",
+            "source_date": "2025-12-22",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "erates in a completely different category than standard urologic drugs. ——————————————————————————— **Mechanisms** The most interesting thing about Vesilute is that it appears bidirectional and normal",
+            "source_title": "The Bladder Peptide",
+            "source_date": "2025-12-22",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the prescribing clinician to weigh Hunter Williams' newer library-video statement (2026-06-17, 45:35): \"Kelly says, peptide for prostate issues, I like one to two milligrams per day of Vesilute, V-E-S-I-L-U-T- E.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 45:35, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/] Hunter Williams' newer library-video continuation (2026-06-17, 46:38) is: \"Do two to three times per year that cycle of 30 days, one to two milligrams of Prostomax and Desolute, both per day. Works wonders. I love it. And I give it my thumbs up and plan on probably doing that at least once a year for me, even though I'm in my thirties.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:38, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/]",
+    "caveats": "- Hunter Williams (2026-03-30, 01:56): \"I can't promise it's going fix everything, but as you can see in some of the data that we're talking about today, there's pretty compelling evidence that it does work.\" [vesilute-a-bioregulator-peptide-for-bladder-health--afadea85 @ 01:56, https://library.hunterwilliamshealth.com/p/vesilute-a-bioregulator-peptide-for-bladder-health--afadea85/]\n- Hunter Williams (2026-03-30, 16:14): \"Again, nothing super complex. There's not a ton of human data or even rodent data for that matter around Vezalot.\" [vesilute-a-bioregulator-peptide-for-bladder-health--afadea85 @ 16:14, https://library.hunterwilliamshealth.com/p/vesilute-a-bioregulator-peptide-for-bladder-health--afadea85/]",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter Williams' newer library video (2026-06-17, 45:35): \"Kelly says, peptide for prostate issues, I like one to two milligrams per day of Vesilute, V-E-S-I-L-U-T- E.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 45:35, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/] Hunter Williams' older email (2025-12-22, threadId 19b484ebf234d2f0): \"Women: Vesilute: 2 mg per day for 30-60 days\" and \"Men: Vesilute: 2 mg per day for 30-60 days.\" Hunter Williams' older email alternative (2026-01-09, threadId 19ba501471b219ea): \"5 mg IM, 3x per week.\"",
+        "route": "Hunter Williams' older email (2026-01-09, threadId 19ba501471b219ea): \"1-2 mg/day subQ\" and \"5 mg IM, 3x per week.\"",
+        "frequency": "Hunter Williams' newer library video (2026-06-17, 45:35): \"Kelly says, peptide for prostate issues, I like one to two milligrams per day of Vesilute, V-E-S-I-L-U-T- E.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 45:35, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/] Hunter Williams' newer library video (2026-06-17, 46:38): \"Do two to three times per year that cycle of 30 days, one to two milligrams of Prostomax and Desolute, both per day.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:38, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/] Hunter Williams' older email (2026-01-09, threadId 19ba501471b219ea): \"2-3 courses per year\" and \"1-2 courses per year.\"",
+        "duration": "Hunter Williams' newer library video (2026-06-17, 46:38): \"Do two to three times per year that cycle of 30 days, one to two milligrams of Prostomax and Desolute, both per day.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 46:38, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/] Hunter Williams' older email (2025-12-22, threadId 19b484ebf234d2f0): \"Vesilute: 2 mg per day for 30-60 days.\" Hunter Williams' older email (2026-01-09, threadId 19ba501471b219ea): \"Duration: 30-60 days.\"",
+        "verbatim_citation": "Hunter Williams — may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 (2026-06-17, 45:35): \"Kelly says, peptide for prostate issues, I like one to two milligrams per day of Vesilute, V-E-S-I-L-U-T- E.\" [may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 45:35, https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/]",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/; https://library.hunterwilliamshealth.com/p/vesilute-a-bioregulator-peptide-for-bladder-health--afadea85/",
+        "timestamp": "Hunter library: 45:35; 46:38. Hunter email: 2025-12-22 threadId 19b484ebf234d2f0; 2026-01-09 threadId 19ba501471b219ea."
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T10:07:29.188Z",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:09.988Z",
+  "mentions_fingerprint": "acc0af565cfa"
+}

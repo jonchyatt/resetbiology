@@ -5,35 +5,6 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-async function resolveUser(auth0User: any) {
-  if (!auth0User) return null
-
-  const auth0Id = auth0User.sub
-  const email = auth0User.email
-
-  // Try to find by Auth0 ID first
-  let user = await prisma.user.findUnique({
-    where: { auth0Sub: auth0Id }
-  })
-
-  // If not found, try by email
-  if (!user && email) {
-    user = await prisma.user.findUnique({
-      where: { email }
-    })
-
-    // Update Auth0 ID if user found by email
-    if (user && !user.auth0Sub) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { auth0Sub: auth0Id }
-      })
-    }
-  }
-
-  return user
-}
-
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -46,7 +17,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await resolveUser(session.user)
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

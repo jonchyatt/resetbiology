@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { isAdminRequest } from '@/lib/adminGuard';
 
 const prisma = new PrismaClient();
 
@@ -30,6 +31,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { slug } = await params;
     const peptideData = await request.json();
@@ -77,6 +81,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { slug } = await params;
     await prisma.peptide.delete({

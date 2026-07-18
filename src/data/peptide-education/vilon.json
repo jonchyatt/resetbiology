@@ -1,0 +1,369 @@
+{
+  "peptide": "Vilon",
+  "slug": "vilon",
+  "aliases": [
+    "Vilon",
+    "Velon",
+    "velon",
+    "vilon",
+    "Velan",
+    "velan"
+  ],
+  "category": "Bioregulators",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 68,
+        "top_doses": [
+          {
+            "dose": "10 mg",
+            "count": 10
+          },
+          {
+            "dose": "2 mg",
+            "count": 6
+          },
+          {
+            "dose": "1 mg",
+            "count": 4
+          },
+          {
+            "dose": "20 mg",
+            "count": 2
+          },
+          {
+            "dose": "10 units",
+            "count": 1
+          },
+          {
+            "dose": "10 milligram",
+            "count": 1
+          },
+          {
+            "dose": "20 milligram",
+            "count": 1
+          },
+          {
+            "dose": "0.2 milligrams",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6",
+            "source_type": "library-video",
+            "source_title": "Unlocking the Power of Vilon The Most Overlooked Anti-Aging Secret",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6.json",
+            "mention_count": 41,
+            "top_snippet": "Hey everybody, my name is Hunter Williams. I hope you're doing amazing wherever you are out in the world. Today's video is going to be about a little known peptide by a regular called a felon. Some people also might pronounce it felone. This is a very interesting peptide. It actually came when they were working on thymaline, and they actually extracted Vilon out of thylmaline and were able to use it and harness benefits from Vylon.",
+            "top_context": "Hey everybody, my name is Hunter Williams. I hope you're doing amazing wherever you are out in the world. Today's video is going to be about a little known peptide by a regular called a felon. Some people also might pronounce it felone. This is a very interesting peptide. It actually came when they were working on thymaline, and they actually extracted Vilon out of thylmaline and were able to use it and harness benefits from Vylon. So it's a pretty cool peptides. I've used it on myself a little bit recently and I definitely noticed an anti-inflammatory benefit. Very similar to BPC. but there's also an immune component to this too. So it's almost like if you mixed BPC with a thymusin together and had a little bit more of a potent anti-inflammatory slash immune kind of response than maybe both of those together at a small dose. It's pretty cool. I think we're still just scratching the surface of all the things this can do. As I'm going to talk about today in the video, there is a lot of data to back this up going back three or four decades really that this has been used in Russia.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "peptide-qa-october-2025--6eb875d9",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · October 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-october-2025--6eb875d9/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-october-2025--6eb875d9.json",
+            "mention_count": 5,
+            "top_snippet": "Vessagen is Good. Velon is What else am I missing? Anything. And testigen would be good. So those would my top four. There's obviously much more, but I really like those because those are ones that you're going to feel more. Some of the other ones you are not just going feel like, you know, pineal on, maybe you feel it. I never really felt it, But I felt like I was healthier maybe versus the others ones. Like I definitely had a feel effect. Just my opinion. Talked about this one a lot, but just to sum up, you can go check out in an earlier video, I talked about combining NAD,",
+            "top_context": "like blurred vision and things like that. So, I know that it is a short- term solution. Whether it was a PCT is okay, but longterm, definitely not. Next one, on the topic of bioregulators, what are the best stacks with injectable peptides? How to use 10 days versus 30 days. So for the injectable bioregulators, I like 30 to 60 days, that's kind of a loaded question. There's infinite number of permutations and combinations. I really like, guess I'll just say my favorite injectible bi-regulators. Cardilax is good. Vessagen is Good. Velon is What else am I missing? Anything. And testigen would be good. So those would my top four. There's obviously much more, but I really like those because those are ones that you're going to feel more. Some of the other ones you are not just going feel like, you know, pineal on, maybe you feel it. I never really felt it, But I felt like I was healthier maybe versus the others ones. Like I definitely had a feel effect. Just my opinion. Talked about this one a lot, but just to sum up, you can go check out in an earlier video, I talked about combining NAD, MOTC, and five amino one MQ and one vial. How long the vile of all three combined last, how safe is this? In my case has always been safe. Now full disclosure, i've never done a pharmacological or PK analysis on this, But it's always seemed to work for me when I've injected it and I run through the whole vials. So practice versus theory, This is a good one. I think since this question, I came out of the video, but next question was I stumbled onto this peptide that nobody's talking about. It beats up a talon for telomere repair and so many others that I can't believe it's seemingly being brushed aside.",
+            "first_timestamp": "20:44"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-11726--2c65a329",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 1/17/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-11726--2c65a329.json",
+            "mention_count": 4,
+            "top_snippet": "how to use them or anything, and they could potentially harness the benefits of them. Like I said, Cardilax, Thymogen, Vessagen for endothelial health helps a lot. Velon, you know, Velan is such an amazing peptide and no one knows about it at all. Like no-one knows anything about Velin, how to use it, like what to do.",
+            "top_context": "I think VIP, I've been talking a lot about VIP lately. VIP is so good and no one knows about it, you know. Cardilax is good, no-one knows it for healing. Fat loss wise, I mean, obviously we have the GLPs. I'm thinking, is there any other fat loss ones? I think there's just a lot of ones that if you go onto any peptide website and look at that 80% of people don't even know what they're for, how to use them or anything, and they could potentially harness the benefits of them. Like I said, Cardilax, Thymogen, Vessagen for endothelial health helps a lot. Velon, you know, Velan is such an amazing peptide and no one knows about it at all. Like no-one knows anything about Velin, how to use it, like what to do. I take one milligram or two milligrams. You can literally inject Velant into an injury to help. It's going to inject itself too and it's gonna help with your immune system. What's cool about some of these bioregulators too, is everyone's like, there's this way to get views on social media and you can just go around and say that BPC causes cancer. And you just say that BPC has no evidence that it's going to help you and that causes cancer. So if you want to get views on social media and you're up and coming to social medial, just go say, that and they'll start new views. And, you know, what's interesting is like some of these injectable bioregulators. I'm not saying BTC is bad.",
+            "first_timestamp": "1:21:59"
+          },
+          {
+            "source_id": "E7GPNidicqY",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/E7GPNidicqY",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "those together. Yeah. How would you dose 20 mg vial of Vilon?",
+            "top_context": "it's just that Jardiance is older, more it's just that Jardiance is older, more established, more of like the first established, more of like the first established, more of like the first mover advantage of that. But I would mover advantage of that. But I would mover advantage of that. But I would start with 10 mg if you're relatively start with 10 mg if you're relatively start with 10 mg if you're relatively metabolically healthy with Brenzavvy. metabolically healthy with Brenzavvy. metabolically healthy with Brenzavvy. &gt;&gt; Yeah. Yeah. But yeah, I think there's a very good But yeah, I think there's a very good even for already healthy people even for already healthy people even for already healthy people of those um to use. [clears throat] So Started a 9-week cut and started it in Started a 9-week cut and started it in AG protocol. AG protocol. AG protocol. Maybe AM? Is that what they meant? Maybe AM? Is that what they meant? Maybe AM? Is that what they meant? AG protocol of 2 mg MOTS-c and 2 mg AG protocol of 2 mg MOTS-c and 2 mg AG protocol of 2 mg MOTS-c and 2 mg SS-31 5 days a week, only 4 days in. SS-31 5 days a week, only 4 days in. SS-31 5 days a week, only 4 days in. Cool. Yeah. It's a good stack. I like Cool. Yeah. It's a good stack. I like Cool. Yeah. It's a good stack. I like doing those. I was I think that's doing those. I was I think that's doing those. I was I think that's something people could do more is mix something people could do more is mix something people could do more is mix those together. Yeah. those together. Yeah. those together. Yeah. How would you dose 20 mg vial of Vilon? How would you dose 20 mg vial of Vilon? How would you dose 20 mg vial of Vilon? Syringe dose and over what time period? Syringe dose and over what time period? Syringe dose and over what time period? Well, if you want, you can check this on Well, if you want, you can check this on Well, if you want, you can check this on the peptide cheat sheet. I have the the peptide cheat sheet. I have the the peptide cheat sheet. I have the exact instructions to do so. Long story exact instructions to do so. Long story exact instructions to do so. Long story short, 2 ml of water, short, 2 ml of water, short, 2 ml of water, 10 units to 20 units, 5 days on, 2 days 10 units to 20 units, 5 days on, 2 days 10 units to 20 units, 5 days on, 2 days off for 60 days. It's almost like I have that memorized. It's almost like I have that memorized. &gt;&gt; [laughter] &gt;&gt; [laughter] &gt;&gt; [laughter] &gt;&gt; My test is 1125 and my free is 280 on &gt;&gt; My test is 1125 and my free is 280 on &gt;&gt; My test is 1125 and my free is 280 on cream. My doctor wanted cream. My doctor wanted cream. My doctor wanted me to take an AI because my estradiol me to take an AI because my estradiol me to take an AI because my estradiol was 81. I decided to take it. She said I was 81. I decided to take it. She said I was 81. I decided to take it. She said I would have side effects, but I feel would have side effects, but I feel would have side effects, but I feel fine. Yeah, I mean, you probably feel fine. Yeah, I mean, you probably feel fine. Yeah, I mean, you probably feel fine, but I would throw the AI in the fine, but I would throw the AI in the fine, but I would throw the AI in the trash cuz 81 at those levels is trash cuz 81 at those levels is trash cuz 81 at those levels is perfectly healthy to me. Yep. But I perfectly healthy to me. Yep. But I perfectly healthy to me. Yep. But I mean, you can do what you want. Doesn't mean, you can do what you want. Doesn't mean, you can do what you want. Doesn't matter to me, but I just think AIs are matter to me, but I just think AIs are matter to me, but I just think AIs are garbage. Yeah.",
+            "first_timestamp": "01:45:28.960"
+          },
+          {
+            "source_id": "197bdbb80a66aee3",
+            "source_type": "email",
+            "source_title": "Thymagen for Immune Function",
+            "source_date": "2025-06-29",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-29-thymagen-for-immune-function.md",
+            "mention_count": 3,
+            "top_snippet": "ject **1mg per day** (10 units/0.1ml), subcutaneously (belly fat), either **AM or PM**. * A 20mg vial lasts 20 days at this dose. For longer cycles, you can use for 30–60 days straight (you’ll need 2–",
+            "top_context": "ject **1mg per day** (10 units/0.1ml), subcutaneously (belly fat), either **AM or PM**. * A 20mg vial lasts 20 days at this dose. For longer cycles, you can use for 30–60 days straight (you’ll need 2–3 vials for a full 60 days). ——————————————————————————— **How Thymagen Works with Epitalon and Vilon** For a complete longevity and immune support protocol, Thymagen works exceptionally well alongside Epitalon and Vilon. Epitalon targets cellular repair and circadian balance, while Vilon supports deeper immune communication and cell protection. When these three are combined, users often notic",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "boost-your-immunity-defy-aging-with-thymalin--08da048d",
+            "source_type": "library-video",
+            "source_title": "Boost Your Immunity Defy Aging with Thymalin",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/boost-your-immunity-defy-aging-with-thymalin--08da048d/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/boost-your-immunity-defy-aging-with-thymalin--08da048d.json",
+            "mention_count": 3,
+            "top_snippet": "It's an oral capsule that you can buy on the internet. That was isolated in the 80s, and later produced as a drug. Still used today. And it's also used as nasal spray. Then other peptide, like Velon and Crystogen, were studied for gene regulation effects, eventually marked as supplements. in some countries and thymalin itself became one of the flagship products of The St. Petersburg Institute of Bioregulation and Gerontology, which has continued research into peptide therapeutics. So this is definitely one the hallmarks of this. And then we just look at that on a broader world perspective. This is interesting to note that I think Western medicine is years behind some of other parts of world and I medicine as a whole is probably,",
+            "top_context": "It is fairly cheap and has fairly powerful benefits and up until recently has not been accessible in the Western world. Then we move into the 90s, Kevin's team treated elderly volunteers with yearly thiamine courses and observed increases in their longevity parameters. So the results were presented later in journals in the early 2000s which garnered interest worldwide in anti-aging properties of thymus peptides. Now, during this time, analogs and subsets, subset peptides from Thymogen were developed. We have one called ThymaGen, which you've probably heard of. It's an oral capsule that you can buy on the internet. That was isolated in the 80s, and later produced as a drug. Still used today. And it's also used as nasal spray. Then other peptide, like Velon and Crystogen, were studied for gene regulation effects, eventually marked as supplements. in some countries and thymalin itself became one of the flagship products of The St. Petersburg Institute of Bioregulation and Gerontology, which has continued research into peptide therapeutics. So this is definitely one the hallmarks of this. And then we just look at that on a broader world perspective. This is interesting to note that I think Western medicine is years behind some of other parts of world and I medicine as a whole is probably, I've heard 70 to 100 years, behind the literature of what's out there that we have access to, that implement in practice today. So Western scientists were more focused on single thymus hormones like thiaminsins and thiemulin rather than complex extracts. However, similar products do exist. For example, thimomodulim, which is a thamus extract pill developed in Italy, and thymostimulin, a thymic peptide injection used in certain European countries are conceptually akin to thimalim. And so just kind of goes to show that this is something that does have efficacy.",
+            "first_timestamp": "6:31"
+          },
+          {
+            "source_id": "peptide-qa-april-2026--9bc7fd8c",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-april-2026--9bc7fd8c.json",
+            "mention_count": 2,
+            "top_snippet": "If you an issue obviously with an injury, cartilax works really if have an issues with your immune system. Velon can work well. supposed to be pronounced thymalin again with your immune system, obviously epitalon with anti-aging and sleep can work really well. So those all have really good interventions, but I'm still hesitant to put out anything definitive because I've just seen different protocols out there. At the end of the day, I think the best way to use those is a targeted approach.",
+            "top_context": "I did get a question on a protocol document covering yearly bioregulator cycling. That's something that I'm working on. Can't obviously answer that in one question, but it would be a really good thing to know. It's one of those things that the best Russian literature is often misinterpreted. and I am hesitant to put something out around that that would end up being wrong. I think the bioregulators, obviously the injectable ones work great for specific things. For instance, if you have lung issues, bronchogen and conlutin work really well together. If you an issue obviously with an injury, cartilax works really if have an issues with your immune system. Velon can work well. supposed to be pronounced thymalin again with your immune system, obviously epitalon with anti-aging and sleep can work really well. So those all have really good interventions, but I'm still hesitant to put out anything definitive because I've just seen different protocols out there. At the end of the day, I think the best way to use those is a targeted approach. If you have a specific issue and then like assuming you're perfectly healthy and everything's good, then you can look into potentially building a stack I don't think you would necessarily harm yourself by mixing the wrong ones, but it just might not be the smartest thing to do. And you might be wasting money if there's a better alternative. Like for instance, if you said, okay, we're going to pair epitalon, pinealon and thymalin together, which I've seen at least from a literature standpoint do really well versus mixing in velon with that. Then eventually maybe it's like not the best thing. So that's my thoughts on that, but I would love to do that.",
+            "first_timestamp": "39:07"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-2726--4d465560",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 2/7/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-2726--4d465560.json",
+            "mention_count": 2,
+            "top_snippet": "Okay. And guys, let us know if the camera looks like it is laging. All right. One other thing, just in terms of a project that I'm working on, I've always thought it'd be a really cool idea. So if people want to know information about user experiences with peptides, typically you would have to go search on Reddit or something like that to look at a bunch of people that are reviewing. Let's say you wanted to use a peptide that's not as popular, maybe like VIP or Velon or Cortilax, one that is not popular.",
+            "top_context": "is going. rather than just going to your doctor and getting gaslit because they took a class and they think it should be done one way. And there's no one right way to do it, obviously, because everyone's going be chemically unique. Anything else you wanted to talk about? No, I think I do have like a tech question right now. Yeah. It's because it's streaming and higher quality that it lagging a little bit when we're looking at it. So that's why, and you can't change the stream quality, but hopefully in the recording, because its recording locally, it shouldn't lag. Okay. And guys, let us know if the camera looks like it is laging. All right. One other thing, just in terms of a project that I'm working on, I've always thought it'd be a really cool idea. So if people want to know information about user experiences with peptides, typically you would have to go search on Reddit or something like that to look at a bunch of people that are reviewing. Let's say you wanted to use a peptide that's not as popular, maybe like VIP or Velon or Cortilax, one that is not popular. and you're like, I don't know if I should buy this peptide or I could use this Peptide. I would love to hear what other people's ratings and experience are. Typically, the only way to do that is to be in some crazy discord or Facebook group that has thousands of people, that it has a bunch of trying to sell peptides in it, or to go on Reddit to which you don' know of half the people on there are bots, if half of the ppl on their are just people in their mom's basement or whatever, i'm sure there's good pple on reddit. i am not trying knock redit. What I'm saying is there's never been kind of like a central research hub to where we kind have validated human experiences for certain peptides,",
+            "first_timestamp": "12:08"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "So the peptide's ability to induce stress response to proteins suggests a mechanism for protecting brain cells in neurodeteriorative conditions. Also from that same journal in 2002 there was a study that investigated short peptides effect on immune cytokine genes and it showed that cortigen stimulates the IL-2 gene expression in mouse splenocytes even without external immune triggers. So those are less potent than some other peptide like epitalon or velon which are better at doing that. Cortigen still significantly increased IL2 mRNA levels.",
+            "source_title": "Cortagen Review My Surprising Results for Brain Mood",
+            "source_date": "2026-03-29",
+            "timestamp": "13:24",
+            "source_url": "https://library.hunterwilliamshealth.com/p/cortagen-review-my-surprising-results-for-brain-mood--83339d09/"
+          },
+          {
+            "snippet": "o more than BPC and TB-500 alone. You get KPV, GHK, cartalax, and PEG-MGF working in concert. For skin removal surgery after big GLP-assisted weight loss, same stack pre and post. Autoimmune Protocols",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/"
+          },
+          {
+            "snippet": "If you an issue obviously with an injury, cartilax works really if have an issues with your immune system. Velon can work well. supposed to be pronounced thymalin again with your immune system, obviously epitalon with anti-aging and sleep can work really well. So those all have really good interventions, but I'm still hesitant to put out anything definitive because I've just seen different protocols out there. At the end of the day, I think the best way to use those is a targeted approach.",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "timestamp": "39:07",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/"
+          },
+          {
+            "snippet": "If you have a specific issue and then like assuming you're perfectly healthy and everything's good, then you can look into potentially building a stack I don't think you would necessarily harm yourself by mixing the wrong ones, but it just might not be the smartest thing to do. And you might be wasting money if there's a better alternative. Like for instance, if you said, okay, we're going to pair epitalon, pinealon and thymalin together, which I've seen at least from a literature standpoint do really well versus mixing in velon with that. Then eventually maybe it's like not the best thing. So that's my thoughts on that, but I would love to do that.",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "timestamp": "39:37",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/"
+          },
+          {
+            "snippet": "how to use them or anything, and they could potentially harness the benefits of them. Like I said, Cardilax, Thymogen, Vessagen for endothelial health helps a lot. Velon, you know, Velan is such an amazing peptide and no one knows about it at all. Like no-one knows anything about Velin, how to use it, like what to do.",
+            "source_title": "Saturday Morning Coffee Talk · 1/17/26",
+            "source_date": "2026-04-08",
+            "timestamp": "1:21:59",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "those together. Yeah. How would you dose 20 mg vial of Vilon?",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "01:45:28.960",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "How would you dose 20 mg vial of Vilon?",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "01:45:31.390",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "How would you dose 20 mg vial of Vilon? Syringe dose and over what time period?",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "01:45:31.400",
+            "source_url": "https://youtu.be/E7GPNidicqY"
+          },
+          {
+            "snippet": "ject **1mg per day** (10 units/0.1ml), subcutaneously (belly fat), either **AM or PM**. * A 20mg vial lasts 20 days at this dose. For longer cycles, you can use for 30–60 days straight (you’ll need 2–",
+            "source_title": "Thymagen for Immune Function",
+            "source_date": "2025-06-29",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "this dose. For longer cycles, you can use for 30–60 days straight (you’ll need 2–3 vials for a full 60 days). ——————————————————————————— **How Thymagen Works with Epitalon and Vilon** For a complete ",
+            "source_title": "Thymagen for Immune Function",
+            "source_date": "2025-06-29",
+            "timestamp": null,
+            "source_url": null
+          }
+        ]
+      }
+    },
+    "taylor-williams": {
+      "summary": {
+        "mention_count": 9,
+        "top_doses": [
+          {
+            "dose": "500 micrograms",
+            "count": 12
+          },
+          {
+            "dose": "10 mg",
+            "count": 9
+          },
+          {
+            "dose": "2 mg",
+            "count": 6
+          },
+          {
+            "dose": "200 mg",
+            "count": 3
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "Cg7JtpnfRY4",
+            "source_type": "podcast",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-Cg7JtpnfRY4.en.vtt",
+            "mention_count": 6,
+            "top_snippet": "often. Using TA1 max 500 micrograms, get headaches. Tried Vilon, Chrisagin 500",
+            "top_context": "is even higher or beyond the technical is even higher or beyond the technical explanation? Did somebody want explanation? Did somebody want explanation? Did somebody want not want me to film that video? not want me to film that video? not want me to film that video? Well, I could get I guess you could say Well, I could get I guess you could say Well, I could get I guess you could say that someone doesn't want me filming any that someone doesn't want me filming any that someone doesn't want me filming any &gt;&gt; does not want you filming any video. &gt;&gt; does not want you filming any video. &gt;&gt; does not want you filming any video. &gt;&gt; any videos. There'd be a lot of people I &gt;&gt; any videos. There'd be a lot of people I &gt;&gt; any videos. There'd be a lot of people I guess happy out there if I just shut guess happy out there if I just shut guess happy out there if I just shut down making videos for good for whatever down making videos for good for whatever down making videos for good for whatever reason. But that's not what I'm going to reason. But that's not what I'm going to reason. But that's not what I'm going to do. But it's kind of one of those things do. But it's kind of one of those things do. But it's kind of one of those things like you choose to believe it or not, it like you choose to believe it or not, it like you choose to believe it or not, it exist. exist. exist. So anyway. So anyway. So anyway. Moving on. I don't know how I got there Moving on. I don't know how I got there Moving on. I don't know how I got there from LL-37 and KPV. Yeah, I don't from LL-37 and KPV. Yeah, I don't from LL-37 and KPV. Yeah, I don't either. either. either. That's why people are here. They we're That's why people are here. They we're That's why people are here. They we're entertaining. I hope so. entertaining. I hope so. entertaining. I hope so. I hope it's worth the while. Mid-40s I hope it's worth the while. Mid-40s I hope it's worth the while. Mid-40s female, perimenopause on HRT, still female, perimenopause on HRT, still female, perimenopause on HRT, still getting colds every 6 weeks, travel getting colds every 6 weeks, travel getting colds every 6 weeks, travel often. Using TA1 max 500 micrograms, get often. Using TA1 max 500 micrograms, get often. Using TA1 max 500 micrograms, get headaches. Tried Vilon, Chrisagin 500 headaches. Tried Vilon, Chrisagin 500 headaches. Tried Vilon, Chrisagin 500 micrograms daily. What else would you micrograms daily. What else would you micrograms daily. What else would you add? I would definitely I mean, if add? I would definitely I mean, if add? I would definitely I mean, if you're traveling a lot, it's one of you're traveling a lot, it's one of you're traveling a lot, it's one of those things you're you're getting those things you're you're getting those things you're you're getting exposure. Glutathione would be a major exposure. Glutathione would be a major exposure. Glutathione would be a major thing that I would add in if you're not thing that I would add in if you're not thing that I would add in if you're not using. That's going to help a lot. I using. That's going to help a lot. I using. That's going to help a lot. I would be injecting 100 to 200 mg of would be injecting 100 to 200 mg of would be injecting 100 to 200 mg of glutathione two three times per week in glutathione two three times per week in glutathione two three times per week in this case. From there, you could add in this case. From there, you could add in this case. From there, you could add in a product called thymogen t h y m o g e a product called thymogen t h y m o g e a product called thymogen t h y m o g e n. That's going to be really good. It's n. That's going to be really good. It's n. That's going to be really good. It's a bioregulator that's a little bit more a bioregulator that's a little bit more a bioregulator that's a little bit more targeted than thymolin which is another targeted than thymolin which is another targeted than thymolin which is another bioregulator. You could actually add bioregulator. You could actually add bioregulator. You could actually add both of those in if you choose but those both of those in if you choose but those both of those in if you choose but those would be the ones I'd add in. You could would be the ones I'd add in. You could would be the ones I'd add in. You could also do LL-37 as well if it is some sort also do LL-37 as well if it is some sort also do LL-37 as well if it is some sort of viral or microbial infection. There of viral or microbial infection. There of viral or microbial infection. There was literally a fruit fly inside of my",
+            "first_timestamp": "00:28:52.560"
+          },
+          {
+            "source_id": "Z1wJf_D6Pec",
+            "source_type": "podcast",
+            "source_title": "Vilon: The Healing Bioregulator Better Than BPC-157",
+            "source_date": "2025-08-02",
+            "source_url": "https://youtu.be/Z1wJf_D6Pec",
+            "source_file": "data/peptide-libraries/by-expert/taylor-williams/podcast-transcripts/raw/2025-08-02-vilon-the-healing-bioregulator-better-than-bpc-157-Z1wJf_D6Pec.en.vtt",
+            "mention_count": 3,
+            "top_snippet": "reallergic reaction with this bio regulator. Velon is also going to help",
+            "top_context": "bio regulator sounds like it could be bio regulator sounds like it could be the be all be all because if you think the be all be all because if you think the be all be all because if you think about it it's also hitting very similar about it it's also hitting very similar about it it's also hitting very similar things that KPV is able to do BPC TB500 things that KPV is able to do BPC TB500 things that KPV is able to do BPC TB500 is able to do and SS31 but this is able to do and SS31 but this is able to do and SS31 but this essentially is going to be in one bio essentially is going to be in one bio essentially is going to be in one bio regulator rather than having to take regulator rather than having to take regulator rather than having to take multiple different peptides. So it's multiple different peptides. So it's multiple different peptides. So it's very similar to those peptides but again very similar to those peptides but again very similar to those peptides but again you're only going to have to take one. you're only going to have to take one. you're only going to have to take one. So, I think that this could actually be So, I think that this could actually be So, I think that this could actually be more beneficial to use than using these more beneficial to use than using these more beneficial to use than using these peptides all separately. And it's going peptides all separately. And it's going peptides all separately. And it's going to be a smaller molecule. So, therefore, to be a smaller molecule. So, therefore, to be a smaller molecule. So, therefore, I know some people have reactions with I know some people have reactions with I know some people have reactions with some of those peptides. So, therefore, some of those peptides. So, therefore, some of those peptides. So, therefore, you're going to have less of a histamine you're going to have less of a histamine you're going to have less of a histamine reallergic reaction with this bio reallergic reaction with this bio reallergic reaction with this bio regulator. Velon is also going to help regulator. Velon is also going to help regulator. Velon is also going to help with cardiovascular health. It's going with cardiovascular health. It's going with cardiovascular health. It's going to help with digestion benefits as well, to help with digestion benefits as well, to help with digestion benefits as well, too. So, it's going to help with too. So, it's going to help with too. So, it's going to help with cardiovascular health, which is going to cardiovascular health, which is going to cardiovascular health, which is going to be super beneficial because it's going be super beneficial because it's going be super beneficial because it's going to help with enhancing gene expressions to help with enhancing gene expressions to help with enhancing gene expressions from stress in the cardio tissue. It's from stress in the cardio tissue. It's from stress in the cardio tissue. It's also going to help support with healing also going to help support with healing also going to help support with healing circulation, especially when it comes to circulation, especially when it comes to circulation, especially when it comes to the heart function. So, because it's the heart function. So, because it's the heart function. So, because it's going to help with improving your going to help with improving your going to help with improving your digestion input and your gut lining digestion input and your gut lining digestion input and your gut lining strength, that is also going to help strength, that is also going to help strength, that is also going to help glucose absorption, which is going to glucose absorption, which is going to glucose absorption, which is going to help with metabolic regulation. Whether help with metabolic regulation. Whether help with metabolic regulation. Whether you're dealing with GI inflammation, you're dealing with GI inflammation, you're dealing with GI inflammation, whether you're dealing with blood sugar whether you're dealing with blood sugar whether you're dealing with blood sugar swings or you're dealing with any kind swings or you're dealing with any kind swings or you're dealing with any kind of like heart related issues, vulin can of like heart related issues, vulin can of like heart related issues, vulin can help support both of those. Now, what's",
+            "first_timestamp": "00:10:38.079"
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "often. Using TA1 max 500 micrograms, get headaches. Tried Vilon, Chrisagin 500",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:52.560",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          },
+          {
+            "snippet": "headaches. Tried Vilon, Chrisagin 500",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:54.430",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          },
+          {
+            "snippet": "headaches. Tried Vilon, Chrisagin 500 micrograms daily. What else would you",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:54.440",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "often. Using TA1 max 500 micrograms, get headaches. Tried Vilon, Chrisagin 500",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:52.560",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          },
+          {
+            "snippet": "headaches. Tried Vilon, Chrisagin 500",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:54.430",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          },
+          {
+            "snippet": "headaches. Tried Vilon, Chrisagin 500 micrograms daily. What else would you",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "00:28:54.440",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          },
+          {
+            "snippet": "those together. Yeah. How would you dose 20 mg vial of Vilon?",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "01:45:28.920",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          },
+          {
+            "snippet": "How would you dose 20 mg vial of Vilon?",
+            "source_title": "Saturday Morning Coffee Talk 4/18/26",
+            "source_date": "2026-04-18",
+            "timestamp": "01:45:31.350",
+            "source_url": "https://youtu.be/Cg7JtpnfRY4"
+          }
+        ]
+      },
+      "female_specific_note": "Taylor Williams Coaching focuses on female-specific HRT/peptide guidance. Per-peptide notes here often emphasize female dosing, fertility, hormone interactions."
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Reset Biology suggests asking the prescribing practitioner to weigh Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 19:25, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"My standard dose would be one milligram per injection, given once daily for 10 to 20 days. Really, you could go up to 30 to 60 days, depending on the severity of the issue you're trying to treat.\" Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:46.399, https://youtu.be/Z1wJf_D6Pec): \"Typical dosing is anywhere between 1 milligram a day if you're kind of using it more for anti-aging benefit.\"",
+    "caveats": "- Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 11:35, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"I would never recommend that you use this in treatment of cancer.\"\n- Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 17:08, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"Obviously if you have an autoimmune disease, consult with your doctor. I think if look at the nature of it, if have a transplanted organ, just exercise caution as you should with anything related to the immune system. Also, If you hypersensitivity of peptides when you're injecting stuff, be careful.\"\n- Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 20:29, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"if you did like super high doses over a super long period of time, could there be something negative that could happen? I'm sure there is just like with everything that you take.\"\n- Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:14:16.320, https://youtu.be/Z1wJf_D6Pec): \"if you are somebody who is more prone to the histamine reactions, vlon is going to be a much gentle approach.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
+    "acute_chronic_split": {
+      "acute": {
+        "dose": "Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:57.680, https://youtu.be/Z1wJf_D6Pec): \"if you're using it more for like a healing injury purpose, then you could bump it up and go up to like 2 milligrams a day.\"",
+        "route": "Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 21:30, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"if had a soft tissue injury, injecting it subq or intrimusculine near that soft-tissue injury might be beneficial.\"",
+        "frequency": "Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:57.680, https://youtu.be/Z1wJf_D6Pec): \"2 milligrams a day.\"",
+        "duration": null,
+        "verbatim_citation": "Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:57.680, https://youtu.be/Z1wJf_D6Pec): \"if you're using it more for like a healing injury purpose, then you could bump it up and go up to like 2 milligrams a day.\" Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 21:30, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"if had a soft tissue injury, injecting it subq or intrimusculine near that soft-tissue injury might be beneficial.\"",
+        "episode_url": "https://youtu.be/Z1wJf_D6Pec; https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/",
+        "timestamp": "00:15:57.680; 21:30"
+      },
+      "chronic": {
+        "dose": "Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 19:25, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"My standard dose would be one milligram per injection, given once daily for 10 to 20 days. Really, you could go up to 30 to 60 days, depending on the severity of the issue you're trying to treat.\" Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 20:29, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"you can do daily sub-q injections of five to 10 milligrams for 10 consecutive days, repeat that every three to six months.\" Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:46.399, https://youtu.be/Z1wJf_D6Pec): \"Typical dosing is anywhere between 1 milligram a day if you're kind of using it more for anti-aging benefit.\"",
+        "route": "Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 21:30, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"the most common and effective is sub-q into the fatty tissue.\" Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:16.720, https://youtu.be/Z1wJf_D6Pec): \"you still inject them subq\".",
+        "frequency": "Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 19:25, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"given once daily\". Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 20:29, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"repeat that every three to six months.\" Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:23.199, https://youtu.be/Z1wJf_D6Pec): \"use it more so quarterly.\"",
+        "duration": "Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 19:25, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"for 10 to 20 days. Really, you could go up to 30 to 60 days\". Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 20:29, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"for 10 consecutive days\". Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:19.120, https://youtu.be/Z1wJf_D6Pec): \"stay on them for about 10 to 30 days and then you are going to cycle off of it\".",
+        "verbatim_citation": "Hunter Williams, \"unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6\" (2026-03-29, 19:25, https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/): \"My standard dose would be one milligram per injection, given once daily for 10 to 20 days. Really, you could go up to 30 to 60 days, depending on the severity of the issue you're trying to treat.\" Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:15:46.399, https://youtu.be/Z1wJf_D6Pec): \"Typical dosing is anywhere between 1 milligram a day if you're kind of using it more for anti-aging benefit.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/; https://youtu.be/Z1wJf_D6Pec",
+        "timestamp": "19:25; 20:29; 00:15:16.720; 00:15:19.120; 00:15:23.199; 00:15:46.399"
+      }
+    },
+    "female_specific_notes": "Taylor Williams, \"Z1wJf_D6Pec\" (2025-08-02, 00:04:50.320, https://youtu.be/Z1wJf_D6Pec): \"I think that vlon can be extremely beneficial for women that are struggling with autoimmune conditions. So whether those autoimmune conditions can be either like Hashimoto's, rheumatoatory arthritis, indometriosis, fibromyalgia.\"",
+    "distilled_at": "2026-07-17T09:46:38.7522238Z",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:08.605Z",
+  "mentions_fingerprint": "ed625af0b3b8"
+}

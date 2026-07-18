@@ -6,9 +6,10 @@
     "Ipa",
     "ipamorelin",
     "ipa",
-    "IPA"
+    "IPA",
+    "IPa"
   ],
-  "category": "Fat Loss",
+  "category": "Growth Hormone",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": {
@@ -24,39 +25,39 @@
         "duration": "8 weeks on, 8 weeks off"
       },
       "summary": {
-        "mention_count": 272,
+        "mention_count": 634,
         "top_doses": [
           {
-            "dose": "10 mg",
-            "count": 51
-          },
-          {
-            "dose": "6 mg",
-            "count": 34
-          },
-          {
             "dose": "2 mg",
-            "count": 34
+            "count": 66
           },
           {
-            "dose": "100 mg",
-            "count": 27
+            "dose": "10 mg",
+            "count": 60
           },
           {
             "dose": "200 mcg",
-            "count": 23
+            "count": 48
           },
           {
-            "dose": "8 mg",
-            "count": 20
+            "dose": "6 mg",
+            "count": 43
           },
           {
             "dose": "300 mcg",
-            "count": 11
+            "count": 39
           },
           {
-            "dose": "10 units",
-            "count": 10
+            "dose": "100 mg",
+            "count": 32
+          },
+          {
+            "dose": "1 mg",
+            "count": 28
+          },
+          {
+            "dose": "500 mcg",
+            "count": 24
           }
         ],
         "top_sources": [
@@ -105,7 +106,7 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-19-ipamorelin-use-guide.md",
             "mention_count": 25,
             "top_snippet": "On Monday, I discussed the fantastic [benefits of Tesamorelin](https://huntershealthhacks.beehiiv.com/p/tesamorelin-vs-visceral-fat). While everyone can benefit from Tesamorelin, men tend to have a be",
-            "top_context": "On Monday, I discussed the fantastic [benefits of Tesamorelin](https://huntershealthhacks.beehiiv.com/p/tesamorelin-vs-visceral-fat). While everyone can benefit from Tesamorelin, men tend to have a better response to it. Conversely, women tend to have a slightly better response to Ipamorelin. Today, I will discuss the amazing benefits of Ipamorelin and, more importantly — how to use it for maximum benefit. Ipamorelin is a potent and selective growth hormone secretagogue (GHS) known for enhancing growth hormone (GH) levels without significantly affecting other hormones like cortis",
+            "top_context": "On Monday, I discussed the fantastic [benefits of Tesamorelin](https://huntershealthhacks.beehiiv.com/p/tesamorelin-vs-visceral-fat). While everyone can benefit from Tesamorelin, men tend to have a better response to it. Conversely, women tend to have a slightly better response to Ipamorelin. Today, I will discuss the amazing benefits of Ipamorelin and, more importantly — how to use it for maximum benefit. Ipamorelin is a potent and selective growth hormone secretagogue (GHS) known for enhancing growth hormone (GH) levels without significantly affecting other hormones like cortisol.",
             "first_timestamp": null
           },
           {
@@ -117,7 +118,19 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-04-10-how-to-mix-a-tesmorelin-ipamorelin-blend.md",
             "mention_count": 21,
             "top_snippet": "One question keeps flooding my inbox these days, so I figured it was time to set the record straight: ““Hunter, how exactly do I mix and dose a Tesamorelin/Ipamorelin blend?”“ — Great question. I pers",
-            "top_context": "One question keeps flooding my inbox these days, so I figured it was time to set the record straight: ““Hunter, how exactly do I mix and dose a Tesamorelin/Ipamorelin blend?”“ — Great question. I personally use pharma-grade HGH, but if you can’t access HGH or don’t want to use it, Tesamorelin and Ipamorelin are your next best choices. But before I jump into the mixing instructions and dosing breakdown, it’s crucial to understand **why** you’d want to",
+            "top_context": "One question keeps flooding my inbox these days, so I figured it was time to set the record straight: ““Hunter, how exactly do I mix and dose a Tesamorelin/Ipamorelin blend?”“ — Great question. I personally use pharma-grade HGH, but if you can’t access HGH or don’t want to use it, Tesamorelin and Ipamorelin are your next best choices. But before I jump into the mixing instructions and dosing breakdown, it’s crucial to understand **why** you’d want to combi",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "ghrh-vs-ghrp-how-to-stack-growth-hormone-peptides--2bcd2680",
+            "source_type": "library-article",
+            "source_title": "GHRH vs GHRP: How to Stack Growth Hormone Peptides",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/ghrh-vs-ghrp-how-to-stack-growth-hormone-peptides--2bcd2680/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/ghrh-vs-ghrp-how-to-stack-growth-hormone-peptides--2bcd2680.json",
+            "mention_count": 21,
+            "top_snippet": "e or lower cost. That's why sermorelin isn't on my cheat sheet. GHRPs are synthetic ghrelin mimetics. They bind to the GHSR-1A receptor (the ghrelin receptor), activate the phospholipase C and PKC pat",
+            "top_context": "e or lower cost. That's why sermorelin isn't on my cheat sheet. GHRPs are synthetic ghrelin mimetics. They bind to the GHSR-1A receptor (the ghrelin receptor), activate the phospholipase C and PKC pathway, and trigger GH release while suppressing somatostatin. The main ones are GHRP-6, GHRP-2, and Ipamorelin. MK-677 also falls in this category, but I'm not a big fan of it because it raises prolactin and cortisol. Why Ipamorelin wins among GHRPs Ipamorelin is highly selective. It triggers a clean GH pulse without raising cortisol or prolactin, and it has minimal appetite effects. GHRP-6 was first gen",
             "first_timestamp": null
           },
           {
@@ -128,33 +141,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-29-the-easiest-way-to-reconstitute-blended-peptides.md",
             "mention_count": 17,
-            "top_snippet": "until you add water. Add the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” approach, f",
-            "top_context": "until you add water. Add the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” approach, followed by three worked examples using blends that many of you have. * **Tesamorelin/Ipamorelin 6mg/2mg** * **GLOW Blend (GHK-Cu 50mg, BPC-157 10mg, TB-500 10mg)** * **Ipamorelin/CJC-1295 no DAC 5mg/5mg**. I’ll also show exactly how many **insulin syringe units** to pull for common doses. “[The Labor Day Sale is going strong at BioLongevity Labs. ](https://biolongevitylabs.com/)",
+            "top_snippet": "nothing until you add water. Add the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” app",
+            "top_context": "nothing until you add water. Add the right amount of bacteriostatic water, swirl gently, and suddenly you can measure precise servings. **Peptides are the same.** Below is my simple “kitchen math” approach, followed by three worked examples using blends that many of you have. * **Tesamorelin/Ipamorelin 6mg/2mg** * **GLOW Blend (GHK-Cu 50mg, BPC-157 10mg, TB-500 10mg)** * **Ipamorelin/CJC-1295 no DAC 5mg/5mg**. I’ll also show exactly how many **insulin syringe units** to pull for common doses. “[The Labor Day Sale is going strong at BioLongevity Labs. ](https://biolongevitylabs.com/) All pro",
             "first_timestamp": null
           },
           {
-            "source_id": "0TyW-wlJMxo",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk | Peptides, Hormones & Fitness for Couples 3/28/26",
-            "source_date": "2026-03-28",
-            "source_url": "https://youtu.be/0TyW-wlJMxo",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-28-saturday-morning-coffee-talk-peptides-hormones-fitness-for-couples-3-2-0TyW-wlJMxo.en.vtt",
-            "mention_count": 12,
-            "top_snippet": "better. Now, does that mean we cannot use Tesamorelin or Ipamorelin or MK-677?",
-            "top_context": "saying, \"Oh, I can take my Retatide I saying, \"Oh, I can take my Retatide I can eat whatever I want can eat whatever I want can eat whatever I want and I'm still going to be and I'm still going to be and I'm still going to be And to that point, if you don't use your And to that point, if you don't use your And to that point, if you don't use your brain just like if you don't use your brain just like if you don't use your brain just like if you don't use your body, if you don't engage your brain in body, if you don't engage your brain in body, if you don't engage your brain in habit-forming behavior and making the habit-forming behavior and making the habit-forming behavior and making the right choices and you're strictly right choices and you're strictly right choices and you're strictly relying on a GLP, well, I think to that relying on a GLP, well, I think to that relying on a GLP, well, I think to that point it's kind of like saying that I'm point it's kind of like saying that I'm point it's kind of like saying that I'm just going to take an exercise mimetic just going to take an exercise mimetic just going to take an exercise mimetic like MotS-C and not exercise. Of course like MotS-C and not exercise. Of course like MotS-C and not exercise. Of course you wouldn't do that. It's the same you wouldn't do that. It's the same you wouldn't do that. It's the same thing with GLP. Michael says briefly mentioned on the Michael says briefly mentioned on the episode with Alex, Tesamorelin, and said episode with Alex, Tesamorelin, and said episode with Alex, Tesamorelin, and said something about it being better to use something about it being better to use something about it being better to use GH. Wonder if you can share your GH. Wonder if you can share your GH. Wonder if you can share your thoughts on this topic. thoughts on this topic. thoughts on this topic. HGH will always be better in my opinion HGH will always be better in my opinion HGH will always be better in my opinion than Tesamorelin. HGH will always be than Tesamorelin. HGH will always be than Tesamorelin. HGH will always be better. Now, does that mean we cannot better. Now, does that mean we cannot better. Now, does that mean we cannot use Tesamorelin or Ipamorelin or MK-677? use Tesamorelin or Ipamorelin or MK-677? use Tesamorelin or Ipamorelin or MK-677? Of course we can use I think those are Of course we can use I think those are Of course we can use I think those are great things to use. But I've used them great things to use. But I've used them great things to use. But I've used them all all all and to me at the right dose and to me at the right dose and to me at the right dose I think it's very similar to obviously I think it's very similar to obviously I think it's very similar to obviously there's nuances with this. I think it's there's nuances with this. I think it's there's nuances with this. I think it's very similar to the conversation very similar to the conversation very similar to the conversation about enclomiphene versus TRT. about enclomiphene versus TRT. about enclomiphene versus TRT. Yeah. Ipamorelin and Tesamorelin are Yeah. Ipamorelin and Tesamorelin are Yeah. Ipamorelin and Tesamorelin are your enclomiphenes and your ACGs your enclomiphenes and your ACGs your enclomiphenes and your ACGs equivalent of the growth hormone equivalent of the growth hormone equivalent of the growth hormone pathway, meaning they stimulate natural pathway, meaning they stimulate natural pathway, meaning they stimulate natural production, which is obviously much production, which is obviously much production, which is obviously much better than nothing. Mhm. But is that better than nothing. Mhm. But is that better than nothing. Mhm. But is that the long-term solution for the next 30 the long-term solution for the next 30 the long-term solution for the next 30 years of your life, next 50 years of years of your life, next 50 years of years of your life, next 50 years of your life? Yeah. Or is HGH going to be your life? Yeah. Or is HGH going to be your life? Yeah. Or is HGH going to be at the right dose? at the right dose? at the right dose? &gt;&gt; Yeah. &gt;&gt; Yeah. &gt;&gt; Yeah. It's interesting because I was talking It's interesting because I was talking It's interesting because I was talking &gt;&gt; lyrically tied versus like using like &gt;&gt; lyrically tied versus like using like &gt;&gt; lyrically tied versus like using like tirzepatide, retatide.",
-            "first_timestamp": "00:43:15.800"
-          },
-          {
-            "source_id": "199737422cc976a5",
-            "source_type": "email",
-            "source_title": "GH Peptides Pre-Workout?",
-            "source_date": "2025-09-22",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-09-22-gh-peptides-pre-workout.md",
-            "mention_count": 12,
-            "top_snippet": "Happy Monday! I recently got a great question from a reader in my [question box](https://hunterwilliamsvideotopic.carrd.co/) that I want to share with you today because I know a lot of you are curious",
-            "top_context": "Happy Monday! I recently got a great question from a reader in my [question box](https://hunterwilliamsvideotopic.carrd.co/) that I want to share with you today because I know a lot of you are curious about the timing of peptides. Here’s the question: “**“Should a female inject Ipamorelin before a workout in the morning? Would that be a benefit or a waste? And does a calorie-free pre-workout containing caffeine negate the effects of this peptide?”**“ — This is a fantastic question because it gets right into the heart of how growth hormone (GH) peptides actually work in the real",
-            "first_timestamp": null
+            "source_id": "hgh-vs-peptides-should-you-combine-both-for-maximum-results--d8c0ace0",
+            "source_type": "library-video",
+            "source_title": "HGH vs Peptides Should You Combine Both for Maximum Results",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/hgh-vs-peptides-should-you-combine-both-for-maximum-results--d8c0ace0/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/hgh-vs-peptides-should-you-combine-both-for-maximum-results--d8c0ace0.json",
+            "mention_count": 15,
+            "top_snippet": "To be honest, when I have Tessa and Epimeraline together, the pulse is so strong that I get water retention and I don't like how that feels. But like CJC and IPA with growth hormone, like growth on the morning and CJS and IPA is really good. And I don't get as much water retention. IPR-Melin, you don' really get hardly any water retention at all, at least not for men. So I would just say play around and see what feels best for you. That's it for the slides.",
+            "top_context": "I'd use HCH in morning and testimonole at night. Then I can kind of rotate. You could also do the same thing with Hippomerellan and CJC and Growth hormone too. Think women would probably like that a little bit better. So just to sum up You got to experiment on yourself. At the end of the day, I can pontificate about all this stuff. I tell you what I do. But I think everyone does beneficial to try all of these. So try some growth hormone. You should try Tessameralin. Try some Cjc by itself. Just try blends of them and see what you like best. To be honest, when I have Tessa and Epimeraline together, the pulse is so strong that I get water retention and I don't like how that feels. But like CJC and IPA with growth hormone, like growth on the morning and CJS and IPA is really good. And I don't get as much water retention. IPR-Melin, you don' really get hardly any water retention at all, at least not for men. So I would just say play around and see what feels best for you. That's it for the slides. The reason for this one, I didn't make like a chart or a table is because I wanted people to think like more critically about this and you kind of have to set up for yourself. I could easily do a video. Like I do, a lot of my videos where I make a charge and I like the table of like, okay, do this, Do this to this. But I want you to understand like yes, you can use both growth hormone and growth from on peptides and there's a benefit to using both of them. So hopefully this was a good one. Appreciate you guys. Thank you so much from the bottom of heart for liking, commenting, subscribing, supporting the channel, all those amazing things.",
+            "first_timestamp": "21:10"
           }
         ],
         "acute_signals": [
@@ -591,25 +592,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Ipamorelin as a selective GH-secretagogue paired with CJC-1295 — Hunter (ODWpYYPTB_8 00:08:14.040): \"ipamorelin or ipamorelin and CJC, they're just going to be better at everything\" and Trevor (m_GpIdkHI4M 00:17:30.880): \"CJC-1295 with DAC and Ipamorelin, they're married. They're joined at the hip. It's like conjoined twins. You do not take one without the other.\" We'd ask the prescribing physician to weigh dose anchoring against Hunter's 2025 email canon — Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Recommended doses are 100-300mcg at night before bed\" — and to consider the female lean toward Ipamorelin over Tesamorelin per Hunter email threadId 1952050e9ec0021f (2025-02-19): \"women tend to have a slightly better response to Ipamorelin.\"",
-    "caveats": "- Insulin-sensitivity / diabetes caution: Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Potential alterations in insulin sensitivity, necessitating caution for individuals with diabetes.\"\n- Injection-site / route: Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Mild swelling or irritation may occur with improper administration (if this happens, try it IM instead of subq).\"\n- Mild fatigue: Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Some users report mild fatigue due to changes in GH and metabolic activity.\"\n- Standalone-vs-stack ceiling: Trevor (m_GpIdkHI4M 00:17:36.840): \"You do not take one without the other. Don't do it. It's just a waste of your time. You're You're limiting what your body is capable of by orders of magnitude.\"\n- HGH likely superior past mid-50s: Hunter (4igc2UpFr7Q 00:17:09.400): \"HGH, especially for someone that's 55, is always going to be better\" — though Hunter (4igc2UpFr7Q 00:17:38.000): \"Ipamorelin and Tesamorelin are fine, but for someone that's 55, the body of a 55-year-old is going to respond at the right dose probably much much better.\"\n- CJC-flushing / heart-rate (when stacked): Taylor (JC1poI1OEog 00:13:19.280): \"the CJC can cause a flushing reaction. It can cause increased heart rate and that can kind of freak people out.\" Taylor's mitigation: Taylor (JC1poI1OEog 00:13:19.280): \"I'd say just start with Ipamorelin, see how you do with that.\"\n- Cycling discipline: Taylor (gCJLLBdAK0k 00:08:31.080): \"each of these peptides you want to do an 8 week rotation so that means you're going to be taking these for eight weeks on and you're going to rotate taking 8 weeks off the reason why it's so important to make sure that you're rotating a 8 week 8 week on rotation with peptides is because your body can come adapted to it which means that eventually you will it will stop having an effect.\"\n- Receptor desensitization on chronic GHRP class: Hunter (ODWpYYPTB_8 00:08:14.040): \"both ghrelin receptor desensitization with chronic use uh, requires dose escalation over time, which is again a fundamental design flaw.\"\n- Hunter's 2023 baseline_protocol vial cycle: \"Frequency\" \"5 days on, 2 days off\"; \"Duration\" \"8 weeks on, 8 weeks off\" — to be revisited against newer Trevor framing of CJC+Ipa as a long-term restorative stack (m_GpIdkHI4M 00:35:13.080): \"This is going to restore the master youth hormone access.\"",
-    "cross_expert_consensus": "All three converge on selectivity and the CJC-1295 pairing. Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Ipamorelin is a potent and selective growth hormone secretagogue (GHS) known for enhancing growth hormone (GH) levels without significantly affecting other hormones like cortisol.\" Trevor (m_GpIdkHI4M 00:18:30.840): \"Ipamorelin is the first clinically proven selective\" and Trevor (m_GpIdkHI4M 00:18:36.000): \"No cortisol, no prolactin spikes whatsoever. First selective GHRP.\" Taylor (Of9flZsatFY 00:01:00.199): \"it's great because it doesn't give you you the um side effect of impacting your other hormones such as prane and cortisol.\" CJC-1295 pairing: Hunter (ODWpYYPTB_8 00:08:14.040): \"the GH release, it's stronger and more sustained with ipamorelin and CJC.\" Trevor (m_GpIdkHI4M 00:19:09.159): \"CJC-1295 with DAC creates the fertile ground… And Ipamorelin is the very precise, very clean, very strong trigger.\" Taylor (JC1poI1OEog 00:13:19.280): \"I think Ipamorelin and CJC combined is a great combo. Personally, I like doing that.\" Bedtime / pre-sleep timing: Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Recommended doses are 100-300mcg at night before bed.\" Taylor (gCJLLBdAK0k 00:11:34.920): \"for the epam marelin this one's really important you want to take epam marelin at night before bed preferably you should take this like at least 30 to 60 minutes after you've eaten your last meal.\" Subcutaneous administration: Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Inject Subcutaneously: Pinch the skin and insert the needle at a 45-degree angle.\" Trevor's stack frame (m_GpIdkHI4M 00:34:50.960): \"the GH restoring stack, right? CJC-1295 with DAC and Ipamorelin… that's this is the foundation of this entire thing.\"",
-    "cross_expert_disagreement": "Dose anchor differs across experts. Hunter's 2023 baseline_protocol lists \"Dose\" \"300 mcg\" with \"AM/PM\" timing; Hunter's 2025 email canon (threadId 1952050e9ec0021f, 2025-02-19): \"Recommended doses are 100-300mcg at night before bed\" (newer narrows to single bedtime dose, 2023 cheat-sheet allowed AM/PM split). Hunter's blend dose (threadId 19621e264ba38f4e, 2025-04-10): \"Draw up 20 units (600mcg of Tesamorelin and 200mcg of ipamorelin) (0.2ml)… Inject subcutaneously every night before bed\" — anchors the practical ipamorelin dose at 200 mcg/night when blended 3:1. Trevor in the same canonical Ipa video does not give a clean Ipa-alone microgram dose, but reframes the duration to the long-haul: Trevor (m_GpIdkHI4M 00:35:13.080): \"CJC-1295 with DAC and Ipamorelin. This is going to restore the master youth hormone access\" — implying chronic-restorative, not the 8-on/8-off cycling Hunter's 2023 cheat-sheet listed. Taylor's reported case-doses cluster at 250-500 mcg and 10 units: Taylor (Cg7JtpnfRY4 01:50:35.280): \"Started Ipamorelin 3 weeks ago, 10 units at night, 5 days on, 2 days off. It's a good ratio, in my opinion\" and Taylor (hgI5Mpc-xDQ 00:47:21.839): \"I'm finishing CJC and IPA 250 micrograms a day.\" Older Hunter framing in the \"Overrated\" video adds the desensitization caveat (Hunter ODWpYYPTB_8 00:08:14.040): \"both ghrelin receptor desensitization with chronic use uh, requires dose escalation over time\" — which sits in tension with Trevor's \"forever\" restorative framing and is closer to Taylor's 8-on/8-off cycling discipline (Taylor gCJLLBdAK0k 00:08:31.080): \"each of these peptides you want to do an 8 week rotation.\" Female fat-loss preference also splits: Hunter (4igc2UpFr7Q 00:20:15.160): \"for belly fat specifically, we do have more data around tesamorelin… they might do better with CJC-1295 and Ipamorelin, but I would say clinically speaking, tesamorelin is going to be better for getting rid of visceral belly fat\" — Taylor inverts that for women: Taylor (yo-VH6HFJSQ 00:06:14.440): \"I like for women um Tes Morin I like that more for men for women I really want you guys to focus on the ipam maralin um this is going to be the best for leaning out your muscle.\"",
+    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's newer library framing alongside the dated 2023 baseline. Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:34, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"I would recommend if you've never tried these to use them in isolation first. to see how well you do. And then if you well on IPPA and you're doing well in CJC, then go ahead and combine them together.\" Hunter 2023 baseline_protocol: \"Dose: 300 mcg\"; \"Timing: AM/PM\"; \"Frequency: 5 days on, 2 days off\"; \"Duration: 8 weeks on, 8 weeks off.\"",
+    "caveats": "- Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"some people have a bad reaction to the CJC\" - Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"you might get a little water retention, injection site flushing, and occasional sleep disruption.\"\n- Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:34, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"If you do get the sleep disruptor, I would move it to the morning.\"\n- Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:34, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"some people really don't do well with CJT. They have immune reactions, they get the flushing, and they can't handle it. So sometimes they just need to stick to epimerelin.\"\n- Hunter library video hgh-vs-peptides-should-you-combine-both-for-maximum-results--d8c0ace0 (2026-03-29, 21:10, https://library.hunterwilliamshealth.com/p/hgh-vs-peptides-should-you-combine-both-for-maximum-results--d8c0ace0/): \"when I have Tessa and Epimeraline together, the pulse is so strong that I get water retention and I don't like how that feels.\"",
+    "cross_expert_consensus": "Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 23:29, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"The first one's going to be CJC, Nodac, and Impramilin.\" Taylor (JC1poI1OEog 00:13:19.280): \"I think Ipamorelin and CJC combined is a great combo. Personally, I like doing that.\" Trevor (m_GpIdkHI4M 00:19:09.159): \"CJC-1295 with DAC creates the fertile ground… And Ipamorelin is the very precise, very clean, very strong trigger.\"",
+    "cross_expert_disagreement": "Hunter 2023 baseline_protocol: \"Dose: 300 mcg\"; \"Timing: AM/PM\"; \"Frequency: 5 days on, 2 days off\"; \"Duration: 8 weeks on, 8 weeks off.\" Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"you could do 150 micrograms of CJ and IPA, you can do 300 to 100 of IP to CJ.\" Taylor (hgI5Mpc-xDQ 00:47:21.839): \"I'm finishing CJC and IPA 250 micrograms a day.\" Taylor (Cg7JtpnfRY4 01:50:35.280): \"Started Ipamorelin 3 weeks ago, 10 units at night, 5 days on, 2 days off. It's a good ratio, in my opinion.\"",
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Recommended doses are 100-300mcg at night before bed.\" Hunter blend email threadId 19621e264ba38f4e (2025-04-10): \"20 units (600mcg of Tesamorelin and 200mcg of ipamorelin)\" anchors a 200 mcg/night ipamorelin dose when blended 3:1 with Tesamorelin. Hunter 2023 baseline_protocol: \"Dose\" \"300 mcg.\" Taylor (hgI5Mpc-xDQ 00:47:21.839): \"finishing CJC and IPA 250 micrograms a day\" and Taylor (Cg7JtpnfRY4 01:50:35.280): \"Started Ipamorelin 3 weeks ago, 10 units at night.\"",
-        "route": "Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Inject Subcutaneously: Pinch the skin and insert the needle at a 45-degree angle.\" Trevor (m_GpIdkHI4M 00:18:12.480): \"Ipamorelin is the release signal. It's brilliance is in the selectivity.\" Hunter email threadId 1952050e9ec0021f (2025-02-19) on switch if needed: \"if this happens, try it IM instead of subq.\"",
-        "frequency": "Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Recommended doses are 100-300mcg at night before bed.\" Hunter 2023 baseline_protocol: \"Frequency\" \"5 days on, 2 days off.\" Hunter blend email threadId 19621e264ba38f4e (2025-04-10): \"Inject subcutaneously every night before bed, ideally on an empty stomach… NOTE: You can also inject 10 units AM and 10 units PM if you find that it keeps you up at night.\"",
-        "duration": "Hunter 2023 baseline_protocol: \"Duration\" \"8 weeks on, 8 weeks off.\" Hunter blend email threadId 19621e264ba38f4e (2025-04-10): \"Follow this protocol for 6-12 weeks, depending on your personal goals and how your body responds. After completing your cycle, take a break of at least 4-6 weeks. Cycling ensures continued effectiveness, avoids receptor desensitization, and keeps your pituitary function optimal.\" Taylor (gCJLLBdAK0k 00:08:31.080): \"each of these peptides you want to do an 8 week rotation… eight weeks on and you're going to rotate taking 8 weeks off.\" Trevor (m_GpIdkHI4M 00:35:13.080): \"CJC-1295 with DAC and Ipamorelin. This is going to restore the master youth hormone access\" frames it as a long-term restorative stack, in tension with the cycling discipline above.",
-        "verbatim_citation": "Hunter email threadId 1952050e9ec0021f (2025-02-19): \"Recommended doses are 100-300mcg at night before bed.\" Hunter blend email threadId 19621e264ba38f4e (2025-04-10): \"Draw up 20 units (600mcg of Tesamorelin and 200mcg of ipamorelin) (0.2ml) of the reconstituted solution into your insulin syringe. Inject subcutaneously every night before bed.\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/ipamorelin-use-guide",
-        "timestamp": "Hunter email threadId 1952050e9ec0021f (2025-02-19); Hunter blend email threadId 19621e264ba38f4e (2025-04-10); Hunter 2023 baseline_protocol; Taylor hgI5Mpc-xDQ 00:47:21.839; Taylor Cg7JtpnfRY4 01:50:35.280; Trevor m_GpIdkHI4M 00:35:13.080"
+        "dose": "Hunter 2023 baseline_protocol: \"Dose: 300 mcg.\" Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"you could do 150 micrograms of CJ and IPA\" Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"you can do 300 to 100 of IP to CJ.\"",
+        "route": null,
+        "frequency": "Hunter 2023 baseline_protocol: \"Frequency: 5 days on, 2 days off.\" Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:34, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"If you do get the sleep disruptor, I would move it to the morning.\"",
+        "duration": "Hunter 2023 baseline_protocol: \"Duration: 8 weeks on, 8 weeks off.\" Taylor (gCJLLBdAK0k 00:08:31.080): \"each of these peptides you want to do an 8 week rotation so that means you're going to be taking these for eight weeks on and you're going to rotate taking 8 weeks off.\"",
+        "verbatim_citation": "Hunter library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/): \"you could do 150 micrograms of CJ and IPA, you can do 300 to 100 of IP to CJ.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/",
+        "timestamp": "24:02"
       }
     },
-    "female_specific_notes": "Hunter email threadId 1952050e9ec0021f (2025-02-19): \"While everyone can benefit from Tesamorelin, men tend to have a better response to it. Conversely, women tend to have a slightly better response to Ipamorelin\" and \"Studies have shown that women naturally exhibit higher GH secretion rates than men at rest and during exercise. This suggests that women may experience more pronounced benefits from Ipamorelin, as their physiology is more responsive to GH fluctuations.\" Taylor (yo-VH6HFJSQ 00:06:14.440): \"I like for women um Tes Morin I like that more for men for women I really want you guys to focus on the ipam maralin um this is going to be the best for leaning out your muscle\"; Taylor (yo-VH6HFJSQ 00:04:31.160): \"the third peptide I'm going to talk about that you are going to be injecting is is going to be epim marelin or you can do EP morelan CJC blend.\" Taylor (Of9flZsatFY 00:05:01.560): \"your hormones are going through a hormonal change when you're going off birth control and the same thing applies for when you're um premenopause per menopause like any form of hormonal change um I would even say that this could be a really great thing to use if you're um getting done with breastfeeding.\" Beauty / skin / sleep signal in women: Taylor (Of9flZsatFY 00:07:15.039): \"my skin was glowing after taking this\" and Taylor (Of9flZsatFY 00:08:21.360): \"my hair was um growing a lot quicker.\" Female-specific pelvic-fat caveat — Hunter (4igc2UpFr7Q 00:20:15.160): \"for belly fat specifically, we do have more data around tesamorelin. Now, in this case it's a woman asking this, so uh they might do better with CJC-1295 and Ipamorelin, but I would say clinically speaking, tesamorelin is going to be better for getting rid of visceral belly fat. I think women that are leaner don't seem to like tesamorelin as much because it's so strong, and so they feel like they get bloated.\" RED-S / amenorrhea: Hunter (4igc2UpFr7Q 00:18:01.030): \"the growth hormone secretagogues probably are not going to do much to address what is going wrong there with the health\" — in that case Hunter explicitly redirects to hormone replacement.",
-    "distilled_at": "2026-04-27T05:16:55.599Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor (yo-VH6HFJSQ 00:06:14.440): \"I like for women um Tes Morin I like that more for men for women I really want you guys to focus on the ipam maralin um this is going to be the best for leaning out your muscle.\" Taylor (Of9flZsatFY 00:05:01.560): \"your hormones are going through a hormonal change when you're going off birth control and the same thing applies for when you're um premenopause per menopause like any form of hormonal change um I would even say that this could be a really great thing to use if you're um getting done with breastfeeding.\"",
+    "distilled_at": "2026-07-17T07:46:02.5224513Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.894Z"
+  "generated_at": "2026-07-17T10:59:06.920Z",
+  "mentions_fingerprint": "430e3e4f4820"
 }

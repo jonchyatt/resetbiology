@@ -41,6 +41,8 @@ model User {
   googleDriveRefreshToken String?                  // Encrypted OAuth refresh token
   googleDriveConnectedAt  DateTime?                // When Drive was connected
   googleDriveSyncEnabled  Boolean                  @default(false)
+  driveVaultState         Json?                    // { needsFolderReconciliation, candidateFolderIds, flaggedAt } — set when connect finds ambiguous vault-root candidates and refuses to guess (see resolveVaultRootFolder in google-drive.ts)
+  driveAccountEmail       String?                  // Google account email the current driveFolder pointer belongs to — lets connect detect a Google-account swap vs. a genuinely new one
   vaultMigrationStartedAt DateTime?                // P2.5 advisory lock — claimed for the duration of a peptide migration. Stale locks (>5min) are reclaimable.
   profileData             Json?
   irbApprovalStatus       String?
@@ -61,6 +63,7 @@ model User {
   foodEntries             FoodEntry[]
   mealPlans               MealPlan[]
   foodLogs                FoodLog[]
+  progressPhotos          ProgressPhoto[]
   workoutSessions         WorkoutSession[]
   workoutPrograms         WorkoutProgram[]
   workoutAssignments      WorkoutAssignment[]
@@ -78,6 +81,22 @@ model User {
   visionProgramEnrollment VisionProgramEnrollment?
 
   @@map("users")
+}
+
+model DriveSyncOutbox {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String    @db.ObjectId
+  domain     String    // journal|workouts|nutrition|peptides|breath|vision|nback|dailyTasks|checkins|modules
+  dateStr    String    // YYYY-MM-DD
+  status     String    @default("pending") // pending|inflight|done|failed|user_removed
+  attempts   Int       @default(0)
+  lastError  String?
+  leaseUntil DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([userId, domain, dateStr])
+  @@index([status, leaseUntil, createdAt]) // covers the FIFO claim query (status+lease filter, createdAt sort)
 }
 
 model ClientProgress {
@@ -405,14 +424,15 @@ model WorkoutSession {
 }
 
 model JournalEntry {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
   entry     String // JSON string containing all journal data
   mood      String?
   weight    Float?
   date      DateTime
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt // optional: pre-existing rows lack it; lets the Drive backfill sweep see historical edits
+  user      User      @relation(fields: [userId], references: [id])
 
   @@map("journal_entries")
 }
@@ -707,6 +727,22 @@ model FoodLog {
   @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
   @@index([userId, localDate], map: "foodlog_user_localDate")
   @@map("food_logs")
+}
+
+// A2 drive-vault: a pointer to a photo stored in the client's own Google
+// Drive vault (Photos subfolder). We never hold the bytes — driveFileId is
+// the only thing persisted here; rendering goes through /api/images/[id]
+// which re-verifies ownership against Drive's appProperties on every read.
+model ProgressPhoto {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  driveFileId String
+  takenAt     DateTime @default(now())
+  note        String?
+
+  @@index([userId, takenAt])
+  @@map("progress_photos")
 }
 
 // --- PWA NOTIFICATION MODELS ---
@@ -1119,6 +1155,10 @@ model VisionProgramEnrollment {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
+  // Tester-only traversal cursor (allowlist-gated). Additive, nullable, never
+  // mutates startDate — days-to-subtract when computing the effective "today".
+  testDayOffset         Int?
+
   user                  User     @relation(fields: [userId], references: [id])
   dailySessions         VisionDailySession[]
 
@@ -1304,4 +1344,24 @@ model PortalModule {
   updatedAt   DateTime @updatedAt
 
   @@map("portal_modules")
+}
+
+// Phase B — reversible-migration harness (data/rb-drive-vault/PHASE-2-SPEC.md
+// sibling rail). One row per (userId, domain) migration run. `records` holds
+// the full per-record manifest array (mongoId, canonicalHash, driveFileId,
+// driveContentHash, byteLength, status) — see
+// scripts/drive-migration-harness.ts for the shape and lifecycle. Durable so
+// an interrupted migrate/verify/rollback can resume from exactly where it
+// left off (idempotent resume keyed on canonicalHash match).
+model MigrationManifest {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  domain      String // "journal" (Phase B); more domains join later, unchanged shape
+  status      String // "incomplete" | "verified" | "failed" | "rollback-incomplete"
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  records     Json // per-record manifest array — see MigrationRecord in scripts/drive-migration-harness.ts
+
+  @@index([userId, domain])
+  @@map("migration_manifests")
 }

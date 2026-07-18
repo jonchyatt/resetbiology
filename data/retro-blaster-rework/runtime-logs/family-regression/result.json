@@ -1,0 +1,114 @@
+{
+  "status": "PASS",
+  "protectedBase": "6f4c8da158b9773bbda90eef0cc51334e6fa636b",
+  "rows": [
+    {
+      "name": "R0 parity",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 339,
+      "stdoutSha256": "e8a7acfa5365270f6c52f151f0966db5eae853ff0a12fabbd87d3111ea7cc13b",
+      "stderrSha256": "405a2bfdfb9af265e5270317aac60e94f3ec8bb7a09cd1e1a283e05823c29708",
+      "finalLine": "R0 PARITY: ALL PASS"
+    },
+    {
+      "name": "E1 data purity",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 1268,
+      "stdoutSha256": "373d1072d69c994ae7a97b248bfaa8f99a6664783d5b806ac480525c210787bd",
+      "stderrSha256": "d5e14bbae439fd30902f0cc7d25b61483d5ba58cb5dbd87401be5ba336ef98b3",
+      "finalLine": "E1 DATA PURITY: ALL PASS"
+    },
+    {
+      "name": "R1.5a parity",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 910,
+      "stdoutSha256": "ed0d26c37770e44b13c1e67923996dd6b715f114976c7bc67d12aaad1c8e7b39",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "PASS R1.5a semantic parity: 22 event payloads/channels preserve inherited timing; no event earlier; max declared R3c authored delay 0ms; R7 note identity/order plus cross-channel interleaving, spawn X, and attack identity excluded as declared FSRS/timing/geometry/ownership"
+    },
+    {
+      "name": "R1.5a visual contract",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 264,
+      "stdoutSha256": "315e05556271d679238894ce7a7231d45cf4d8af04efb08b38f8204aa0791b07",
+      "stderrSha256": "d3c17cde470731d5d12ef79f6dec20bbcd5b018af2df8b177c3e4f28dc238025",
+      "finalLine": "PASS R1.5a visual contract: protected diff clean; backdrop=640x360 PNG sha256=7c093a99e0c37e24f685941fc19530611f5d99173cb1ed457e45d924379bdc59; load failure/reduced-motion/CRT/vocal-meter contracts present"
+    },
+    {
+      "name": "R1.5b roster",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 631,
+      "stdoutSha256": "7466bfee92d790cbc82819bf44cff25195a2e78163e30a95982b6c2c4039a693",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "late load cannot morph an existing alien; scout/procedural fallbacks remain available"
+    },
+    {
+      "name": "R2 sprite atlas",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 194,
+      "stdoutSha256": "4e4dd630f2700a517f4ec39b472497b1b0694dedfc5421a42a231870470439dd",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "PASS chip anchor unchanged at (149, 88)"
+    },
+    {
+      "name": "R3b formation",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 747,
+      "stdoutSha256": "481bda437f23038f187ff946a337f6dfc7502743352481e3d6cabcf67fb5a910",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "targetability, long-frame mic parity, state recovery, silence contract PASS"
+    },
+    {
+      "name": "R3c authored dives",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 589,
+      "stdoutSha256": "bf001433474696eb198a138ed251c7f66fb2edbb93822bfbb1416d3179726b2c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "}"
+    },
+    {
+      "name": "R4 causal weapon VFX",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 747,
+      "stdoutSha256": "eef54f15c5bc8fa7070234b10241c7ba4b3e3a7a60d1a670651ac4d4a1891d5a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "}"
+    },
+    {
+      "name": "R7 FSRS soul-binding",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 2047,
+      "stdoutSha256": "f53b72199f6ca16b7b3d8db79773d5e9f872d81beb55aeb9be842e78a6bdded6",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "}"
+    },
+    {
+      "name": "R8a radio check",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 719,
+      "stdoutSha256": "e02e22030b81282cbfca50025a672ef3aef9382d5f2f1825e00b0075088ac73c",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "finalLine": "}"
+    },
+    {
+      "name": "R8c signal check",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 1055,
+      "stdoutSha256": "c2175e99468153bf98821de0877444901cc33b2f9192fcc6b785aaa54f308453",
+      "stderrSha256": "eded084ab17d243f1c6e1bc2419457acc5df6bd57fb8d38ab45bc497198cd599",
+      "finalLine": "}"
+    }
+  ]
+}

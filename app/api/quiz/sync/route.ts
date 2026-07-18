@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
+import { resolveUserFromSession } from '@/lib/getUserFromSession'
 
 /**
  * POST: Sync quiz data from localStorage to user profile after Auth0 login
@@ -25,56 +26,37 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    // Find or create user
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
+    // Route the sub<->email resolution through the guarded resolver (same
+    // contract as getUserFromSession.ts: an email-fallback reattach only
+    // fires when Auth0 reports the session's email as verified). Preserve
+    // the original quizResponses.email fallback for the rare case where the
+    // Auth0 session itself has no email claim.
+    const effectiveSession = session.user.email
+      ? session
+      : { ...session, user: { ...session.user, email: quizResponses?.email } }
 
-    // If not found by auth0Sub, try by email
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
+    const resolution = await resolveUserFromSession(effectiveSession as typeof session)
 
-      if (user) {
-        // Update auth0Sub if found by email
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
+    if (resolution?.status === 'unverified_email') {
+      return NextResponse.json({ error: 'verify_email' }, { status: 403 })
+    }
+
+    if (!resolution) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // resolveUserFromSession already found-or-created the row (sub match,
+    // verified-email reattach, or fresh create); apply the quiz-specific
+    // fields on top, same as the original find-or-create/update branches.
+    const user = await prisma.user.update({
+      where: { id: resolution.user.id },
+      data: {
+        displayName: quizResponses.preferredName || resolution.user.displayName,
+        image: resolution.user.image || session.user.picture || null,
+        quizResponses: quizResponses,
+        onboardingComplete: true
       }
-    }
-
-    // Create user if doesn't exist
-    if (!user) {
-      console.log('Creating new user from quiz data:', {
-        auth0Sub: session.user.sub,
-        email: session.user.email || quizResponses.email,
-        displayName: quizResponses.preferredName
-      })
-
-      user = await prisma.user.create({
-        data: {
-          auth0Sub: session.user.sub,
-          email: session.user.email || quizResponses.email,
-          name: session.user.name,
-          displayName: quizResponses.preferredName,
-          image: session.user.picture,
-          quizResponses: quizResponses,
-          onboardingComplete: true
-        }
-      })
-    } else {
-      // Update existing user with quiz data
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          displayName: quizResponses.preferredName || user.displayName,
-          quizResponses: quizResponses,
-          onboardingComplete: true
-        }
-      })
-    }
+    })
 
     return NextResponse.json({
       success: true,

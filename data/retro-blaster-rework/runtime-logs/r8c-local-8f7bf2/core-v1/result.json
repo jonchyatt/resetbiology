@@ -1,0 +1,5962 @@
+{
+  "verdict": "PASS",
+  "schema": "retro-blaster-r8c-helium/v1",
+  "mode": "core",
+  "browserLane": "existing-helium-hawkeye-only",
+  "transport": "http://127.0.0.1:9224",
+  "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=r8c-local-8f7bf2",
+  "productBase": "4b8f0fdd6c6109f1cddd9dd7be2259422d951941",
+  "sourceHashes": {
+    "engine": "219DD9F312349281B3555B3DC78D4BC47D34C9F0C1E145EFD41ACF65408E0405",
+    "shell": "8F7BF26EAD3FA57ACDA75A2DD557F08CED30F50E871B682D461317C1D7AC5C0F",
+    "renderer": "109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3"
+  },
+  "pageErrors": [],
+  "videoPath": "C:\\Users\\jonch\\rbw-retro-blaster\\data\\retro-blaster-rework\\runtime-logs\\r8c-local-8f7bf2\\core-v1\\video\\c615b8a47665c4c6d7e194693f92a581.webm",
+  "payload": {
+    "healthy": {
+      "outcome": "correct",
+      "pending": {
+        "signalCheck": {
+          "wave": 2,
+          "pending": true,
+          "cuePolicy": null,
+          "phase": null,
+          "disposition": "pending",
+          "requestId": null,
+          "maskActive": true
+        },
+        "mask": "active"
+      },
+      "authority": {
+        "attack": {
+          "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+          "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "blind",
+          "readinessObservationId": 217,
+          "stimulusRequest": {
+            "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+            "note": "E4",
+            "requestedAtDirectorClockMs": 8509.899999994042
+          },
+          "phase": "outbound",
+          "telegraphStartedAtMs": 8159.699999994042,
+          "demandAtMs": 8526.499999994041,
+          "deadlineAtMs": 10526.499999994041,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        },
+        "delta": 16.599999999998545,
+        "blindStart": {
+          "atMs": 9301,
+          "frame": 287,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        "pacing": {
+          "difficulty": "easy",
+          "wave": 1,
+          "waveStartedAtMs": 1293.699999988079,
+          "waveEndedAtMs": 5809.999999994041,
+          "waveDurationMs": 4516.300000005962,
+          "requiredAnswerEventsMs": [
+            3827.3999999940397,
+            4993.099999994041
+          ],
+          "demandCount": 2,
+          "measuredApm": 26.570422691105904,
+          "minimumGapMs": 1165.7000000000016
+        }
+      },
+      "terminal": {
+        "formation": {
+          "phase": "playing",
+          "wave": 2,
+          "directorClockMs": 8593.700000005963,
+          "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": {
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+            "note": "E4",
+            "side": 1,
+            "cuePolicy": "blind",
+            "readinessObservationId": 217,
+            "stimulusRequest": {
+              "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+              "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+              "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+              "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+              "note": "E4",
+              "requestedAtDirectorClockMs": 8509.899999994042
+            },
+            "phase": "hit-locked",
+            "telegraphStartedAtMs": 8159.699999994042,
+            "demandAtMs": 8526.499999994041,
+            "deadlineAtMs": 10526.499999994041,
+            "outboundT": 0.05376000000953791,
+            "returnFromT": 0,
+            "returnStartedAtMs": null,
+            "outcome": "correct",
+            "resolvedAtMs": 8593.700000005963,
+            "voiceWindowEligible": null,
+            "voiceHeardPhonation": false
+          },
+          "requiredAnswerEventsMs": [
+            8509.899999994042
+          ],
+          "lastCompletedWavePacing": {
+            "difficulty": "easy",
+            "wave": 1,
+            "waveStartedAtMs": 1293.699999988079,
+            "waveEndedAtMs": 5809.999999994041,
+            "waveDurationMs": 4516.300000005962,
+            "requiredAnswerEventsMs": [
+              3827.3999999940397,
+              4993.099999994041
+            ]
+          },
+          "ships": [
+            {
+              "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+              "visualId": "2:0",
+              "slot": 0,
+              "x": 306.5,
+              "y": 76.5,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "hit-locked"
+            }
+          ]
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "blind",
+          "phase": "hit-locked",
+          "disposition": "terminal",
+          "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+          "maskActive": false
+        },
+        "mask": "inactive"
+      },
+      "scoreBefore": 200,
+      "scoreAfter": 300,
+      "gradeWrites": [
+        {
+          "atMs": 20185.69999998808,
+          "frame": 583,
+          "key": "pitch_fsrs_memory_ear"
+        }
+      ],
+      "sourceStarts": [
+        {
+          "atMs": 9301,
+          "frame": 287,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        {
+          "atMs": 20186,
+          "frame": 583,
+          "type": "oscillator",
+          "frequency": 440,
+          "receipt": {
+            "sequence": 9,
+            "kind": "sfx",
+            "note": null,
+            "guard": "shoot",
+            "requestId": null,
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        },
+        {
+          "atMs": 20673.29999998212,
+          "frame": 595,
+          "type": "buffer",
+          "duration": 0.2,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 10,
+            "kind": "sfx",
+            "note": null,
+            "guard": "explosion",
+            "requestId": null,
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": null,
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        }
+      ],
+      "receipts": [
+        {
+          "atMs": 9301.09999999404,
+          "frame": 287,
+          "value": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        {
+          "atMs": 20186.09999999404,
+          "frame": 583,
+          "value": {
+            "sequence": 9,
+            "kind": "sfx",
+            "note": null,
+            "guard": "shoot",
+            "requestId": null,
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        },
+        {
+          "atMs": 20673.29999998212,
+          "frame": 595,
+          "value": {
+            "sequence": 10,
+            "kind": "sfx",
+            "note": null,
+            "guard": "explosion",
+            "requestId": null,
+            "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+            "attackId": null,
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        }
+      ],
+      "freeze": {
+        "before": {
+          "phase": "playing",
+          "wave": 2,
+          "directorClockMs": 8559.899999994042,
+          "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": {
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+            "note": "E4",
+            "side": 1,
+            "cuePolicy": "blind",
+            "readinessObservationId": 217,
+            "stimulusRequest": {
+              "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+              "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+              "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+              "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+              "note": "E4",
+              "requestedAtDirectorClockMs": 8509.899999994042
+            },
+            "phase": "outbound",
+            "telegraphStartedAtMs": 8159.699999994042,
+            "demandAtMs": 8526.499999994041,
+            "deadlineAtMs": 10526.499999994041,
+            "outboundT": 0.026720000000001163,
+            "returnFromT": 0,
+            "returnStartedAtMs": null,
+            "outcome": null,
+            "resolvedAtMs": null,
+            "voiceWindowEligible": null,
+            "voiceHeardPhonation": false
+          },
+          "requiredAnswerEventsMs": [
+            8509.899999994042
+          ],
+          "lastCompletedWavePacing": {
+            "difficulty": "easy",
+            "wave": 1,
+            "waveStartedAtMs": 1293.699999988079,
+            "waveEndedAtMs": 5809.999999994041,
+            "waveDurationMs": 4516.300000005962,
+            "requiredAnswerEventsMs": [
+              3827.3999999940397,
+              4993.099999994041
+            ]
+          },
+          "ships": [
+            {
+              "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+              "visualId": "2:0",
+              "slot": 0,
+              "x": 306.5,
+              "y": 76.5,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "outbound"
+            }
+          ]
+        },
+        "after": {
+          "phase": "playing",
+          "wave": 2,
+          "directorClockMs": 8559.899999994042,
+          "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": {
+            "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+            "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+            "note": "E4",
+            "side": 1,
+            "cuePolicy": "blind",
+            "readinessObservationId": 217,
+            "stimulusRequest": {
+              "requestId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3:stimulus",
+              "gameId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5",
+              "attackId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:attack:3",
+              "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+              "note": "E4",
+              "requestedAtDirectorClockMs": 8509.899999994042
+            },
+            "phase": "outbound",
+            "telegraphStartedAtMs": 8159.699999994042,
+            "demandAtMs": 8526.499999994041,
+            "deadlineAtMs": 10526.499999994041,
+            "outboundT": 0.026720000000001163,
+            "returnFromT": 0,
+            "returnStartedAtMs": null,
+            "outcome": null,
+            "resolvedAtMs": null,
+            "voiceWindowEligible": null,
+            "voiceHeardPhonation": false
+          },
+          "requiredAnswerEventsMs": [
+            8509.899999994042
+          ],
+          "lastCompletedWavePacing": {
+            "difficulty": "easy",
+            "wave": 1,
+            "waveStartedAtMs": 1293.699999988079,
+            "waveEndedAtMs": 5809.999999994041,
+            "waveDurationMs": 4516.300000005962,
+            "requiredAnswerEventsMs": [
+              3827.3999999940397,
+              4993.099999994041
+            ]
+          },
+          "ships": [
+            {
+              "alienId": "f1c8c25f-f82f-4169-8e22-0c51fd9b1cd5:alien:2:0",
+              "visualId": "2:0",
+              "slot": 0,
+              "x": 306.5,
+              "y": 76.5,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "outbound"
+            }
+          ]
+        }
+      },
+      "responsive": [
+        {
+          "name": "desktop-1280x800",
+          "viewport": {
+            "width": 1280,
+            "height": 800,
+            "dpr": 1
+          },
+          "canvasRect": {
+            "x": 175,
+            "y": 154.5,
+            "width": 930,
+            "height": 523.125,
+            "right": 1105,
+            "bottom": 677.625
+          },
+          "instruction": "SIGNAL CHECK → LISTEN ONCE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+          "helper": "FORMATION IDENTITIES HIDDEN · REPLAY LOCKED UNTIL ANSWER",
+          "replay": {
+            "text": "SIGNAL CHECK - REPLAY LOCKED",
+            "disabled": true,
+            "ariaLabel": "Signal check replay locked until answer"
+          },
+          "responseButtons": [
+            {
+              "note": "C4",
+              "ariaLabel": "Answer C with key 1",
+              "disabled": false,
+              "x": 540,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 584,
+              "bottom": 83
+            },
+            {
+              "note": "A4",
+              "ariaLabel": "Answer A with key 2",
+              "disabled": false,
+              "x": 592,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 636,
+              "bottom": 83
+            },
+            {
+              "note": "G4",
+              "ariaLabel": "Answer G with key 3",
+              "disabled": false,
+              "x": 644,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 688,
+              "bottom": 83
+            },
+            {
+              "note": "E4",
+              "ariaLabel": "Answer E with key 4",
+              "disabled": false,
+              "x": 696,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 740,
+              "bottom": 83
+            }
+          ]
+        },
+        {
+          "name": "portrait-390x844",
+          "viewport": {
+            "width": 390,
+            "height": 844,
+            "dpr": 1
+          },
+          "canvasRect": {
+            "x": 13,
+            "y": 155,
+            "width": 364,
+            "height": 204.75,
+            "right": 377,
+            "bottom": 359.75
+          },
+          "instruction": "SIGNAL CHECK → LISTEN ONCE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+          "helper": "FORMATION IDENTITIES HIDDEN · REPLAY LOCKED UNTIL ANSWER",
+          "replay": {
+            "text": "SIGNAL CHECK - REPLAY LOCKED",
+            "disabled": true,
+            "ariaLabel": "Signal check replay locked until answer"
+          },
+          "responseButtons": [
+            {
+              "note": "C4",
+              "ariaLabel": "Answer C with key 1",
+              "disabled": false,
+              "x": 95,
+              "y": 57,
+              "width": 44,
+              "height": 44,
+              "right": 139,
+              "bottom": 101
+            },
+            {
+              "note": "A4",
+              "ariaLabel": "Answer A with key 2",
+              "disabled": false,
+              "x": 147,
+              "y": 57,
+              "width": 44,
+              "height": 44,
+              "right": 191,
+              "bottom": 101
+            },
+            {
+              "note": "G4",
+              "ariaLabel": "Answer G with key 3",
+              "disabled": false,
+              "x": 199,
+              "y": 57,
+              "width": 44,
+              "height": 44,
+              "right": 243,
+              "bottom": 101
+            },
+            {
+              "note": "E4",
+              "ariaLabel": "Answer E with key 4",
+              "disabled": false,
+              "x": 251,
+              "y": 57,
+              "width": 44,
+              "height": 44,
+              "right": 295,
+              "bottom": 101
+            }
+          ]
+        },
+        {
+          "name": "landscape-844x390",
+          "viewport": {
+            "width": 844,
+            "height": 390,
+            "dpr": 1
+          },
+          "canvasRect": {
+            "x": 263,
+            "y": 154.5,
+            "width": 318,
+            "height": 178.875,
+            "right": 581,
+            "bottom": 333.375
+          },
+          "instruction": "SIGNAL CHECK → LISTEN ONCE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+          "helper": "FORMATION IDENTITIES HIDDEN · REPLAY LOCKED UNTIL ANSWER",
+          "replay": {
+            "text": "SIGNAL CHECK - REPLAY LOCKED",
+            "disabled": true,
+            "ariaLabel": "Signal check replay locked until answer"
+          },
+          "responseButtons": [
+            {
+              "note": "C4",
+              "ariaLabel": "Answer C with key 1",
+              "disabled": false,
+              "x": 322,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 366,
+              "bottom": 83
+            },
+            {
+              "note": "A4",
+              "ariaLabel": "Answer A with key 2",
+              "disabled": false,
+              "x": 374,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 418,
+              "bottom": 83
+            },
+            {
+              "note": "G4",
+              "ariaLabel": "Answer G with key 3",
+              "disabled": false,
+              "x": 426,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 470,
+              "bottom": 83
+            },
+            {
+              "note": "E4",
+              "ariaLabel": "Answer E with key 4",
+              "disabled": false,
+              "x": 478,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 522,
+              "bottom": 83
+            }
+          ]
+        },
+        {
+          "name": "compact-640x400",
+          "viewport": {
+            "width": 640,
+            "height": 400,
+            "dpr": 1
+          },
+          "canvasRect": {
+            "x": 138.109375,
+            "y": 119,
+            "width": 363.765625,
+            "height": 190,
+            "right": 501.875,
+            "bottom": 309
+          },
+          "instruction": "SIGNAL CHECK → LISTEN ONCE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)",
+          "helper": "FORMATION IDENTITIES HIDDEN · REPLAY LOCKED UNTIL ANSWER",
+          "replay": {
+            "text": "SIGNAL CHECK - REPLAY LOCKED",
+            "disabled": true,
+            "ariaLabel": "Signal check replay locked until answer"
+          },
+          "responseButtons": [
+            {
+              "note": "C4",
+              "ariaLabel": "Answer C with key 1",
+              "disabled": false,
+              "x": 220,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 264,
+              "bottom": 83
+            },
+            {
+              "note": "A4",
+              "ariaLabel": "Answer A with key 2",
+              "disabled": false,
+              "x": 272,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 316,
+              "bottom": 83
+            },
+            {
+              "note": "G4",
+              "ariaLabel": "Answer G with key 3",
+              "disabled": false,
+              "x": 324,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 368,
+              "bottom": 83
+            },
+            {
+              "note": "E4",
+              "ariaLabel": "Answer E with key 4",
+              "disabled": false,
+              "x": 376,
+              "y": 39,
+              "width": 44,
+              "height": 44,
+              "right": 420,
+              "bottom": 83
+            }
+          ]
+        }
+      ],
+      "zoom": {
+        "method": "activated the uniquely titled existing Helium proof page and sent genuine browser-chrome Control+0 / one-at-a-time Control+Plus shortcuts until observed 200%",
+        "screenshotCaveat": "The CDP page screenshot at DPR 2 is a cropped capture-surface artifact; acceptance is based on genuine browser shortcut telemetry plus live zero-overflow DOM geometry.",
+        "before": {
+          "innerWidth": 1280,
+          "innerHeight": 800,
+          "dpr": 1,
+          "visualViewport": {
+            "width": 1280,
+            "height": 800,
+            "scale": 1
+          },
+          "overflow": 0,
+          "layout": {
+            "document": {
+              "clientWidth": 1280,
+              "scrollWidth": 1280
+            },
+            "instructionRail": {
+              "x": 160,
+              "y": 12,
+              "width": 960,
+              "height": 98,
+              "right": 1120,
+              "bottom": 110,
+              "clientWidth": 960,
+              "scrollWidth": 960
+            },
+            "instruction": {
+              "x": 168,
+              "y": 17,
+              "width": 944,
+              "height": 18,
+              "right": 1112,
+              "bottom": 35,
+              "clientWidth": 944,
+              "scrollWidth": 944
+            },
+            "helper": {
+              "x": 168,
+              "y": 87,
+              "width": 944,
+              "height": 18,
+              "right": 1112,
+              "bottom": 105,
+              "clientWidth": 944,
+              "scrollWidth": 944
+            },
+            "cabinet": {
+              "x": 160,
+              "y": 118,
+              "width": 960,
+              "height": 574.625,
+              "right": 1120,
+              "bottom": 692.625,
+              "clientWidth": 956,
+              "scrollWidth": 956
+            },
+            "canvas": {
+              "x": 175,
+              "y": 154.5,
+              "width": 930,
+              "height": 523.125,
+              "right": 1105,
+              "bottom": 677.625,
+              "clientWidth": 930,
+              "scrollWidth": 930
+            },
+            "responseButtons": [
+              {
+                "note": "C4",
+                "disabled": false,
+                "x": 540,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 584,
+                "bottom": 83
+              },
+              {
+                "note": "A4",
+                "disabled": false,
+                "x": 592,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 636,
+                "bottom": 83
+              },
+              {
+                "note": "G4",
+                "disabled": false,
+                "x": 644,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 688,
+                "bottom": 83
+              },
+              {
+                "note": "E4",
+                "disabled": false,
+                "x": 696,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 740,
+                "bottom": 83
+              }
+            ]
+          }
+        },
+        "zoomed": {
+          "innerWidth": 640,
+          "innerHeight": 400,
+          "dpr": 2,
+          "visualViewport": {
+            "width": 640,
+            "height": 400,
+            "scale": 1
+          },
+          "overflow": 0,
+          "layout": {
+            "document": {
+              "clientWidth": 640,
+              "scrollWidth": 640
+            },
+            "instructionRail": {
+              "x": 12,
+              "y": 12,
+              "width": 616,
+              "height": 98,
+              "right": 628,
+              "bottom": 110,
+              "clientWidth": 616,
+              "scrollWidth": 616
+            },
+            "instruction": {
+              "x": 20,
+              "y": 17,
+              "width": 600,
+              "height": 18,
+              "right": 620,
+              "bottom": 35,
+              "clientWidth": 600,
+              "scrollWidth": 600
+            },
+            "helper": {
+              "x": 20,
+              "y": 87,
+              "width": 600,
+              "height": 18,
+              "right": 620,
+              "bottom": 105,
+              "clientWidth": 600,
+              "scrollWidth": 600
+            },
+            "cabinet": {
+              "x": 137.109375,
+              "y": 118,
+              "width": 365.7734375,
+              "height": 192,
+              "right": 502.8828125,
+              "bottom": 310,
+              "clientWidth": 366,
+              "scrollWidth": 366
+            },
+            "canvas": {
+              "x": 138.109375,
+              "y": 119,
+              "width": 363.7734375,
+              "height": 190,
+              "right": 501.8828125,
+              "bottom": 309,
+              "clientWidth": 364,
+              "scrollWidth": 364
+            },
+            "responseButtons": [
+              {
+                "note": "C4",
+                "disabled": false,
+                "x": 220,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 264,
+                "bottom": 83
+              },
+              {
+                "note": "A4",
+                "disabled": false,
+                "x": 272,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 316,
+                "bottom": 83
+              },
+              {
+                "note": "G4",
+                "disabled": false,
+                "x": 324,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 368,
+                "bottom": 83
+              },
+              {
+                "note": "E4",
+                "disabled": false,
+                "x": 376,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 420,
+                "bottom": 83
+              }
+            ]
+          }
+        },
+        "reset": {
+          "innerWidth": 1280,
+          "innerHeight": 800,
+          "dpr": 1,
+          "visualViewport": {
+            "width": 1280,
+            "height": 800,
+            "scale": 1
+          },
+          "overflow": 0,
+          "layout": {
+            "document": {
+              "clientWidth": 1280,
+              "scrollWidth": 1280
+            },
+            "instructionRail": {
+              "x": 160,
+              "y": 12,
+              "width": 960,
+              "height": 98,
+              "right": 1120,
+              "bottom": 110,
+              "clientWidth": 960,
+              "scrollWidth": 960
+            },
+            "instruction": {
+              "x": 168,
+              "y": 17,
+              "width": 944,
+              "height": 18,
+              "right": 1112,
+              "bottom": 35,
+              "clientWidth": 944,
+              "scrollWidth": 944
+            },
+            "helper": {
+              "x": 168,
+              "y": 87,
+              "width": 944,
+              "height": 18,
+              "right": 1112,
+              "bottom": 105,
+              "clientWidth": 944,
+              "scrollWidth": 944
+            },
+            "cabinet": {
+              "x": 160,
+              "y": 118,
+              "width": 960,
+              "height": 574.625,
+              "right": 1120,
+              "bottom": 692.625,
+              "clientWidth": 956,
+              "scrollWidth": 956
+            },
+            "canvas": {
+              "x": 175,
+              "y": 154.5,
+              "width": 930,
+              "height": 523.125,
+              "right": 1105,
+              "bottom": 677.625,
+              "clientWidth": 930,
+              "scrollWidth": 930
+            },
+            "responseButtons": [
+              {
+                "note": "C4",
+                "disabled": false,
+                "x": 540,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 584,
+                "bottom": 83
+              },
+              {
+                "note": "A4",
+                "disabled": false,
+                "x": 592,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 636,
+                "bottom": 83
+              },
+              {
+                "note": "G4",
+                "disabled": false,
+                "x": 644,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 688,
+                "bottom": 83
+              },
+              {
+                "note": "E4",
+                "disabled": false,
+                "x": 696,
+                "y": 39,
+                "width": 44,
+                "height": 44,
+                "right": 740,
+                "bottom": 83
+              }
+            ]
+          }
+        },
+        "presses": 5
+      },
+      "colorHints": "COLOR HINTS OFF",
+      "reducedMotion": true,
+      "segment": {
+        "start": {
+          "atMs": 6455,
+          "frame": 195
+        },
+        "end": {
+          "atMs": 21457,
+          "frame": 619
+        },
+        "durationMs": 15002,
+        "frameDelta": 424
+      }
+    },
+    "wrong": {
+      "outcome": "wrong",
+      "pending": {
+        "signalCheck": {
+          "wave": 2,
+          "pending": true,
+          "cuePolicy": null,
+          "phase": null,
+          "disposition": "pending",
+          "requestId": null,
+          "maskActive": true
+        },
+        "mask": "active"
+      },
+      "authority": {
+        "attack": {
+          "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+          "alienId": "95a50d36-9c5e-4054-b330-292ca19e74e7:alien:2:0",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "blind",
+          "readinessObservationId": 238,
+          "stimulusRequest": {
+            "requestId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3:stimulus",
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "alienId": "95a50d36-9c5e-4054-b330-292ca19e74e7:alien:2:0",
+            "note": "E4",
+            "requestedAtDirectorClockMs": 9175.000000005959
+          },
+          "phase": "outbound",
+          "telegraphStartedAtMs": 8791.80000000596,
+          "demandAtMs": 9208.400000005959,
+          "deadlineAtMs": 11208.400000005959,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        },
+        "delta": 33.399999999999636,
+        "blindStart": {
+          "atMs": 9997.5,
+          "frame": 307,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3:stimulus",
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        "pacing": {
+          "difficulty": "easy",
+          "wave": 1,
+          "waveStartedAtMs": 1072.300000011921,
+          "waveEndedAtMs": 6059.100000005959,
+          "waveDurationMs": 4986.799999994038,
+          "requiredAnswerEventsMs": [
+            4076.70000000596,
+            5209.200000005959
+          ],
+          "demandCount": 2,
+          "measuredApm": 24.063527713191515,
+          "minimumGapMs": 1132.4999999999986
+        }
+      },
+      "terminal": {
+        "formation": {
+          "phase": "playing",
+          "wave": 2,
+          "directorClockMs": 9275.000000005959,
+          "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": {
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "alienId": "95a50d36-9c5e-4054-b330-292ca19e74e7:alien:2:0",
+            "note": "E4",
+            "side": 1,
+            "cuePolicy": "blind",
+            "readinessObservationId": 238,
+            "stimulusRequest": {
+              "requestId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3:stimulus",
+              "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+              "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+              "alienId": "95a50d36-9c5e-4054-b330-292ca19e74e7:alien:2:0",
+              "note": "E4",
+              "requestedAtDirectorClockMs": 9175.000000005959
+            },
+            "phase": "returning",
+            "telegraphStartedAtMs": 8791.80000000596,
+            "demandAtMs": 9208.400000005959,
+            "deadlineAtMs": 11208.400000005959,
+            "outboundT": 0.05328000000000029,
+            "returnFromT": 0.05328000000000029,
+            "returnStartedAtMs": 9275.000000005959,
+            "outcome": "wrong",
+            "resolvedAtMs": 9275.000000005959,
+            "voiceWindowEligible": null,
+            "voiceHeardPhonation": false
+          },
+          "requiredAnswerEventsMs": [
+            9175.000000005959
+          ],
+          "lastCompletedWavePacing": {
+            "difficulty": "easy",
+            "wave": 1,
+            "waveStartedAtMs": 1072.300000011921,
+            "waveEndedAtMs": 6059.100000005959,
+            "waveDurationMs": 4986.799999994038,
+            "requiredAnswerEventsMs": [
+              4076.70000000596,
+              5209.200000005959
+            ]
+          },
+          "ships": [
+            {
+              "alienId": "95a50d36-9c5e-4054-b330-292ca19e74e7:alien:2:0",
+              "visualId": "2:0",
+              "slot": 0,
+              "x": 309.9144552930146,
+              "y": 77.99382419069389,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "returning"
+            }
+          ]
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "blind",
+          "phase": "returning",
+          "disposition": "terminal",
+          "requestId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3:stimulus",
+          "maskActive": false
+        },
+        "mask": "inactive"
+      },
+      "scoreBefore": 200,
+      "scoreAfter": 200,
+      "gradeWrites": [
+        {
+          "atMs": 10105.300000011921,
+          "frame": 310,
+          "key": "pitch_fsrs_memory_ear"
+        }
+      ],
+      "sourceStarts": [
+        {
+          "atMs": 9997.5,
+          "frame": 307,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3:stimulus",
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        {
+          "atMs": 10106.59999999404,
+          "frame": 310,
+          "type": "oscillator",
+          "frequency": 440,
+          "receipt": {
+            "sequence": 9,
+            "kind": "sfx",
+            "note": null,
+            "guard": "wrong",
+            "requestId": null,
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        },
+        {
+          "atMs": 10457.59999999404,
+          "frame": 319,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 10,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "attack",
+            "requestId": null,
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        }
+      ],
+      "receipts": [
+        {
+          "atMs": 9997.800000011921,
+          "frame": 307,
+          "value": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3:stimulus",
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        {
+          "atMs": 10106.90000000596,
+          "frame": 310,
+          "value": {
+            "sequence": 9,
+            "kind": "sfx",
+            "note": null,
+            "guard": "wrong",
+            "requestId": null,
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        },
+        {
+          "atMs": 10457.59999999404,
+          "frame": 319,
+          "value": {
+            "sequence": 10,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "attack",
+            "requestId": null,
+            "gameId": "95a50d36-9c5e-4054-b330-292ca19e74e7",
+            "attackId": "95a50d36-9c5e-4054-b330-292ca19e74e7:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        }
+      ],
+      "freeze": null,
+      "responsive": null,
+      "zoom": null,
+      "colorHints": "COLOR HINTS ON",
+      "reducedMotion": false,
+      "segment": {
+        "start": {
+          "atMs": 6586.0999999940395,
+          "frame": 216
+        },
+        "end": {
+          "atMs": 11203.90000000596,
+          "frame": 337
+        },
+        "durationMs": 4617.800000011921,
+        "frameDelta": 121
+      }
+    },
+    "timeout": {
+      "outcome": "timeout",
+      "pending": {
+        "signalCheck": {
+          "wave": 2,
+          "pending": true,
+          "cuePolicy": null,
+          "phase": null,
+          "disposition": "pending",
+          "requestId": null,
+          "maskActive": true
+        },
+        "mask": "active"
+      },
+      "authority": {
+        "attack": {
+          "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+          "alienId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:alien:2:0",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "blind",
+          "readinessObservationId": 213,
+          "stimulusRequest": {
+            "requestId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3:stimulus",
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "alienId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:alien:2:0",
+            "note": "E4",
+            "requestedAtDirectorClockMs": 8567.699999999999
+          },
+          "phase": "outbound",
+          "telegraphStartedAtMs": 8184.899999999999,
+          "demandAtMs": 8584.199999999999,
+          "deadlineAtMs": 10584.199999999999,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        },
+        "delta": 16.5,
+        "blindStart": {
+          "atMs": 9221.700000017881,
+          "frame": 279,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3:stimulus",
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        "pacing": {
+          "difficulty": "easy",
+          "wave": 1,
+          "waveStartedAtMs": 1098.7000000178814,
+          "waveEndedAtMs": 5817.899999999999,
+          "waveDurationMs": 4719.199999982117,
+          "requiredAnswerEventsMs": [
+            3752.000000000001,
+            4918.2
+          ],
+          "demandCount": 2,
+          "measuredApm": 25.428038650715106,
+          "minimumGapMs": 1166.199999999999
+        }
+      },
+      "terminal": {
+        "formation": {
+          "phase": "playing",
+          "wave": 2,
+          "directorClockMs": 10600.599999999997,
+          "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": {
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "alienId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:alien:2:0",
+            "note": "E4",
+            "side": 1,
+            "cuePolicy": "blind",
+            "readinessObservationId": 213,
+            "stimulusRequest": {
+              "requestId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3:stimulus",
+              "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+              "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+              "alienId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:alien:2:0",
+              "note": "E4",
+              "requestedAtDirectorClockMs": 8567.699999999999
+            },
+            "phase": "returning",
+            "telegraphStartedAtMs": 8184.899999999999,
+            "demandAtMs": 8584.199999999999,
+            "deadlineAtMs": 10584.199999999999,
+            "outboundT": 1,
+            "returnFromT": 1,
+            "returnStartedAtMs": 10600.599999999997,
+            "outcome": "timeout",
+            "resolvedAtMs": 10600.599999999997,
+            "voiceWindowEligible": null,
+            "voiceHeardPhonation": false
+          },
+          "requiredAnswerEventsMs": [
+            8567.699999999999
+          ],
+          "lastCompletedWavePacing": {
+            "difficulty": "easy",
+            "wave": 1,
+            "waveStartedAtMs": 1098.7000000178814,
+            "waveEndedAtMs": 5817.899999999999,
+            "waveDurationMs": 4719.199999982117,
+            "requiredAnswerEventsMs": [
+              3752.000000000001,
+              4918.2
+            ]
+          },
+          "ships": [
+            {
+              "alienId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:alien:2:0",
+              "visualId": "2:0",
+              "slot": 0,
+              "x": 306.5,
+              "y": 76.5,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "returning"
+            },
+            {
+              "alienId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:alien:2:1",
+              "visualId": "2:1",
+              "slot": 1,
+              "x": 216.5,
+              "y": 76.5,
+              "formationX": 216.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "formation"
+            }
+          ]
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "blind",
+          "phase": "returning",
+          "disposition": "terminal",
+          "requestId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3:stimulus",
+          "maskActive": false
+        },
+        "mask": "inactive"
+      },
+      "scoreBefore": 200,
+      "scoreAfter": 200,
+      "gradeWrites": [
+        {
+          "atMs": 11403.200000017881,
+          "frame": 354,
+          "key": "pitch_fsrs_memory_ear"
+        }
+      ],
+      "sourceStarts": [
+        {
+          "atMs": 9221.700000017881,
+          "frame": 279,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3:stimulus",
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        {
+          "atMs": 11405,
+          "frame": 354,
+          "type": "oscillator",
+          "frequency": 440,
+          "receipt": {
+            "sequence": 9,
+            "kind": "sfx",
+            "note": null,
+            "guard": "wrong",
+            "requestId": null,
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        },
+        {
+          "atMs": 11759.40000000596,
+          "frame": 361,
+          "type": "buffer",
+          "duration": 0.5949166666666666,
+          "playbackRate": 1,
+          "receipt": {
+            "sequence": 10,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "attack",
+            "requestId": null,
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        }
+      ],
+      "receipts": [
+        {
+          "atMs": 9221.800000011921,
+          "frame": 279,
+          "value": {
+            "sequence": 8,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "blind-stimulus",
+            "requestId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3:stimulus",
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": false
+          }
+        },
+        {
+          "atMs": 11405.300000011921,
+          "frame": 354,
+          "value": {
+            "sequence": 9,
+            "kind": "sfx",
+            "note": null,
+            "guard": "wrong",
+            "requestId": null,
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        },
+        {
+          "atMs": 11759.5,
+          "frame": 361,
+          "value": {
+            "sequence": 10,
+            "kind": "piano",
+            "note": "E4",
+            "guard": "attack",
+            "requestId": null,
+            "gameId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3",
+            "attackId": "457a2077-2fe7-4d56-adb7-5d7a4937ffa3:attack:3",
+            "ceremonyId": null,
+            "terminalAlreadyRecorded": true
+          }
+        }
+      ],
+      "freeze": null,
+      "responsive": null,
+      "zoom": null,
+      "colorHints": "COLOR HINTS OFF",
+      "reducedMotion": true,
+      "segment": {
+        "start": {
+          "atMs": 6380.5,
+          "frame": 202
+        },
+        "end": {
+          "atMs": 12713,
+          "frame": 390
+        },
+        "durationMs": 6332.5,
+        "frameDelta": 188
+      }
+    },
+    "cancellation": {
+      "pending": {
+        "wave": 2,
+        "pending": true,
+        "cuePolicy": null,
+        "phase": null,
+        "disposition": "pending",
+        "requestId": null,
+        "maskActive": true
+      },
+      "unresolved": {
+        "formation": {
+          "phase": "playing",
+          "wave": 2,
+          "directorClockMs": 8583.60000001788,
+          "gameId": "d1915995-e3d7-4679-add8-28e201561dd5",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": {
+            "attackId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3",
+            "alienId": "d1915995-e3d7-4679-add8-28e201561dd5:alien:2:0",
+            "note": "E4",
+            "side": 1,
+            "cuePolicy": "blind",
+            "readinessObservationId": 245,
+            "stimulusRequest": {
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "gameId": "d1915995-e3d7-4679-add8-28e201561dd5",
+              "attackId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3",
+              "alienId": "d1915995-e3d7-4679-add8-28e201561dd5:alien:2:0",
+              "note": "E4",
+              "requestedAtDirectorClockMs": 8583.60000001788
+            },
+            "phase": "awaiting-stimulus",
+            "telegraphStartedAtMs": 8217.10000001788,
+            "demandAtMs": null,
+            "deadlineAtMs": null,
+            "outboundT": 0,
+            "returnFromT": 0,
+            "returnStartedAtMs": null,
+            "outcome": null,
+            "resolvedAtMs": null,
+            "voiceWindowEligible": null,
+            "voiceHeardPhonation": false
+          },
+          "requiredAnswerEventsMs": [],
+          "lastCompletedWavePacing": {
+            "difficulty": "easy",
+            "wave": 1,
+            "waveStartedAtMs": 1193.300000011921,
+            "waveEndedAtMs": 5868.000000017882,
+            "waveDurationMs": 4674.700000005961,
+            "requiredAnswerEventsMs": [
+              3884.8000000178818,
+              5001.500000017882
+            ]
+          },
+          "ships": [
+            {
+              "alienId": "d1915995-e3d7-4679-add8-28e201561dd5:alien:2:0",
+              "visualId": "2:0",
+              "slot": 0,
+              "x": 306.5,
+              "y": 76.5,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "awaiting-stimulus"
+            }
+          ]
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "blind",
+          "phase": "awaiting-stimulus",
+          "disposition": "blind",
+          "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+          "maskActive": true
+        },
+        "mask": "active"
+      },
+      "cancelled": {
+        "formation": {
+          "phase": "playing",
+          "wave": 2,
+          "directorClockMs": 9583.70000001788,
+          "gameId": "d1915995-e3d7-4679-add8-28e201561dd5",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": null,
+          "requiredAnswerEventsMs": [],
+          "lastCompletedWavePacing": {
+            "difficulty": "easy",
+            "wave": 1,
+            "waveStartedAtMs": 1193.300000011921,
+            "waveEndedAtMs": 5868.000000017882,
+            "waveDurationMs": 4674.700000005961,
+            "requiredAnswerEventsMs": [
+              3884.8000000178818,
+              5001.500000017882
+            ]
+          },
+          "ships": [
+            {
+              "alienId": "d1915995-e3d7-4679-add8-28e201561dd5:alien:2:0",
+              "visualId": "2:0",
+              "slot": 0,
+              "x": 306.5,
+              "y": 76.5,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "formation"
+            },
+            {
+              "alienId": "d1915995-e3d7-4679-add8-28e201561dd5:alien:2:1",
+              "visualId": "2:1",
+              "slot": 1,
+              "x": 216.5,
+              "y": 76.5,
+              "formationX": 216.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "formation"
+            }
+          ]
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": null,
+          "phase": null,
+          "disposition": "cancelled-ack-timeout",
+          "requestId": null,
+          "maskActive": false
+        },
+        "mask": "inactive"
+      },
+      "laterAttack": {
+        "attackId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:4",
+        "alienId": "d1915995-e3d7-4679-add8-28e201561dd5:alien:2:1",
+        "note": "A4",
+        "side": -1,
+        "cuePolicy": "guided",
+        "readinessObservationId": 294,
+        "stimulusRequest": null,
+        "phase": "telegraph",
+        "telegraphStartedAtMs": 10097.300000029802,
+        "demandAtMs": null,
+        "deadlineAtMs": null,
+        "outboundT": 0,
+        "returnFromT": 0,
+        "returnStartedAtMs": null,
+        "outcome": null,
+        "resolvedAtMs": null,
+        "voiceWindowEligible": null,
+        "voiceHeardPhonation": false
+      },
+      "trace": {
+        "startedAt": 6395.800000011921,
+        "frame": 389,
+        "receipts": [
+          {
+            "atMs": 9220.5,
+            "frame": 305,
+            "value": {
+              "sequence": 8,
+              "kind": "piano",
+              "note": "E4",
+              "guard": "blind-stimulus",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "gameId": "d1915995-e3d7-4679-add8-28e201561dd5",
+              "attackId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3",
+              "ceremonyId": null,
+              "terminalAlreadyRecorded": false
+            }
+          }
+        ],
+        "sourceStarts": [
+          {
+            "atMs": 9220.199999988079,
+            "frame": 305,
+            "type": "buffer",
+            "duration": 0.5949166666666666,
+            "playbackRate": 1,
+            "receipt": {
+              "sequence": 8,
+              "kind": "piano",
+              "note": "E4",
+              "guard": "blind-stimulus",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "gameId": "d1915995-e3d7-4679-add8-28e201561dd5",
+              "attackId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3",
+              "ceremonyId": null,
+              "terminalAlreadyRecorded": false
+            }
+          }
+        ],
+        "storageWrites": [],
+        "signalSamples": [
+          {
+            "atMs": 6403,
+            "frame": 226,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6431.800000011921,
+            "frame": 227,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6456.5999999940395,
+            "frame": 228,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6484.5999999940395,
+            "frame": 229,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6508.300000011921,
+            "frame": 230,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6532.0999999940395,
+            "frame": 231,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6557.800000011921,
+            "frame": 232,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6583.699999988079,
+            "frame": 233,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6609,
+            "frame": 234,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6631.5,
+            "frame": 235,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6653.800000011921,
+            "frame": 236,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6679.9000000059605,
+            "frame": 237,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6703.5999999940395,
+            "frame": 238,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6728.0999999940395,
+            "frame": 239,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6754.199999988079,
+            "frame": 240,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6777.4000000059605,
+            "frame": 241,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6803.199999988079,
+            "frame": 242,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6827.800000011921,
+            "frame": 243,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6856.5999999940395,
+            "frame": 244,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6891.699999988079,
+            "frame": 245,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6918.199999988079,
+            "frame": 246,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 6943.4000000059605,
+            "frame": 247,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7069.800000011921,
+            "frame": 248,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7091.9000000059605,
+            "frame": 249,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7116,
+            "frame": 250,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7144.0999999940395,
+            "frame": 251,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7184,
+            "frame": 252,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7223.0999999940395,
+            "frame": 253,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7262.199999988079,
+            "frame": 254,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7299.0999999940395,
+            "frame": 255,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7334,
+            "frame": 256,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7373.800000011921,
+            "frame": 257,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7420.0999999940395,
+            "frame": 258,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7454.699999988079,
+            "frame": 259,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7487,
+            "frame": 260,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7530,
+            "frame": 261,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7569.9000000059605,
+            "frame": 262,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7608.9000000059605,
+            "frame": 263,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7648.300000011921,
+            "frame": 264,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7680.0999999940395,
+            "frame": 265,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7720.699999988079,
+            "frame": 266,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7766.0999999940395,
+            "frame": 267,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7805.5999999940395,
+            "frame": 268,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7846.199999988079,
+            "frame": 269,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7876.9000000059605,
+            "frame": 270,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7904.4000000059605,
+            "frame": 271,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7935.300000011921,
+            "frame": 272,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 7961,
+            "frame": 273,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8073.5,
+            "frame": 274,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8086.9000000059605,
+            "frame": 275,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8120.199999988079,
+            "frame": 276,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8150.699999988079,
+            "frame": 277,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8177.300000011921,
+            "frame": 278,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8207.40000000596,
+            "frame": 279,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8235.40000000596,
+            "frame": 280,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8261.90000000596,
+            "frame": 281,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8287.5,
+            "frame": 282,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8322.800000011921,
+            "frame": 283,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8348.5,
+            "frame": 284,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8378.5,
+            "frame": 285,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8402.699999988079,
+            "frame": 286,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8427,
+            "frame": 287,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8453.199999988079,
+            "frame": 288,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8477.800000011921,
+            "frame": 289,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8506,
+            "frame": 290,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8529.800000011921,
+            "frame": 291,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8562.199999988079,
+            "frame": 292,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8596.09999999404,
+            "frame": 293,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8637.90000000596,
+            "frame": 294,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8678.90000000596,
+            "frame": 295,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8719.90000000596,
+            "frame": 296,
+            "value": {
+              "wave": 2,
+              "pending": true,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "pending",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8763.09999999404,
+            "frame": 297,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8764.59999999404,
+            "frame": 297,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8805.09999999404,
+            "frame": 298,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8847.5,
+            "frame": 299,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8891.300000011921,
+            "frame": 300,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8933.40000000596,
+            "frame": 301,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 8974.09999999404,
+            "frame": 302,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9133.800000011921,
+            "frame": 303,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9175.90000000596,
+            "frame": 304,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "telegraph",
+              "disposition": "blind",
+              "requestId": null,
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9220.5,
+            "frame": 305,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9223.90000000596,
+            "frame": 305,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9259.300000011921,
+            "frame": 306,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9301.59999999404,
+            "frame": 307,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9348.5,
+            "frame": 308,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9388.40000000596,
+            "frame": 309,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9419.5,
+            "frame": 310,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9461.699999988079,
+            "frame": 311,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9510,
+            "frame": 312,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9550.300000011921,
+            "frame": 313,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9587,
+            "frame": 314,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9616.300000011921,
+            "frame": 315,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9642.5,
+            "frame": 316,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9680.59999999404,
+            "frame": 317,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9721.199999988079,
+            "frame": 318,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9758.59999999404,
+            "frame": 319,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9799.300000011921,
+            "frame": 320,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9837.90000000596,
+            "frame": 321,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9877.800000011921,
+            "frame": 322,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9922.199999988079,
+            "frame": 323,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9957.59999999404,
+            "frame": 324,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 9983.800000011921,
+            "frame": 325,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10086.5,
+            "frame": 326,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10114.5,
+            "frame": 327,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10144,
+            "frame": 328,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10173.5,
+            "frame": 329,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10205.59999999404,
+            "frame": 330,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10233.5,
+            "frame": 331,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10263,
+            "frame": 332,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": "blind",
+              "phase": "awaiting-stimulus",
+              "disposition": "blind",
+              "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus",
+              "maskActive": true
+            }
+          },
+          {
+            "atMs": 10289.699999988079,
+            "frame": 333,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10291.40000000596,
+            "frame": 333,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10322.40000000596,
+            "frame": 334,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10353.5,
+            "frame": 335,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10385.5,
+            "frame": 336,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10416.300000011921,
+            "frame": 337,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10446.199999988079,
+            "frame": 338,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10472.09999999404,
+            "frame": 339,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10497.59999999404,
+            "frame": 340,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10527.90000000596,
+            "frame": 341,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10560.300000011921,
+            "frame": 342,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10589.699999988079,
+            "frame": 343,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10619.09999999404,
+            "frame": 344,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10645.699999988079,
+            "frame": 345,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10679.09999999404,
+            "frame": 346,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10721.59999999404,
+            "frame": 347,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10762.59999999404,
+            "frame": 348,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10805.199999988079,
+            "frame": 349,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10847.199999988079,
+            "frame": 350,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10876.800000011921,
+            "frame": 351,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10918,
+            "frame": 352,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10957.800000011921,
+            "frame": 353,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 10998.800000011921,
+            "frame": 354,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11039.199999988079,
+            "frame": 355,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11087.90000000596,
+            "frame": 356,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11252,
+            "frame": 357,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11292.199999988079,
+            "frame": 358,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11330.40000000596,
+            "frame": 359,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11373.90000000596,
+            "frame": 360,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11416,
+            "frame": 361,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11455.699999988079,
+            "frame": 362,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11496.300000011921,
+            "frame": 363,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11539.40000000596,
+            "frame": 364,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11580.40000000596,
+            "frame": 365,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11617.59999999404,
+            "frame": 366,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11668.199999988079,
+            "frame": 367,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11710.90000000596,
+            "frame": 368,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11750.800000011921,
+            "frame": 369,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11794.59999999404,
+            "frame": 370,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11837.300000011921,
+            "frame": 371,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11880.59999999404,
+            "frame": 372,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11917.5,
+            "frame": 373,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 11959,
+            "frame": 374,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12007.40000000596,
+            "frame": 375,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12100.699999988079,
+            "frame": 376,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12146.40000000596,
+            "frame": 377,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12152.59999999404,
+            "frame": 378,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12170.09999999404,
+            "frame": 379,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12186.5,
+            "frame": 380,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12220.5,
+            "frame": 381,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12245.40000000596,
+            "frame": 382,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12267.300000011921,
+            "frame": 383,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12295.300000011921,
+            "frame": 384,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12323.699999988079,
+            "frame": 385,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12348.5,
+            "frame": 386,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12376.40000000596,
+            "frame": 387,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12402.90000000596,
+            "frame": 388,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          },
+          {
+            "atMs": 12425.300000011921,
+            "frame": 389,
+            "value": {
+              "wave": 2,
+              "pending": false,
+              "cuePolicy": null,
+              "phase": null,
+              "disposition": "cancelled-ack-timeout",
+              "requestId": null,
+              "maskActive": false
+            }
+          }
+        ],
+        "maskSamples": [
+          {
+            "atMs": 6403,
+            "frame": 226,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6431.800000011921,
+            "frame": 227,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6456.5999999940395,
+            "frame": 228,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6484.5999999940395,
+            "frame": 229,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6508.4000000059605,
+            "frame": 230,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6532.0999999940395,
+            "frame": 231,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6557.800000011921,
+            "frame": 232,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6583.699999988079,
+            "frame": 233,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6609,
+            "frame": 234,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6631.5,
+            "frame": 235,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6653.800000011921,
+            "frame": 236,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6679.9000000059605,
+            "frame": 237,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6703.5999999940395,
+            "frame": 238,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6728.0999999940395,
+            "frame": 239,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6754.199999988079,
+            "frame": 240,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6777.4000000059605,
+            "frame": 241,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6803.199999988079,
+            "frame": 242,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6827.800000011921,
+            "frame": 243,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6856.5999999940395,
+            "frame": 244,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6891.800000011921,
+            "frame": 245,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6918.199999988079,
+            "frame": 246,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 6943.4000000059605,
+            "frame": 247,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7069.9000000059605,
+            "frame": 248,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7091.9000000059605,
+            "frame": 249,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7116,
+            "frame": 250,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7144.0999999940395,
+            "frame": 251,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7184,
+            "frame": 252,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7223.0999999940395,
+            "frame": 253,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7262.199999988079,
+            "frame": 254,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7299.0999999940395,
+            "frame": 255,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7334,
+            "frame": 256,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7373.800000011921,
+            "frame": 257,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7420.0999999940395,
+            "frame": 258,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7454.800000011921,
+            "frame": 259,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7487,
+            "frame": 260,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7530,
+            "frame": 261,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7569.9000000059605,
+            "frame": 262,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7608.9000000059605,
+            "frame": 263,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7648.300000011921,
+            "frame": 264,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7680.0999999940395,
+            "frame": 265,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7720.699999988079,
+            "frame": 266,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7766.0999999940395,
+            "frame": 267,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7805.5999999940395,
+            "frame": 268,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7846.300000011921,
+            "frame": 269,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7877,
+            "frame": 270,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7904.4000000059605,
+            "frame": 271,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7935.300000011921,
+            "frame": 272,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 7961,
+            "frame": 273,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8073.5,
+            "frame": 274,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8086.9000000059605,
+            "frame": 275,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8120.199999988079,
+            "frame": 276,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8150.699999988079,
+            "frame": 277,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8177.300000011921,
+            "frame": 278,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8207.40000000596,
+            "frame": 279,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8235.40000000596,
+            "frame": 280,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8261.90000000596,
+            "frame": 281,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8287.5,
+            "frame": 282,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8322.800000011921,
+            "frame": 283,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8348.5,
+            "frame": 284,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8378.5,
+            "frame": 285,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8402.699999988079,
+            "frame": 286,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8427,
+            "frame": 287,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8453.199999988079,
+            "frame": 288,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8477.800000011921,
+            "frame": 289,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8506,
+            "frame": 290,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8529.800000011921,
+            "frame": 291,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8562.199999988079,
+            "frame": 292,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8596.09999999404,
+            "frame": 293,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8637.90000000596,
+            "frame": 294,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8678.90000000596,
+            "frame": 295,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8719.90000000596,
+            "frame": 296,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8763.09999999404,
+            "frame": 297,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8805.199999988079,
+            "frame": 298,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8847.5,
+            "frame": 299,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8891.300000011921,
+            "frame": 300,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8933.40000000596,
+            "frame": 301,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 8974.09999999404,
+            "frame": 302,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9133.800000011921,
+            "frame": 303,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9175.90000000596,
+            "frame": 304,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9220.5,
+            "frame": 305,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9259.300000011921,
+            "frame": 306,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9301.59999999404,
+            "frame": 307,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9348.5,
+            "frame": 308,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9388.40000000596,
+            "frame": 309,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9419.59999999404,
+            "frame": 310,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9461.699999988079,
+            "frame": 311,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9510,
+            "frame": 312,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9550.300000011921,
+            "frame": 313,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9587.09999999404,
+            "frame": 314,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9616.300000011921,
+            "frame": 315,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9642.5,
+            "frame": 316,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9680.699999988079,
+            "frame": 317,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9721.199999988079,
+            "frame": 318,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9758.59999999404,
+            "frame": 319,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9799.300000011921,
+            "frame": 320,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9837.90000000596,
+            "frame": 321,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9877.800000011921,
+            "frame": 322,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9922.300000011921,
+            "frame": 323,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9957.59999999404,
+            "frame": 324,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 9983.800000011921,
+            "frame": 325,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10086.5,
+            "frame": 326,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10114.5,
+            "frame": 327,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10144.09999999404,
+            "frame": 328,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10173.59999999404,
+            "frame": 329,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10205.59999999404,
+            "frame": 330,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10233.5,
+            "frame": 331,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10263,
+            "frame": 332,
+            "node": "canvas",
+            "value": "active"
+          },
+          {
+            "atMs": 10289.699999988079,
+            "frame": 333,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10291.40000000596,
+            "frame": 333,
+            "node": "div",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10322.40000000596,
+            "frame": 334,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10353.5,
+            "frame": 335,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10385.5,
+            "frame": 336,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10416.300000011921,
+            "frame": 337,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10446.199999988079,
+            "frame": 338,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10472.09999999404,
+            "frame": 339,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10497.59999999404,
+            "frame": 340,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10527.90000000596,
+            "frame": 341,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10560.300000011921,
+            "frame": 342,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10589.699999988079,
+            "frame": 343,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10619.199999988079,
+            "frame": 344,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10645.699999988079,
+            "frame": 345,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10679.09999999404,
+            "frame": 346,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10721.699999988079,
+            "frame": 347,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10762.59999999404,
+            "frame": 348,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10805.199999988079,
+            "frame": 349,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10847.199999988079,
+            "frame": 350,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10876.800000011921,
+            "frame": 351,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10918,
+            "frame": 352,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10957.800000011921,
+            "frame": 353,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 10998.800000011921,
+            "frame": 354,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11039.199999988079,
+            "frame": 355,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11087.90000000596,
+            "frame": 356,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11252,
+            "frame": 357,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11292.199999988079,
+            "frame": 358,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11330.40000000596,
+            "frame": 359,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11373.90000000596,
+            "frame": 360,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11416,
+            "frame": 361,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11455.699999988079,
+            "frame": 362,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11496.300000011921,
+            "frame": 363,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11539.40000000596,
+            "frame": 364,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11580.40000000596,
+            "frame": 365,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11617.59999999404,
+            "frame": 366,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11668.199999988079,
+            "frame": 367,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11710.90000000596,
+            "frame": 368,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11750.800000011921,
+            "frame": 369,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11794.59999999404,
+            "frame": 370,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11837.300000011921,
+            "frame": 371,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11880.59999999404,
+            "frame": 372,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11917.5,
+            "frame": 373,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 11959,
+            "frame": 374,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12007.40000000596,
+            "frame": 375,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12100.699999988079,
+            "frame": 376,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12146.40000000596,
+            "frame": 377,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12152.59999999404,
+            "frame": 378,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12170.09999999404,
+            "frame": 379,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12186.5,
+            "frame": 380,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12220.5,
+            "frame": 381,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12245.40000000596,
+            "frame": 382,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12267.300000011921,
+            "frame": 383,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12295.300000011921,
+            "frame": 384,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12323.699999988079,
+            "frame": 385,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12348.5,
+            "frame": 386,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12376.40000000596,
+            "frame": 387,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12402.90000000596,
+            "frame": 388,
+            "node": "canvas",
+            "value": "inactive"
+          },
+          {
+            "atMs": 12425.300000011921,
+            "frame": 389,
+            "node": "canvas",
+            "value": "inactive"
+          }
+        ],
+        "formationLabels": [
+          {
+            "atMs": 10289.09999999404,
+            "frame": 333,
+            "text": "E",
+            "x": 320,
+            "y": 73.125
+          },
+          {
+            "atMs": 10289.199999988079,
+            "frame": 333,
+            "text": "A",
+            "x": 230,
+            "y": 73.125
+          }
+        ],
+        "scoreSamples": [
+          {
+            "atMs": 6402.5999999940395,
+            "frame": 226,
+            "score": 200
+          },
+          {
+            "atMs": 6431.300000011921,
+            "frame": 227,
+            "score": 200
+          },
+          {
+            "atMs": 6456.199999988079,
+            "frame": 228,
+            "score": 200
+          },
+          {
+            "atMs": 6484.4000000059605,
+            "frame": 229,
+            "score": 200
+          },
+          {
+            "atMs": 6508,
+            "frame": 230,
+            "score": 200
+          },
+          {
+            "atMs": 6531.800000011921,
+            "frame": 231,
+            "score": 200
+          },
+          {
+            "atMs": 6557.5,
+            "frame": 232,
+            "score": 200
+          },
+          {
+            "atMs": 6583.5,
+            "frame": 233,
+            "score": 200
+          },
+          {
+            "atMs": 6608.5999999940395,
+            "frame": 234,
+            "score": 200
+          },
+          {
+            "atMs": 6631.199999988079,
+            "frame": 235,
+            "score": 200
+          },
+          {
+            "atMs": 6653.5999999940395,
+            "frame": 236,
+            "score": 200
+          },
+          {
+            "atMs": 6679.5,
+            "frame": 237,
+            "score": 200
+          },
+          {
+            "atMs": 6703.199999988079,
+            "frame": 238,
+            "score": 200
+          },
+          {
+            "atMs": 6727.699999988079,
+            "frame": 239,
+            "score": 200
+          },
+          {
+            "atMs": 6753.9000000059605,
+            "frame": 240,
+            "score": 200
+          },
+          {
+            "atMs": 6777.0999999940395,
+            "frame": 241,
+            "score": 200
+          },
+          {
+            "atMs": 6802.9000000059605,
+            "frame": 242,
+            "score": 200
+          },
+          {
+            "atMs": 6827.4000000059605,
+            "frame": 243,
+            "score": 200
+          },
+          {
+            "atMs": 6856.0999999940395,
+            "frame": 244,
+            "score": 200
+          },
+          {
+            "atMs": 6891.5,
+            "frame": 245,
+            "score": 200
+          },
+          {
+            "atMs": 6917.9000000059605,
+            "frame": 246,
+            "score": 200
+          },
+          {
+            "atMs": 6943.0999999940395,
+            "frame": 247,
+            "score": 200
+          },
+          {
+            "atMs": 7069.4000000059605,
+            "frame": 248,
+            "score": 200
+          },
+          {
+            "atMs": 7091.4000000059605,
+            "frame": 249,
+            "score": 200
+          },
+          {
+            "atMs": 7115.800000011921,
+            "frame": 250,
+            "score": 200
+          },
+          {
+            "atMs": 7143.9000000059605,
+            "frame": 251,
+            "score": 200
+          },
+          {
+            "atMs": 7183.4000000059605,
+            "frame": 252,
+            "score": 200
+          },
+          {
+            "atMs": 7222.800000011921,
+            "frame": 253,
+            "score": 200
+          },
+          {
+            "atMs": 7261.800000011921,
+            "frame": 254,
+            "score": 200
+          },
+          {
+            "atMs": 7298.5999999940395,
+            "frame": 255,
+            "score": 200
+          },
+          {
+            "atMs": 7333.699999988079,
+            "frame": 256,
+            "score": 200
+          },
+          {
+            "atMs": 7373.300000011921,
+            "frame": 257,
+            "score": 200
+          },
+          {
+            "atMs": 7419.5999999940395,
+            "frame": 258,
+            "score": 200
+          },
+          {
+            "atMs": 7454.0999999940395,
+            "frame": 259,
+            "score": 200
+          },
+          {
+            "atMs": 7486.300000011921,
+            "frame": 260,
+            "score": 200
+          },
+          {
+            "atMs": 7529.5,
+            "frame": 261,
+            "score": 200
+          },
+          {
+            "atMs": 7569.5,
+            "frame": 262,
+            "score": 200
+          },
+          {
+            "atMs": 7608.5999999940395,
+            "frame": 263,
+            "score": 200
+          },
+          {
+            "atMs": 7647.800000011921,
+            "frame": 264,
+            "score": 200
+          },
+          {
+            "atMs": 7679.5999999940395,
+            "frame": 265,
+            "score": 200
+          },
+          {
+            "atMs": 7720.0999999940395,
+            "frame": 266,
+            "score": 200
+          },
+          {
+            "atMs": 7765.5999999940395,
+            "frame": 267,
+            "score": 200
+          },
+          {
+            "atMs": 7805.199999988079,
+            "frame": 268,
+            "score": 200
+          },
+          {
+            "atMs": 7845.699999988079,
+            "frame": 269,
+            "score": 200
+          },
+          {
+            "atMs": 7876.5,
+            "frame": 270,
+            "score": 200
+          },
+          {
+            "atMs": 7903.9000000059605,
+            "frame": 271,
+            "score": 200
+          },
+          {
+            "atMs": 7934.800000011921,
+            "frame": 272,
+            "score": 200
+          },
+          {
+            "atMs": 7960.5,
+            "frame": 273,
+            "score": 200
+          },
+          {
+            "atMs": 8073.199999988079,
+            "frame": 274,
+            "score": 200
+          },
+          {
+            "atMs": 8086.5,
+            "frame": 275,
+            "score": 200
+          },
+          {
+            "atMs": 8119.800000011921,
+            "frame": 276,
+            "score": 200
+          },
+          {
+            "atMs": 8150.199999988079,
+            "frame": 277,
+            "score": 200
+          },
+          {
+            "atMs": 8176.9000000059605,
+            "frame": 278,
+            "score": 200
+          },
+          {
+            "atMs": 8206.90000000596,
+            "frame": 279,
+            "score": 200
+          },
+          {
+            "atMs": 8234.699999988079,
+            "frame": 280,
+            "score": 200
+          },
+          {
+            "atMs": 8261.59999999404,
+            "frame": 281,
+            "score": 200
+          },
+          {
+            "atMs": 8287.300000011921,
+            "frame": 282,
+            "score": 200
+          },
+          {
+            "atMs": 8322.5,
+            "frame": 283,
+            "score": 200
+          },
+          {
+            "atMs": 8348.09999999404,
+            "frame": 284,
+            "score": 200
+          },
+          {
+            "atMs": 8378.199999988079,
+            "frame": 285,
+            "score": 200
+          },
+          {
+            "atMs": 8402.199999988079,
+            "frame": 286,
+            "score": 200
+          },
+          {
+            "atMs": 8426.59999999404,
+            "frame": 287,
+            "score": 200
+          },
+          {
+            "atMs": 8453,
+            "frame": 288,
+            "score": 200
+          },
+          {
+            "atMs": 8477.5,
+            "frame": 289,
+            "score": 200
+          },
+          {
+            "atMs": 8505.59999999404,
+            "frame": 290,
+            "score": 200
+          },
+          {
+            "atMs": 8529.300000011921,
+            "frame": 291,
+            "score": 200
+          },
+          {
+            "atMs": 8561.90000000596,
+            "frame": 292,
+            "score": 200
+          },
+          {
+            "atMs": 8595.5,
+            "frame": 293,
+            "score": 200
+          },
+          {
+            "atMs": 8637.199999988079,
+            "frame": 294,
+            "score": 200
+          },
+          {
+            "atMs": 8678.59999999404,
+            "frame": 295,
+            "score": 200
+          },
+          {
+            "atMs": 8719.300000011921,
+            "frame": 296,
+            "score": 200
+          },
+          {
+            "atMs": 8762.800000011921,
+            "frame": 297,
+            "score": 200
+          },
+          {
+            "atMs": 8804.300000011921,
+            "frame": 298,
+            "score": 200
+          },
+          {
+            "atMs": 8846.800000011921,
+            "frame": 299,
+            "score": 200
+          },
+          {
+            "atMs": 8890.90000000596,
+            "frame": 300,
+            "score": 200
+          },
+          {
+            "atMs": 8932.90000000596,
+            "frame": 301,
+            "score": 200
+          },
+          {
+            "atMs": 8973.699999988079,
+            "frame": 302,
+            "score": 200
+          },
+          {
+            "atMs": 9133.300000011921,
+            "frame": 303,
+            "score": 200
+          },
+          {
+            "atMs": 9175.300000011921,
+            "frame": 304,
+            "score": 200
+          },
+          {
+            "atMs": 9219.300000011921,
+            "frame": 305,
+            "score": 200
+          },
+          {
+            "atMs": 9259,
+            "frame": 306,
+            "score": 200
+          },
+          {
+            "atMs": 9301,
+            "frame": 307,
+            "score": 200
+          },
+          {
+            "atMs": 9347.90000000596,
+            "frame": 308,
+            "score": 200
+          },
+          {
+            "atMs": 9387.800000011921,
+            "frame": 309,
+            "score": 200
+          },
+          {
+            "atMs": 9419.300000011921,
+            "frame": 310,
+            "score": 200
+          },
+          {
+            "atMs": 9461.300000011921,
+            "frame": 311,
+            "score": 200
+          },
+          {
+            "atMs": 9509.59999999404,
+            "frame": 312,
+            "score": 200
+          },
+          {
+            "atMs": 9549.90000000596,
+            "frame": 313,
+            "score": 200
+          },
+          {
+            "atMs": 9586.5,
+            "frame": 314,
+            "score": 200
+          },
+          {
+            "atMs": 9615.90000000596,
+            "frame": 315,
+            "score": 200
+          },
+          {
+            "atMs": 9641.90000000596,
+            "frame": 316,
+            "score": 200
+          },
+          {
+            "atMs": 9680,
+            "frame": 317,
+            "score": 200
+          },
+          {
+            "atMs": 9720.90000000596,
+            "frame": 318,
+            "score": 200
+          },
+          {
+            "atMs": 9758.300000011921,
+            "frame": 319,
+            "score": 200
+          },
+          {
+            "atMs": 9798.699999988079,
+            "frame": 320,
+            "score": 200
+          },
+          {
+            "atMs": 9837.40000000596,
+            "frame": 321,
+            "score": 200
+          },
+          {
+            "atMs": 9877.300000011921,
+            "frame": 322,
+            "score": 200
+          },
+          {
+            "atMs": 9921.59999999404,
+            "frame": 323,
+            "score": 200
+          },
+          {
+            "atMs": 9957.300000011921,
+            "frame": 324,
+            "score": 200
+          },
+          {
+            "atMs": 9983.300000011921,
+            "frame": 325,
+            "score": 200
+          },
+          {
+            "atMs": 10086.300000011921,
+            "frame": 326,
+            "score": 200
+          },
+          {
+            "atMs": 10113.90000000596,
+            "frame": 327,
+            "score": 200
+          },
+          {
+            "atMs": 10143.59999999404,
+            "frame": 328,
+            "score": 200
+          },
+          {
+            "atMs": 10173.199999988079,
+            "frame": 329,
+            "score": 200
+          },
+          {
+            "atMs": 10205.300000011921,
+            "frame": 330,
+            "score": 200
+          },
+          {
+            "atMs": 10232.699999988079,
+            "frame": 331,
+            "score": 200
+          },
+          {
+            "atMs": 10262.699999988079,
+            "frame": 332,
+            "score": 200
+          },
+          {
+            "atMs": 10289.40000000596,
+            "frame": 333,
+            "score": 200
+          },
+          {
+            "atMs": 10322.09999999404,
+            "frame": 334,
+            "score": 200
+          },
+          {
+            "atMs": 10353.09999999404,
+            "frame": 335,
+            "score": 200
+          },
+          {
+            "atMs": 10384.59999999404,
+            "frame": 336,
+            "score": 200
+          },
+          {
+            "atMs": 10415.90000000596,
+            "frame": 337,
+            "score": 200
+          },
+          {
+            "atMs": 10445.800000011921,
+            "frame": 338,
+            "score": 200
+          },
+          {
+            "atMs": 10471.800000011921,
+            "frame": 339,
+            "score": 200
+          },
+          {
+            "atMs": 10497.09999999404,
+            "frame": 340,
+            "score": 200
+          },
+          {
+            "atMs": 10527.699999988079,
+            "frame": 341,
+            "score": 200
+          },
+          {
+            "atMs": 10559.90000000596,
+            "frame": 342,
+            "score": 200
+          },
+          {
+            "atMs": 10589.300000011921,
+            "frame": 343,
+            "score": 200
+          },
+          {
+            "atMs": 10618.90000000596,
+            "frame": 344,
+            "score": 200
+          },
+          {
+            "atMs": 10645.300000011921,
+            "frame": 345,
+            "score": 200
+          },
+          {
+            "atMs": 10678.699999988079,
+            "frame": 346,
+            "score": 200
+          },
+          {
+            "atMs": 10721.09999999404,
+            "frame": 347,
+            "score": 200
+          },
+          {
+            "atMs": 10762.09999999404,
+            "frame": 348,
+            "score": 200
+          },
+          {
+            "atMs": 10804.90000000596,
+            "frame": 349,
+            "score": 200
+          },
+          {
+            "atMs": 10846.90000000596,
+            "frame": 350,
+            "score": 200
+          },
+          {
+            "atMs": 10876.40000000596,
+            "frame": 351,
+            "score": 200
+          },
+          {
+            "atMs": 10917.40000000596,
+            "frame": 352,
+            "score": 200
+          },
+          {
+            "atMs": 10957.5,
+            "frame": 353,
+            "score": 200
+          },
+          {
+            "atMs": 10998.40000000596,
+            "frame": 354,
+            "score": 200
+          },
+          {
+            "atMs": 11038.5,
+            "frame": 355,
+            "score": 200
+          },
+          {
+            "atMs": 11087.40000000596,
+            "frame": 356,
+            "score": 200
+          },
+          {
+            "atMs": 11251.5,
+            "frame": 357,
+            "score": 200
+          },
+          {
+            "atMs": 11291.800000011921,
+            "frame": 358,
+            "score": 200
+          },
+          {
+            "atMs": 11330,
+            "frame": 359,
+            "score": 200
+          },
+          {
+            "atMs": 11373.300000011921,
+            "frame": 360,
+            "score": 200
+          },
+          {
+            "atMs": 11415.40000000596,
+            "frame": 361,
+            "score": 200
+          },
+          {
+            "atMs": 11455.199999988079,
+            "frame": 362,
+            "score": 200
+          },
+          {
+            "atMs": 11495.59999999404,
+            "frame": 363,
+            "score": 200
+          },
+          {
+            "atMs": 11539,
+            "frame": 364,
+            "score": 200
+          },
+          {
+            "atMs": 11580,
+            "frame": 365,
+            "score": 200
+          },
+          {
+            "atMs": 11617,
+            "frame": 366,
+            "score": 200
+          },
+          {
+            "atMs": 11667.699999988079,
+            "frame": 367,
+            "score": 200
+          },
+          {
+            "atMs": 11710.300000011921,
+            "frame": 368,
+            "score": 200
+          },
+          {
+            "atMs": 11750.199999988079,
+            "frame": 369,
+            "score": 200
+          },
+          {
+            "atMs": 11794,
+            "frame": 370,
+            "score": 200
+          },
+          {
+            "atMs": 11836.300000011921,
+            "frame": 371,
+            "score": 200
+          },
+          {
+            "atMs": 11880.199999988079,
+            "frame": 372,
+            "score": 200
+          },
+          {
+            "atMs": 11916.90000000596,
+            "frame": 373,
+            "score": 200
+          },
+          {
+            "atMs": 11958.699999988079,
+            "frame": 374,
+            "score": 200
+          },
+          {
+            "atMs": 12007,
+            "frame": 375,
+            "score": 200
+          },
+          {
+            "atMs": 12100.40000000596,
+            "frame": 376,
+            "score": 200
+          },
+          {
+            "atMs": 12145.800000011921,
+            "frame": 377,
+            "score": 200
+          },
+          {
+            "atMs": 12152.40000000596,
+            "frame": 378,
+            "score": 200
+          },
+          {
+            "atMs": 12169.699999988079,
+            "frame": 379,
+            "score": 200
+          },
+          {
+            "atMs": 12186.09999999404,
+            "frame": 380,
+            "score": 200
+          },
+          {
+            "atMs": 12220.09999999404,
+            "frame": 381,
+            "score": 200
+          },
+          {
+            "atMs": 12245.199999988079,
+            "frame": 382,
+            "score": 200
+          },
+          {
+            "atMs": 12266.90000000596,
+            "frame": 383,
+            "score": 200
+          },
+          {
+            "atMs": 12294.90000000596,
+            "frame": 384,
+            "score": 200
+          },
+          {
+            "atMs": 12323.5,
+            "frame": 385,
+            "score": 200
+          },
+          {
+            "atMs": 12348,
+            "frame": 386,
+            "score": 200
+          },
+          {
+            "atMs": 12376.09999999404,
+            "frame": 387,
+            "score": 200
+          },
+          {
+            "atMs": 12402,
+            "frame": 388,
+            "score": 200
+          },
+          {
+            "atMs": 12425,
+            "frame": 389,
+            "score": 200
+          }
+        ],
+        "ackDrops": [
+          {
+            "atMs": 9221.40000000596,
+            "frame": 305,
+            "requestId": "d1915995-e3d7-4679-add8-28e201561dd5:attack:3:stimulus"
+          }
+        ]
+      },
+      "segment": {
+        "start": {
+          "atMs": 6400,
+          "frame": 225
+        },
+        "end": {
+          "atMs": 13635.699999988079,
+          "frame": 419
+        },
+        "durationMs": 7235.699999988079,
+        "frameDelta": 194
+      }
+    },
+    "outputNotReady": {
+      "kind": "output-not-ready",
+      "first": {
+        "attack": {
+          "attackId": "9007f598-f348-4c17-9d11-deba655fc19d:attack:3",
+          "alienId": "9007f598-f348-4c17-9d11-deba655fc19d:alien:2:0",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 234,
+          "stimulusRequest": null,
+          "phase": "telegraph",
+          "telegraphStartedAtMs": 7973,
+          "demandAtMs": null,
+          "deadlineAtMs": null,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "guided",
+          "phase": "telegraph",
+          "disposition": "guided-output-not-ready",
+          "requestId": null,
+          "maskActive": false
+        }
+      },
+      "second": {
+        "attack": {
+          "attackId": "9007f598-f348-4c17-9d11-deba655fc19d:attack:4",
+          "alienId": "9007f598-f348-4c17-9d11-deba655fc19d:alien:2:1",
+          "note": "A4",
+          "side": -1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 268,
+          "stimulusRequest": null,
+          "phase": "telegraph",
+          "telegraphStartedAtMs": 9139.300000000001,
+          "demandAtMs": null,
+          "deadlineAtMs": null,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "guided",
+          "phase": "telegraph",
+          "disposition": "guided-output-not-ready",
+          "requestId": null,
+          "maskActive": false
+        }
+      }
+    },
+    "unreviewed": {
+      "kind": "unreviewed",
+      "first": {
+        "attack": {
+          "attackId": "939776a7-9852-42fb-aee9-9887406cd9d4:attack:3",
+          "alienId": "939776a7-9852-42fb-aee9-9887406cd9d4:alien:2:0",
+          "note": "A4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 222,
+          "stimulusRequest": null,
+          "phase": "telegraph",
+          "telegraphStartedAtMs": 8004.5999999821215,
+          "demandAtMs": null,
+          "deadlineAtMs": null,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "guided",
+          "phase": "telegraph",
+          "disposition": "guided-unreviewed",
+          "requestId": null,
+          "maskActive": false
+        }
+      },
+      "second": {
+        "attack": {
+          "attackId": "939776a7-9852-42fb-aee9-9887406cd9d4:attack:4",
+          "alienId": "939776a7-9852-42fb-aee9-9887406cd9d4:alien:2:1",
+          "note": "C4",
+          "side": -1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 253,
+          "stimulusRequest": null,
+          "phase": "telegraph",
+          "telegraphStartedAtMs": 9120.699999982122,
+          "demandAtMs": null,
+          "deadlineAtMs": null,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        },
+        "signalCheck": {
+          "wave": 2,
+          "pending": false,
+          "cuePolicy": "guided",
+          "phase": "telegraph",
+          "disposition": "guided-unreviewed",
+          "requestId": null,
+          "maskActive": false
+        }
+      }
+    }
+  }
+}

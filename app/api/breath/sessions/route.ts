@@ -2,30 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { syncUserDataForDate } from '@/lib/google-drive'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
   return d
-}
-
-async function resolveUser(sessionUser: any) {
-  if (!sessionUser?.sub) return null
-
-  let user = await prisma.user.findUnique({ where: { auth0Sub: sessionUser.sub } })
-
-  if (!user && sessionUser.email) {
-    user = await prisma.user.findUnique({ where: { email: sessionUser.email } })
-    if (user) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { auth0Sub: sessionUser.sub },
-      })
-    }
-  }
-
-  return user
 }
 
 async function appendBreathToJournal(userId: string, timestamp: Date, summary: { cycles: number; durationSeconds: number }): Promise<string> {
@@ -107,7 +89,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await resolveUser(session.user)
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -200,10 +182,8 @@ export async function POST(request: NextRequest) {
       durationSeconds: totalDuration / 1000,
     })
 
-    // Sync to Google Drive (non-blocking)
-    syncUserDataForDate(user.id, new Date()).catch(err => {
-      console.error('Drive sync failed:', err)
-    })
+    // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
+    await enqueueDriveSync(user.id, new Date(), ['breath']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,
@@ -231,7 +211,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await resolveUser(session.user)
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })

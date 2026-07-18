@@ -5,43 +5,43 @@
     "Cartalax",
     "cartalax"
   ],
-  "category": "Uncategorized",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 64,
+        "mention_count": 105,
         "top_doses": [
           {
             "dose": "2 mg",
-            "count": 50
+            "count": 62
           },
           {
             "dose": "20 mg",
-            "count": 13
+            "count": 14
           },
           {
             "dose": "200 mg",
-            "count": 12
+            "count": 13
+          },
+          {
+            "dose": "1 mg",
+            "count": 7
+          },
+          {
+            "dose": "500 mcg",
+            "count": 7
           },
           {
             "dose": "100 unit",
             "count": 5
           },
           {
-            "dose": "500 mcg",
-            "count": 5
+            "dose": "20 units",
+            "count": 4
           },
           {
             "dose": "6 mg",
-            "count": 3
-          },
-          {
-            "dose": "1 mg",
-            "count": 3
-          },
-          {
-            "dose": "20 units",
             "count": 3
           }
         ],
@@ -55,7 +55,7 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-23-sigumir-cartalax.md",
             "mention_count": 22,
             "top_snippet": "If you’re reading this, you or someone you love probably knows what it’s like to wake up stiff, feel those sharp twinges after a workout, or just not bounce back the way you used to. Let’s dig into th",
-            "top_context": "If you’re reading this, you or someone you love probably knows what it’s like to wake up stiff, feel those sharp twinges after a workout, or just not bounce back the way you used to. Let’s dig into the _real science_ of two of my favorite tools for joint and cartilage health: **Sigumir** and **Cartalax**. ——————————————————————————— **What are Sigumir and Cartalax?** First, some basics. If you’ve never heard these names before, that’s because the West is only now waking up to the power of peptide bioregulators for tissue regeneration. * **Sigumir** is a natural polypeptide complex",
+            "top_context": "If you’re reading this, you or someone you love probably knows what it’s like to wake up stiff, feel those sharp twinges after a workout, or just not bounce back the way you used to. Let’s dig into the _real science_ of two of my favorite tools for joint and cartilage health: **Sigumir** and **Cartalax**. ——————————————————————————— **What are Sigumir and Cartalax?** First, some basics. If you’ve never heard these names before, that’s because the West is only now waking up to the power of peptide bioregulators for tissue regeneration. * **Sigumir** is a natural polypeptide complex. It’s ext",
             "first_timestamp": null
           },
           {
@@ -68,6 +68,18 @@
             "mention_count": 15,
             "top_snippet": "ses - Chronic knee or hip discomfort - Early osteoarthritis - Post-meniscus wear - Joint aging in lifters + athletes - Imaging shows **thinning** rather than full structural loss ### Why it works when",
             "top_context": "ses - Chronic knee or hip discomfort - Early osteoarthritis - Post-meniscus wear - Joint aging in lifters + athletes - Imaging shows **thinning** rather than full structural loss ### Why it works when others plateau - Cartilage lacks robust blood supply → vascular-signaling peptides hit ceiling - Cartalax doesn't depend on vascular pathway — works within tissue itself ## ⭐ DOSING — Hunter's Protocols ### Standalone Cartalax (focused course) - **1-2 mg per day** subQ - **30 consecutive days** - Drives cartilage-specific gene signaling + matrix normalization ### ⭐ COMBINED 4-PEPTIDE JOINT STACK (4-",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "cartalax-review-faster-healing-than-bpc-157--9318611b",
+            "source_type": "library-article",
+            "source_title": "Cartalax Review: Faster Healing Than BPC-157?",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/cartalax-review-faster-healing-than-bpc-157--9318611b.json",
+            "mention_count": 14,
+            "top_snippet": "tissue. It comes as an injectable lyophilized powder or oral capsules. Today I'm focused on the injectable since that's what I've been using. My Personal Experience I'll be honest. I don't have cartil",
+            "top_context": "tissue. It comes as an injectable lyophilized powder or oral capsules. Today I'm focused on the injectable since that's what I've been using. My Personal Experience I'll be honest. I don't have cartilage problems. I feel healthy, no chronic soreness, no nagging injuries. So when I first injected Cartalax sub-Q for systemic use, I didn't notice much. Then I had a chance to actually test it. I did a chest press session with dumbbells and woke up the next morning with both wrists really sore. Perfect opportunity. I injected 2mg of Cartalax directly into one wrist. Within 20 minutes I had full range",
             "first_timestamp": null
           },
           {
@@ -95,39 +107,39 @@
             "first_timestamp": null
           },
           {
-            "source_id": "195dedb693f63f9b",
-            "source_type": "email",
-            "source_title": "Updated Peptide Cheat Sheet",
-            "source_date": "2025-03-28",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-28-updated-peptide-cheat-sheet.md",
-            "mention_count": 2,
-            "top_snippet": "want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen** (brain & stress resilience) • **Pinealon** (neurogenes",
-            "top_context": "want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen** (brain & stress resilience) • **Pinealon** (neurogenesis & cognitive enhancement) • **Bronchogen** (improves lung function and breathing) • **Cartalax** (supports joint health, cartilage repair, and mobility) And more! I’ve personally seen these peptides and bioregulators transform the lives of thousands of people, enhancing performance, longevity, recovery, and overall vitality. This cheat sheet is 100% free—my gift to you, so you have",
+            "source_id": "peptide-qa-march-2026--dd9aa173",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · March 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-march-2026--dd9aa173.json",
+            "mention_count": 4,
+            "top_snippet": "s? I haven't seen them. Healing and Recovery Started BPC for ligament tear and developed anhedonia. Already on Wellbutrin. Was BPC the cause? BPC can affect dopamine regulation. Combined with a dopami",
+            "top_context": "s? I haven't seen them. Healing and Recovery Started BPC for ligament tear and developed anhedonia. Already on Wellbutrin. Was BPC the cause? BPC can affect dopamine regulation. Combined with a dopaminergic drug like Wellbutrin and your own neurochemistry, it's possible. I'd swap BPC for TB-500, cartalax, GHK, or PEG MGF. You'll get the healing without the dopamine downside. Pre and post-op peptide protocol? Short answer. Cartalax, BPC, TB-500, GHK, PEG MGF, and add KPV. Run them up to the surgery, stop a couple days before, hold off one or two days after to let inflammation do its job, then resu",
             "first_timestamp": null
           },
           {
-            "source_id": "195e91fe0fed1a09",
-            "source_type": "email",
-            "source_title": "Live Q&A Tonight!",
-            "source_date": "2025-03-30",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-30-live-q-a-tonight.md",
-            "mention_count": 1,
-            "top_snippet": "her. ​_[Tesamorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide bl",
-            "top_context": "her. ​_[Tesamorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get: ** * _[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/)_ for $24.50 - If you are clueless using Peptides, start here! * _[Peptides Demystified](https://c",
+            "source_id": "the-5-peptides-id-choose-if-i-could-only-pick-5--2dcc98d1",
+            "source_type": "library-article",
+            "source_title": "The 5 Peptides I'd Choose if I Could Only Pick 5",
+            "source_date": "2026-04-20",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-5-peptides-id-choose-if-i-could-only-pick-5--2dcc98d1/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-5-peptides-id-choose-if-i-could-only-pick-5--2dcc98d1.json",
+            "mention_count": 4,
+            "top_snippet": "putting them in my top five. KPV is better for reducing inflammation in my experience. I get a stronger reduction in systemic inflammation, and it works great on local inflammation if you have an inju",
+            "top_context": "putting them in my top five. KPV is better for reducing inflammation in my experience. I get a stronger reduction in systemic inflammation, and it works great on local inflammation if you have an injury. I personally get a better anti-inflammatory benefit from KPV than I do from BPC or TB-500. 4. Cartalax This is the other reason BPC and TB-500 didn't make my list. Cartalax blows them out of the water for healing in my opinion. I almost feel spoiled now. Anytime I pull a muscle or tweak something, I inject 1 to 2 mg of Cartalax and the pain is basically gone within a couple of days. BPC and TB-500",
             "first_timestamp": null
           },
           {
-            "source_id": "195ee3b383eab82d",
-            "source_type": "email",
-            "source_title": "Shred vs. ShredX vs. MetaShred",
-            "source_date": "2025-03-31",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-31-shred-vs-shredx-vs-metashred.md",
-            "mention_count": 1,
-            "top_snippet": "lin-6mg-ipamorelin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptid",
-            "top_context": "lin-6mg-ipamorelin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get:** * __[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/?utm_source=huntershealthhacks.beehiiv.com&amp;utm_medium=referral&amp;utm_campaign=live-q-a-tonight)_",
+            "source_id": "peptide-qa-december-2025--f7613f71",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · December 2025",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-december-2025--f7613f71/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-december-2025--f7613f71.json",
+            "mention_count": 3,
+            "top_snippet": "on, then 1 mg per day during. That's what I do. I'm not a huge fan of tanning beds, but people have reported Melanotan-1 enhances the tan they get from them. Could be a way to get a little less inflam",
+            "top_context": "on, then 1 mg per day during. That's what I do. I'm not a huge fan of tanning beds, but people have reported Melanotan-1 enhances the tan they get from them. Could be a way to get a little less inflammation per session. BPC for Bulging Disc You can use BPC-157 or the Wolverine blend, but I'd add Cartalax. Cartalax has a more profound effect on disc issues. Don't fool yourself into thinking peptides solve structural problems. They help with recovery, inflammation, and pain, but structural issues often need correction. Female Stack for Energy, Fat Loss, Muscle Retatrutide for fat loss. Ipamorelin o",
             "first_timestamp": null
           }
         ],
@@ -264,33 +276,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Cartalax as a chondrocyte-targeted bioregulator rather than a general healing peptide, with Hunter (Bd2WVS6Jv70 00:01:51.920): \"TB-500 on this list is because Cartalax absolutely blows those out of water, in my opinion, when it comes to healing\" framing the case for it but Hunter email threadId 19be2cf9a8f0850c (2026-01-21) cautioning, \"If the issue is acute injury, inflammation, or soft tissue damage, Cartalax may not be the primary tool to use in isolation. If the issue is joint aging, degeneration, or cartilage that never fully rebounds, Cartalax often becomes the missing piece.\" We'd ask the prescribing physician to weigh Hunter's published dose ladder — Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"Preventative Maintenance — 1 mg daily — 10 days — Every 4-6 months,\" \"Mild to Moderate Issues — 2 mg daily — 20 days — Every 3-4 months,\" \"Severe Issues / Post-Surgery — 2 mg daily — 30-60 days — Every 3-6 months\" — and the route choice between subcutaneous (systemic) versus direct intra-articular injection that Hunter teaches in the same email: \"Subcutaneous (Sub-Q) = systemic inflammation\" / \"Direct injection into problematic area = localized pain.\" Trevor Bachmeyer is silent on Cartalax in the indexed transcripts and emails, so the synthesis below leans on Hunter's primary content with a single Taylor anecdotal datapoint.",
-    "caveats": "- Trevor silent: no Bachmeyer transcript or email mentions Cartalax in the indexed corpus — clinicians should treat Trevor's standard subQ/cycling doctrine as not yet specifically applied to this peptide.\n- Acute-injury isolation caveat: Hunter email threadId 19be2cf9a8f0850c (2026-01-21): \"If the issue is acute injury, inflammation, or soft tissue damage, Cartalax may not be the primary tool to use in isolation\" — Hunter pairs it with BPC-157, TB-500, and GHK-Cu in the 4-peptide joint stack rather than running it alone for fresh injuries.\n- Dose-ceiling tension: Hunter podcast (Bd2WVS6Jv70 00:02:02.160): \"I will inject just 1 to 2 mg of Cartalax\" matches his email ladder topping out at \"2 mg daily\" for severe cases (threadId 1965f8635cb5e8f2, 2025-04-22) — no expert in the corpus endorses higher daily dosing.\n- Cycling/duration tension: Hunter email threadId 1965f8635cb5e8f2 (2025-04-22) caps even severe-issue courses at \"30-60 days\" with rest intervals \"Every 3-6 months,\" while Hunter email threadId 1979ed3cdb566ab1 (2025-06-23) says \"I typically run this protocol for 30 days consecutively\" with \"up to 90 days consecutively\" only \"If you are severely damaged\" and maintenance \"2-3 times per year\" — newer 2026-01-21 email overrides nothing here, both ladders converge on cycled rather than continuous use.\n- Route caveat: Hunter email threadId 1979ed3cdb566ab1 (2025-06-23): \"Cartalax is usually used as an injectable, either systemically (for widespread joint pain) or locally (right into an injury or 'bad joint')\" — oral use is not described; oral bioavailability is not addressed in the corpus and should not be assumed.\n- Stacking caveat: Hunter email threadId 19be2cf9a8f0850c (2026-01-21) joint stack instructs \"Cartalax: 1 mg/day\" simultaneously with \"BPC-157: 500 mcg/day,\" \"TB-500: 500 mcg/day,\" \"GHK-Cu: 2.5 mg/day\" — separate syringes implied; co-administration with KPV in one syringe is anecdotal only per Taylor episode (Cg7JtpnfRY4 02:00:55.200): \"I'm currently taking both. I have and have it's worked great\" with the speaker immediately admitting (02:01:01.960): \"I haven't tested those. I haven't got the third-party verified test.\"\n- Allergy/safety claim: Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"No reported side effects. Metabolizes into harmless amino acids — no organ stress, no toxicity\" and threadId 1979ed3cdb566ab1 (2025-06-23): \"Neither product triggered allergies (thanks to the small size of the active peptide) or any weird reactions, even in older adults with other health issues\" — sourced primarily to Russian Linkova et al. literature Hunter cites; Western RCT data is absent.",
-    "cross_expert_consensus": "Where Hunter and Taylor overlap is narrow but present. Hunter (Bd2WVS6Jv70 00:01:51.920): \"TB-500 on this list is because Cartalax absolutely blows those out of water, in my opinion, when it comes to healing\" and Hunter (Bd2WVS6Jv70 00:02:21.400): \"if I could only pick one healing peptide, it would definitely be Cartalax.\" Taylor episode (Cg7JtpnfRY4 02:06:54.240): \"They are not placebo effect in my opinion. I've seen nothing short of miraculous from Cartalax and KPV in my own life.\" Both surface Cartalax as a high-conviction healing tool from personal experience, both hedge with first-person framing (\"in my opinion\" / \"in my own life\"), and neither cites third-party verified data — Taylor episode (Cg7JtpnfRY4 02:01:01.960): \"I haven't tested those. I haven't got the third-party verified test.\" Trevor is absent from the consensus column entirely.",
-    "cross_expert_disagreement": "There is no substantive Hunter-vs-Taylor doctrinal disagreement on Cartalax in the indexed corpus — both endorse it from personal experience and neither contradicts the other. The notable disagreement is internal to Hunter: Hunter podcast (Bd2WVS6Jv70 00:01:51.920): \"Cartalax absolutely blows those out of water, in my opinion, when it comes to healing\" (positioning Cartalax as superior to BPC-157 and TB-500 for healing) sits in tension with Hunter email threadId 19be2cf9a8f0850c (2026-01-21): \"If the issue is acute injury, inflammation, or soft tissue damage, Cartalax may not be the primary tool to use in isolation\" (which carves Cartalax out as a degenerative-cartilage tool, not an acute-injury tool). The 2026-04-18 podcast describes injecting Cartalax into a fresh muscle tweak — Hunter (Bd2WVS6Jv70 00:01:59.560): \"anytime I pull a muscle or tweak something, I will inject just 1 to 2 mg of Cartalax\" — while the 2026-01-21 email recommends pairing it inside a 4-peptide stack rather than soloing it for the same scenario. Both quotes are from the same expert within ~3 months and are not reconciled in the corpus. Trevor silent. Taylor does not contradict.",
+    "recommendation": "Hunter Williams (2026-06-17; may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 30:04; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"Pretty much all injury questions can be answered like this. Take the clove blend with cartilax at one to two milligrams and PEG-MGF at 200 or 400 micrograms.\" Hunter Williams (2026-04-20; the-5-peptides-id-choose-if-i-could-only-pick-5--2dcc98d1 @ 01:49; https://library.hunterwilliamshealth.com/p/the-5-peptides-id-choose-if-i-could-only-pick-5--2dcc98d1/): \"cartillax absolutely blows those out of water in my opinion when it comes to healing.\"",
+    "caveats": "- Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 19:33; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"we don't have data in pregnant or breastfeeding women, so I would probably steer away from there.\"\n- Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 18:27; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I wouldn't worry about any sort of side effects. I can't say it's guaranteed, but relative to other peptides because of the nature of how these chemically signal in the body, very, low risk, if any at all.\"\n- Taylor Williams (2026-04-18; Cg7JtpnfRY4 @ 02:00:59; https://youtu.be/Cg7JtpnfRY4): \"anecdotally speaking, yes. But I haven't tested those. I haven't got the third-party verified test.\"",
+    "cross_expert_consensus": "Hunter Williams (2026-04-20; the-5-peptides-id-choose-if-i-could-only-pick-5--2dcc98d1 @ 01:49; https://library.hunterwilliamshealth.com/p/the-5-peptides-id-choose-if-i-could-only-pick-5--2dcc98d1/): \"BPC and TB 500 work well too and you can use them all together.\" Taylor Williams (2026-04-18; Cg7JtpnfRY4 @ 02:00:59; https://youtu.be/Cg7JtpnfRY4): \"anecdotally speaking, yes. But I haven't tested those. I haven't got the third-party verified test.\"",
+    "cross_expert_disagreement": null,
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter podcast (Bd2WVS6Jv70 00:02:02.160): \"I will inject just 1 to 2 mg of Cartalax\"; Hunter email threadId 1965f8635cb5e8f2 (2025-04-22) ladder: \"Severe Issues / Post-Surgery — 2 mg daily — 30-60 days — Every 3-6 months.\"",
-        "route": "Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"Subcutaneous (Sub-Q) = systemic inflammation\" / \"Direct injection into problematic area = localized pain\"; Hunter email threadId 1979ed3cdb566ab1 (2025-06-23): \"injected subcutaneously into the belly for full-body/joint pain, or directly into a problem area (e.g., knee, elbow, shoulder) for localized, acute injuries.\"",
-        "frequency": "Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"2 mg daily\" for both \"Mild to Moderate Issues\" and \"Severe Issues / Post-Surgery.\"",
-        "duration": "Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"Severe Issues / Post-Surgery — 30-60 days\"; Hunter email threadId 1979ed3cdb566ab1 (2025-06-23): \"30 days consecutively, especially after an injury flare\" and \"If you are severely damaged, you can run up to 90 days consecutively.\"",
-        "verbatim_citation": "Hunter (Bd2WVS6Jv70 00:01:59.560): \"anytime I pull a muscle or tweak something, I will inject just 1 to 2 mg of Cartalax, and it seems to completely eradicate all the pain I have within a couple days.\" Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"Severe Issues / Post-Surgery — 2 mg daily — 30-60 days — Every 3-6 months.\"",
-        "episode_url": "https://youtu.be/Bd2WVS6Jv70",
-        "timestamp": "Bd2WVS6Jv70 00:01:59.560 / 00:02:02.160 / 00:02:09.960; email threadId 1965f8635cb5e8f2 (2025-04-22); email threadId 1979ed3cdb566ab1 (2025-06-23)"
+        "dose": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 02:42; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I did two milligrams, which would be kind of the starter dose for cartilax into my wrist.\" Hunter Williams (2026-06-17; may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 30:04; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"Take the clove blend with cartilax at one to two milligrams and PEG-MGF at 200 or 400 micrograms.\"",
+        "route": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 02:42; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I did two milligrams, which would be kind of the starter dose for cartilax into my wrist.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:21; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"if I have like for instance a bum shoulder, I'm probably going to inject shallow IM in that shoulder.\"",
+        "frequency": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 22:31; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I'm just going to use it as needed as a general maintenance thing. As I train and sometimes tweak stuff, you can use that way.\"",
+        "duration": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 22:31; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I would inject two milligrams per day until you see resolution.\"",
+        "verbatim_citation": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 03:13; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I got Taylor to inject another two milligrams of cartilagin into it to see how it did again, 30 minutes to an hour later, the spasms were gone.\" Hunter Williams (2026-06-17; may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 @ 30:04; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/): \"Pretty much all injury questions can be answered like this. Take the clove blend with cartilax at one to two milligrams and PEG-MGF at 200 or 400 micrograms.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+        "timestamp": "cartalax-review-faster-healing-than-bpc-157--9318611b 02:42 / 03:13 / 21:21 / 22:31; may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 30:04"
       },
       "chronic": {
-        "dose": "Hunter email threadId 1965f8635cb5e8f2 (2025-04-22) ladder: \"Preventative Maintenance — 1 mg daily — 10 days — Every 4-6 months\" and \"Mild to Moderate Issues — 2 mg daily — 20 days — Every 3-4 months\"; Hunter email threadId 19be2cf9a8f0850c (2026-01-21) standalone: \"1-2 mg per day subQ\" for \"30 consecutive days.\"",
-        "route": "Hunter email threadId 19be2cf9a8f0850c (2026-01-21): \"1-2 mg per day subQ\" for the standalone focused course; Hunter email threadId 1979ed3cdb566ab1 (2025-06-23): \"injected subcutaneously into the belly for full-body/joint pain.\"",
-        "frequency": "Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"1 mg daily\" (preventative) or \"2 mg daily\" (mild-moderate); Hunter email threadId 19be2cf9a8f0850c (2026-01-21): \"1 mg/day\" inside the 4-peptide joint stack alongside \"BPC-157: 500 mcg/day,\" \"TB-500: 500 mcg/day,\" \"GHK-Cu: 2.5 mg/day.\"",
-        "duration": "Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"Preventative Maintenance — 10 days — Every 4-6 months\" / \"Mild to Moderate Issues — 20 days — Every 3-4 months\"; Hunter email threadId 19be2cf9a8f0850c (2026-01-21) standalone: \"30 consecutive days\" and joint stack: \"4-8 weeks\"; Hunter email threadId 1979ed3cdb566ab1 (2025-06-23) maintenance: \"2-3 times per year.\"",
-        "verbatim_citation": "Hunter email threadId 19be2cf9a8f0850c (2026-01-21): \"Standalone Cartalax (focused course) — 1-2 mg per day subQ — 30 consecutive days — Drives cartilage-specific gene signaling + matrix normalization.\" Hunter email threadId 19be2cf9a8f0850c (2026-01-21): \"COMBINED 4-PEPTIDE JOINT STACK (4-8 weeks) — Cartalax: 1 mg/day — BPC-157: 500 mcg/day — TB-500: 500 mcg/day — GHK-Cu: 2.5 mg/day.\" Hunter email threadId 1965f8635cb5e8f2 (2025-04-22): \"Preventative Maintenance — 1 mg daily — 10 days — Every 4-6 months.\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/sigumir-cartalax-8a52253035568ae7",
-        "timestamp": "email threadId 1965f8635cb5e8f2 (2025-04-22); email threadId 1979ed3cdb566ab1 (2025-06-23); email threadId 19be2cf9a8f0850c (2026-01-21)"
+        "dose": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 20:43; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"You do one milligram and I would just do this sub cue.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:21; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I would use two milligrams sub cure I am again depending on the nature of where you're looking to have some benefit and do that for 20 days in a row.\" Hunter Williams (2025-04-22; email threadId 1965f8635cb5e8f2): \"Severe Issues / Post-Surgery - 2 mg daily - 30-60 days - Every 3-6 months.\"",
+        "route": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 20:43; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"You do one milligram and I would just do this sub cue.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:21; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I would use two milligrams sub cure I am again depending on the nature of where you're looking to have some benefit\"",
+        "frequency": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 20:43; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"you do this for 10 days and then just repeat it for every four to six months.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:21; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"You'd do every three to four months.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:57; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"for the intensive or advanced, you'd want to do it every day for 30 to 60 days and then repeat after six months if needed.\"",
+        "duration": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 20:43; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"you do this for 10 days and then just repeat it for every four to six months.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:21; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"do that for 20 days in a row.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:57; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"for the intensive or advanced, you'd want to do it every day for 30 to 60 days and then repeat after six months if needed.\" Hunter Williams (2025-04-22; email threadId 1965f8635cb5e8f2): \"Severe Issues / Post-Surgery - 2 mg daily - 30-60 days - Every 3-6 months.\"",
+        "verbatim_citation": "Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 20:43; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"You do one milligram and I would just do this sub cue.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:21; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"I would use two milligrams sub cure I am again depending on the nature of where you're looking to have some benefit and do that for 20 days in a row.\" Hunter Williams (2026-03-29; cartalax-review-faster-healing-than-bpc-157--9318611b @ 21:57; https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/): \"for the intensive or advanced, you'd want to do it every day for 30 to 60 days and then repeat after six months if needed.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/cartalax-review-faster-healing-than-bpc-157--9318611b/",
+        "timestamp": "cartalax-review-faster-healing-than-bpc-157--9318611b 20:43 / 21:21 / 21:57; email threadId 1965f8635cb5e8f2 (2025-04-22)"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:32:35.464Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T09:19:23.900Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.984Z"
+  "generated_at": "2026-07-17T10:59:08.734Z",
+  "mentions_fingerprint": "b705d8f265bf"
 }

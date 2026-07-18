@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 
+const RETENTION_DAYS = 7
+
 interface CronHealthCheckData {
   notificationsFound?: number
   notificationsSent?: number
@@ -26,6 +28,14 @@ export class CronHealthMonitor {
 
     this.checkId = check.id
     console.log(`🏥 Cron health check started: ${this.checkId}`)
+
+    // Unbounded growth here filled the Atlas free-tier quota and blocked all
+    // writes cluster-wide (2026-07-06 P1). Prune on every run to stay bounded.
+    const cutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000)
+    prisma.cronHealthCheck
+      .deleteMany({ where: { startedAt: { lt: cutoff } } })
+      .catch(err => console.warn('⚠️  CronHealthMonitor: prune failed', err))
+
     return this.checkId
   }
 

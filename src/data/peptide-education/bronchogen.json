@@ -5,20 +5,24 @@
     "Bronchogen",
     "bronchogen"
   ],
-  "category": "Uncategorized",
+  "category": "Bioregulators",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 30,
+        "mention_count": 71,
         "top_doses": [
           {
             "dose": "2 mg",
-            "count": 10
+            "count": 22
           },
           {
             "dose": "20 mg",
             "count": 6
+          },
+          {
+            "dose": "100 mcg",
+            "count": 4
           },
           {
             "dose": "8 mg",
@@ -29,7 +33,15 @@
             "count": 2
           },
           {
-            "dose": "100 mcg",
+            "dose": "250 micrograms",
+            "count": 2
+          },
+          {
+            "dose": "100 micrograms",
+            "count": 2
+          },
+          {
+            "dose": "10 milligrams",
             "count": 1
           }
         ],
@@ -42,9 +54,33 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-26-healing-the-lungs.md",
             "mention_count": 21,
-            "top_snippet": "been hospitalized because he could barely breathe. After a battery of tests, we learned he’d developed **Chronic Obstructive Pulmonary Disease (COPD)**—a condition that drastically limits airflow, mak",
-            "top_context": "been hospitalized because he could barely breathe. After a battery of tests, we learned he’d developed **Chronic Obstructive Pulmonary Disease (COPD)**—a condition that drastically limits airflow, making even simple breathing incredibly challenging. I immediately shipped him a few bottles of Bronchogen to administer as soon as he was released from the hospital. Today, I will explore how you could potentially use Bronchogen to treat COPD or even just for performance enhancement and longevity. Bronchogen: (https://biolongevitylabs.com/product/bronchogen-20mg/) ———————————————————————————",
+            "top_snippet": "just been hospitalized because he could barely breathe. After a battery of tests, we learned he’d developed **Chronic Obstructive Pulmonary Disease (COPD)**—a condition that drastically limits airflow",
+            "top_context": "just been hospitalized because he could barely breathe. After a battery of tests, we learned he’d developed **Chronic Obstructive Pulmonary Disease (COPD)**—a condition that drastically limits airflow, making even simple breathing incredibly challenging. I immediately shipped him a few bottles of Bronchogen to administer as soon as he was released from the hospital. Today, I will explore how you could potentially use Bronchogen to treat COPD or even just for performance enhancement and longevity. Bronchogen: (https://biolongevitylabs.com/product/bronchogen-20mg/) ——————————————————————————— **Bron",
             "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-stack-for-lung-health-and-copd-recovery--4b867216",
+            "source_type": "library-video",
+            "source_title": "Peptide Stack for Lung Health and COPD Recovery",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-stack-for-lung-health-and-copd-recovery--4b867216.json",
+            "mention_count": 19,
+            "top_snippet": "So this is obviously not small potatoes when we look at it. Just to give you an overview of the stack, the first one's going to be bronchogen. We have another peptide called Conlutin, you may not have heard of. Another one called VIP, vasoactive intestinal peptides. we have TB 500 and then GHKCU. And I'm going talk specifically about some of those ones that you've probably heard and don't typically associate with lung health, what they're actually doing. But let's look at bronchogen first. This is going to be a very lung-specific peptide. So broncogen is a bioregulator peptides, and it's a synthetic tetrapeptide derived from broncho tissue.",
+            "top_context": "in 2019, responsible for approximately 4 million deaths in 454 million cases. And again, that's pre-COVID. I wasn't able to find any updated numbers just from doing a cursory, quick internet search. In standard treatments, managed symptoms would often fail to reverse underlying lung damage or halt disease progression of the lungs. This has sparked interest in regenerative and modulatory therapies, a la peptides, including peptide to support lung tissue repair and reduce chronic inflammation. We also Again, I just can't stress, man, think about that 4 million deaths in 2019 and 454 million global cases of people with lung health issues. So this is obviously not small potatoes when we look at it. Just to give you an overview of the stack, the first one's going to be bronchogen. We have another peptide called Conlutin, you may not have heard of. Another one called VIP, vasoactive intestinal peptides. we have TB 500 and then GHKCU. And I'm going talk specifically about some of those ones that you've probably heard and don't typically associate with lung health, what they're actually doing. But let's look at bronchogen first. This is going to be a very lung-specific peptide. So broncogen is a bioregulator peptides, and it's a synthetic tetrapeptide derived from broncho tissue. It acts as a gene expression modulator, giving lung tissues a molecular repair signal to restore normal function. Basically, the way these bioregulator peptides work, especially the injectable ones, which I feel are much more efficacious than the oral ones. The oral one's are still good to use, but when we look at the Injectable one, what is going on is that they bind to DNA and histone proteins inside of lung tissue, Which then modulates gene transcription in the lung cells.",
+            "first_timestamp": "5:06"
+          },
+          {
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 6,
+            "top_snippet": "I do that on the daily on, the regular. You'd obviously just want to make sure you cycle periodically, but no, those are all fine to take together. Next question, peptides in elderly people. So reasons why it may, may not work for them. BPC-157 post heart bypass and valve replacement for a 70 year old male smoker, for example, what else would he benefit from bronchogen? I'd say definitely broncogen, Bpc, TB 500, KPV would all be good things to just help with inflammation there.",
+            "top_context": "But also too you could not use it with retitulotaide but use in the off cycle and you're good because it's hitting a completely different receptor. You know, interestingly enough, Cagri still seems to be one of those weird wild card ones where some people love it and some hate it. I love, but for instance my wife, she thinks it's the worst thing ever. A lot of people say it makes them feel weird and depressed, so who knows what's going on there. Next question. Can you take Metashred with five amino? I was stacking shred with 5 amino before I started taking MetaShred. Absolutely. So that would just be BAM15, SLU, PP332 and 5-amino-1-inc-pew. I do that on the daily on, the regular. You'd obviously just want to make sure you cycle periodically, but no, those are all fine to take together. Next question, peptides in elderly people. So reasons why it may, may not work for them. BPC-157 post heart bypass and valve replacement for a 70 year old male smoker, for example, what else would he benefit from bronchogen? I'd say definitely broncogen, Bpc, TB 500, KPV would all be good things to just help with inflammation there. I think cardiogen. if they had a heart bypass surgery, because that's going to work specifically to heal inflammation in the heart tissue. So yeah, bronchogen would be good. And there's another injectable bioregulator for the lungs called Conluten, C-H-O-N-L-U-T-E-M. That would a good one. Next question. Can you do a video on peptides that could help recovery from rhabdomyolysis? My husband's a firefighter. Yeah. So when we look at rábdo, that's obviously what happens with rabdo is it's stressed from working out from the kidneys basically and along a roundabout",
+            "first_timestamp": "22:58"
           },
           {
             "source_id": "19af0c0c3b0300ba",
@@ -59,6 +95,30 @@
             "first_timestamp": null
           },
           {
+            "source_id": "this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543",
+            "source_type": "library-video",
+            "source_title": "This Peptide Reverses Pancreatic Aging (Pancragen Deep Dive)",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543.json",
+            "mention_count": 4,
+            "top_snippet": "So these changes essentially reversed the aging decline in those critical proteins. They also used a control peptide of bronchogen, which is for the lungs to show specificity and broncogen had minimal effect on pancreas markers, whereas pancrogen had robust effects. Another validation there that these are working specifically on the tissue. Whereas if you wanted to look at lung tissue, pancreagen probably wouldn't work but bronchogen would. So we see there, it affected both the young and the old, but the effect was much more pronounced in the older ones, which I think too is relevant to know if kind of extrapolate that. When looking at bioregulators, if we have a strappingly healthy young 21 year old male, is he necessarily going to feel anything or notice anything?",
+            "top_context": "They can be very, very beneficial to help basically restore a more youthful state across the body. So this was a cell culture study. They took pancreatic cell cultures at different ages, early passage versus late passage to mimic young versus old cells, and treated them with pancreagen. so they measured the expression of multiple transcription factors governing pancratic cell identity. And what they found was that pancreatin significantly increased the expression of all these differentiation factors in both young and age cell cultures with especially large increases in the age cells. So these changes essentially reversed the aging decline in those critical proteins. They also used a control peptide of bronchogen, which is for the lungs to show specificity and broncogen had minimal effect on pancreas markers, whereas pancrogen had robust effects. Another validation there that these are working specifically on the tissue. Whereas if you wanted to look at lung tissue, pancreagen probably wouldn't work but bronchogen would. So we see there, it affected both the young and the old, but the effect was much more pronounced in the older ones, which I think too is relevant to know if kind of extrapolate that. When looking at bioregulators, if we have a strappingly healthy young 21 year old male, is he necessarily going to feel anything or notice anything? Probably not. But if give a 55 year-old pre-diabetic overweight person pancrogen, they're probably going notice marked improvement in their blood sugar. and eventually downstream effects like digestion and hopefully weight loss if they're changing their lifestyle. So I thought that was pretty cool to bring up. When we look up the cell study, pancreagen basically had gene activation within the cells. It also induced cell differentiation. There was a functional improvement to restore function to the organ. That also helped with tissue regeneration of damaged tissue. Basically they concluded that transcription factors that regulate differentiation of pancreatic cells are a pharmacological target for pancogen.",
+            "first_timestamp": "18:38"
+          },
+          {
+            "source_id": "peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · Fat Loss, Injury Recovery, And More",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-fat-loss-injury-recovery-and-more--c6e897c6.json",
+            "mention_count": 3,
+            "top_snippet": "That'll be down in description of every video, so, I got good one today, So let's go through it. So starting off first question, can I take bronchogen peptide for lung health at the same time as BPC and TP 500 for my neck? Should they be taken separately? Absolutely. You can take all of those at same. I see no issues with doing so. Bronchogens is actually a bioregulator. Um, so I wouldn't Those are very low, if no side effects whatsoever, but you can definitely take those. So good question.",
+            "top_context": "I also always book a call and all that stuff, but I always recommend people join that group first because we do live Q&A calls where you can come on and Ask JNI Questions. or you can message me directly and we can have, you know, we have a little one on one chat in the community where you message. So, um, that's the best thing. If you want to be able to ask me questions, or if you just have question in your head, do you wanna answer it? Drop it here and you'll probably, if not guaranteed to see it in next Q&A video. I've got some good ones today. And as always, check out Peptide Cheat Sheet, sign up with their email list. That'll be down in description of every video, so, I got good one today, So let's go through it. So starting off first question, can I take bronchogen peptide for lung health at the same time as BPC and TP 500 for my neck? Should they be taken separately? Absolutely. You can take all of those at same. I see no issues with doing so. Bronchogens is actually a bioregulator. Um, so I wouldn't Those are very low, if no side effects whatsoever, but you can definitely take those. So good question. Next question, how does SLU PP332 compare to tesofencing for fat loss? Well, it blows teso-fencing away for path loss. I really think tesophencing is much better as a cognitive enhancing agent that it is for that loss it does. slightly suppress your appetite. But in my experience, it's not that great, but tesofencing at 250 micrograms is amazing for creativity and cognition and burl fluidity. Uh, however, SLU blows it away for fat loss. So I would say I have used both of them together.",
+            "first_timestamp": "1:47"
+          },
+          {
             "source_id": "195dedb693f63f9b",
             "source_type": "email",
             "source_title": "Updated Peptide Cheat Sheet",
@@ -66,82 +126,91 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-28-updated-peptide-cheat-sheet.md",
             "mention_count": 2,
-            "top_snippet": "nti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen*",
-            "top_context": "nti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen** (brain & stress resilience) • **Pinealon** (neurogenesis & cognitive enhancement) • **Bronchogen** (improves lung function and breathing) • **Cartalax** (supports joint health, cartilage repair, and mobility) And more! I’ve personally seen these peptides and bioregulators transform the lives of thousands of people, enhancing performance, longevity, recovery, and overall vitality. T",
+            "top_snippet": "perior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **C",
+            "top_context": "perior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen** (brain & stress resilience) • **Pinealon** (neurogenesis & cognitive enhancement) • **Bronchogen** (improves lung function and breathing) • **Cartalax** (supports joint health, cartilage repair, and mobility) And more! I’ve personally seen these peptides and bioregulators transform the lives of thousands of people, enhancing performance, longevity, recovery, and overall vitality. This chea",
             "first_timestamp": null
           },
           {
-            "source_id": "195e91fe0fed1a09",
-            "source_type": "email",
-            "source_title": "Live Q&A Tonight!",
-            "source_date": "2025-03-30",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-30-live-q-a-tonight.md",
-            "mention_count": 1,
-            "top_snippet": "relin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectab",
-            "top_context": "relin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get: ** * _[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/)_ for $24.50 - If you are clueless using Peptides, start here! * _[Peptides Demystified](https://click.convertkit-mail2.com/wvun",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "195ee3b383eab82d",
-            "source_type": "email",
-            "source_title": "Shred vs. ShredX vs. MetaShred",
-            "source_date": "2025-03-31",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-31-shred-vs-shredx-vs-metashred.md",
-            "mention_count": 1,
-            "top_snippet": "/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injecta",
-            "top_context": "/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get:** * __[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/?utm_source=huntershealthhacks.beehiiv.com&amp;utm_medium=referral&amp;utm_campaign=live-q-a-tonight)__ for $24.50 - If you are clue",
-            "first_timestamp": null
+            "source_id": "peptide-qa-january-2026--7994649b",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · January 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-january-2026--7994649b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-january-2026--7994649b.json",
+            "mention_count": 2,
+            "top_snippet": "So I'd say wait until you're a little bit more cleaned up to help with that. But those are where I start. Next question, kind of adjacent to this, we have allergies, what to do for allergies like asthma, hay fever, allergic to animals, whatever. I mean, my first one for that would be thymosalpha-1, I think VIP does really well for, that especially around the asthma thing because it helps with the lungs. You can also try one of the lung bioregulators, bronchogen or chonlutin, chondluten would the other one. if you wanted to introduce those. So you could do all of those together if want to experiment with a couple other ones.",
+            "top_context": "And poor good health does not mean you have to be fat. It could just be that you were more susceptible to damage from glyphosate on your gut lining and you had toxins leaking into your bloodstream and got auto immune disease. A lotta times that happens to people. To answer the question, I think VIP would be like the first one for autoimmune diseases. I would say VIP, thymus and alpha one, thymaline, KPV are all really good. You could also try lorazetide. LL37 is okay, but sometimes for people with auto immune disease, it can kind of backfire on them. So I'd say wait until you're a little bit more cleaned up to help with that. But those are where I start. Next question, kind of adjacent to this, we have allergies, what to do for allergies like asthma, hay fever, allergic to animals, whatever. I mean, my first one for that would be thymosalpha-1, I think VIP does really well for, that especially around the asthma thing because it helps with the lungs. You can also try one of the lung bioregulators, bronchogen or chonlutin, chondluten would the other one. if you wanted to introduce those. So you could do all of those together if want to experiment with a couple other ones. I wouldn't say it's like, it would be a guaranteed fix all for allergies, but based on what I know is causing the allergy, those would probably help based the pathway. Next one, are there any circumstances where taking TRT and peptides is not a good idea? Let me think. I mean, I think it's always good to optimize the body. Right. If you're a guy and you are really trying to get pregnant with your wife, probably not the best time to start TRD. Although in some cases it could be helpful if you were dealing with fertility issues.",
+            "first_timestamp": "14:29"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "sage:** 2 mg subcutaneously daily * **Duration:** 30–45 days * **Ideal For:** Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory condition",
+            "snippet": "* **Dosage:** 2 mg subcutaneously daily * **Duration:** 30–45 days * **Ideal For:** Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory con",
             "source_title": "Healing The Lungs",
             "source_date": "2025-03-26",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "utaneously daily * **Duration:** 30–45 days * **Ideal For:** Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory conditions needing rapid a",
+            "snippet": "2 mg subcutaneously daily * **Duration:** 30–45 days * **Ideal For:** Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory conditions needin",
             "source_title": "Healing The Lungs",
             "source_date": "2025-03-26",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "Yeah, her parents literally live like right on the golf. My dad works at a golfer. Golf is like my dad's life and explains why he had COPD. Yeah. He had really bad last December. TB 500 that, I mean, he was in a hospital for seven days with COPD and gave them some TB. 500. I, mean we had a little bit of other stuff, like gave him a, a lot of 37 cause he said he hadn't an infection. Um, not a ton. And then, uh, bronchogen, which is like the bioregulator for the lungs.",
+            "source_title": "Estrogen is Critical for Men Too - Here's Why Your Peptides Fail Without It with Sarah Morgan",
+            "source_date": "2026-04-30",
+            "timestamp": "1:24:04",
+            "source_url": "https://library.hunterwilliamshealth.com/p/estrogen-is-critical-for-men-too---heres-why-your-peptides-fail-without-it-with---dbaa1c38/"
+          },
+          {
+            "snippet": "I did get a question on a protocol document covering yearly bioregulator cycling. That's something that I'm working on. Can't obviously answer that in one question, but it would be a really good thing to know. It's one of those things that the best Russian literature is often misinterpreted. and I am hesitant to put something out around that that would end up being wrong. I think the bioregulators, obviously the injectable ones work great for specific things. For instance, if you have lung issues, bronchogen and conlutin work really well together.",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "timestamp": "38:37",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/"
+          },
+          {
+            "snippet": "I do that on the daily on, the regular. You'd obviously just want to make sure you cycle periodically, but no, those are all fine to take together. Next question, peptides in elderly people. So reasons why it may, may not work for them. BPC-157 post heart bypass and valve replacement for a 70 year old male smoker, for example, what else would he benefit from bronchogen? I'd say definitely broncogen, Bpc, TB 500, KPV would all be good things to just help with inflammation there.",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "timestamp": "22:58",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/"
           }
         ],
         "chronic_signals": [
           {
-            "snippet": "been hospitalized because he could barely breathe. After a battery of tests, we learned he’d developed **Chronic Obstructive Pulmonary Disease (COPD)**—a condition that drastically limits airflow, mak",
+            "snippet": "just been hospitalized because he could barely breathe. After a battery of tests, we learned he’d developed **Chronic Obstructive Pulmonary Disease (COPD)**—a condition that drastically limits airflow",
             "source_title": "Healing The Lungs",
             "source_date": "2025-03-26",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "ve Pulmonary Disease (COPD)**—a condition that drastically limits airflow, making even simple breathing incredibly challenging. I immediately shipped him a few bottles of Bronchogen to administer as s",
+            "snippet": "uctive Pulmonary Disease (COPD)**—a condition that drastically limits airflow, making even simple breathing incredibly challenging. I immediately shipped him a few bottles of Bronchogen to administer ",
             "source_title": "Healing The Lungs",
             "source_date": "2025-03-26",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "en simple breathing incredibly challenging. I immediately shipped him a few bottles of Bronchogen to administer as soon as he was released from the hospital. Today, I will explore how you could potent",
+            "snippet": "ing even simple breathing incredibly challenging. I immediately shipped him a few bottles of Bronchogen to administer as soon as he was released from the hospital. Today, I will explore how you could ",
             "source_title": "Healing The Lungs",
             "source_date": "2025-03-26",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "mmediately shipped him a few bottles of Bronchogen to administer as soon as he was released from the hospital. Today, I will explore how you could potentially use Bronchogen to treat COPD or even just",
+            "snippet": "I immediately shipped him a few bottles of Bronchogen to administer as soon as he was released from the hospital. Today, I will explore how you could potentially use Bronchogen to treat COPD or even j",
             "source_title": "Healing The Lungs",
             "source_date": "2025-03-26",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "administer as soon as he was released from the hospital. Today, I will explore how you could potentially use Bronchogen to treat COPD or even just for performance enhancement and longevity. Bronchogen",
+            "snippet": "ogen to administer as soon as he was released from the hospital. Today, I will explore how you could potentially use Bronchogen to treat COPD or even just for performance enhancement and longevity. Br",
             "source_title": "Healing The Lungs",
             "source_date": "2025-03-26",
             "timestamp": null,
@@ -153,33 +222,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's tiered subcutaneous protocol — Hunter email threadId 195d486531c37652 (2025-03-26) frames it as 'three specific protocols tailored to different situations' with 'Dosage: 500 mcg (0.5 mg) subcutaneously daily' for longevity/maintenance, 'Dosage: 1 mg subcutaneously daily' for intermediate (long COVID, asthma, mild COPD), and 'Dosage: 2 mg subcutaneously daily' for severe/acute respiratory conditions. We'd ask the prescribing physician to weigh duration because Hunter email threadId 195d486531c37652 (2025-03-26) lists '30 days, repeated every 4–6 months' for the longevity tier and '30–45 days' for the intensive tier, while the newer Hunter email threadId 19af0c0c3b0300ba (2025-12-05) extends a 5-peptide lung-stack including Bronchogen at '2 mg | Injection | 12 weeks.' Taylor and Trevor have no published Bronchogen content, so the synthesis is single-expert and Hunter himself frames the data as preliminary.",
-    "caveats": "- Single-expert evidence base: Taylor Williams and Dr Trevor Bachmeyer have no Bronchogen mentions in the corpus — this card draws entirely from Hunter Williams emails.\n- Hunter's own hedging on the evidence: Hunter email threadId 195d486531c37652 (2025-03-26): \"The data is limited, but after experimenting with several of them and getting feedback from my inner circle, I feel confident in the new peptide cheat sheet I will put out with these injectable bioregulators.\"\n- Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"All of this is experimental. I'm just a guy on the internet who loves reading studies and has seen this work in real people, including my own family.\"\n- Animal/cellular-data preponderance: Hunter email threadId 195d486531c37652 (2025-03-26): \"Bronchogen has shown impressive potential in multiple animal and cellular studies, with powerful real-world testimonials from biohackers, integrative clinicians, and patients themselves.\"\n- Dose-tier duration ceiling — Hunter email threadId 195d486531c37652 (2025-03-26) caps the intensive 2 mg/day tier at \"30–45 days,\" but the newer Hunter email threadId 19af0c0c3b0300ba (2025-12-05) runs 2 mg/day for \"12 weeks\" inside a 5-peptide lung stack — clinician should reconcile.\n- Route is exclusively subcutaneous injection across all Hunter sources — Hunter email threadId 195d486531c37652 (2025-03-26): \"2 mg Bronchogen, injected subcutaneously, daily for at least 30 days.\"\n- No female-specific signal: Taylor Williams has no Bronchogen content, so fertility/hormone-context guidance is absent — clinician should not extrapolate.",
-    "cross_expert_consensus": "Single-expert synthesis — only Hunter Williams has published Bronchogen content. Cross-expert consensus is not assessable from the corpus. Hunter's own internally-consistent claim across two emails: route is subcutaneous injection. Hunter email threadId 195d486531c37652 (2025-03-26): \"2 mg Bronchogen, injected subcutaneously, daily for at least 30 days.\" Hunter email threadId 19af0c0c3b0300ba (2025-12-05) lists Bronchogen at \"2 mg | Injection | 12 weeks\" inside the 5-peptide lung stack. Mechanism framing also internally consistent: Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Injectable bioregulators penetrate lung cells, get into nucleus, bind DNA + histone proteins\" and \"Bioregulator peptide derived from bronchial tissue.\"",
-    "cross_expert_disagreement": "No cross-expert disagreement assessable — Taylor Williams and Dr Trevor Bachmeyer have no Bronchogen mentions in the corpus. Within Hunter's own content, the duration of the 2 mg/day intensive tier shifts between sources: Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 2 mg subcutaneously daily\" / \"Duration: 30–45 days\" / \"Ideal For: Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory conditions needing rapid and profound repair,\" while the newer Hunter email threadId 19af0c0c3b0300ba (2025-12-05) lists \"Bronchogen | 2 mg | Injection | 12 weeks\" inside the lung-stack protocol. Newer 2025-12-05 content extends duration; the 2025-03-26 source frames 2 mg/day as the high-acuity tier capped at 45 days. Both should be surfaced to the clinician, not averaged.",
+    "recommendation": "Reset Biology suggests asking the prescribing physician to weigh Hunter Williams' newer library protocol: \"What I like is two milligrams per day for 12 weeks, and you would just do that every day.\" (Hunter Williams, Peptide Stack for Lung Health and COPD Recovery, 2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/). The dated 2025-03-26 email remains surfaced: \"Dosage: 2 mg subcutaneously daily\" / \"Duration: 30â€“45 days\" (Hunter Williams, Healing The Lungs, threadId 195d486531c37652, 2025-03-26).",
+    "caveats": "- Hunter Williams, Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 20:48, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"this is all experimental. This is just me. I'm a guy talking on the internet that has seen these things.\"\n- Hunter Williams, Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 20:48, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"That this not a guarantee that it's going to fix all the tissue or issues in your lungs when it comes to that.\"\n- Hunter Williams, Peptide Q&A Â· April 2026 (2026-04-30, peptide-qa-april-2026--9bc7fd8c @ 38:37, https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/): \"the best Russian literature is often misinterpreted. and I am hesitant to put something out around that that would end up being wrong.\"\n- Hunter Williams, Peptide Q&A Â· April 2026 (2026-04-30, peptide-qa-april-2026--9bc7fd8c @ 39:07, https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/): \"I'm still hesitant to put out anything definitive because I've just seen different protocols out there.\"\n- Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"The data is limited, but after experimenting with several of them and getting feedback from my inner circle, I feel confident in the new peptide cheat sheet I will put out with these injectable bioregulators.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": "Hunter Williams' dated protocol durations differ without an averaged replacement: Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"Dosage: 2 mg subcutaneously daily\" / \"Duration: 30â€“45 days\"; Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"What I like is two milligrams per day for 12 weeks, and you would just do that every day.\"",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 2 mg subcutaneously daily.\"",
-        "route": "Hunter email threadId 195d486531c37652 (2025-03-26): \"2 mg Bronchogen, injected subcutaneously, daily for at least 30 days.\"",
-        "frequency": "Hunter email threadId 195d486531c37652 (2025-03-26): \"daily.\"",
-        "duration": "Hunter email threadId 195d486531c37652 (2025-03-26): \"Duration: 30–45 days.\"",
-        "verbatim_citation": "Hunter email threadId 195d486531c37652 (2025-03-26): \"🔴 Intensive Protocol (Severe Issues, Advanced COPD, Acute Conditions): Dosage: 2 mg subcutaneously daily / Duration: 30–45 days / Ideal For: Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory conditions needing rapid and profound repair.\"",
+        "dose": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"Dosage: 2 mg subcutaneously daily.\"",
+        "route": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"2 mg Bronchogen, injected subcutaneously, daily for at least 30 days.\"",
+        "frequency": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"daily.\"",
+        "duration": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"Duration: 30â€“45 days.\"",
+        "verbatim_citation": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"ðŸ”´ Intensive Protocol (Severe Issues, Advanced COPD, Acute Conditions): Dosage: 2 mg subcutaneously daily / Duration: 30â€“45 days / Ideal For: Severe COPD cases (like my father-in-law), advanced emphysema, severe chronic inflammation, or acute respiratory conditions needing rapid and profound repair.\"",
         "episode_url": "https://huntershealthhacks.beehiiv.com/p/healing-the-lungs",
         "timestamp": "Hunter email threadId 195d486531c37652 (2025-03-26)"
       },
       "chronic": {
-        "dose": "Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 500 mcg (0.5 mg) subcutaneously daily\" (longevity/maintenance tier); Hunter email threadId 195d486531c37652 (2025-03-26): \"Dosage: 1 mg subcutaneously daily\" (intermediate tier for long COVID, mild COPD, asthma); Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Bronchogen | 2 mg | Injection | 12 weeks\" (5-peptide lung stack).",
-        "route": "Hunter email threadId 195d486531c37652 (2025-03-26): \"subcutaneously\"; Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Injection.\"",
-        "frequency": "Hunter email threadId 195d486531c37652 (2025-03-26): \"daily\"; Hunter email threadId 19af0c0c3b0300ba (2025-12-05) protocol table column: \"Daily Dose.\"",
-        "duration": "Hunter email threadId 195d486531c37652 (2025-03-26): \"30 days, repeated every 4–6 months\" (longevity tier); Hunter email threadId 195d486531c37652 (2025-03-26): \"30–60 days\" (intermediate tier); Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"12 weeks\" (lung stack).",
-        "verbatim_citation": "Hunter email threadId 195d486531c37652 (2025-03-26): \"🟢 Longevity & Maintenance Protocol: Dosage: 500 mcg (0.5 mg) subcutaneously daily / Duration: 30 days, repeated every 4–6 months / Ideal For: General respiratory health, anti-aging, immunity enhancement, and ongoing lung maintenance.\" Hunter email threadId 195d486531c37652 (2025-03-26): \"🟡 Intermediate Protocol (Long COVID, Asthma, Mild COPD): Dosage: 1 mg subcutaneously daily / Duration: 30–60 days / Ideal For: Long COVID sufferers, mild-to-moderate asthma, chronic bronchitis, or COPD patients seeking stronger improvement in breathing, energy, and inflammation reduction.\" Hunter email threadId 19af0c0c3b0300ba (2025-12-05): \"Bronchogen | 2 mg | Injection | 12 weeks.\"",
-        "episode_url": "https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2",
-        "timestamp": "Hunter email threadId 195d486531c37652 (2025-03-26); Hunter email threadId 19af0c0c3b0300ba (2025-12-05)"
+        "dose": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"Dosage: 500 mcg (0.5 mg) subcutaneously daily\"; Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"Dosage: 1 mg subcutaneously daily\"; Hunter Williams, Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"What I like is two milligrams per day for 12 weeks, and you would just do that every day.\"",
+        "route": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"subcutaneously\"; Hunter Williams, Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"two milligrams per day for 12 weeks.\"",
+        "frequency": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"daily\"; Hunter Williams, Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"you would just do that every day.\"",
+        "duration": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"30 days, repeated every 4â€“6 months\"; Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"30â€“60 days\"; Hunter Williams, Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"two milligrams per day for 12 weeks.\"",
+        "verbatim_citation": "Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"ðŸŸ¢ Longevity & Maintenance Protocol: Dosage: 500 mcg (0.5 mg) subcutaneously daily / Duration: 30 days, repeated every 4â€“6 months / Ideal For: General respiratory health, anti-aging, immunity enhancement, and ongoing lung maintenance.\" Hunter Williams, Healing The Lungs (2025-03-26, threadId 195d486531c37652): \"ðŸŸ¡ Intermediate Protocol (Long COVID, Asthma, Mild COPD): Dosage: 1 mg subcutaneously daily / Duration: 30â€“60 days / Ideal For: Long COVID sufferers, mild-to-moderate asthma, chronic bronchitis, or COPD patients seeking stronger improvement in breathing, energy, and inflammation reduction.\" Hunter Williams, Peptide Stack for Lung Health and COPD Recovery (2026-03-30, peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16, https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/): \"What I like is two milligrams per day for 12 weeks, and you would just do that every day.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/peptide-stack-for-lung-health-and-copd-recovery--4b867216/",
+        "timestamp": "peptide-stack-for-lung-health-and-copd-recovery--4b867216 @ 19:16; Hunter email threadId 195d486531c37652 (2025-03-26)"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:39:24.556Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T10:04:34.4661226Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:35.001Z"
+  "generated_at": "2026-07-17T10:59:09.319Z",
+  "mentions_fingerprint": "f7df1fdd3397"
 }

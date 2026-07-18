@@ -1,0 +1,217 @@
+{
+  "peptide": "Noopept",
+  "slug": "noopept",
+  "aliases": [
+    "Noopept",
+    "noopept"
+  ],
+  "category": "Cognitive Enhancement",
+  "experts": {
+    "hunter-williams": {
+      "baseline_protocol": null,
+      "summary": {
+        "mention_count": 27,
+        "top_doses": [
+          {
+            "dose": "10 mg",
+            "count": 6
+          },
+          {
+            "dose": "30 mg",
+            "count": 3
+          },
+          {
+            "dose": "40 mg",
+            "count": 1
+          },
+          {
+            "dose": "750 mcg",
+            "count": 1
+          }
+        ],
+        "top_sources": [
+          {
+            "source_id": "the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390",
+            "source_type": "library-article",
+            "source_title": "The Best Nootropic You Dont Know About J-147 Dihexa and Noopept Explained",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390.json",
+            "mention_count": 14,
+            "top_snippet": "r new product BioMind from BioLongevity Labs. It stacks three compounds that work through completely different pathways, and the synergy is real. Here's what each one does and how I actually use it. J",
+            "top_context": "r new product BioMind from BioLongevity Labs. It stacks three compounds that work through completely different pathways, and the synergy is real. Here's what each one does and how I actually use it. J-147 J-147 is the newest of the three. Most people in the research world have heard of dihexa and noopept, but J-147 is still pretty novel. It's a synthetic derivative of curcumin, developed at the Salk Institute as a candidate Alzheimer's drug. The big advantage over regular curcumin is bioavailability. J-147 is orally active, crosses the blood brain barrier, and is classified as a neuroprotector for",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "1981023143d4996d",
+            "source_type": "email",
+            "source_title": "Brain Fog",
+            "source_date": "2025-07-15",
+            "source_url": null,
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-15-brain-fog.md",
+            "mention_count": 4,
+            "top_snippet": "he key is stacking the right interventions and using targeted compounds that _actually work_. ——————————————————————————— **BioMind** BioMind is a no-nonsense, research-driven blend specifically desig",
+            "top_context": "he key is stacking the right interventions and using targeted compounds that _actually work_. ——————————————————————————— **BioMind** BioMind is a no-nonsense, research-driven blend specifically designed for this purpose. **One capsule of BioMind contains:** * 10mg J-147 * 10mg Dihexa * 10mg Noopept This is a stack of **next-generation nootropics** that directly target the mechanisms behind brain fog, memory loss, and word recall. Why these ingredients? Simple. Each one is a “neurotrophic” agent, meaning they help _grow_ new connections in the brain, repair damage, and make your neurons m",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19d5563af433c548",
+            "source_type": "email",
+            "source_title": "March 2026 Q&A — Max Dose Tirz / Reta Horror / BPC Anhedonia",
+            "source_date": "2026-04-03",
+            "source_url": "https://open.spotify.com/episode/7Hp4gx4DNSSmXJAM8kliDO",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-03-march-q-and-a-tirz-reta-bpc.md",
+            "mention_count": 2,
+            "top_snippet": "** - What to use instead ### Pre + Post Surgery Peptide Protocol - Surgical context ### MOTS-C Paradox - Why MOTS-C makes some people **MORE tired instead of energized** - **ROS (reactive oxygen speci",
+            "top_context": "** - What to use instead ### Pre + Post Surgery Peptide Protocol - Surgical context ### MOTS-C Paradox - Why MOTS-C makes some people **MORE tired instead of energized** - **ROS (reactive oxygen species) buildup** could be the culprit ### Peptides for Social Anxiety, Confidence, Fear - **Dihexa, Noopept, oxytocin** - Why chemical piece is only part of equation ### Mitophagy + Autophagy Background Players - **Urolithin A** dosing - **Spermidine** dosing ## Cross-Reference If a reader has these specific GLP-1 issues, this is the canonical Hunter Q&A episode they should check. Submit Q&A question",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "semax-how-to-use-it-for-maximum-focus--cf7bc9d7",
+            "source_type": "library-article",
+            "source_title": "Semax How To Use It For Maximum Focus",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/semax-how-to-use-it-for-maximum-focus--cf7bc9d7.json",
+            "mention_count": 2,
+            "top_snippet": "ute so a 750 mcg dose matches that pump volume. What to stack with Semax Selank. The most popular pairing. Semax turns your brain into a supercomputer. Selank takes the edge off anxiety. Together you ",
+            "top_context": "ute so a 750 mcg dose matches that pump volume. What to stack with Semax Selank. The most popular pairing. Semax turns your brain into a supercomputer. Selank takes the edge off anxiety. Together you get calm, focused, driven energy. Alpha-GPC. I take this regularly, especially on fasting days. Noopept. Solid addition to a nootropic stack. Lion's mane mushroom. I take this every day. Make sure you get 100% lion's mane extract, not the stuff grown on oats where you end up with 80% oat and 20% mushroom. I use Real Mushrooms (no affiliate). The difference is huge. Omega-3s. Everyone should be taki",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "19d21e15f89c4e2f",
+            "source_type": "email",
+            "source_title": "Dihexa Deep Dive",
+            "source_date": "2026-03-24",
+            "source_url": "https://open.spotify.com/episode/1AgU8pUfumBRW3W5UiYpnu",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-03-24-dihexa-deep-dive.md",
+            "mention_count": 1,
+            "top_snippet": "g to invest hundreds of millions to take a simple peptide through FDA approval when they can't patent it.\" **Hunter's discipline:** Start low. Work up. Cycle responsibly. Don't jump to 40 mg/day becau",
+            "top_context": "g to invest hundreds of millions to take a simple peptide through FDA approval when they can't patent it.\" **Hunter's discipline:** Start low. Work up. Cycle responsibly. Don't jump to 40 mg/day because someone on the internet said so. ## Source Products - BioLongevity Labs **BioMind** (Dihexa + Noopept + J-147 stack) — code HUNTERW - Parabolic Peptides — pure Dihexa — code TAYLORW",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352",
+            "source_type": "library-article",
+            "source_title": "May 2026 Q&A | Retatrutide, Testosterone, Autoimmune, and Beyond",
+            "source_date": "2026-06-17",
+            "source_url": "https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352.json",
+            "mention_count": 1,
+            "top_snippet": "ptides help. Hormones do more. Chelsea has alopecia areata and scalp psoriasis. Microdose a GLP. Topical ivermectin works well for psoriasis. Topical KPV alongside the GHK is worth a shot. Cognitive S",
+            "top_context": "ptides help. Hormones do more. Chelsea has alopecia areata and scalp psoriasis. Microdose a GLP. Topical ivermectin works well for psoriasis. Topical KPV alongside the GHK is worth a shot. Cognitive Stacks Tammy is studying for an exam on Cmax, Selank, lengtha hexa, and 9-Me-BC. Solid stack. Add Noopept. Alyssa asked about Atomax, Cmax, and P21. Atomax is a stronger version of Cmax. P21 is more of a neuromodulator. Not nootropic in the same way. Hair, Skin, and Aging Stuff For graying hair, I notice oral and injectable GHK darkens mine, especially when Melanotan is lightening it. For thinning",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-march-2026--dd9aa173",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · March 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-march-2026--dd9aa173.json",
+            "mention_count": 1,
+            "top_snippet": "alon, and there's now a pituitary bioregulator called Endoluten. There are also oral bioregulators specifically for the hypothalamus worth checking out. Peptides for social anxiety, confidence, fear? ",
+            "top_context": "alon, and there's now a pituitary bioregulator called Endoluten. There are also oral bioregulators specifically for the hypothalamus worth checking out. Peptides for social anxiety, confidence, fear? Hormones first. When mine got dialed in, a lot of that stuff just got easier. After that, dihexa, Noopept, and oxytocin can all help. Just remember the chemical piece is only one component. There's a real psychological side to this too. Don't skip working on that part. Autoimmune Can thymalin or other peptides help reduce autoimmune disorders like lupus? Absolutely. I've built specific stacks for au",
+            "first_timestamp": null
+          },
+          {
+            "source_id": "peptide-qa-may-2025--673c48ea",
+            "source_type": "library-article",
+            "source_title": "Peptide Q&A · May 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-may-2025--673c48ea/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-may-2025--673c48ea.json",
+            "mention_count": 1,
+            "top_snippet": "into fat, and the fat tissue reacts. Peptides for Anxiety and Depression First answer is testosterone. A lot of psychological issues trace back to low T. Beyond that, anxiety and depression often come",
+            "top_context": "into fat, and the fat tissue reacts. Peptides for Anxiety and Depression First answer is testosterone. A lot of psychological issues trace back to low T. Beyond that, anxiety and depression often come down to neurotransmitter methylation and brain inflammation. My picks: BioMind (J-147, dihexa, noopept) Semax and Selank Cerebrolysin (the gold standard) If we're treating this as a brain issue, Cerebrolysin is the answer 1000%. Raising Free Testosterone in Women Time and body fat. The longer you're on testosterone, the more free T tends to climb and SHBG drops. But excess body fat blocks that.",
+            "first_timestamp": null
+          }
+        ],
+        "acute_signals": [
+          {
+            "snippet": "** - What to use instead ### Pre + Post Surgery Peptide Protocol - Surgical context ### MOTS-C Paradox - Why MOTS-C makes some people **MORE tired instead of energized** - **ROS (reactive oxygen speci",
+            "source_title": "March 2026 Q&A — Max Dose Tirz / Reta Horror / BPC Anhedonia",
+            "source_date": "2026-04-03",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/7Hp4gx4DNSSmXJAM8kliDO"
+          },
+          {
+            "snippet": "h Wellbutrin** — dopamine connection, what to use instead - Pre/post surgery peptide protocol ### Mitochondrial - ⭐ **MOTS-c making people MORE tired instead of energized** — reactive oxygen species b",
+            "source_title": "Max Dose Tirzepatide, Retatrutide Horror Stories, BPC-157 Anhedonia, and More",
+            "source_date": "2026-04-03",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "iod. Bacopa monnieri. Memory and learning support. Acetyl-L-Carnitine. My favorite oral form of carnitine. Energy and cognitive function. Ginkgo biloba. Blood flow and cognitive health. Stack those al",
+            "source_title": "Semax How To Use It For Maximum Focus",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/"
+          }
+        ],
+        "chronic_signals": [
+          {
+            "snippet": "g to invest hundreds of millions to take a simple peptide through FDA approval when they can't patent it.\" **Hunter's discipline:** Start low. Work up. Cycle responsibly. Don't jump to 40 mg/day becau",
+            "source_title": "Dihexa Deep Dive",
+            "source_date": "2026-03-24",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/1AgU8pUfumBRW3W5UiYpnu"
+          },
+          {
+            "snippet": "** - What to use instead ### Pre + Post Surgery Peptide Protocol - Surgical context ### MOTS-C Paradox - Why MOTS-C makes some people **MORE tired instead of energized** - **ROS (reactive oxygen speci",
+            "source_title": "March 2026 Q&A — Max Dose Tirz / Reta Horror / BPC Anhedonia",
+            "source_date": "2026-04-03",
+            "timestamp": null,
+            "source_url": "https://open.spotify.com/episode/7Hp4gx4DNSSmXJAM8kliDO"
+          },
+          {
+            "snippet": "h Wellbutrin** — dopamine connection, what to use instead - Pre/post surgery peptide protocol ### Mitochondrial - ⭐ **MOTS-c making people MORE tired instead of energized** — reactive oxygen species b",
+            "source_title": "Max Dose Tirzepatide, Retatrutide Horror Stories, BPC-157 Anhedonia, and More",
+            "source_date": "2026-04-03",
+            "timestamp": null,
+            "source_url": null
+          },
+          {
+            "snippet": "ute so a 750 mcg dose matches that pump volume. What to stack with Semax Selank. The most popular pairing. Semax turns your brain into a supercomputer. Selank takes the edge off anxiety. Together you ",
+            "source_title": "Semax How To Use It For Maximum Focus",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/"
+          },
+          {
+            "snippet": "iod. Bacopa monnieri. Memory and learning support. Acetyl-L-Carnitine. My favorite oral form of carnitine. Energy and cognitive function. Ginkgo biloba. Blood flow and cognitive health. Stack those al",
+            "source_title": "Semax How To Use It For Maximum Focus",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/"
+          }
+        ]
+      }
+    }
+  },
+  "reset_biology_synthesis": {
+    "status": "distilled",
+    "recommendation": "Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:54; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"Many people like it around 10 to 30 milligrams per day.\" Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 33:45; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"If you use two, it'd be 10mg. first thing in the morning, two to three days per week, and then on the non-U stage, use 600 milligrams of Alpha GPC.\"",
+    "caveats": "- Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 26:17; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"Now, potential side effects, we could have slight anxiety or restlessness occur in very sensitive individuals, where others find it actually reduces anxiety. Again, this is where neutropics, two people could take it and have completely opposite effects.\"\n- Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 26:51; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"There are also no known dangerous interactions, however, because NUPEP has mild MAO inhibiting effects in the cortex from some studies, one should be cautious combining it with other MAOs inhibitors or stimulants to avoid blood pressure spikes or agitation.\"\n- Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 31:03; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"If we were to use this every single day, eventually what could happen is we could desensitize receptors. We could drive too much synaptic growth. we can raise neurotrophin levels beyond the optimal. BNF is a Goldilocks molecule. Too little is bad, but too may disrupt emotional stability and cause excitability or anxiety.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
+    "acute_chronic_split": {
+      "acute": null,
+      "chronic": {
+        "dose": "Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:22; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"A small open-label clinical study in Russia followed 56 days of NUPEP, where they took 10 milligrams twice daily in patients with mild cognitive impairment.\" Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:54; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"Many people like it around 10 to 30 milligrams per day.\" Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 33:13; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"we're using two capsules, 10 milligrams, five milligrams of each per capsule.\"",
+        "route": null,
+        "frequency": "Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:22; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"they took 10 milligrams twice daily in patients with mild cognitive impairment.\" Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:54; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"Many people like it around 10 to 30 milligrams per day.\" Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 33:45; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"If you use two, it'd be 10mg. first thing in the morning, two to three days per week, and then on the non-U stage, use 600 milligrams of Alpha GPC.\"",
+        "duration": "Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:22; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"A small open-label clinical study in Russia followed 56 days of NUPEP.\"",
+        "verbatim_citation": "Hunter Williams (2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:54; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/): \"Many people like it around 10 to 30 milligrams per day.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/",
+        "timestamp": "the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:22; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:54; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 33:13; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 33:45"
+      }
+    },
+    "female_specific_notes": null,
+    "distilled_at": "2026-07-17T10:15:14.5229510Z",
+    "distilled_by": "codex"
+  },
+  "generated_at": "2026-07-17T10:59:09.590Z",
+  "mentions_fingerprint": "c01be31639d6"
+}

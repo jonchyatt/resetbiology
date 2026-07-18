@@ -1,31 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-// Helper to find user by auth0Sub or email
-async function resolveUser(session: any) {
-  const authUser = session?.user
-  if (!authUser) return null
-
-  let user = authUser.sub
-    ? await prisma.user.findUnique({ where: { auth0Sub: authUser.sub } })
-    : null
-
-  if (!user && authUser.email) {
-    user = await prisma.user.findUnique({ where: { email: authUser.email } })
-    if (user && authUser.sub && user.auth0Sub !== authUser.sub) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { auth0Sub: authUser.sub }
-      })
-    }
-  }
-
-  return user
-}
 
 /**
  * GET /api/nback/progress
@@ -34,7 +13,7 @@ async function resolveUser(session: any) {
 export async function GET(req: NextRequest) {
   try {
     const session = await auth0.getSession()
-    const user = await resolveUser(session)
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })

@@ -9,12 +9,63 @@ interface CameraUploadProps {
   mealType?: string
 }
 
+const VAULT_REQUIRED_MESSAGE =
+  "Your photos aren't stored anywhere unless you connect your own Drive vault — you're in charge of what's yours. Connect your vault and every photo you take lands in YOUR Google Drive, under your control, not ours."
+
 export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }: CameraUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // Vault-required notice: analysis + logging still proceed without a photo
+  // (D2 fail-closed) — this just tells the user why the photo didn't attach,
+  // and holds the analyzed result until they choose to continue.
+  const [vaultNotice, setVaultNotice] = useState<string | null>(null)
+  // Durable-retry notice: upload failed for a reason OTHER than vault_required
+  // (network blip, 500, expired session) after retries. The photo is only
+  // ever dropped by explicit user choice, never silently.
+  const [photoSaveFailed, setPhotoSaveFailed] = useState(false)
+  const [savingPhoto, setSavingPhoto] = useState(false)
+  const [pendingResult, setPendingResult] = useState<any>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const RETRY_DELAYS_MS = [500, 1500] // 2 extra attempts, short backoff
+
+  const attachPhotoOnce = async (
+    file: File
+  ): Promise<{ status: 'ok'; url: string } | { status: 'vault_required'; notice: string } | { status: 'error' }> => {
+    try {
+      const uploadForm = new FormData()
+      uploadForm.append('image', file)
+      const res = await fetch('/api/upload/image', { method: 'POST', body: uploadForm })
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        return { status: 'ok', url: data.url }
+      }
+      if (res.status === 409 && data.error === 'vault_required') {
+        return { status: 'vault_required', notice: data.message || VAULT_REQUIRED_MESSAGE }
+      }
+      return { status: 'error' }
+    } catch {
+      return { status: 'error' }
+    }
+  }
+
+  // Client-owned durable retry: vault_required (409) is a permanent state
+  // (no point retrying) and returns immediately. Any other failure (network
+  // blip, 500, expired session) gets 2 automatic retries with short backoff
+  // before giving up and handing back 'error' for the caller to hold pending.
+  const attachPhoto = async (
+    file: File
+  ): Promise<{ status: 'ok'; url: string } | { status: 'vault_required'; notice: string } | { status: 'error' }> => {
+    for (let attempt = 0; ; attempt++) {
+      const result = await attachPhotoOnce(file)
+      if (result.status !== 'error') return result
+      if (attempt >= RETRY_DELAYS_MS.length) return result
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS_MS[attempt]))
+    }
+  }
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -69,8 +120,33 @@ export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }
         throw new Error(data.message || data.error || 'Analysis failed')
       }
 
+      // Attach the original photo to the client's vault (durable retry —
+      // see attachPhoto).
+      const attachResult = await attachPhoto(selectedFile)
+      const resultWithPhoto = {
+        ...data,
+        photoUrl: attachResult.status === 'ok' ? attachResult.url : null,
+      }
+
+      if (attachResult.status === 'vault_required') {
+        // Vault not connected: hold the analyzed result and show the
+        // notice instead of auto-closing — the log still proceeds fine
+        // without a photo once the user continues.
+        setPendingResult(resultWithPhoto)
+        setVaultNotice(attachResult.notice)
+        return
+      }
+
+      if (attachResult.status === 'error') {
+        // Retries exhausted: hold the photo/result pending and let the
+        // user explicitly retry or abandon it — never drop it silently.
+        setPendingResult(resultWithPhoto)
+        setPhotoSaveFailed(true)
+        return
+      }
+
       // Pass result to parent component
-      onAnalysisComplete(data)
+      onAnalysisComplete(resultWithPhoto)
       onClose()
 
     } catch (err: any) {
@@ -79,6 +155,28 @@ export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }
     } finally {
       setAnalyzing(false)
     }
+  }
+
+  // User-triggered retry after the automatic retries in attachPhoto were
+  // exhausted. On success, proceeds with the log flow using the new URL.
+  const handleRetryPhotoSave = async () => {
+    if (!selectedFile || !pendingResult) return
+
+    setSavingPhoto(true)
+    const attachResult = await attachPhoto(selectedFile)
+    setSavingPhoto(false)
+
+    if (attachResult.status === 'ok') {
+      onAnalysisComplete({ ...pendingResult, photoUrl: attachResult.url })
+      onClose()
+      return
+    }
+    if (attachResult.status === 'vault_required') {
+      setPhotoSaveFailed(false)
+      setVaultNotice(attachResult.notice)
+      return
+    }
+    // Still failing — stay in the photoSaveFailed state for another retry.
   }
 
   return (
@@ -103,6 +201,60 @@ export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }
         {error && (
           <div className="mb-4 p-3 bg-rose-500/20 border border-rose-400/30 rounded-lg text-rose-300 text-sm">
             {error}
+          </div>
+        )}
+
+        {/* Vault-required notice — photo wasn't stored, but the log still works */}
+        {vaultNotice && (
+          <div className="mb-4 p-3 bg-blue-500/10 border border-blue-400/20 rounded-lg text-blue-200 text-sm space-y-2">
+            <p>{vaultNotice}</p>
+            <div className="flex gap-3">
+              <a
+                href="/connect-drive"
+                className="text-primary-400 hover:text-primary-300 font-medium underline"
+              >
+                Connect your vault
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  onAnalysisComplete(pendingResult)
+                  onClose()
+                }}
+                className="text-gray-300 hover:text-white font-medium underline"
+              >
+                Continue without photo
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Photo-save-failed notice — retries exhausted, photo held pending
+            until the user explicitly retries or continues without it. */}
+        {photoSaveFailed && (
+          <div className="mb-4 p-3 bg-amber-500/10 border border-amber-400/20 rounded-lg text-amber-200 text-sm space-y-2">
+            <p>Your photo isn&apos;t saved yet.</p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleRetryPhotoSave}
+                disabled={savingPhoto}
+                className="text-primary-400 hover:text-primary-300 font-medium underline disabled:opacity-50"
+              >
+                {savingPhoto ? 'Retrying...' : 'Retry saving photo'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onAnalysisComplete(pendingResult)
+                  onClose()
+                }}
+                disabled={savingPhoto}
+                className="text-gray-300 hover:text-white font-medium underline disabled:opacity-50"
+              >
+                Continue without photo
+              </button>
+            </div>
           </div>
         )}
 

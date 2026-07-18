@@ -1,30 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
-import { getUserFromSession } from '@/lib/getUserFromSession'
+import { resolveUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { enqueueDriveSync, drainDriveSyncRowsNow } from '@/lib/driveSyncQueue'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
   return d
-}
-
-async function resolveUser(sessionUser: any) {
-  if (!sessionUser?.sub) return null
-
-  let user = await prisma.user.findUnique({ where: { auth0Sub: sessionUser.sub } })
-
-  if (!user && sessionUser.email) {
-    user = await prisma.user.findUnique({ where: { email: sessionUser.email } })
-    if (user) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { auth0Sub: sessionUser.sub },
-      })
-    }
-  }
-
-  return user
 }
 
 async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: string): Promise<string> {
@@ -103,11 +86,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await resolveUser(session.user)
+    const resolution = await resolveUserFromSession(session)
 
-    if (!user) {
+    if (resolution?.status === 'unverified_email') {
+      return NextResponse.json({ error: 'verify_email' }, { status: 403 })
+    }
+
+    if (!resolution) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
+
+    const user = resolution.user
 
     const body = await request.json()
     const {
@@ -192,6 +181,23 @@ export async function POST(request: NextRequest) {
 
     const journalNote = await appendModuleToJournal(user.id, new Date(), moduleId)
 
+    // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work) — this route also appends a note to
+    // today's journal entry, so sync that too
+    const syncNow = new Date()
+    await enqueueDriveSync(user.id, syncNow, ['modules', 'journal']).catch(err => console.error('Drive enqueue failed:', err))
+
+    // Immediate targeted drain of the rows just enqueued (also awaited — same
+    // reason as above). The durable outbox row is already persisted regardless
+    // of what happens here, so this is a best-effort accelerator, not the source
+    // of truth: on failure the row is left exactly where the shared retry/backoff
+    // logic would leave it and the cron drain (/api/cron/drive-sync-drain) picks
+    // it up on its next tick. Root-cause: enqueue-only was awaited (3e047b19) but
+    // nothing ever awaited the drain half in-request, so delivery depended
+    // entirely on the cron actually firing — unverified until this ticket.
+    await drainDriveSyncRowsNow(user.id, syncNow, ['modules', 'journal']).catch(err =>
+      console.error('Drive immediate drain failed (cron will retry):', err)
+    )
+
     return NextResponse.json({
       success: true,
       completion,
@@ -218,11 +224,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const user = await resolveUser(session.user)
+    const resolution = await resolveUserFromSession(session)
 
-    if (!user) {
+    if (resolution?.status === 'unverified_email') {
+      return NextResponse.json({ error: 'verify_email' }, { status: 403 })
+    }
+
+    if (!resolution) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
+
+    const user = resolution.user
 
     // Parse query params
     const { searchParams } = new URL(request.url)

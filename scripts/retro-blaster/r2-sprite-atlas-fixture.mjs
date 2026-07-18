@@ -48,8 +48,8 @@ assert(
   'chip anchor moved when the atlas reconciliation offset was applied',
 )
 assert(
-  renderer.includes("ctx.fillText(alien.note.replace(/\\d/, ''), alien.x + ALIEN_W / 2, alien.y - 3)"),
-  'renderer no longer keys the note chip to the original alien origin',
+  renderer.includes("ctx.fillText(alien.note.replace(/\\d/, ''), alien.x + ALIEN_W / 2, alien.y - 3 * s)"),
+  'renderer no longer keys the external note label to the original alien origin',
 )
 
 console.log(`PASS all ${requiredFrames.length} required frames are integer, non-degenerate, and in bounds`)

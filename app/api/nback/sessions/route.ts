@@ -1,33 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { syncUserDataForDate } from '@/lib/google-drive'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-// Helper to find user by auth0Sub or email
-async function resolveUser(session: any) {
-  const authUser = session?.user
-  if (!authUser) return null
-
-  let user = authUser.sub
-    ? await prisma.user.findUnique({ where: { auth0Sub: authUser.sub } })
-    : null
-
-  if (!user && authUser.email) {
-    user = await prisma.user.findUnique({ where: { email: authUser.email } })
-    // Auto-link auth0Sub if found by email
-    if (user && authUser.sub && user.auth0Sub !== authUser.sub) {
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: { auth0Sub: authUser.sub }
-      })
-    }
-  }
-
-  return user
-}
 
 /**
  * GET /api/nback/sessions
@@ -36,7 +14,7 @@ async function resolveUser(session: any) {
 export async function GET(req: NextRequest) {
   try {
     const session = await auth0.getSession()
-    const user = await resolveUser(session)
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
@@ -108,7 +86,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await auth0.getSession()
-    const user = await resolveUser(session)
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
@@ -281,10 +259,8 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Sync to Google Drive (non-blocking)
-    syncUserDataForDate(user.id, new Date()).catch(err => {
-      console.error('Drive sync failed:', err)
-    })
+    // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
+    await enqueueDriveSync(user.id, new Date(), ['nback']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

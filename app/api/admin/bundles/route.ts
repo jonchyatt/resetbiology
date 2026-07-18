@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { calculateBundlePrice } from '@/lib/bundlePricing'
+import { isAdminRequest } from '@/lib/adminGuard';
 
 /**
  * GET: List all bundles with their components
  */
 export async function GET(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const bundles = await prisma.product.findMany({
       where: { isBundle: true },
@@ -37,6 +41,9 @@ export async function GET(req: NextRequest) {
  * POST: Create a new bundle
  */
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { name, slug, description, imageUrl, showInStore } = await req.json()
 
@@ -78,6 +85,9 @@ export async function POST(req: NextRequest) {
  * PATCH: Update bundle details
  */
 export async function PATCH(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { id, name, slug, description, imageUrl, active, storefront } = await req.json()
 
@@ -125,6 +135,9 @@ export async function PATCH(req: NextRequest) {
  * DELETE: Delete a bundle
  */
 export async function DELETE(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')

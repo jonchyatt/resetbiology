@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
+import { getUserFromSession } from '@/lib/getUserFromSession';
 import { prisma } from '@/lib/prisma';
 import { sendShippingConfirmationEmail } from '@/lib/email';
 
@@ -19,11 +20,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [{ auth0Sub: session.user.sub }, { email: session.user.email }],
-      },
-    });
+    const user = await getUserFromSession(session);
 
     if (!user || !isAdmin(user)) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
@@ -77,11 +74,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [{ auth0Sub: session.user.sub }, { email: session.user.email }],
-      },
-    });
+    const user = await getUserFromSession(session);
 
     if (!user || !isAdmin(user)) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 });

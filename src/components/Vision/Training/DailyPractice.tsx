@@ -12,10 +12,12 @@ import {
   Zap,
   Coffee,
   BookOpen,
-  Wind
+  Wind,
+  RotateCcw
 } from 'lucide-react'
 import MiniBreathExercise from '@/components/Breath/MiniBreathExercise'
 import TrainingSession from './TrainingSession'
+import SnellenQuickCheck, { type SnellenQuickCheckResult } from './SnellenQuickCheck'
 import SessionRunner, { type SessionRunnerFinishPayload } from './SessionRunner'
 import WeeklyAssessment, { type WeeklyAssessmentResult } from './WeeklyAssessment'
 import ProgressDashboard from './ProgressDashboard'
@@ -99,6 +101,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [baselineComplete, setBaselineComplete] = useState(false)
   const [completedExercises, setCompletedExercises] = useState<string[]>([])
   const [showSnellenTrainer, setShowSnellenTrainer] = useState(false)
+  const [showQuickCheck, setShowQuickCheck] = useState(false)
+  const [savingBaselines, setSavingBaselines] = useState(false)
   const [sessionNotes, setSessionNotes] = useState('')
   const [nearSnellenResult, setNearSnellenResult] = useState('')
   const [farSnellenResult, setFarSnellenResult] = useState('')
@@ -111,6 +115,10 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [engineResults, setEngineResults] = useState<EngineResult[]>([])
   const [showWeeklyAssessment, setShowWeeklyAssessment] = useState(false)
   const [assessmentDoneWeek, setAssessmentDoneWeek] = useState<number | null>(null)
+  const [resetting, setResetting] = useState(false)
+  const [resetConfirming, setResetConfirming] = useState(false)
+  const [isTester, setIsTester] = useState(false)
+  const [advancingDay, setAdvancingDay] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -144,6 +152,33 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     loadProgram()
   }
 
+  // Day-1 baseline (amendment 5): guided measure lands on a result-confirm state
+  // inside SnellenQuickCheck; onComplete only fires from "Use these" there, so
+  // persistence + dropdown prefill only happen on explicit confirm, never on abort.
+  const handleQuickCheckComplete = async (result: SnellenQuickCheckResult) => {
+    setSavingBaselines(true)
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update_baselines',
+          data: {
+            nearSnellen: result.nearSnellen,
+            farSnellen: result.farSnellen
+          }
+        })
+      })
+    } catch (error) {
+      console.error('Failed to save quick-check baselines:', error)
+    }
+    if (result.nearSnellen) setNearSnellenResult(result.nearSnellen)
+    if (result.farSnellen) setFarSnellenResult(result.farSnellen)
+    setSavingBaselines(false)
+    setShowQuickCheck(false)
+    loadProgram()
+  }
+
   useEffect(() => {
     loadProgram()
   }, [])
@@ -169,6 +204,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
       if (data.success) {
         setEnrolled(data.enrolled)
+        setIsTester(Boolean(data.isTester))
         if (data.enrolled) {
           setEnrollment(data.enrollment)
           setTodaySession(data.todaySession)
@@ -181,6 +217,39 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleResetProgram = async () => {
+    setResetting(true)
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset_program' })
+      })
+    } catch (error) {
+      console.error('Failed to reset program:', error)
+    }
+    setResetConfirming(false)
+    setResetting(false)
+    loadProgram()
+  }
+
+  // Tester-only "rip through the program" bypass — advances the traversal
+  // cursor one trainable day forward (skipping rest days server-side).
+  const handleAdvanceDay = async () => {
+    setAdvancingDay(true)
+    try {
+      await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'advance_day' })
+      })
+    } catch (error) {
+      console.error('Failed to advance test day:', error)
+    }
+    setAdvancingDay(false)
+    loadProgram()
   }
 
   const handleEnroll = async () => {
@@ -456,6 +525,16 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
               </ul>
             </div>
           )}
+
+          {isTester && (
+            <button
+              onClick={handleAdvanceDay}
+              disabled={advancingDay}
+              className="mt-6 min-h-11 px-6 py-3 bg-amber-500/90 hover:bg-amber-500 disabled:opacity-50 text-black font-bold rounded-xl transition-all border-2 border-amber-300"
+            >
+              TESTER · Jump to next session →
+            </button>
+          )}
         </div>
       </div>
     )
@@ -519,6 +598,16 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
           <p className="text-gray-500 text-sm mt-6">
             Come back tomorrow for Day {todaySession.day < 5 ? todaySession.day + 1 : 1} of Week {todaySession.day < 5 ? todaySession.week : todaySession.week + 1}
           </p>
+
+          {isTester && (
+            <button
+              onClick={handleAdvanceDay}
+              disabled={advancingDay}
+              className="mt-6 min-h-11 px-6 py-3 bg-amber-500/90 hover:bg-amber-500 disabled:opacity-50 text-black font-bold rounded-xl transition-all border-2 border-amber-300"
+            >
+              TESTER · Jump to next session →
+            </button>
+          )}
         </div>
 
         {/* Measured progress — natural review moment after today's work is banked */}
@@ -530,6 +619,77 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   // Active session view
   const session = todaySession.session
   if (!session) {
+    // 12 weeks elapsed with no session scheduled = graduated, not an error.
+    const graduated = todaySession.week >= 12 && !todaySession.isRestDay
+
+    if (graduated) {
+      return (
+        <div className="space-y-6">
+          <div className="bg-gradient-to-br from-secondary-600/20 to-primary-600/20 backdrop-blur-sm border border-secondary-400/30 rounded-xl p-8 text-center shadow-lg">
+            <Trophy className="w-16 h-16 text-secondary-400 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-white mb-2">Program Complete!</h3>
+            <p className="text-gray-300 mb-4">
+              You've finished all 12 weeks of the Vision Recovery Program.
+            </p>
+            <div className="flex justify-center gap-4 text-sm mb-6">
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-primary-400/20">
+                <span className="text-gray-400">Longest streak:</span>
+                <span className="text-secondary-400 font-bold ml-2">{enrollment.longestStreak} days</span>
+              </div>
+              <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-lg px-4 py-2 border border-primary-400/20">
+                <span className="text-gray-400">Total:</span>
+                <span className="text-primary-400 font-bold ml-2">{enrollment.sessionsCompleted} sessions</span>
+              </div>
+            </div>
+
+            {!resetConfirming ? (
+              <button
+                onClick={() => setResetConfirming(true)}
+                className="px-6 py-3 bg-gray-700/60 hover:bg-gray-700 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2 mx-auto"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Reset & Start Over
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-gray-300 text-sm">
+                  This clears your 12-week progress, streak, and daily session history so you can run the program again from Week 1 Day 1. This can&apos;t be undone.
+                </p>
+                <div className="flex justify-center gap-3">
+                  <button
+                    onClick={handleResetProgram}
+                    disabled={resetting}
+                    className="px-6 py-3 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300 flex items-center gap-2"
+                  >
+                    {resetting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Resetting...
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="w-4 h-4" />
+                        Yes, reset my progress
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setResetConfirming(false)}
+                    disabled={resetting}
+                    className="px-6 py-3 bg-gray-700/60 hover:bg-gray-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-all duration-300"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <ProgressDashboard />
+        </div>
+      )
+    }
+
     return (
       <div className="space-y-6">
         <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm border border-gray-600/30 rounded-xl p-8 text-center shadow-lg">
@@ -554,9 +714,11 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
         </button>
         <TrainingSession
           visionType="near"
-          exerciseType="letters"
+          exerciseType="e-directional"
           initialLevel={1}
           nightMode={nightMode}
+          autoStart={false}
+          onExit={() => setShowSnellenTrainer(false)}
         />
       </div>
     )
@@ -795,6 +957,15 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
               {!baselineComplete && (
                 <div className="space-y-4">
                   <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-xl p-6">
+                    {showQuickCheck ? (
+                      <SnellenQuickCheck
+                        legs="both"
+                        nightMode={nightMode}
+                        onComplete={handleQuickCheckComplete}
+                        onExit={() => setShowQuickCheck(false)}
+                      />
+                    ) : (
+                    <>
                     <h4 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
                       <Eye className="w-5 h-5 text-blue-400" />
                       Step 1: Snellen Baseline ({session.baselineMinutes} min)
@@ -846,10 +1017,11 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
                     <div className="flex gap-3">
                       <button
-                        onClick={() => setShowSnellenTrainer(true)}
-                        className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm"
+                        onClick={() => setShowQuickCheck(true)}
+                        disabled={savingBaselines}
+                        className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm disabled:opacity-50"
                       >
-                        Open Snellen Trainer
+                        Measure now (guided, ~3 min)
                       </button>
                       <button
                         onClick={() => setBaselineComplete(true)}
@@ -858,6 +1030,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                         Continue to Exercises
                       </button>
                     </div>
+                    </>
+                    )}
                   </div>
                 </div>
               )}

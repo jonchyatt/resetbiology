@@ -43,23 +43,53 @@ async function generateMemberID(): Promise<string> {
  * Sync user to database after authentication
  * Called from beforeSessionSaved hook
  */
-async function syncUserToDatabase(session: Session): Promise<void> {
+export async function syncUserToDatabase(session: Session): Promise<void> {
   if (!session?.user?.email) {
     return;
   }
 
   const { email, name, picture, sub: auth0Sub } = session.user;
+  // Auth0 only populates email_verified when it has a verified claim to give
+  // us — absence means NOT verified, same contract as getUserFromSession.ts.
+  const emailVerified = session.user.email_verified === true;
 
   try {
-    // Check if user exists by Auth0 ID or email
-    let user = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { auth0Sub },
-          { email }
-        ]
+    // (a) Match by Auth0 sub first — the normal, unambiguous case. Falls
+    // through to the email lookup below only when no row owns this sub yet.
+    let user = auth0Sub
+      ? await prisma.user.findUnique({ where: { auth0Sub } })
+      : null;
+
+    if (!user) {
+      const existingByEmail = await prisma.user.findUnique({ where: { email } });
+
+      if (existingByEmail && !emailVerified) {
+        // (c) Email-match but UNVERIFIED: do not reattach this sub to the
+        // existing row and do not create a duplicate (unique email
+        // constraint would reject it anyway). Skip the sync entirely —
+        // resolveUserFromSession()'s guard is the backstop that turns this
+        // into a 403 verify_email response on the API side. Must not throw:
+        // the caller (beforeSessionSaved) still needs to return the session
+        // so the login redirect completes.
+        console.warn('[identity-merge] blocked: unverified email matches existing user', {
+          existingUserId: existingByEmail.id,
+          attemptedSub: auth0Sub,
+          email,
+        });
+        return;
       }
-    });
+
+      if (existingByEmail) {
+        // (b) Email-match + VERIFIED: reattach this sub to the existing row.
+        user = existingByEmail;
+        console.log('[identity-merge]', {
+          existingUserId: existingByEmail.id,
+          newSub: auth0Sub,
+          email,
+          emailVerified: true,
+        });
+      }
+    }
 
     // Check for quiz submission to determine if they should get introduction tier
     const quizSubmission = await prisma.nEPQSubmission.findFirst({

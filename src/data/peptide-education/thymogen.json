@@ -3,33 +3,62 @@
   "slug": "thymogen",
   "aliases": [
     "Thymogen",
-    "thymogen"
+    "thymogen",
+    "ThymoGen"
   ],
-  "category": "Uncategorized",
+  "category": "Bioregulators",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 18,
+        "mention_count": 94,
         "top_doses": [
           {
             "dose": "500 micrograms",
-            "count": 12
-          },
-          {
-            "dose": "200 mg",
-            "count": 3
+            "count": 13
           },
           {
             "dose": "2 mg",
-            "count": 3
+            "count": 10
+          },
+          {
+            "dose": "200 mg",
+            "count": 4
           },
           {
             "dose": "20 mg",
             "count": 3
+          },
+          {
+            "dose": "10 mg",
+            "count": 1
+          },
+          {
+            "dose": "50 mcg",
+            "count": 1
+          },
+          {
+            "dose": "500 mcg",
+            "count": 1
+          },
+          {
+            "dose": "200 milligrams",
+            "count": 1
           }
         ],
         "top_sources": [
+          {
+            "source_id": "thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a",
+            "source_type": "library-video",
+            "source_title": "Thymogen: A Targeted Immune Peptide for Post-Viral Recovery",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a.json",
+            "mention_count": 49,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be about a peptide called thymogen. Sometimes you will see it spelled thy-ma-gen. Thymagen is actually what is known as a bioregulator peptides and it works specifically on the immune system. Now, this is one I haven't talked about that much, but it's been sold at research companies for a while now. In the past, I have typically talked Thymalin, T-H-Y-M-A-L-I-N, and I love thymaline.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today's video is going to be about a peptide called thymogen. Sometimes you will see it spelled thy-ma-gen. Thymagen is actually what is known as a bioregulator peptides and it works specifically on the immune system. Now, this is one I haven't talked about that much, but it's been sold at research companies for a while now. In the past, I have typically talked Thymalin, T-H-Y-M-A-L-I-N, and I love thymaline. I've used thymaline pretty extensively. Actually, would even in some cases say it is better than thimus and alpha 1. But when we look at thylmalin, it has a broad spectrum immune peptide, meaning that it helping kind of in every facet of the immune system. Whereas thymogen is a little bit more targeted to help with post-viral infection, post virus healing, kind of more of a targeted peptide, very similar to thiamin-senop-1, but different. So today, that's what we're going to talk about. I'm going explain what thimogen, how we would use it, and how it's similar and different to Thymolin.",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "19b7181810d68a8a",
             "source_type": "email",
@@ -41,6 +70,42 @@
             "top_snippet": "ay exists for mucosal immune support — Hunter defaults to injections for longevity ### Cycling philosophy - Reset button, NOT permanent crutch - Run it → let immune system stabilize → reassess ## ⭐ St",
             "top_context": "ay exists for mucosal immune support — Hunter defaults to injections for longevity ### Cycling philosophy - Reset button, NOT permanent crutch - Run it → let immune system stabilize → reassess ## ⭐ Stacking with Thymalin ### Concept - **Thymalin** = broad foundation (2 mg/day for 30-60 days) - **Thymogen** = targeted fine-tuning phase ### Sequence 1. Start with Thymalin for short block 2. Follow with Thymogen 4-8 weeks 3. Optional: layer in **Thymosin Alpha-1** to cover every base ### Mental model - Thymalin = broad thymus reset - Thymogen = precision immune fine-tuning, especially T-cell support",
             "first_timestamp": null
+          },
+          {
+            "source_id": "unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6",
+            "source_type": "library-video",
+            "source_title": "Unlocking the Power of Vilon The Most Overlooked Anti-Aging Secret",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/unlocking-the-power-of-vilon-the-most-overlooked-anti-aging-secret--658adad6.json",
+            "mention_count": 7,
+            "top_snippet": "That's why I love to lay my presentations out if you haven't noticed. see here. So Vilon emerged from groundbreaking research on thymic peptides in the seventies and eighties in The Soviet Union. initially was studied from calf extracts, and through further research, they isolated the active dipeptide known as thymogen. And so building on the work of thimogen, the designed a new synthetic peptide out of that sequence called velon, And it was developed in the nineties as",
+            "top_context": "If you want to join the best private community on my planet, check out Fully Optimized Health, link down the in description below as well. Without further ado, I am going share my screen and today we are going about Vlon. All right. My name is Hunter Williams. And today we're going to learn all about Vlon. So VLON is the thymic peptide bioregulator, similar to thiamogen or thimalen. But it's doing a little bit of different things than those because it is technically not the same thing. Pretty similar in practice, but also there's a bit going on. Today we are just going talk about the history, the mechanisms, benefits, safety profile dosage, and then also some published research findings. That's why I love to lay my presentations out if you haven't noticed. see here. So Vilon emerged from groundbreaking research on thymic peptides in the seventies and eighties in The Soviet Union. initially was studied from calf extracts, and through further research, they isolated the active dipeptide known as thymogen. And so building on the work of thimogen, the designed a new synthetic peptide out of that sequence called velon, And it was developed in the nineties as a thiamine bioregulator to mimic and enhance the immune regulatory functions of the thamus gland. When we look at the Thamus Glam, we really look something that shrinks over Our lifespan dramatically after the age of 30, but if we can supplement with peptides like this to help the very least mimic a young or turn it into a younger thymic gland to basically work at the DNA level to reverse the expression of the genes to be younger. or even to help regrow thymic tissue. That's going to have immensely powerful impact on our overall health and well-being.",
+            "first_timestamp": "2:55"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-11726--2c65a329",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 1/17/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-11726--2c65a329.json",
+            "mention_count": 5,
+            "top_snippet": "And then again, the cartilax and PGMGF too I think would be helpful in that case. It's a good question. Can you discuss if you see issues with staying on thymogen for a few months or even longer? It is helping so much with inflammation. I'm thinking about continuing for awhile. No, I don't think that there's any issue. Even if wanted to stay on it for year, The worst thing that would happen is that it just is not going to work anymore for that. But no, I don't see any issue with that at all because of the nature of really good benefit from it.",
+            "top_context": "Yeah, I had pulled a muscle on my neck the other day doing something and I just had Taylor inject like into the trap. I like that because there's like usually a good amount of muscle there that's not too much in pain and it's close enough to the area, whereas I think sometimes like a bulging disc area. There's a lot of times like almost sticking out because it is pretty bony right there for a lots of people and so it can just hurt to inject right on top of that. Obviously the closer to the injury the better, but that's what I would do. And then again, the cartilax and PGMGF too I think would be helpful in that case. It's a good question. Can you discuss if you see issues with staying on thymogen for a few months or even longer? It is helping so much with inflammation. I'm thinking about continuing for awhile. No, I don't think that there's any issue. Even if wanted to stay on it for year, The worst thing that would happen is that it just is not going to work anymore for that. But no, I don't see any issue with that at all because of the nature of really good benefit from it. I would even say I'd probably feel better doing that than diamonds and alpha one for a year, even though I don't see really any issue with doing diamonds now for one, for that long. But I think the Imogen for as long as it's helping could be great. Yeah, I agree with that. I think it's probably cleaning up a lot of the residual inflammation that's there for someone. But thymogen seems to be, compared to thiamin, which is more of like a systemic inflammation reducer, thimogen, seems be more analogous to Thymus and Alpha-1,",
+            "first_timestamp": "49:51"
+          },
+          {
+            "source_id": "peptide-qa-july-2025--936e4b81",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · July 2025",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-july-2025--936e4b81.json",
+            "mention_count": 4,
+            "top_snippet": "Peptides who I recommend for people struggling with Lyme disease, I would say, again, very similar to those, thymosophil-1, Thymogen or thimolm, KPV, you could use LL-37. I think that would be probably beneficial to that person. And then, yeah, also testosterone is going to be huge for someone with lyme Someone says, can you talk about using GOP-1 peptides and fasting, when to use them and not when fasting so it doesn't break down more muscle?",
+            "top_context": "Before that, he's has been taking the Glostac. Those are all good. I would say PPC, TB 500. KPV, GHK, Cortalax are all going to be really good for nerve regeneration. Probably Vesigen as well, I think would be helpful for someone with Bell's palsy. And then depending on the nature of Bells palsie, a lot of it has to do with the immune system in the body, and so something like a thymalin or thiamogen and thimoncinophil one would help aswell. I don't know if this is going do anything from the nerve signaling standpoint, but it's at least going help clear some of that inflammation from that body. Peptides who I recommend for people struggling with Lyme disease, I would say, again, very similar to those, thymosophil-1, Thymogen or thimolm, KPV, you could use LL-37. I think that would be probably beneficial to that person. And then, yeah, also testosterone is going to be huge for someone with lyme Someone says, can you talk about using GOP-1 peptides and fasting, when to use them and not when fasting so it doesn't break down more muscle? I would like to get the benefits of using both methods, but I'm concerned with extended fast and GOp-2 used together will cause more harm than good. In my experience, as long as you are training and eating enough protein, it won't. I even think the sugar fast Or you can just eat sugar instead of fasting completely, just have fruit, I call it fruit fasting. I think it's a better way to say it. So fruit-fasting obviously will be super beneficial to that as well. If you're doing that and you are hormonally optimized and using your growth hormone peptide, you shouldn't have anything to worry about.",
+            "first_timestamp": "47:43"
           },
           {
             "source_id": "0TyW-wlJMxo",
@@ -67,16 +132,16 @@
             "first_timestamp": "00:29:13.720"
           },
           {
-            "source_id": "199d026a6dd3eb61",
-            "source_type": "email",
-            "source_title": "October Q&A Video Is Up!",
-            "source_date": "2025-10-10",
-            "source_url": "https://open.spotify.com/episode/0W2xCxtez1lUroS3hlzeNC",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-10-october-q-a-video-is-up.md",
-            "mention_count": 1,
-            "top_snippet": "ol), circadian-consistent sleep, and resistance training to restore insulin sensitivity. ——————————————————————————— **Seasonal Flu ** Question: “Everyone’s coming down with something this time of yea",
-            "top_context": "ol), circadian-consistent sleep, and resistance training to restore insulin sensitivity. ——————————————————————————— **Seasonal Flu ** Question: “Everyone’s coming down with something this time of year. What peptides do you recommend?” Answer: Thymosin Alpha-1, LL-37, and Thymalin/Thymogen. Add BPC-157/TB-500 or KPV if inflammation is roaring. Begin at first tickle in the throat and keep electrolytes, vitamin D, zinc, and sleep stress-free. Peptides are best early and consistently dosed. Waiting until “I’m wrecked” is a tougher road. ———————————————————————————",
-            "first_timestamp": null
+            "source_id": "boost-your-immunity-defy-aging-with-thymalin--08da048d",
+            "source_type": "library-video",
+            "source_title": "Boost Your Immunity Defy Aging with Thymalin",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/boost-your-immunity-defy-aging-with-thymalin--08da048d/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/boost-your-immunity-defy-aging-with-thymalin--08da048d.json",
+            "mention_count": 3,
+            "top_snippet": "It is fairly cheap and has fairly powerful benefits and up until recently has not been accessible in the Western world. Then we move into the 90s, Kevin's team treated elderly volunteers with yearly thiamine courses and observed increases in their longevity parameters. So the results were presented later in journals in the early 2000s which garnered interest worldwide in anti-aging properties of thymus peptides. Now, during this time, analogs and subsets, subset peptides from Thymogen were developed. We have one called ThymaGen, which you've probably heard of.",
+            "top_context": "And then it was continued to use or was used in the 80s in immunology clinics, including applications in post Chernobyl radiation exposure. This is why I wanted to include some history because I am fascinated by this stuff. But it is used and people that were exposed to radiation at Chernobil. And then after the Soviet Union fell, thymelin continued to be produced and used in Russia under some post-Soviet states and it is featured on the Russian list of essential medicines as an immunomodulator. And over the years, millions of doses of thylalin have been administered, establishing a track record of safety and moderate cost. It is fairly cheap and has fairly powerful benefits and up until recently has not been accessible in the Western world. Then we move into the 90s, Kevin's team treated elderly volunteers with yearly thiamine courses and observed increases in their longevity parameters. So the results were presented later in journals in the early 2000s which garnered interest worldwide in anti-aging properties of thymus peptides. Now, during this time, analogs and subsets, subset peptides from Thymogen were developed. We have one called ThymaGen, which you've probably heard of. It's an oral capsule that you can buy on the internet. That was isolated in the 80s, and later produced as a drug. Still used today. And it's also used as nasal spray. Then other peptide, like Velon and Crystogen, were studied for gene regulation effects, eventually marked as supplements. in some countries and thymalin itself became one of the flagship products of The St. Petersburg Institute of Bioregulation and Gerontology, which has continued research into peptide therapeutics. So this is definitely one the hallmarks of this. And then we just look at that on a broader world perspective. This is interesting to note that I think Western medicine is years behind some of other parts of world and I medicine as a whole is probably,",
+            "first_timestamp": "6:01"
           }
         ],
         "acute_signals": [
@@ -298,33 +363,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Thymogen as a targeted, time-limited immune bioregulator rather than a daily standby — Hunter email threadId 19b7181810d68a8a (2025-12-30): \"Thymogen is a reset button, not a permanent crutch. You run it, you let the immune system stabilize, and you reassess.\" The only verbatim dose anywhere in our corpus is Hunter email threadId 19b7181810d68a8a (2025-12-30): \"1–2 mg per day for 30–60 days\" via subcutaneous injection (\"Subcutaneous injections (Hunter's preference, practical). Intramuscular also works. Nasal spray exists for mucosal immune support — Hunter defaults to injections for longevity\"). We'd ask the prescribing physician to weigh Hunter's framing of Thymogen as the precision step paired with broader Thymalin — Hunter (E7GPNidicqY 00:29:19.760): \"It's a bioregulator that's a little bit more targeted than thymalin which is another bioregulator. You could actually add both of those in if you choose\" — and Taylor's permissive duration view that long runs are acceptable so long as benefit persists.",
-    "caveats": "- Cycling philosophy, not chronic crutch: Hunter email threadId 19b7181810d68a8a (2025-12-30): \"Reset button, NOT permanent crutch - Run it → let immune system stabilize → reassess\" and \"Seasonal tune-up 1-2× per year. Healthy + longevity-minded → 1×/year often plenty. High-stress / travel-heavy / sleep-deprived / lots of exposure → 2×/year.\"\n- Tolerance / loss-of-effect on extended runs: Taylor (5ugqlYRSRSo 00:50:13.200): \"if you wanted to stay on it for a year. The worst thing that would happen is that it just is not going to work anymore for that.\"\n- Route: Hunter email threadId 19b7181810d68a8a (2025-12-30): \"Subcutaneous injections (Hunter's preference, practical). Intramuscular also works. Nasal spray exists for mucosal immune support — Hunter defaults to injections for longevity.\"\n- Reputation when used appropriately: Hunter email threadId 19b7181810d68a8a (2025-12-30): \"Reputation: well-tolerated, minimal side effects when used appropriately.\"\n- Best-candidate framing (NOT a blanket immune stim): Hunter email threadId 19b7181810d68a8a (2025-12-30): \"Want balanced immune response, not blanket stimulation\" and \"Post-viral recovery + lingering immune fatigue\" and \"Cold/flu season support as proactive 'keep on hand' tool.\"\n- Trevor Bachmeyer has no Thymogen content in our SmashweRx corpus — caveats below cite Hunter and Taylor only.",
-    "cross_expert_consensus": "Hunter and Taylor agree Thymogen is a targeted bioregulator that pairs naturally with Thymalin and is well tolerated for extended use as long as it is helping. Hunter (E7GPNidicqY 00:29:19.760): \"It's a bioregulator that's a little bit more targeted than thymalin which is another bioregulator. You could actually add both of those in if you choose.\" Taylor (5ugqlYRSRSo 00:51:13.760): \"Both great to take. I think you could do thymogen and thyolin together.\" On seasonal/immune-support placement: Hunter email threadId 199d026a6dd3eb61 (2025-10-10): \"Seasonal Flu… Answer: Thymosin Alpha-1, LL-37, and Thymalin/Thymogen.\" Hunter (0TyW-wlJMxo 01:04:16.080): \"Thymogen could be another great one to help with immune function.\" Taylor (G27dIPBJUSs 01:04:16.080) repeats the same framing in the parallel 3/28/26 episode: \"Thymalin could be another great one. Thymogen could be another great one to help with immune function.\" On safety of long-duration runs: Taylor (5ugqlYRSRSo 00:50:21.040): \"the nature of the way bio-regulator peptides work. They're very short chain, very low immunogenicity from the bio regular peptides like thyogen. I see no issue with that, especially if someone's getting really good benefit from it.\"",
-    "cross_expert_disagreement": "Hunter and Taylor diverge on the cycling philosophy. Hunter email threadId 19b7181810d68a8a (2025-12-30) frames Thymogen as a deliberately time-limited reset: \"1–2 mg per day for 30–60 days\" with \"Reset button, NOT permanent crutch - Run it → let immune system stabilize → reassess\" and \"Seasonal tune-up 1-2× per year.\" Taylor (5ugqlYRSRSo 00:50:11.119): \"if you wanted to stay on it for a year. The worst thing that would happen is that it just is not going to work anymore for that. But no, I don't see any issue with that at all\" and Taylor (5ugqlYRSRSo 00:50:43.119): \"I think the genen for as long as it's helping could be great.\" No averaging — Hunter teaches a 30–60 day pulse 1–2x/year; Taylor teaches that running it for months or even a year is acceptable when symptomatic benefit persists, with tolerance loss as the failure mode rather than safety risk. Trevor Bachmeyer has no Thymogen content in our SmashweRx corpus, so no Trevor side exists for this disagreement.",
+    "recommendation": "Reset Biology suggests asking the practitioner to weigh Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"I recommend one to two milligrams of thymogen per day for a cycle of 30 to 60 days, again, four to eight weeks, typically once or twice per year as a tune-up course.\" Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:33; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"However, if you did get an illness of iris sickness, something like that. I would use it in that case specifically, but if not, I think it's still just good to use one or two times per year.\"",
+    "caveats": "- Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 14:07; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"People with severe autoimmune diseases should use under medical supervision.\"\n- Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 14:37; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"Pregnant or breastfeeding women should avoid due to lack of research in those populations.\"\n- Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 14:07; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"you're going to see maybe some slight injection site redness or soreness, temporary fatigue or subtle appetite or mood shifts. They're very rare.\"\n- Hunter Williams - saturday-morning-coffee-talk-11726--2c65a329 (2026-04-08; 49:51; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/): \"Even if wanted to stay on it for year, The worst thing that would happen is that it just is not going to work anymore for that.\"",
+    "cross_expert_consensus": "Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 15:41; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"Whereas thiamogen is a more targeted action on T lymphocyte maturation and cytokine profile regulation. Think of it as more of a precision tool for immune fine tuning.\" Taylor Williams - Cg7JtpnfRY4 (2026-04-18; 00:29:19.960; https://youtu.be/Cg7JtpnfRY4): \"It's a bioregulator that's a little bit more targeted than thymolin which is another bioregulator.\"",
+    "cross_expert_disagreement": "Older Hunter library entry: Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:33; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"Again, thymogen is more of a reset button, not a permanent crutch or excuse me, permanent crutch nudging the immune system back on track and allowing it to function naturally.\" Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"I like to do this really at most two times per year.\" Newer Hunter library entry: Hunter Williams - saturday-morning-coffee-talk-11726--2c65a329 (2026-04-08; 49:51; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/): \"No, I don't think that there's any issue. Even if wanted to stay on it for year, The worst thing that would happen is that it just is not going to work anymore for that.\" Hunter Williams - saturday-morning-coffee-talk-11726--2c65a329 (2026-04-08; 50:32; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/): \"But I think the Imogen for as long as it's helping could be great.\"",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter email threadId 19b7181810d68a8a (2025-12-30): \"1–2 mg per day for 30–60 days.\" Hunter (E7GPNidicqY 00:29:17.760): \"in a product called thymogen t h y m o g e n. That's going to be really good. It's a bioregulator that's a little bit more targeted than thymalin which is another bioregulator. You could actually add both of those in if you choose.\"",
-        "route": "Hunter email threadId 19b7181810d68a8a (2025-12-30): \"Subcutaneous injections (Hunter's preference, practical). Intramuscular also works. Nasal spray exists for mucosal immune support — Hunter defaults to injections for longevity.\"",
-        "frequency": "Hunter email threadId 19b7181810d68a8a (2025-12-30): \"1–2 mg per day for 30–60 days\" — daily during the pulse.",
-        "duration": "Hunter email threadId 19b7181810d68a8a (2025-12-30): \"30–60 days\" with \"Seasonal tune-up 1-2× per year.\" Hunter email threadId 199d026a6dd3eb61 (2025-10-10): \"Begin at first tickle in the throat… Peptides are best early and consistently dosed. Waiting until 'I'm wrecked' is a tougher road.\"",
-        "verbatim_citation": "Hunter email threadId 19b7181810d68a8a (2025-12-30): \"1–2 mg per day for 30–60 days\" and \"Reset button, NOT permanent crutch - Run it → let immune system stabilize → reassess.\"",
-        "episode_url": "https://open.spotify.com/episode/19HziRJ6v3GPSJRALFHdCI",
-        "timestamp": "email-2025-12-30; podcast E7GPNidicqY 00:29:13.720"
+        "dose": "Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"I recommend one to two milligrams of thymogen per day for a cycle of 30 to 60 days, again, four to eight weeks, typically once or twice per year as a tune-up course.\"",
+        "route": "Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"Usually this is going to be by subq injection. You could do IM injection, but sub q is just easier. Again, intranasal spray available for mucosal immune support, But injections preferred for longevity goals.\"",
+        "frequency": "Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"I recommend one to two milligrams of thymogen per day for a cycle of 30 to 60 days, again, four to eight weeks, typically once or twice per year as a tune-up course.\"",
+        "duration": "Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:33; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"However, if you did get an illness of iris sickness, something like that. I would use it in that case specifically, but if not, I think it's still just good to use one or two times per year.\"",
+        "verbatim_citation": "Hunter Williams - thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:33; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/): \"However, if you did get an illness of iris sickness, something like that. I would use it in that case specifically.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/",
+        "timestamp": "13:03; 13:33"
       },
       "chronic": {
-        "dose": "No verbatim chronic-dose number in our corpus distinct from the acute pulse — both experts speak of running the same 1–2 mg/day pattern for longer when benefit persists. Hunter email threadId 19b7181810d68a8a (2025-12-30): \"1–2 mg per day for 30–60 days\" frames the pulse; Taylor (5ugqlYRSRSo 00:51:13.760) extends the same product to long runs: \"Both great to take. I think you could do thymogen and thyolin together.\"",
-        "route": "Hunter email threadId 19b7181810d68a8a (2025-12-30): \"Subcutaneous injections (Hunter's preference, practical). Intramuscular also works.\"",
-        "frequency": "Taylor (5ugqlYRSRSo 00:50:43.119): \"I think the genen for as long as it's helping could be great\" — daily, continued so long as benefit persists.",
-        "duration": "Taylor (5ugqlYRSRSo 00:50:11.119): \"if you wanted to stay on it for a year. The worst thing that would happen is that it just is not going to work anymore for that\" vs Hunter email threadId 19b7181810d68a8a (2025-12-30) ceiling: \"Seasonal tune-up 1-2× per year.\"",
-        "verbatim_citation": "Taylor (5ugqlYRSRSo 00:50:21.040): \"the nature of the way bio-regulator peptides work. They're very short chain, very low immunogenicity from the bio regular peptides like thyogen. I see no issue with that, especially if someone's getting really good benefit from it.\" Taylor (5ugqlYRSRSo 00:50:43.119): \"I think the genen for as long as it's helping could be great.\"",
-        "episode_url": "https://youtu.be/5ugqlYRSRSo",
-        "timestamp": "00:50:11.119; 00:50:21.040; 00:50:43.119"
+        "dose": null,
+        "route": null,
+        "frequency": null,
+        "duration": "Hunter Williams - saturday-morning-coffee-talk-11726--2c65a329 (2026-04-08; 49:51; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/): \"Even if wanted to stay on it for year, The worst thing that would happen is that it just is not going to work anymore for that.\"",
+        "verbatim_citation": "Hunter Williams - saturday-morning-coffee-talk-11726--2c65a329 (2026-04-08; 50:32; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/): \"But I think the Imogen for as long as it's helping could be great.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/",
+        "timestamp": "49:51; 50:32"
       }
     },
-    "female_specific_notes": "Taylor Williams Coaching's framing emphasizes female dosing/HRT context, but no peptide-specific female signal for Thymogen surfaces in our captured Coffee-Talk corpus — the closest she comes is recommending Thymogen alongside TA1, Thymalin, Vilon, and Chrisagin in answer to a viewer profile of \"Mid-40s female, perimenopause on HRT, still getting colds every 6 weeks, travel often\" — Taylor (Cg7JtpnfRY4 00:29:13.960): \"in a product called thymogen t h y m o g e n. That's going to be really good. It's a bioregulator that's a little bit more targeted than thymolin which is another bioregulator.\" Reset Biology should treat this as Taylor endorsing Thymogen for a perimenopausal/travel-stressed female case rather than as a female-specific dose adjustment.",
-    "distilled_at": "2026-04-27T05:35:44.897Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor Williams - Cg7JtpnfRY4 (2026-04-18; 00:28:32.000; https://youtu.be/Cg7JtpnfRY4): \"Mid-40s female, perimenopause on HRT, still getting colds every 6 weeks, travel often, using TA1 max 500 micrograms, get headaches, tried Vlon, chrysogen, 500 mcg daily. What else would you add?\" Taylor Williams - Cg7JtpnfRY4 (2026-04-18; 00:29:13.960; https://youtu.be/Cg7JtpnfRY4): \"From there, you could add in a product called thymogen t h y m o g e n. That's going to be really good.\"",
+    "distilled_at": "2026-07-17T09:21:55.834Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.914Z"
+  "generated_at": "2026-07-17T10:59:07.042Z",
+  "mentions_fingerprint": "3c2fcefb78ef"
 }

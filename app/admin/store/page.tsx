@@ -346,7 +346,7 @@ export default async function AdminStorePage() {
                   <div className="mt-2 p-3 bg-blue-900/20 border border-blue-400/30 rounded-lg backdrop-blur-sm">
                     <p className="text-sm text-blue-300 font-medium mb-1">📸 Image Upload:</p>
                     <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
-                      <li>Upload to <a href="https://imgur.com" target="_blank" className="text-primary-400 hover:underline">Imgur</a> or <a href="https://cloudinary.com" target="_blank" className="text-primary-400 hover:underline">Cloudinary</a></li>
+                      <li>Upload to <a href="https://cloudinary.com" target="_blank" className="text-primary-400 hover:underline">Cloudinary</a> or another image host</li>
                       <li>Copy the image URL</li>
                       <li>Paste here (must be https://)</li>
                     </ol>

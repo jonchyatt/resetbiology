@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 
 export async function GET(request: NextRequest) {
   try {
@@ -103,7 +104,10 @@ export async function POST(request: NextRequest) {
         }
       })
     }
-    
+
+    // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
+    await enqueueDriveSync(user.id, new Date(), ['dailyTasks']).catch(err => console.error('Drive enqueue failed:', err))
+
     return NextResponse.json({ 
       success: true,
       task

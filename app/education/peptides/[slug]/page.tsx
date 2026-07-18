@@ -114,13 +114,19 @@ export default async function PeptidePage({ params }: Props) {
               <Link href="/education/peptides" className="hover:underline">Peptide Library</Link>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">{card.peptide}</h1>
-            <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-4 flex-wrap mb-6">
               <span className="text-lg text-white/95">{card.category !== 'Uncategorized' ? card.category : 'Cross-category'}</span>
               <span className="text-sm text-white/70">{totalMentions.toLocaleString()} cited mentions</span>
               {card.aliases.length > 1 && (
                 <span className="text-sm text-white/70">Aliases: {card.aliases.slice(0, 5).join(', ')}</span>
               )}
             </div>
+            <Link
+              href={`/peptides?peptide=${card.slug}`}
+              className="inline-block bg-gradient-to-r from-[#3FBFB5] to-[#72C247] text-black font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+            >
+              Start Protocol →
+            </Link>
           </div>
         </div>
 

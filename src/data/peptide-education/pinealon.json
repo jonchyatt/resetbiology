@@ -5,47 +5,71 @@
     "Pinealon",
     "pinealon"
   ],
-  "category": "Uncategorized",
+  "category": "Bioregulators",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 17,
+        "mention_count": 67,
         "top_doses": [
           {
             "dose": "1 mg",
-            "count": 10
-          },
-          {
-            "dose": "10 units",
-            "count": 4
+            "count": 11
           },
           {
             "dose": "2 mg",
-            "count": 4
+            "count": 8
+          },
+          {
+            "dose": "10 mg",
+            "count": 7
+          },
+          {
+            "dose": "10 units",
+            "count": 5
           },
           {
             "dose": "20 mg",
+            "count": 4
+          },
+          {
+            "dose": "6 mg",
+            "count": 3
+          },
+          {
+            "dose": "300 mcg",
             "count": 3
           },
           {
             "dose": "8 mg",
             "count": 2
-          },
-          {
-            "dose": "6 mg",
-            "count": 2
-          },
-          {
-            "dose": "20 units",
-            "count": 1
-          },
-          {
-            "dose": "300 mcg",
-            "count": 1
           }
         ],
         "top_sources": [
+          {
+            "source_id": "pinealon-updated-benefits-mechanisms-and-dosing--a729f708",
+            "source_type": "library-video",
+            "source_title": "Pinealon: Updated Benefits, Mechanisms, and Dosing",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/pinealon-updated-benefits-mechanisms-and-dosing--a729f708.json",
+            "mention_count": 19,
+            "top_snippet": "I'll probably say both during this presentation as I'm just going through a stream of consciousness and everything. But I love pinealon. It is one of my favorite peptides. That wouldn't put it in like the top top five or maybe the Top 10, but it's still a really cool one nonetheless. It's actually one I know for me helps a little bit more on the circadian rhythm side of things, probably helps with sleep just in my own personal experience. We're going to walk through everything that it does today, but then also to a bit on performance side. So it kind of just up regulates everything. It is hard to pinpoint one specific thing, very similar to the way that SS 31 just kind makes you feel better and kind to makes everything work better.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today, I am doing an update video to one that I did a long time ago.I don't even remember what it was, but it feels like it's probably been at least two years. And it is going to be about the peptide or the bioregulator peptides called Penelon or pineal on I'm not sure exactly how you pronounce it,but contrary to what a lot of people think,this is actually not the Peptide bi-regulator for the pineo gland, although it does work on the brain and the central nervous system. actually epitalin works more specifically on the pineal gland or pinea line, however you say it. I'll probably say both during this presentation as I'm just going through a stream of consciousness and everything. But I love pinealon. It is one of my favorite peptides. That wouldn't put it in like the top top five or maybe the Top 10, but it's still a really cool one nonetheless. It's actually one I know for me helps a little bit more on the circadian rhythm side of things, probably helps with sleep just in my own personal experience. We're going to walk through everything that it does today, but then also to a bit on performance side. So it kind of just up regulates everything. It is hard to pinpoint one specific thing, very similar to the way that SS 31 just kind makes you feel better and kind to makes everything work better. Pinealine does something very similar. And I think for long-term, when we look at long term, there's a lot of data around longevity and a lotta data, around healthy brain aging or having good memory and good focus as we age. So I'm a big fan of it today. I wanna walk through the mechanisms, the doses, benefits and everything, and then give you my own personal insight, just really based on my experimentation and what I've kind of advised. other people to do in the past. So that's what we're going to talk about today. Thank you guys so much for tuning in. The overwhelming amount of support that I've been getting recently is awesome.",
+            "first_timestamp": "0:42"
+          },
+          {
+            "source_id": "pinealon-how-to-use-it-for-anti-aging-and-longevity--c0de1ff9",
+            "source_type": "library-article",
+            "source_title": "Pinealon How To Use It For Anti-Aging And Longevity",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/pinealon-how-to-use-it-for-anti-aging-and-longevity--c0de1ff9/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/pinealon-how-to-use-it-for-anti-aging-and-longevity--c0de1ff9.json",
+            "mention_count": 17,
+            "top_snippet": "or two, where you really start to see shifts in biological age and overall brain function. If you're younger, you might not notice a huge difference. The older you are, the more dramatic the changes t",
+            "top_context": "or two, where you really start to see shifts in biological age and overall brain function. If you're younger, you might not notice a huge difference. The older you are, the more dramatic the changes tend to be because aging brings poorer sleep and reduced overall function. Stacks That Work Well Pinealon plays nicely with a few other peptides. Epitalon. This is the most popular pairing. I'd run 10mg of Epitalon per day with 2mg of Pinealon, both for 10 days, two to three times per year. Cerebrolysin. Powerful and potent. The powers that be aren't big fans of it, but it pairs very well with Pineal",
+            "first_timestamp": null
+          },
           {
             "source_id": "1958c6d78ba43937",
             "source_type": "email",
@@ -71,6 +95,18 @@
             "first_timestamp": null
           },
           {
+            "source_id": "epitalon-the-telomere-lengthening-peptide-how-to-use-it--7e8ad2c1",
+            "source_type": "library-article",
+            "source_title": "Epitalon — The Telomere Lengthening Peptide | How To Use It",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/epitalon-the-telomere-lengthening-peptide-how-to-use-it--7e8ad2c1/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/epitalon-the-telomere-lengthening-peptide-how-to-use-it--7e8ad2c1.json",
+            "mention_count": 3,
+            "top_snippet": "and reversing biological age. This isn't vitamin C or a pre-workout. Stacking Epitalon There are two peptides epitalon pairs really well with. Thymalin. Supports the thymus gland, enhances immune func",
+            "top_context": "and reversing biological age. This isn't vitamin C or a pre-workout. Stacking Epitalon There are two peptides epitalon pairs really well with. Thymalin. Supports the thymus gland, enhances immune function, helps with hormone regulation. Great if you're focused on the physical side of longevity. Pinealon. Targets the pineal gland, improves brain health and cognitive function. Better choice if your concern is cognitive longevity. You could run epitalon with thymalin for one cycle, then epitalin with pinealon for the next, and rotate. You could even stack all three, but it gets expensive fast. BPC-",
+            "first_timestamp": null
+          },
+          {
             "source_id": "195dedb693f63f9b",
             "source_type": "email",
             "source_title": "Updated Peptide Cheat Sheet",
@@ -78,8 +114,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-28-updated-peptide-cheat-sheet.md",
             "mention_count": 2,
-            "top_snippet": "pamorelin’s growth hormone release, delivering superior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bior",
-            "top_context": "pamorelin’s growth hormone release, delivering superior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen** (brain & stress resilience) • **Pinealon** (neurogenesis & cognitive enhancement) • **Bronchogen** (improves lung function and breathing) • **Cartalax** (supports joint health, cartilage repair, and mobility) And more! I’ve personally seen these peptides and bioregulators transform the lives of thousands of people, enhancing p",
+            "top_snippet": "with Ipamorelin’s growth hormone release, delivering superior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectabl",
+            "top_context": "with Ipamorelin’s growth hormone release, delivering superior anti-aging and physique-enhancing results. And because I want this to be your go-to resource, I’ve also included some of the top injectable bioregulators for targeted health optimization: • **Cortagen** (brain & stress resilience) • **Pinealon** (neurogenesis & cognitive enhancement) • **Bronchogen** (improves lung function and breathing) • **Cartalax** (supports joint health, cartilage repair, and mobility) And more! I’ve personally seen these peptides and bioregulators transform the lives of thousands of people, enhancing performan",
             "first_timestamp": null
           },
           {
@@ -90,8 +126,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-30-live-q-a-tonight.md",
             "mention_count": 1,
-            "top_snippet": "amorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, ",
-            "top_context": "amorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get: ** * _[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/)_ for $24.50 - If you are clueless using Peptides, start here! * _[Peptides Demystified](https://click.convertki",
+            "top_snippet": "r. ​_[Tesamorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blen",
+            "top_context": "r. ​_[Tesamorelin/Ipamorelin Blend (8mg)](https://biolongevitylabs.com/product/tesamorelin-6mg-ipamorelin-2mg-blend/)_ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get: ** * _[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/)_ for $24.50 - If you are clueless using Peptides, start here! * _[Peptides Demystified](https://click.convertkit-mail2.com/",
             "first_timestamp": null
           },
           {
@@ -102,20 +138,8 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-03-31-shred-vs-shredx-vs-metashred.md",
             "mention_count": 1,
-            "top_snippet": "elin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus,",
-            "top_context": "elin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get:** * __[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/?utm_source=huntershealthhacks.beehiiv.com&amp;utm_medium=referral&amp;utm_campaign=live-q-a-tonight)__ for $24.50 -",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "19a3c533447e6751",
-            "source_type": "email",
-            "source_title": "Tirzepatide Becomes The Top-Selling Medication Worldwide",
-            "source_date": "2025-10-31",
-            "source_url": "https://open.spotify.com/episode/0uLvXmHfqMtIsicXgkeq1D",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-10-31-tirzepatide-top-selling-peptide-replacement-therapy.md",
-            "mention_count": 1,
-            "top_snippet": "odically throughout the year.\" > \"Hopefully we as a community can make this more commonplace and eventually a standard practice!\" ⭐ Key conceptual frame Hunter is pushing in 2025: - We already do Horm",
-            "top_context": "odically throughout the year.\" > \"Hopefully we as a community can make this more commonplace and eventually a standard practice!\" ⭐ Key conceptual frame Hunter is pushing in 2025: - We already do Hormone Replacement Therapy (HRT) when hormones decline with age - Endogenous peptides (BPC, Humanin, Pinealon, Epitalon, GHK-Cu, etc.) ALSO decline with age - **Why aren't we replacing them too?** - Suggestion: periodic cycles throughout the year (\"rotating\" peptides) Spotify deep dive: open.spotify.com/episode/0uLvXmHfqMtIsicXgkeq1D ## Industry Data Point — Tirzepatide #1 Worldwide - October 2025: Tirz",
+            "top_snippet": "6mg-ipamorelin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide bl",
+            "top_context": "6mg-ipamorelin-2mg-blend/?utm_source=huntershealthhacks.beehiiv.com&utm_medium=referral&utm_campaign=live-q-a-tonight)__ - The next best thing to human growth hormone and strongest fat loss peptide blend! Plus, these injectable Bioregulators are also on sale: * Cortagen * Epitalon * Cartalax * Pinealon * Bronchogen * Cardiogen * Chonluten **You can get 50% off all peptide courses. Get:** * __[The Reconstitution Minicourse](http://jaycampbell.com/reconstitution-course/?utm_source=huntershealthhacks.beehiiv.com&amp;utm_medium=referral&amp;utm_campaign=live-q-a-tonight)__ for $24.50 - If you ar",
             "first_timestamp": null
           }
         ],
@@ -126,6 +150,34 @@
             "source_date": "2026-02-10",
             "timestamp": null,
             "source_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD"
+          },
+          {
+            "snippet": "If you have a specific issue and then like assuming you're perfectly healthy and everything's good, then you can look into potentially building a stack I don't think you would necessarily harm yourself by mixing the wrong ones, but it just might not be the smartest thing to do. And you might be wasting money if there's a better alternative. Like for instance, if you said, okay, we're going to pair epitalon, pinealon and thymalin together, which I've seen at least from a literature standpoint do really well versus mixing in velon with that. Then eventually maybe it's like not the best thing. So that's my thoughts on that, but I would love to do that.",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "timestamp": "39:37",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/"
+          },
+          {
+            "snippet": "e treating an injury and want to get into the muscle directly. How to inject when you have very little body fat. Most people can grab belly fat and inject. If you're really lean, angle the needle at a",
+            "source_title": "Peptide Q&A · March 2025",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-march-2025--e47049f7/"
+          },
+          {
+            "snippet": "orders showed significantly improved sleep quality and restored circadian markers. Quick caveat. If you're not hormonally optimized and you're trashing your body with alcohol, Pinealon isn't going to ",
+            "source_title": "Pinealon: Updated Benefits, Mechanisms, and Dosing",
+            "source_date": "2026-03-30",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/"
+          },
+          {
+            "snippet": "3 times daily for 15 to 30 days. For preventative use (this is most of us watching), 1 capsule 2 times daily for 15 to 30 days. Good for prolonged screen exposure or harsh environments. For post-surgi",
+            "source_title": "Reverse Vision Decline? Visoluten’s Eye-Opening Results (Backed by Science)",
+            "source_date": "2026-03-29",
+            "timestamp": null,
+            "source_url": "https://library.hunterwilliamshealth.com/p/reverse-vision-decline-visolutens-eye-opening-results-backed-by-science--9f0ce713/"
           }
         ],
         "chronic_signals": [
@@ -215,33 +267,34 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Hunter's two distinct pinealon frames before prescribing: a low-dose subcutaneous bioregulator cycle for circadian/cognitive support and a higher-dose protocol for stress, HPA, or travel-driven dysfunction. Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"100-300 mcg/day subQ\" \"10-20 days\" for conservative use, vs. \"2 mg/day subQ\" \"10-60 days depending on situation.\" We'd ask the prescribing physician to weigh timing carefully because Hunter (threadId 19c49cac85fb70ef, 2026-02-10) reports \"Hunter at night → restlessness + elevated heart rate\" and \"Morning dosing → problem solved,\" which directly overrides his earlier 2025-03-12 \"1 mg/day (at night)\" Epitalon-combo guidance.",
-    "caveats": "- Annual ceiling: Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"DO NOT exceed 100-120 mg total per year.\"\n- Timing reversal — newer overrides older: Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Take in the morning\" overrides Hunter (threadId 1958c6d78ba43937, 2025-03-12) \"Pinealon: 1 mg/day (at night).\" 2026-02-10 explains why: \"Hunter at night → restlessness + elevated heart rate. Morning dosing → problem solved.\"\n- Effects persist after stopping: Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation.\"\n- Expectation-setting: Taylor (5ugqlYRSRSo 01:14:50.320): \"a lot of people have this like this fantasy about this like magical longevity stack\" and Taylor (5ugqlYRSRSo 01:15:23.040): \"if you want the most longevity protocol, it's hormone optimization. That is the fountain of youth as we have it today.\" Taylor (5ugqlYRSRSo 01:15:39.600) frames bi-regulators including pinealon as adjunctive: \"sure, it's great to do epitalon and pinealon, daimolin, and some of these other bi-regular things for longevity, but I just want people's expectations.\"\n- No Trevor Bachmeyer (SmashweRx) signal — pinealon is not addressed in Trevor's transcripts in this card.\n- Reconstitution detail: Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"2 mL bacteriostatic water per vial\" \"Slow injection of BAC, dissolve naturally — DO NOT SHAKE\"; \"1 mg Pinealon = 10 units (0.1 mL)\" on a U-100 insulin syringe; \"Inject subQ (belly fat).\"",
-    "cross_expert_consensus": "Both Hunter and Taylor agree that pinealon is part of a bioregulator longevity stack and frame it as legitimate but not stand-alone. Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"Epitalon optimizes the body. Pinealon optimizes the brain. Combining them = hits both major components of longevity.\" Taylor (5ugqlYRSRSo 01:15:39.600): \"sure, it's great to do epitalon and pinealon, daimolin, and some of these other bi-regular things for longevity.\" Hunter's \"peptide replacement therapy\" frame from threadId (2025-10-31): \"Endogenous peptides (BPC, Humanin, Pinealon, Epitalon, GHK-Cu, etc.) ALSO decline with age\" with \"Suggestion: periodic cycles throughout the year ('rotating' peptides)\" aligns with the cycling guidance both experts use. On route, Hunter is consistent that pinealon is subcutaneous: Hunter (threadId 19c49cac85fb70ef, 2026-02-10) \"100-300 mcg/day subQ\" and \"2 mg/day subQ\"; Hunter (threadId 1958c6d78ba43937, 2025-03-12) \"Inject subQ (belly fat).\" Taylor does not specify a route in her single transcript.",
-    "cross_expert_disagreement": "Within Hunter's own content, dose and timing differ between the 2025-03-12 combo email and the 2026-02-10 standalone deep-dive. Older Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"Pinealon: 1 mg/day (at night)\" with \"20 days STRAIGHT\" \"2-3 times per year.\" Newer Hunter (threadId 19c49cac85fb70ef, 2026-02-10) materially changes both: \"Conservative (most online protocols)\" \"100-300 mcg/day subQ\" \"10-20 days,\" \"Hunter's preferred dose\" \"2 mg/day subQ\" \"10-60 days,\" and on timing \"Hunter at night → restlessness + elevated heart rate\" \"Morning dosing → problem solved\" \"Take in the morning.\" The newer 2026-02-10 content is the operative recommendation. Taylor differs from Hunter not on dose specifics (she cites no doses) but on framing: Hunter calls pinealon \"shines for sleep + circadian\" Taylor (5ugqlYRSRSo 01:15:23.040) cautions \"if you want the most longevity protocol, it's hormone optimization\" and (5ugqlYRSRSo 01:15:46.960) \"I just want people's expectations because it's kind of one of those things.\" No Trevor Bachmeyer voice exists in this card to compare.",
+    "recommendation": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:22: \"What you'll usually see if you go across the Internet is this 100 to 300 micrograms per day range and people do that as a sub-q injection for 10 to 20 days.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:57: \"Now I on the other hand I really like two milligram per day and I would that probably in the neighborhood of like 10 to 60 days. I would say 10 if it's more of an acute issue.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+    "caveats": "- Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 12:31: \"I noticed if I took it at night, kind of had a higher heart rate, kinda was a little bit more restless. And so I just switched it into the mornings, but you could do either one.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/\n- Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 13:32: \"I would probably say don't do more than 100 milligrams throughout a course of a year. You know if we get them to like the 120 range, that's fine.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/\n- Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 14:03: \"With sleep, transient sleep pattern changes, vivid dreams, mild insomnia. If dose too late, like I said, that's something that I definitely experience. Effects are usually temporary and resolve with adjustment.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/\n- Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 14:35: \"There could be mild anxiety or irritability in a minority of users. And then in rare cases you get dizziness, brief fatigue or lethargy.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/\n- Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 14:35: \"we don t have a lot of long term safety data, based on the mechanisms, I think it would be fine.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+    "cross_expert_consensus": "Hunter Williams, Saturday Morning Coffee Talk · 1/17/26 (library video, 2026-04-08) @ 1:15:36: \"it's great to do epitalon and pinealon, thymalin, and some of these other bioregulator things for longevity. But I just want people's expectations\" https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/ Taylor Williams, Saturday Morning Coffee Talk 1/17/26 (2026-01-17) @ 01:15:39.600: \"it's great to do epitalon and pinealon, daimolin, and some of these other bi-regular things for longevity, but I just want people's expectations\" https://youtu.be/5ugqlYRSRSo",
+    "cross_expert_disagreement": "Hunter Williams, The Epitalon + Pinealon Combo (2025-03-12, threadId 1958c6d78ba43937): \"Pinealon: 1 mg/day (at night)\"; \"20 days STRAIGHT\"; \"2-3 times per year.\" Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:57: \"Now I on the other hand I really like two milligram per day and I would that probably in the neighborhood of like 10 to 60 days. I would say 10 if it's more of an acute issue.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 12:31: \"I noticed if I took it at night, kind of had a higher heart rate, kinda was a little bit more restless. And so I just switched it into the mornings, but you could do either one.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ The later 2026-03-30 library video is the operative Hunter source. Hunter Williams, Pinealon How To Use It For Anti-Aging And Longevity (library article, 2026-03-29, no transcript cue): \"In Pinealon's case, that organ is the pineal gland.\" https://library.hunterwilliamshealth.com/p/pinealon-how-to-use-it-for-anti-aging-and-longevity--c0de1ff9/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 0:09: \"contrary to what a lot of people think,this is actually not the Peptide bi-regulator for the pineo gland\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ The later 2026-03-30 library video is the operative Hunter source.",
     "acute_chronic_split": {
       "acute": {
-        "dose": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"2 mg/day subQ\" with \"Shorter cycles → acute issues.\"",
-        "route": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"2 mg/day subQ.\"",
-        "frequency": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Take in the morning.\"",
-        "duration": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"10-60 days depending on situation\" with \"Shorter cycles → acute issues.\"",
-        "verbatim_citation": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Hunter's preferred dose - 2 mg/day subQ - 10-60 days depending on situation - Shorter cycles → acute issues - Longer cycles → prolonged stress, HPA dysfunction, heavy travel.\"",
-        "episode_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
-        "timestamp": "Hunter email threadId 19c49cac85fb70ef (2026-02-10)"
+        "dose": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:57: \"Now I on the other hand I really like two milligram per day and I would that probably in the neighborhood of like 10 to 60 days. I would say 10 if it's more of an acute issue.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "route": null,
+        "frequency": null,
+        "duration": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:57: \"I would say 10 if it's more of an acute issue.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "verbatim_citation": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:57: \"Now I on the other hand I really like two milligram per day and I would that probably in the neighborhood of like 10 to 60 days. I would say 10 if it's more of an acute issue.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "timestamp": "11:57"
       },
       "chronic": {
-        "dose": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"100-300 mcg/day subQ\" for conservative use; microdosing alternative \"Start: 200 mcg/day - Titrate up to: 500 mcg/day over 8-12 weeks - ~20 mg per cycle total.\" Older Hunter (threadId 1958c6d78ba43937, 2025-03-12) combo dose: \"Pinealon: 1 mg/day (at night).\"",
-        "route": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"100-300 mcg/day subQ\"; Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"Inject subQ (belly fat).\"",
-        "frequency": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Take in the morning.\" Older Hunter (threadId 1958c6d78ba43937, 2025-03-12) said \"at night\" — explicitly overridden by 2026-02-10.",
-        "duration": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"10-20 days\" conservative; \"10-60 days depending on situation\" preferred; microdose \"8-12 weeks.\" Annual cap: \"DO NOT exceed 100-120 mg total per year.\" Older Hunter (threadId 1958c6d78ba43937, 2025-03-12): \"20 days STRAIGHT\" \"2-3 times per year.\"",
-        "verbatim_citation": "Hunter (threadId 19c49cac85fb70ef, 2026-02-10): \"Conservative (most online protocols) - 100-300 mcg/day subQ - 10-20 days - Works for subtle circadian / cognitive support\" and \"Annual cap - DO NOT exceed 100-120 mg total per year - Effects persist well after stopping → suggests long-lasting regulatory changes, NOT transient stimulation.\"",
-        "episode_url": "https://open.spotify.com/episode/6r4jji1nEwaFYsF0GfJiaD",
-        "timestamp": "Hunter email threadId 19c49cac85fb70ef (2026-02-10); older combo threadId 1958c6d78ba43937 (2025-03-12)"
+        "dose": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:22: \"100 to 300 micrograms per day\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:57: \"two milligram per day\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 12:31: \"starting at 200 micrograms daily, titrate up to around half a milligram. You would get like, a total of 20 milligrams per cycle.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "route": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:22: \"people do that as a sub-q injection\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 14:03: \"just do a sub-Q injection into the belly.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "frequency": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 12:31: \"you could do either one.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, The Epitalon + Pinealon Combo (2025-03-12, threadId 1958c6d78ba43937): \"Pinealon: 1 mg/day (at night).\" Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 12:31: \"I just switched it into the mornings\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "duration": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:22: \"for 10 to 20 days\"; \"two to four weeks or 10 to 20 days.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:57: \"10 to 60 days\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 12:31: \"a micro dose of eight to 12 weeks\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 14:03: \"two milligrams per day for 30 to 60 days.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "verbatim_citation": "Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 11:22: \"What you'll usually see if you go across the Internet is this 100 to 300 micrograms per day range and people do that as a sub-q injection for 10 to 20 days.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/ Hunter Williams, Pinealon: Updated Benefits, Mechanisms, and Dosing (2026-03-30) @ 12:31: \"Then if you wanted to do a micro dose of eight to 12 weeks, starting at 200 micrograms daily, titrate up to around half a milligram. You would get like, a total of 20 milligrams per cycle.\" https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/pinealon-updated-benefits-mechanisms-and-dosing--a729f708/",
+        "timestamp": "11:22; 11:57; 12:31; 14:03"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:40:40.186Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T03:54:28.2649289-06:00",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.994Z"
+  "generated_at": "2026-07-17T10:59:09.054Z",
+  "mentions_fingerprint": "1cc330ae6a11"
 }

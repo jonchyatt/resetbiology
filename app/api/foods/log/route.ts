@@ -15,10 +15,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    let user = authUser.sub ? await prisma.user.findUnique({ where: { auth0Sub: authUser.sub } }) : null;
-    if (!user && authUser.email) {
-      user = await prisma.user.findUnique({ where: { email: authUser.email } });
-    }
+    const user = await getUserFromSession(session);
 
     if (!user) {
       return NextResponse.json({ ok: false, error: 'User not found' }, { status: 404 });
@@ -45,6 +42,13 @@ export async function POST(req: Request) {
     if (!itemName || typeof nutrients !== 'object' || nutrients === null) {
       return NextResponse.json({ ok: false, error: 'Missing itemName or nutrients' }, { status: 400 });
     }
+
+    // Only our own vault-backed render path may land in photoUrl — an
+    // external-host photo URL can never enter FoodLog again.
+    const safePhotoUrl =
+      typeof photoUrl === 'string' && /^\/api\/images\/[A-Za-z0-9_-]+$/.test(photoUrl)
+        ? photoUrl
+        : null;
 
     const logTimestamp = loggedAt ? new Date(loggedAt) : new Date();
     const startOfDay = new Date(logTimestamp);
@@ -73,7 +77,7 @@ export async function POST(req: Request) {
         unit,
         gramWeight: typeof gramWeight === 'number' ? gramWeight : gramWeight ? Number(gramWeight) : null,
         nutrients,
-        photoUrl,
+        photoUrl: safePhotoUrl,
         notes,
         localDate, // User's local date YYYY-MM-DD
         localTime, // User's local time HH:MM:SS
@@ -198,10 +202,7 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    let user = authUser.sub ? await prisma.user.findUnique({ where: { auth0Sub: authUser.sub } }) : null;
-    if (!user && authUser.email) {
-      user = await prisma.user.findUnique({ where: { email: authUser.email } });
-    }
+    const user = await getUserFromSession(session);
 
     if (!user) {
       return NextResponse.json({ ok: false, error: 'User not found' }, { status: 404 });

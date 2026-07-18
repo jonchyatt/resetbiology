@@ -3,49 +3,74 @@
   "slug": "metformin",
   "aliases": [
     "Metformin",
-    "metformin"
+    "metformin",
+    "MetFormin"
   ],
-  "category": "Uncategorized",
+  "category": "Hormones",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 239,
+        "mention_count": 806,
         "top_doses": [
           {
             "dose": "500 mg",
-            "count": 67
+            "count": 136
+          },
+          {
+            "dose": "500 milligrams",
+            "count": 75
           },
           {
             "dose": "6 mg",
-            "count": 44
+            "count": 47
           },
           {
-            "dose": "000 mg",
-            "count": 6
-          },
-          {
-            "dose": "85 mg",
-            "count": 4
+            "dose": "1000 mg",
+            "count": 21
           },
           {
             "dose": "10 mg",
-            "count": 4
+            "count": 16
           },
           {
-            "dose": "0.25 mg",
-            "count": 3
+            "dose": "25 milligrams",
+            "count": 15
           },
           {
-            "dose": "2 iu",
-            "count": 3
+            "dose": "000 mg",
+            "count": 13
           },
           {
-            "dose": "20 mg",
-            "count": 2
+            "dose": "2000 milligrams",
+            "count": 12
           }
         ],
         "top_sources": [
+          {
+            "source_id": "stop-blocking-estrogen-use-metformin-instead--5fc9929b",
+            "source_type": "library-video",
+            "source_title": "Stop Blocking Estrogen: Use Metformin Instead",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/stop-blocking-estrogen-use-metformin-instead--5fc9929b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/stop-blocking-estrogen-use-metformin-instead--5fc9929b.json",
+            "mention_count": 78,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are at in the world. Today's video is called metformin versus estrogen. So I think I may be doing something that no one else is probably stupid enough to do, which is to make a video helping men understand that estrogen is not bad. And to take it a step further, I'm going to recommend that you use metformin to help quote unquote, manage your estrogen. I am not a big fan of quote, unquote saying, quote-unquote, manager estrogen, but what I have noticed through the years of doing this is that men with",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are at in the world. Today's video is called metformin versus estrogen. So I think I may be doing something that no one else is probably stupid enough to do, which is to make a video helping men understand that estrogen is not bad. And to take it a step further, I'm going to recommend that you use metformin to help quote unquote, manage your estrogen. I am not a big fan of quote, unquote saying, quote-unquote, manager estrogen, but what I have noticed through the years of doing this is that men with higher amounts of body fat tend to aromatize more of their testosterone, whether that's exogenous or endogenous testosterone into estrogen. So what I have noticed is that first of all, before I started testosterone while I'm on testosterone I've never had a lot of visceral fat on my body. All of the high estrogen symptoms that men speak of I never experienced.",
+            "first_timestamp": "0:10"
+          },
+          {
+            "source_id": "100-reasons-everyone-should-use-metformin-studies-included--43918476",
+            "source_type": "library-video",
+            "source_title": "100 Reasons Everyone Should Use Metformin Studies Included",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/100-reasons-everyone-should-use-metformin-studies-included--43918476/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/100-reasons-everyone-should-use-metformin-studies-included--43918476.json",
+            "mention_count": 67,
+            "top_snippet": "Hey, everybody. This is Hunter Williams. I hope you are doing amazing wherever you're at in the world. Today is going to be a little bit of a change up video. Am going be talking about 100 reasons why everyone should use metformin. So as most of you know, you follow me for peptides and I talk a lot about peptide. But today I want to talk about something that I think everyone that whether you using peptize or not should be using. and that is metformin. I firmly believe, and I learned much of this from Jay Campbell, that met formin is likely the most powerful life extension agent that we have on the planet",
+            "top_context": "Hey, everybody. This is Hunter Williams. I hope you are doing amazing wherever you're at in the world. Today is going to be a little bit of a change up video. Am going be talking about 100 reasons why everyone should use metformin. So as most of you know, you follow me for peptides and I talk a lot about peptide. But today I want to talk about something that I think everyone that whether you using peptize or not should be using. and that is metformin. I firmly believe, and I learned much of this from Jay Campbell, that met formin is likely the most powerful life extension agent that we have on the planet right now. And that's saying a lot because obviously you guys know I know a There's a lot of misinformation, disinformation, and I'm not saying all of it is bad intended or has bad intentions by some of the influencers that put it out, but today I want to kind of provide a counter to a lots of information around Metformin out on the internet. It seems like for whatever reason, Most of the stuff Jay and I talk about kind of just paints a target on our back and maybe that's because it actually works. And a lot of this stuff out on the internet wants to sell you stuff that doesn't work.",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "197c2ddd4fc636b1",
             "source_type": "email",
@@ -55,7 +80,7 @@
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-30-new-metformin-studies-out.md",
             "mention_count": 35,
             "top_snippet": "Happy Monday! Every year, a new “miracle supplement” tries to make its way onto the anti-aging stage. But when the dust settles, one compound keeps shining brighter than the rest: **Metformin**. It’s ",
-            "top_context": "Happy Monday! Every year, a new “miracle supplement” tries to make its way onto the anti-aging stage. But when the dust settles, one compound keeps shining brighter than the rest: **Metformin**. It’s not new, it’s not sexy, but it _keeps_ delivering. And the latest 2025 research just turbocharged its case as the ultimate longevity molecule. Whether you’re optimizing blood sugar, aiming for legendary healthspan, or stacking the deck against age-related diseases, it’s impossible",
+            "top_context": "Happy Monday! Every year, a new “miracle supplement” tries to make its way onto the anti-aging stage. But when the dust settles, one compound keeps shining brighter than the rest: **Metformin**. It’s not new, it’s not sexy, but it _keeps_ delivering. And the latest 2025 research just turbocharged its case as the ultimate longevity molecule. Whether you’re optimizing blood sugar, aiming for legendary healthspan, or stacking the deck against age-related diseases, it’s impossible to ig",
             "first_timestamp": null
           },
           {
@@ -71,6 +96,18 @@
             "first_timestamp": "00:23:42.200"
           },
           {
+            "source_id": "sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859",
+            "source_type": "library-video",
+            "source_title": "SGLT2 Inhibitors Explained Benefits Risks and My Personal Experience",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859.json",
+            "mention_count": 28,
+            "top_snippet": "So shout out to him. I think he has a YouTube channel, Simon Campbell, if you can go find it out there. So go look him up if you want. I don't know if he has videos about these on his channel or not, but I also too have heard about this in the comments and there were people criticizing me for not talking about them yet. And again, there's only so much time of the day. There's always so research I can do. So that's why I hadn't, so now I'm getting around to it. But anyway, I will also say this. Some people will debate whether Metformin or SGLT2 inhibitors are better.",
+            "top_context": "them previously. So I want to preface this with a few things. First of all, I didn't know anything about SGLT2 inhibitors. I learned about this from my audience. Specifically, there's a guy named Simon Campbell out there, he's probably watching this video right now, that I found out about these from. So, I still don't know that much about them other than what I've tested on myself. And then obviously doing my own research and compiling this relative to some of the other compounds I talk about. But Simon was the first person that introduced me to this. So shout out to him. I think he has a YouTube channel, Simon Campbell, if you can go find it out there. So go look him up if you want. I don't know if he has videos about these on his channel or not, but I also too have heard about this in the comments and there were people criticizing me for not talking about them yet. And again, there's only so much time of the day. There's always so research I can do. So that's why I hadn't, so now I'm getting around to it. But anyway, I will also say this. Some people will debate whether Metformin or SGLT2 inhibitors are better. Spoiler alert, i'm going to talk about how you can use them both together. And also too, I think dogmatism is the enemy of progress, meaning that if we are dogmatic about certain concepts or ideas or supplements or drugs or whatever, that inhibits progress. So I would like to think and I do my best to have an open mind regarding all this stuff. I like put things to my personal test. But like if I found out tomorrow that testosterone was bad, which is not going to happen, I would adjust my positions accordingly.",
+            "first_timestamp": "1:12"
+          },
+          {
             "source_id": "19544a0246974d8d",
             "source_type": "email",
             "source_title": "Should You Use Metformin If You’re On a GLP-1?",
@@ -78,69 +115,33 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-02-26-should-you-use-metformin-if-you-re-on-a-glp-1.md",
             "mention_count": 21,
-            "top_snippet": "e interaction between HGH, GLP-1 drugs, and metformin—especially when it comes to blood sugar. Here’s a perfect example from a recent reader-submitted question: ““My hormones are optimized. I take **2",
-            "top_context": "e interaction between HGH, GLP-1 drugs, and metformin—especially when it comes to blood sugar. Here’s a perfect example from a recent reader-submitted question: ““My hormones are optimized. I take **2 IU of HGH every night** and **microdose Retatrutide 3x per week**. I also take **1,000 mg of metformin daily**. I’m in **good shape (14% body fat)**. Do you think metformin is still necessary if I’m on a GLP-1 drug? My blood sugar became elevated when I started HGH.”“ — This is an important question for anyone using peptides, GH, and metabolic optimization tools—so let’s break it down. _*",
+            "top_snippet": "One of the most common questions I get is about the interaction between HGH, GLP-1 drugs, and metformin—especially when it comes to blood sugar. Here’s a perfect example from a recent reader-submitted",
+            "top_context": "One of the most common questions I get is about the interaction between HGH, GLP-1 drugs, and metformin—especially when it comes to blood sugar. Here’s a perfect example from a recent reader-submitted question: ““My hormones are optimized. I take **2 IU of HGH every night** and **microdose Retatrutide 3x per week**. I also take **1,000 mg of metformin daily**. I’m in **good shape (14% body fat)**.",
             "first_timestamp": null
           },
           {
-            "source_id": "19db739726262c08",
-            "source_type": "email",
-            "source_title": "Why I Still Take 500mg of Metformin Daily",
-            "source_date": "2026-04-22",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-22-metformin-500mg-daily.md",
-            "mention_count": 20,
-            "top_snippet": "# Why I Still Take 500mg of Metformin Daily — Defense in the GLP-1 / SGLT2 Era > \"The longevity community keeps telling you metformin is dead. In my opinion, they're wrong based on data that keeps pou",
-            "top_context": "# Why I Still Take 500mg of Metformin Daily — Defense in the GLP-1 / SGLT2 Era > \"The longevity community keeps telling you metformin is dead. In my opinion, they're wrong based on data that keeps pouring in.\" > \"If I had to pick one drug for longevity and I was diabetic, I'd pick an SGLT2. If I had to pick one drug and I wasn't diabetic, I'd still pick an SGLT2 off-label. But I don't have to pick one.\" ## ⭐ Why Hunter Keeps Me",
-            "first_timestamp": null
+            "source_id": "saturday-morning-coffee-talk-with-taylor--18e31bfe",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · With Taylor",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-with-taylor--18e31bfe.json",
+            "mention_count": 21,
+            "top_snippet": "APV first, thymus and alpha one at second. And actually, if you could use a microdose of a GLP one, not so much that it may like cause GI issues, but a micronose with the GLp one actually will help with a lot of the gut health stuff. I would say metformin would be great to add in as well to that. It's interest, low dose naltrexone would amazing for that because that's an immune system modulator. Thymolin would good too, that would more lower on the totem pole in the hierarchy of it.",
+            "top_context": "I don't know when you say that you were taking to much a a thing, what that means. Like if you had an immune reaction to peptide, I will say when we talk about mast cell activation syndrome, Typically, the peptides are going to work best. Here's my hierarchy of defense. I would actually say probably KPV would be number one because it's going calm the inflammation storm that's resulting in the immune response. APV first, thymus and alpha one at second. And actually, if you could use a microdose of a GLP one, not so much that it may like cause GI issues, but a micronose with the GLp one actually will help with a lot of the gut health stuff. I would say metformin would be great to add in as well to that. It's interest, low dose naltrexone would amazing for that because that's an immune system modulator. Thymolin would good too, that would more lower on the totem pole in the hierarchy of it. But yeah, I would say KPV first, thymus and alpha 1, LDN, microdose of a GLP, metformin, and then if you want to do thiamine as well. I think if your doing those things, That's kind of like a multimodal approach to calming down inflammation in the body through the immune system. And when you do that, it's going to help stop that. A lot of people that have an immune reaction to a growth hormone peptide or immune reactions to whatever peptides they're taking,",
+            "first_timestamp": "34:08"
           },
           {
-            "source_id": "he_GzaUMwpI",
-            "source_type": "podcast",
-            "source_title": "The FDA Just Changed Everything for Peptides | My Honest Take",
-            "source_date": "2026-04-17",
-            "source_url": "https://youtu.be/he_GzaUMwpI",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-17-the-fda-just-changed-everything-for-peptides-my-honest-take-he_GzaUMwpI.en.vtt",
-            "mention_count": 18,
-            "top_snippet": "if you think about let's use the analogy of metformin for a second. Metformin",
-            "top_context": "to get BPC or TB-500 or KPV from your to get BPC or TB-500 or KPV from your doctor, doctor, doctor, although not impossible. And I think at although not impossible. And I think at although not impossible. And I think at that point, you're probably going to that point, you're probably going to that point, you're probably going to have a lot of people that stay in the have a lot of people that stay in the have a lot of people that stay in the research world. They'll probably do what research world. They'll probably do what research world. They'll probably do what they can to shut that down, but I don't they can to shut that down, but I don't they can to shut that down, but I don't think it's going to be that effective at think it's going to be that effective at think it's going to be that effective at shutting down. shutting down. shutting down. But, But, But, it's probably going to be pretty high. it's probably going to be pretty high. it's probably going to be pretty high. But, what will start to happen, and I'm But, what will start to happen, and I'm But, what will start to happen, and I'm already seeing this happen now, is more already seeing this happen now, is more already seeing this happen now, is more and more compounding pharmacies are and more compounding pharmacies are and more compounding pharmacies are going to get into uh making peptides. going to get into uh making peptides. going to get into uh making peptides. More and more telehealth clinics are More and more telehealth clinics are More and more telehealth clinics are going to get into prescribing peptides. going to get into prescribing peptides. going to get into prescribing peptides. And eventually, what's going to happen And eventually, what's going to happen And eventually, what's going to happen is that's going to bring the price down is that's going to bring the price down is that's going to bring the price down to where it is actually more to where it is actually more to where it is actually more cost-effective cost-effective cost-effective for someone to get a peptide from their for someone to get a peptide from their for someone to get a peptide from their doctor than it is through the research doctor than it is through the research doctor than it is through the research world. And I know that sounds crazy, but world. And I know that sounds crazy, but world. And I know that sounds crazy, but if you think about let's use the analogy if you think about let's use the analogy if you think about let's use the analogy of metformin for a second. Metformin of metformin for a second. Metformin of metformin for a second. Metformin right now is a generic, it's off patent, right now is a generic, it's off patent, right now is a generic, it's off patent, uh it's basically like the cheapest drug uh it's basically like the cheapest drug uh it's basically like the cheapest drug on the planet, probably one of the on the planet, probably one of the on the planet, probably one of the cheapest, most widely prescribed drugs cheapest, most widely prescribed drugs cheapest, most widely prescribed drugs on the planet. And you can actually get on the planet. And you can actually get on the planet. And you can actually get metformin from like an offshore black metformin from like an offshore black metformin from like an offshore black market underground pharmacy if you want market underground pharmacy if you want market underground pharmacy if you want to. But, if you look at the cost of to. But, if you look at the cost of to. But, if you look at the cost of doing that, and also the the fact that doing that, and also the the fact that doing that, and also the the fact that you have to use crypto and usually takes you have to use crypto and usually takes you have to use crypto and usually takes like six weeks to arrive, like six weeks to arrive, like six weeks to arrive, uh the cost of doing that versus going uh the cost of doing that versus going uh the cost of doing that versus going to an online pharmacy and just filling to an online pharmacy and just filling to an online pharmacy and just filling out a 5-minute questionnaire like out a 5-minute questionnaire like out a 5-minute questionnaire like Ageless RX or TeleRX, you can get Ageless RX or TeleRX, you can get Ageless RX or TeleRX, you can get metformin for like 15 to 30 bucks a metformin for like 15 to 30 bucks a metformin for like 15 to 30 bucks a month delivered to your doorstep with a month delivered to your doorstep with a month delivered to your doorstep with a prescription. And so, why would you go prescription. And so, why would you go prescription. And so, why would you go through all the trouble to order through all the trouble to order through all the trouble to order metformin from an offshore pharmacy and metformin from an offshore pharmacy and metformin from an offshore pharmacy and go through all that crypto and wait go through all that crypto and wait go through all that crypto and wait however many weeks for it to arrive however many weeks for it to arrive however many weeks for it to arrive versus just going on an online pharmacy,",
-            "first_timestamp": "00:09:09.760"
-          },
-          {
-            "source_id": "1977fedef602bdeb",
-            "source_type": "email",
-            "source_title": "The Truth About High Estrogen",
-            "source_date": "2025-06-17",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-06-17-the-truth-about-high-estrogen.md",
-            "mention_count": 17,
-            "top_snippet": "— If that sounds familiar, you’re definitely not alone. There’s a LOT of misinformation out there about estrogen, aromatase, and what it _really_ means to feel “estrogen dominant” or to have symptoms ",
-            "top_context": "— If that sounds familiar, you’re definitely not alone. There’s a LOT of misinformation out there about estrogen, aromatase, and what it _really_ means to feel “estrogen dominant” or to have symptoms that look like high estrogen. So, let’s dive deep into why I’m a massive proponent of **metformin** (not aromatase inhibitors) for people struggling with these issues. “[BioLongevity Labs is launching a flash sale today on the following items:](https://biolongevitylabs.com/) GLP-3 BPC-157/TB-500 Blend MOTS-C Glow Blend (BPC-157/TB-500/GHK-Cu) Thymosin Alpha-1 Melanota",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "JFrn_zX0RE4",
-            "source_type": "podcast",
-            "source_title": "Peptides & Longevity Medicine Explained by a Real Cardiologist | Dr. Abid Husain, MD",
-            "source_date": "2026-03-27",
-            "source_url": "https://youtu.be/JFrn_zX0RE4",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-03-27-peptides-longevity-medicine-explained-by-a-real-cardiologist-dr-abid-h-JFrn_zX0RE4.en.vtt",
-            "mention_count": 15,
-            "top_snippet": "little bold. I think they'll probably make Metformin obsolete assuming that",
-            "top_context": "interesting um and that's why it can interesting um and that's why it can re-calibrate the gut microbiome improve re-calibrate the gut microbiome improve re-calibrate the gut microbiome improve gut health um improve b you know short gut health um improve b you know short gut health um improve b you know short chain fatty acids which are important chain fatty acids which are important chain fatty acids which are important for gut health improving that metabolism for gut health improving that metabolism for gut health improving that metabolism so it's got a multi-system effect that so it's got a multi-system effect that so it's got a multi-system effect that is perfectly in line with what we're is perfectly in line with what we're is perfectly in line with what we're trying to do with longevity. Um, you trying to do with longevity. Um, you trying to do with longevity. Um, you know, it's a systems approach that good know, it's a systems approach that good know, it's a systems approach that good longevity care means you've got you're longevity care means you've got you're longevity care means you've got you're improving all of the systems or many improving all of the systems or many improving all of the systems or many systems at once to to help the overall systems at once to to help the overall systems at once to to help the overall organism function better. Uh, so SGLT2 organism function better. Uh, so SGLT2 organism function better. Uh, so SGLT2 inhibitors meet all of that. They they inhibitors meet all of that. They they inhibitors meet all of that. They they do all of these things in multiple do all of these things in multiple do all of these things in multiple different tissues. different tissues. different tissues. Yeah, I think it's interesting too is uh Yeah, I think it's interesting too is uh Yeah, I think it's interesting too is uh maybe this is a prediction, maybe a maybe this is a prediction, maybe a maybe this is a prediction, maybe a little bold. I think they'll probably little bold. I think they'll probably little bold. I think they'll probably make Metformin obsolete assuming that make Metformin obsolete assuming that make Metformin obsolete assuming that people can, you know, affordably get people can, you know, affordably get people can, you know, affordably get them because Metformin is so cheap. The them because Metformin is so cheap. The them because Metformin is so cheap. The SGLT2s are a little bit more expensive. SGLT2s are a little bit more expensive. SGLT2s are a little bit more expensive. But I think if you look at the the cost But I think if you look at the the cost But I think if you look at the the cost benefit, if you said you could have an benefit, if you said you could have an benefit, if you said you could have an SGLT or two or Metformin, I would take SGLT or two or Metformin, I would take SGLT or two or Metformin, I would take SGLT2s all day because of the benefits SGLT2s all day because of the benefits SGLT2s all day because of the benefits you have and you don't have any of the you have and you don't have any of the you have and you don't have any of the drawbacks of metformin that a lot of drawbacks of metformin that a lot of drawbacks of metformin that a lot of people have. So people have. So people have. So &gt;&gt; that's right. Yeah. I I I did a lecture &gt;&gt; that's right. Yeah. I I I did a lecture &gt;&gt; that's right. Yeah. I I I did a lecture a few years ago and and that was that a few years ago and and that was that a few years ago and and that was that was part of it. That was the gist of it. was part of it. That was the gist of it. was part of it. That was the gist of it. It was about, you know, metformin being It was about, you know, metformin being It was about, you know, metformin being old news and SGLT2 inhibitors should be old news and SGLT2 inhibitors should be old news and SGLT2 inhibitors should be the one that you use now. So, I agree. the one that you use now. So, I agree. the one that you use now. So, I agree. &gt;&gt; Yeah. Yeah. Well, wrapping up, I'm sure &gt;&gt; Yeah. Yeah. Well, wrapping up, I'm sure &gt;&gt; Yeah. Yeah. Well, wrapping up, I'm sure the one thing I appreciate about you is the one thing I appreciate about you is the one thing I appreciate about you is you practice what you preach. So, not you practice what you preach. So, not you practice what you preach. So, not only are you living living this in uh only are you living living this in uh only are you living living this in uh your professional world, but you also your professional world, but you also your professional world, but you also live it in your personal life. Can you live it in your personal life. Can you live it in your personal life. Can you just give people kind of high level what",
-            "first_timestamp": "01:05:39.359"
-          },
-          {
-            "source_id": "1985d61b6553c86f",
-            "source_type": "email",
-            "source_title": "Metformin + Dihydroberberine",
-            "source_date": "2025-07-30",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-30-metformin-dihydroberberine.md",
-            "mention_count": 15,
-            "top_snippet": "Happy Wednesday! Today I’m diving deep into a question I get almost every week. Here’s the most recent one I received: “**“Hey Hunter, I keep hearing about metformin and berberine for blood sugar and ",
-            "top_context": "Happy Wednesday! Today I’m diving deep into a question I get almost every week. Here’s the most recent one I received: “**“Hey Hunter, I keep hearing about metformin and berberine for blood sugar and longevity. I’m confused. Should I just take metformin, or is berberine better? I hear metformin is super dangerous!”**“ — If you’re on the fence about which route to take, or wondering whether to combine them, this breakdown is for you. “FYI, BioLongevity La",
-            "first_timestamp": null
+            "source_id": "the-high-cholesterol-peptide-stack-strategies-and-dosages-revealed--75826526",
+            "source_type": "library-video",
+            "source_title": "The High Cholesterol Peptide Stack Strategies And Dosages Revealed",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-high-cholesterol-peptide-stack-strategies-and-dosages-revealed--75826526/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-high-cholesterol-peptide-stack-strategies-and-dosages-revealed--75826526.json",
+            "mention_count": 21,
+            "top_snippet": "Um, I was going to, um, basically work directly on cholesterol and bringing that down. Now, the next one, I had to throw it in there, if you know me, you'll know I love to talk about this, is metformin. So basically, met formin is a bi-guanide class oral anti-hyperglycemic medication. Basically, it decreases hepatic glucose production, which basically just means our liver producing glucose, increases insulin sensitivity, and enhances peripheral glucose uptake.",
+            "top_context": "If you get in the capsule form, I'll go as high as 20 milligrams sometimes. That's obviously going to give you extra endurance. I don't really see any benefit going higher than 20 kilograms. Now, the reason this never got approved for human use is because there were certain trials that it was shown to, increase cancer in mice or something like that. But again, that was relative to probably a hundred or a thousand times the dose that humans would ever use. So people have been using this for decades with zero side effects whatsoever. And I think it's, it relates to chronic inflammation and chronic disease within the body. Um, I was going to, um, basically work directly on cholesterol and bringing that down. Now, the next one, I had to throw it in there, if you know me, you'll know I love to talk about this, is metformin. So basically, met formin is a bi-guanide class oral anti-hyperglycemic medication. Basically, it decreases hepatic glucose production, which basically just means our liver producing glucose, increases insulin sensitivity, and enhances peripheral glucose uptake. Why does that matter for cholesterol? Basically when we reduce blood glucose levels, we're going to improve insulin's sensitivity This is going to help lower triglyceride and LDL cholesterol. So again, it goes back to insulin resistance. We improved insulin's resistance, we're going bring down LDl. we are going down triglicerides, which is just going help obviously bring our cholesterol down. And then also Metformin is also going do help in fat loss and weight management, uh, Which is beneficial for obviously lowering cholesterol levels. I would recommend 500 milligrams of AMMPM. And then I take a thousand milligrams of MMPM.",
+            "first_timestamp": "14:28"
           }
         ],
         "acute_signals": [
@@ -626,33 +627,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider that the three experts split sharply on whether metformin belongs in a non-diabetic longevity stack at all: Hunter and Taylor recommend it, Trevor recommends MOTS-C instead. Hunter email threadId 19db739726262c08 (2026-04-22): \"Why I Still Take 500mg of Metformin Daily\" with the operative dose \"Metformin 500 mg daily\" while Trevor (sKS-my9Y8vQ 00:13:50.720): \"Metformin works by partially trashing and poisoning your mitochondria.\" We'd ask the prescribing physician to weigh dose level, B12 supplementation, exercise context, and whether the indication is type-2 diabetes (where Trevor concedes utility) versus longevity-only (where Trevor and Hunter diverge).",
-    "caveats": "- B12 depletion is real and dose-correlated: Hunter email threadId 19db739726262c08 (2026-04-22): \"2025 All of Us Research Program (14,808 adults): long-term users 67% higher likelihood of B12 deficiency\" and \"Take methylcobalamin\" / \"Test B12 annually\"; Trevor (sKS-my9Y8vQ 00:19:24.559): \"Long-term metformin users have B12 deficiency rates of 30%\"; Trevor (sKS-my9Y8vQ 00:19:36.400): \"30% of metformin users develop B12 deficiency within 5 years or less.\"\n- Exercise-blunting concern is dose-dependent: Hunter email threadId 19db739726262c08 (2026-04-22): \"REAL but DOSE-DEPENDENT\" and \"these all used 1500-2000 mg daily\" and \"At 500 mg, evidence for blunting is much thinner.\"\n- GI side effects in 20–30%: Hunter email threadId 19db739726262c08 (2026-04-22): \"20-30% experience nausea/diarrhea/cramping\" and \"start low, extended-release, titrate slowly, take with food.\" Taylor (ovNE9d4xFsk 00:13:37.760): \"starting off with a lower dose for two weeks let your body and let your gut microbiomes go through that cleansing effect.\"\n- Lactic acidosis: Hunter email threadId 19db739726262c08 (2026-04-22): \"Real but rare\" and \"Risk concentrated in significant kidney disease, heart failure, alcohol use disorder.\"\n- Mitochondrial mechanism critique: Trevor (sKS-my9Y8vQ 00:13:57.839): \"It's not fixing mitochondrial dysfunction. It's causing a mild version of mitochondrial dysfunction.\" Trevor (sKS-my9Y8vQ 00:18:51.360): \"chronic metformin use in non-diabetic subjects reduced maximum mitochondrial ATP production by 15%.\"\n- Folate/homocysteine: Trevor (sKS-my9Y8vQ 00:19:27.200): \"Metformin also depletes folate leading to elevated homocyine which increases ... cardiovascular risk.\"\n- Genomic instability flag: Trevor (sKS-my9Y8vQ 00:23:43.520): \"chronic complex one inhibition, which is exactly what metformin does, increases the mutation rate in mitochondrial DNA by three times.\"\n- Type-2 management vs reversal: Trevor (sKS-my9Y8vQ 00:41:03.440): \"Metformin doesn't reverse type 2 it manages it. People stay on metformin indefinitely because if they stop they go back to having type 2 diabetes.\"\n- Non-diabetic lifespan extension is contested: Trevor (sKS-my9Y8vQ 00:17:26.799): \"Metformin did not extend lifespan in non-diabetic humans. Not one single freaking study showed lifespan extension.\"",
-    "cross_expert_consensus": "All three experts agree metformin's primary biochemistry is AMPK activation through complex-I inhibition, even though they disagree on whether that is net-positive. Hunter email threadId 19db739726262c08 (2026-04-22): \"Metformin — AMPK activation via complex I inhibition + hepatic insulin sensitivity.\" Taylor (ovNE9d4xFsk 00:05:12.160): \"metformin is going to enhance your mitochondria Health which is crucial for maintaining energy levels.\" Trevor (sKS-my9Y8vQ 00:11:04.000): \"metformin enters the cells and accumulates in the mitochondrial matrix\" and (sKS-my9Y8vQ 00:11:09.839): \"It inhibits complex one of your electron transport chain.\" All three also agree it lowers blood glucose and is FDA-indicated for type 2 diabetes — Trevor (sKS-my9Y8vQ 00:43:03.680): \"Metformin works for type 2 diabetes because it lows lowers blood glucose through a mechanism that involves AMPK activation.\" Taylor (ovNE9d4xFsk 00:04:02.280): \"this basically was designed for type 2 diabetics to help with their blood sugar.\" Hunter email threadId 19544a0246974d8d (2025-02-26): \"Metformin reduces hepatic glucose production and activates AMPK.\" Both Hunter and Taylor agree on a 500 mg starting dose: Hunter email threadId 19db739726262c08 (2026-04-22): \"Metformin 500 mg daily (low end, avoids exercise-blunting concern).\" Taylor (ovNE9d4xFsk 00:15:21.519): \"500 milligrams ... in the morning.\"",
-    "cross_expert_disagreement": "Whether to take it at all in non-diabetics is the core disagreement. Hunter email threadId 19db739726262c08 (2026-04-22): \"The longevity community keeps telling you metformin is dead. In my opinion, they're wrong based on data that keeps pouring in.\" Taylor (ut_iXVvl-8w 00:03:30.000): \"metformin everybody should take it it's amazing supplement.\" Trevor (sKS-my9Y8vQ 00:18:18.320): \"for non-diabetic people, the people taking it for longevity, zero lifespan extension, zero\" and Trevor (sKS-my9Y8vQ 00:43:15.359): \"for non-diabetic people, taking it for longevity, you are getting harmed, not helped.\" Daily total dose differs: Hunter email threadId 19db739726262c08 (2026-04-22): \"Metformin 500 mg daily.\" Taylor (ovNE9d4xFsk 00:15:33.839): \"500 milligrams in the morning and 500 milligrams at night\" — i.e. 1,000 mg/day. Older Hunter content also referenced higher: Hunter email threadId 19544a0246974d8d (2025-02-26): \"1,000 mg of metformin daily\" with newer Hunter (2026-04-22) operative dose 500 mg. Hunter email threadId 19544a0246974d8d (2025-02-26) suggests \"Dropping from 1,000 mg to 500 mg per day\" or \"Cycling metformin\" is a reasonable protocol shift in GLP-1 / SGLT2 era. Stack philosophy differs: Hunter email threadId 19db739726262c08 (2026-04-22) endorses the triple stack — \"SGLT2 + GLP-1 + background metformin\" and \"It's no longer the strongest anti-aging drug on the market. SGLT2s probably are. But I don't have to pick one drug.\" Trevor (sKS-my9Y8vQ 00:43:33.760): \"Meanwhile, MOT C is doing something that Metformin can't.\"",
+    "recommendation": "Reset Biology suggests the prescribing clinician consider the directly conflicting expert statements before treating longevity-only use as an indication: Hunter (100-reasons-everyone-should-use-metformin-studies-included--43918476, 2026-03-29, 00:09, https://library.hunterwilliamshealth.com/p/100-reasons-everyone-should-use-metformin-studies-included--43918476/): \"I firmly believe ... that met formin is likely the most powerful life extension agent that we have on the planet\"; Trevor (sKS-my9Y8vQ, 2026-04-09, 00:43:15.359, https://youtu.be/sKS-my9Y8vQ): \"for non-diabetic people, taking it for longevity, you are getting harmed, not helped.\"",
+    "caveats": "- Hunter (saturday-morning-coffee-talk-with-taylor--18e31bfe, 2026-04-08, 00:39:05, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/): \"if you took 2000 milligrams of met formin before workout, you probably will notice a little bit of impairment in your performance.\"\n- Hunter (saturday-morning-coffee-talk-with-taylor--18e31bfe, 2026-04-08, 00:39:38, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/): \"if you are a professional athlete, you might not need Metformin. If I was a Professional Powerlifter or Olympic Weightlifter, then I probably wouldn't use MetFormin leading into the competitive phase of what I'm doing.\"\n- Hunter (100-reasons-everyone-should-use-metformin-studies-included--43918476, 2026-03-29, 02:20, https://library.hunterwilliamshealth.com/p/100-reasons-everyone-should-use-metformin-studies-included--43918476/): \"Very rarely have I seen someone make it through the first 14 to 21 days of using metformin to where that goes away.\"\n- Trevor (sKS-my9Y8vQ, 2026-04-09, 00:17:26.799, https://youtu.be/sKS-my9Y8vQ): \"Metformin did not extend lifespan in non-diabetic humans. Not one single freaking study showed lifespan extension.\"\n- Trevor (sKS-my9Y8vQ, 2026-04-09, 00:19:36.400, https://youtu.be/sKS-my9Y8vQ): \"30% of metformin users develop B12 deficiency within 5 years or less.\"",
+    "cross_expert_consensus": "Hunter (100-reasons-everyone-should-use-metformin-studies-included--43918476, 2026-03-29, 04:25, https://library.hunterwilliamshealth.com/p/100-reasons-everyone-should-use-metformin-studies-included--43918476/): \"number one, what is metformin known for? Improving insulin sensitivity.\" Taylor (ovNE9d4xFsk, 2024-09-03, 00:04:02.280, https://youtu.be/ovNE9d4xFsk): \"this basically was designed for type 2 diabetics to help with their blood sugar.\" Trevor (sKS-my9Y8vQ, 2026-04-09, 00:43:03.680, https://youtu.be/sKS-my9Y8vQ): \"Metformin works for type 2 diabetes because it lows lowers blood glucose through a mechanism that involves AMPK activation.\"",
+    "cross_expert_disagreement": "Hunter (100-reasons-everyone-should-use-metformin-studies-included--43918476, 2026-03-29, 00:09, https://library.hunterwilliamshealth.com/p/100-reasons-everyone-should-use-metformin-studies-included--43918476/): \"I firmly believe ... that met formin is likely the most powerful life extension agent that we have on the planet\"; Taylor (ut_iXVvl-8w, 2024-05-21, 00:03:30.000, https://youtu.be/ut_iXVvl-8w): \"metformin everybody should take it it's amazing supplement\"; Trevor (sKS-my9Y8vQ, 2026-04-09, 00:18:18.320, https://youtu.be/sKS-my9Y8vQ): \"for non-diabetic people, the people taking it for longevity, zero lifespan extension, zero.\" Hunter older (email threadId 19544a0246974d8d, 2025-02-26): \"1,000 mg of metformin daily\"; Hunter newer (saturday-morning-coffee-talk-with-taylor--18e31bfe, 2026-04-08, 00:44:43, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/): \"I take 500 milligrams of metormin and 25 milligrams Jartians.\" Taylor (ovNE9d4xFsk, 2024-09-03, 00:15:33.839, https://youtu.be/ovNE9d4xFsk): \"I now take 500 milligrams in the morning and 500 milligrams at night.\"",
     "acute_chronic_split": {
-      "acute": {
-        "dose": "Taylor (ovNE9d4xFsk 00:13:37.760): \"starting off with a lower dose for two weeks\" before titrating up.",
-        "route": "Oral. Hunter email threadId 19db739726262c08 (2026-04-22): \"start low, extended-release, titrate slowly, take with food.\"",
-        "frequency": "Taylor (ovNE9d4xFsk 00:14:13.560): \"I would take it at night and I'd give myself about two weeks for my GI system to kind of get used to it.\"",
-        "duration": "Taylor (ovNE9d4xFsk 00:14:18.360): \"about two weeks\" titration window before stepping up to maintenance dose.",
-        "verbatim_citation": "Taylor (ovNE9d4xFsk 00:13:37.760): \"starting off with a lower dose for two weeks let your body and let your gut microbiomes go through that cleansing effect.\" Hunter email threadId 19db739726262c08 (2026-04-22): \"start low, extended-release, titrate slowly, take with food.\"",
-        "episode_url": "https://youtu.be/ovNE9d4xFsk",
-        "timestamp": "00:13:37.760; 00:14:13.560; 00:14:18.360"
-      },
+      "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 19db739726262c08 (2026-04-22): \"Metformin 500 mg daily (low end, avoids exercise-blunting concern).\" Taylor (ovNE9d4xFsk 00:15:33.839): \"500 milligrams in the morning and 500 milligrams at night.\" Older Hunter (2025-02-26 threadId 19544a0246974d8d): \"1,000 mg of metformin daily\" — newer Hunter overrides to 500 mg with cycling option.",
-        "route": "Oral. Hunter email threadId 19db739726262c08 (2026-04-22): \"extended-release\" preferred for GI tolerability.",
-        "frequency": "Hunter email threadId 19db739726262c08 (2026-04-22): \"Metformin 500 mg daily.\" Taylor (ovNE9d4xFsk 00:15:33.839): twice daily — \"500 milligrams in the morning and 500 milligrams at night.\"",
-        "duration": "Indefinite per Hunter and Taylor (both frame it as ongoing longevity supplementation). Trevor (sKS-my9Y8vQ 00:41:05.839): \"stay on metformin indefinitely because if they stop they go back to having type 2 diabetes\" — Trevor frames this indefinite use as a critique.",
-        "verbatim_citation": "Hunter email threadId 19db739726262c08 (2026-04-22): \"Metformin 500 mg daily\" + \"Plus methylcobalamin sublingual\" + \"Annual B12 testing.\" Taylor (ovNE9d4xFsk 00:15:33.839): \"I now take 500 milligrams in the morning and 500 milligrams at night.\" Trevor (sKS-my9Y8vQ 00:43:11.520): \"For diabetic people, it has a an upside to it. But even then, it's not solving the problem.\"",
-        "episode_url": "https://youtu.be/sKS-my9Y8vQ",
-        "timestamp": "Hunter 2026-04-22 email; Taylor 00:15:33.839; Trevor 00:43:11.520"
+        "dose": "Hunter older (email threadId 19544a0246974d8d, 2025-02-26): \"1,000 mg of metformin daily\"; Hunter (sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859, 2026-03-29, 17:00, https://library.hunterwilliamshealth.com/p/sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859/): \"I was taking 1500 to 2000 milligrams of Metformins, split up into two doses. What I've done is moving to 500mg Met formin in the evening.\" Hunter newer (saturday-morning-coffee-talk-with-taylor--18e31bfe, 2026-04-08, 00:44:43, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/): \"I take 500 milligrams of metormin and 25 milligrams Jartians.\" Taylor (ovNE9d4xFsk, 2024-09-03, 00:15:33.839, https://youtu.be/ovNE9d4xFsk): \"I now take 500 milligrams in the morning and 500 milligrams at night.\"",
+        "route": null,
+        "frequency": "Hunter (sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859, 2026-03-29, 17:00, https://library.hunterwilliamshealth.com/p/sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859/): \"What I've done is moving to 500mg Met formin in the evening.\" Taylor (ovNE9d4xFsk, 2024-09-03, 00:15:33.839, https://youtu.be/ovNE9d4xFsk): \"I now take 500 milligrams in the morning and 500 milligrams at night.\"",
+        "duration": "Hunter (100-reasons-everyone-should-use-metformin-studies-included--43918476, 2026-03-29, 30:18, https://library.hunterwilliamshealth.com/p/100-reasons-everyone-should-use-metformin-studies-included--43918476/): \"I will use met for men for life, until I find conflicting over the unless I find conflicting evidence otherwise.\"",
+        "verbatim_citation": "Hunter (saturday-morning-coffee-talk-with-taylor--18e31bfe, 2026-04-08, 00:39:05, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/): \"if your doing 500 milligrams a day, no, I don't notice any impairment my workout.\" Hunter (saturday-morning-coffee-talk-with-taylor--18e31bfe, 2026-04-08, 00:44:43, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/): \"I take 500 milligrams of metormin and 25 milligrams Jartians.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859/; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/; https://youtu.be/ovNE9d4xFsk",
+        "timestamp": "Hunter 2025-02-26 email; Hunter 2026-03-29 17:00; Hunter 2026-04-08 00:39:05, 00:44:43; Taylor 2024-09-03 00:15:33.839"
       }
     },
-    "female_specific_notes": "Taylor frames metformin as a women-forward supplement. Taylor (ovNE9d4xFsk 00:06:02.319): \"metformin can help women manage their PCOS\" and (ovNE9d4xFsk 00:06:21.960): \"it's going to help with your insulin sensitivity and that is one of the things that c what PT as caus from is because of insulin sensitivity.\" Taylor (ovNE9d4xFsk 00:06:50.120): \"it also can help women with PCOS because it can actually improve their ovulation so this is going to be great for women that are you know wanting to enhance their fertility.\" Taylor (ovNE9d4xFsk 00:11:10.240): \"improving your thyroid function which is going to be super important for hormone balancing.\" Hunter email threadId 197c2ddd4fc636b1 (2025-06-30): \"Women with type 2 diabetes who started Metformin (instead of a sulfonylurea) had a 30% lower risk of dying before age 90\" — Women's Health Initiative target trial emulation. No expert raised pregnancy/breastfeeding contraindications in the cited content; the prescribing physician should weigh those separately.",
-    "distilled_at": "2026-04-27T05:02:38.629Z",
-    "distilled_by": "claude"
+    "female_specific_notes": "Taylor (ovNE9d4xFsk, 2024-09-03, 00:06:02.319, https://youtu.be/ovNE9d4xFsk): \"metformin can help women manage their PCOS\"; Taylor (ovNE9d4xFsk, 2024-09-03, 00:06:50.120, https://youtu.be/ovNE9d4xFsk): \"it also can help women with PCOS because it can actually improve their ovulation so this is going to be great for women that are you know wanting to enhance their fertility.\"",
+    "distilled_at": "2026-07-17T00:04:37.4437847-06:00",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.792Z"
+  "generated_at": "2026-07-17T10:59:06.228Z",
+  "mentions_fingerprint": "0959342a8b26"
 }

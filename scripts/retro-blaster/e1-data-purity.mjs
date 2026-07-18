@@ -111,13 +111,26 @@ function memory(note, { reviewed = true, weak = false } = {}) {
 }
 
 function alien(note = 'C4') {
-  return { x: 120, y: 120, note, hue: 0, alive: true, frame: 0, hitTimer: 0 }
+  return {
+    alienId: 'fixture-game:alien:1:0', visualId: 'fixture:0', visualKind: 0,
+    x: 120, y: 120, entering: false, entryT: 1, entryTargetX: 120,
+    formationSlot: 0, formationX: 120, formationY: 120,
+    note, hue: 0, alive: true, frame: 0, hitTimer: 0,
+  }
 }
 
 function playableState() {
-  const state = engine.createInitialState('easy', ['C4', 'A4', 'G4', 'E4'], 1000)
+  const state = engine.createInitialState('easy', ['C4', 'A4', 'G4', 'E4'], 1000, 'fixture-game')
   state.aliens = [alien()]
-  state.activeIdx = 0
+  state.activeAttack = {
+    attackId: 'fixture-game:attack:1', alienId: state.aliens[0].alienId,
+    note: state.aliens[0].note, side: 1, phase: 'outbound',
+    telegraphStartedAtMs: state.directorClockMs - engine.DIVE_TELEGRAPH_MS,
+    demandAtMs: state.directorClockMs,
+    deadlineAtMs: state.directorClockMs + engine.DIVE_RESPONSE_DEADLINE_MS,
+    outboundT: 0, returnFromT: 0, returnStartedAtMs: null,
+    outcome: null, resolvedAtMs: null,
+  }
   state.waveIntroTimer = 0
   state.spawnQueue = []
   state.alienCountThisWave = 1
@@ -131,9 +144,14 @@ function applyEngineEvents(events, inputMode, stores) {
 }
 
 function driveClick(stores) {
-  const result = engine.tick(playableState(), {
+  const state = playableState()
+  const result = engine.tick(state, {
     inputMode: 'click', isListening: false, pitch: null,
-    answeredNote: 'C4', latencyMs: 800,
+    pendingAnswer: {
+      note: 'C4', inputMode: 'click', gameId: state.gameId,
+      alienId: state.activeAttack.alienId, attackId: state.activeAttack.attackId,
+    },
+    latencyMs: 800,
     fsrs: shell.activeLaneStore(stores, 'click'),
   }, 0, () => 0.5)
   applyEngineEvents(result.events, 'click', stores)
@@ -225,6 +243,7 @@ const fixtures = [
     return 'independent {}; EAR created without VOICE seed'
   }],
   ['5', 'sibling regression sweep', () => {
+    const protectedBase = process.env.RETRO_PROTECTED_BASE || 'origin/master'
     const siblingPaths = [
       'src/components/PitchDefender/RetroBlaster.tsx',
       'src/components/PitchDefender/DrillMode.tsx',
@@ -232,18 +251,18 @@ const fixtures = [
       'src/components/PitchDefender/PitchDefender.tsx',
       'src/components/NBack/PitchRecognition.tsx',
     ]
-    const diff = execFileSync('git', ['diff', '--name-only', 'origin/master'], { cwd: root, encoding: 'utf8' })
+    const diff = execFileSync('git', ['diff', '--name-only', protectedBase], { cwd: root, encoding: 'utf8' })
       .split(/\r?\n/).filter(Boolean).map(path => path.replaceAll('\\', '/'))
     const changedSibling = siblingPaths.filter(path => diff.includes(path))
     assert(changedSibling.length === 0, `sibling diff detected: ${changedSibling.join(', ')}`)
     for (const path of siblingPaths.slice(1)) {
       const current = readFileSync(resolve(root, path), 'utf8').replaceAll('\r\n', '\n')
-      const baseline = execFileSync('git', ['show', `origin/master:${path}`], { cwd: root, encoding: 'utf8' })
+      const baseline = execFileSync('git', ['show', `${protectedBase}:${path}`], { cwd: root, encoding: 'utf8' })
         .replaceAll('\r\n', '\n')
       assert(current === baseline, `${path} differs from origin/master`)
       assert(current.includes("'pitch_fsrs_memory'"), `${path} lost its VOICE key literal`)
     }
-    return 'git diff clean for siblings; 4 legacy literals intact'
+    return `git diff clean for siblings against ${protectedBase}; 4 legacy literals intact`
   }],
   ['6', 'active-lane roster source', () => {
     const earNotes = gameTypes.INTRO_ORDER.slice(0, 7)

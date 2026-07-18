@@ -3,29 +3,78 @@
   "slug": "dihexa",
   "aliases": [
     "Dihexa",
-    "dihexa"
+    "dihexa",
+    "DiHexa",
+    "diHEXA",
+    "DiHExA",
+    "DiHEXA",
+    "DiHeXa"
   ],
-  "category": "Uncategorized",
+  "category": "Cognitive Enhancement",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 27,
+        "mention_count": 158,
         "top_doses": [
           {
             "dose": "10 mg",
-            "count": 7
+            "count": 27
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 16
           },
           {
             "dose": "40 mg",
-            "count": 5
+            "count": 10
+          },
+          {
+            "dose": "40 milligrams",
+            "count": 8
           },
           {
             "dose": "5 mg",
-            "count": 2
+            "count": 5
+          },
+          {
+            "dose": "25 milligrams",
+            "count": 5
+          },
+          {
+            "dose": "250 mcg",
+            "count": 4
+          },
+          {
+            "dose": "30 milligrams",
+            "count": 4
           }
         ],
         "top_sources": [
+          {
+            "source_id": "dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e",
+            "source_type": "library-video",
+            "source_title": "Dihexa: A Deep Dive on the Synapse Building Nootropic Peptide",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e.json",
+            "mention_count": 42,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today, I am going to do a deep dive video on Dihexa. Di Hexa is a nootropic peptide. It is very cool. You guys don't know if you listen to me, but I do like to dabble from time to time. And I will say of all the ones I've tried, actually never have tried modafinil and maybe that makes me a very weak and inexperienced biohacker, but that's okay.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you might be in the world. Today, I am going to do a deep dive video on Dihexa. Di Hexa is a nootropic peptide. It is very cool. You guys don't know if you listen to me, but I do like to dabble from time to time. And I will say of all the ones I've tried, actually never have tried modafinil and maybe that makes me a very weak and inexperienced biohacker, but that's okay. For me, nootropics are not something that I really like to push the gas pedal to for a couple of reasons. One, I don't feel like I need to. And so when you do what I do, you're hormonally optimized. You take peptides. The most part I say I have all the brain function that, um, really desire, which is I'm very blessed and fortunate to have that. But with some of these nootropic compounds, even ones that I've taken that are not really like as far, I have never taken modafinil, that don't push you that hard.",
+            "first_timestamp": "0:09"
+          },
+          {
+            "source_id": "the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390",
+            "source_type": "library-video",
+            "source_title": "The Best Nootropic You Dont Know About J-147 Dihexa and Noopept Explained",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390.json",
+            "mention_count": 39,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Well, I better bring my A game for this one in terms of my verbal fluency and cognition. So what I'm going to do today is introduce three pretty novel, unique, nootropic compounds that are part of our new product called BioMind from BioLongevity Labs. J 147 dihexa and new pep and those are the three things we have in our Neutropics shout out to Alex kickle for helping us formulate and develop that If",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Well, I better bring my A game for this one in terms of my verbal fluency and cognition. So what I'm going to do today is introduce three pretty novel, unique, nootropic compounds that are part of our new product called BioMind from BioLongevity Labs. J 147 dihexa and new pep and those are the three things we have in our Neutropics shout out to Alex kickle for helping us formulate and develop that If you've watched my channel for some time, you probably know. I'm not the biggest nootropic head I always say therapeutic testosterone is the best Nootropic. So I had a profound change in my cognition and brain horsepower once I got my hormones optimized and started therapeutic testosterone. But I will say I am really, really loving this product. So what I'm going to do today is just walk through each of these ingredients and kind of explain the background on them and explain my best case use of these products and how I use them, how cycle them and all that good stuff.",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "19d21e15f89c4e2f",
             "source_type": "email",
@@ -39,6 +88,42 @@
             "first_timestamp": null
           },
           {
+            "source_id": "peptide-qa-april-2026--9bc7fd8c",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · April 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-april-2026--9bc7fd8c.json",
+            "mention_count": 9,
+            "top_snippet": "to which the body's not going to reject that. But again, that's something that you would look at secondarily to whatever your doctor is recommending. Jose asks, what's your opinion on dihexa for Alzheimer's protocols and stacks? I think di hexa works great for alzheimer's. I would obviously lean into cerebral lyosin first and you can go to cerebrallyosine.com and just click on the practitioner page and they have dosing instructions for people that are administering cerebral lysine for things like stroke or Alzheimer. But dihexa can be great.",
+            "top_context": "And so they're, it's kind of tough to add in peptides on top of that, because you don't know how it's going to react to all these medications. It would really, in a lot of cases, be necessary to make sure that her body doesn't reject it. I think something very basic, like a microdose of a GLP, is going alleviate some of the metabolic burden on the body, which could be beneficial. But don t take that as an official recommendation. Also something with the immune system, potentially thymus and alpha-1 could also be good because, again, you want to modulate immune activity. to which the body's not going to reject that. But again, that's something that you would look at secondarily to whatever your doctor is recommending. Jose asks, what's your opinion on dihexa for Alzheimer's protocols and stacks? I think di hexa works great for alzheimer's. I would obviously lean into cerebral lyosin first and you can go to cerebrallyosine.com and just click on the practitioner page and they have dosing instructions for people that are administering cerebral lysine for things like stroke or Alzheimer. But dihexa can be great. I think for the case of Alzheimer's, 10 milligrams is usually the daily dose of diHEXA. And so you could probably take someone to like 20 to 25 milligrams of DiHExA per day and they would do pretty well there. But I really like it for Alzheimer. It's one of those things you can definitely use. In my opinion, only going to be benefit for someone like that. Can you do deep dives on urolithin A and P21? I've got my six or 87 year old mother on Urolathin-A and p21 for neurodegenerative issues and would love your take. I think that's a great thing to do. Would probably also add in cerebral liason again, like I mentioned, and then also with someone that is in their eighties,",
+            "first_timestamp": "18:50"
+          },
+          {
+            "source_id": "the-best-peptides-for-learning-become-a-supercomputer--9797c575",
+            "source_type": "library-video",
+            "source_title": "The Best Peptides For Learning Become A Supercomputer",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-best-peptides-for-learning-become-a-supercomputer--9797c575/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-best-peptides-for-learning-become-a-supercomputer--9797c575.json",
+            "mention_count": 9,
+            "top_snippet": "If you had, a couple of weeks or a, couple months you were learning a new skill. So cerebral, excuse me, cerebral isin, very powerful. Next one is dihexa. So this one, my experience, is a little bit weaker than some of these other ones, but you're gonna see why I added it here. Dihexa is basically a synthetic peptide that facilitates synaptogenesis by binding to the hepatocyte growth factor in its receptor, CMET, enhancing neuroplasticity and cognitive function. As it relates to learning and skill development, dihexia promotes the formation of new neural connections, And in doing so,",
+            "top_context": "So this is where cerebral isin really shines. It helps with the brain's ability to adapt and pivot and kind of see things from new angles. Obviously, a lot of people use cerubilisin in a clinical context intravenously, but if you're doing this via the research route, you can definitely do it intramuscularly. And I would do 5ml. Those come in 5 ml ampoules, so you would just use like one ampoule at a time. um, twice per week. And, um you know, you could do that for an extended period of time, but I think it would really just be better in the context of learning. If you had, a couple of weeks or a, couple months you were learning a new skill. So cerebral, excuse me, cerebral isin, very powerful. Next one is dihexa. So this one, my experience, is a little bit weaker than some of these other ones, but you're gonna see why I added it here. Dihexa is basically a synthetic peptide that facilitates synaptogenesis by binding to the hepatocyte growth factor in its receptor, CMET, enhancing neuroplasticity and cognitive function. As it relates to learning and skill development, dihexia promotes the formation of new neural connections, And in doing so, it enhances learning ability and memory, making it ideal for mastering your skills and tasks that require cognitive flexibility. So this is where we're going to see kind of this like synaptogenesis, which is basically like the formation of these new neural pathways around something. And my experience is a little bit weaker, but I think still good, especially if we're using all of these other ones to kind of throw in there. So dosage is pretty straightforward. Most of the time you can find this in like a oral solution or capsules.",
+            "first_timestamp": "11:01"
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-2726--4d465560",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 2/7/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-2726--4d465560/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-2726--4d465560.json",
+            "mention_count": 8,
+            "top_snippet": "And that's where I will upload this when I am done. You can't live stream on Spotify which would kind of cool if you could live-stream, You can't, as of now. I want to improve memory and recall. P21, Cerebral Iosin, Dihexa. Do you believe in theoretical cancer risk with DiHEXA? I'm not a big believer that the DiHeXa at the doses, you know, 10 to 40 milligrams a day is really going to have any issues there. DiHexa, I think, would be a good start. p21. i would say like Di Hexa would intro, p 21 would intermediate, cerebral IOSin would advanced.",
+            "top_context": "Way more people on Spotify, which is why I put my stuff on spotify. You can also listen to the audio or listen To the video, Which is pretty cool with Spotify. So I'm a bigger fan of going to Spotify than Rumble because I don't disagree that it would be bad to go to rumble, but like way more people have Spotify. Then they do rumple and a lot of when Joe Rogan like went exclusive with Spotify, which he's not anymore. There was a big migration of people that like got Spotify accounts and like started using it more for podcasting. So, I think for the podcast nature of it, Spotify is much better. And that's where I will upload this when I am done. You can't live stream on Spotify which would kind of cool if you could live-stream, You can't, as of now. I want to improve memory and recall. P21, Cerebral Iosin, Dihexa. Do you believe in theoretical cancer risk with DiHEXA? I'm not a big believer that the DiHeXa at the doses, you know, 10 to 40 milligrams a day is really going to have any issues there. DiHexa, I think, would be a good start. p21. i would say like Di Hexa would intro, p 21 would intermediate, cerebral IOSin would advanced. So they all work, they'll work well, just as a matter of like what you can source. Obviously dihexa oral supplementation, P20 and cerebral isin would be injection, but they're all, great. I would probably just like try all of them and see what she liked best. So I don't think there'd be any harm in like in isolation, trialing each of those and seeing what worked best Do you think that for somebody who is more, more so optimal and just trying to improve brain cognition and brain health.",
+            "first_timestamp": "45:20"
+          },
+          {
             "source_id": "1981023143d4996d",
             "source_type": "email",
             "source_title": "Brain Fog",
@@ -46,69 +131,21 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-15-brain-fog.md",
             "mention_count": 4,
-            "top_snippet": "The key is stacking the right interventions and using targeted compounds that _actually work_. ——————————————————————————— **BioMind** BioMind is a no-nonsense, research-driven blend specifically desi",
-            "top_context": "The key is stacking the right interventions and using targeted compounds that _actually work_. ——————————————————————————— **BioMind** BioMind is a no-nonsense, research-driven blend specifically designed for this purpose. **One capsule of BioMind contains:** * 10mg J-147 * 10mg Dihexa * 10mg Noopept This is a stack of **next-generation nootropics** that directly target the mechanisms behind brain fog, memory loss, and word recall. Why these ingredients? Simple. Each one is a “neurotrophic” agent, meaning they help _grow_ new connections in the brain, repair damag",
+            "top_snippet": "decline**. The key is stacking the right interventions and using targeted compounds that _actually work_. ——————————————————————————— **BioMind** BioMind is a no-nonsense, research-driven blend specif",
+            "top_context": "decline**. The key is stacking the right interventions and using targeted compounds that _actually work_. ——————————————————————————— **BioMind** BioMind is a no-nonsense, research-driven blend specifically designed for this purpose. **One capsule of BioMind contains:** * 10mg J-147 * 10mg Dihexa * 10mg Noopept This is a stack of **next-generation nootropics** that directly target the mechanisms behind brain fog, memory loss, and word recall. Why these ingredients? Simple. Each one is a “neurotrophic” agent, meaning they help _grow_ new connections in the brain, repair damage, and mak",
             "first_timestamp": null
           },
           {
-            "source_id": "4igc2UpFr7Q",
-            "source_type": "podcast",
-            "source_title": "GLP-1 Stacks, HGH & Healing Protocols - Your Questions Answered | March 2026",
-            "source_date": "2026-04-03",
-            "source_url": "https://youtu.be/4igc2UpFr7Q",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-03-glp-1-stacks-hgh-healing-protocols-your-questions-answered-march-2026-4igc2UpFr7Q.en.vtt",
-            "mention_count": 3,
-            "top_snippet": "as much as you know, especially like social anxiety. But I would say Dihexa",
-            "top_context": "hypothalamus that um are out there, and hypothalamus that um are out there, and I don't I forget the name of what those I don't I forget the name of what those I don't I forget the name of what those are called, but I would check that out. are called, but I would check that out. are called, but I would check that out. And then, uh I think someone too, just And then, uh I think someone too, just And then, uh I think someone too, just to kind of help with that, epitalon to kind of help with that, epitalon to kind of help with that, epitalon would be good to kind of help um just would be good to kind of help um just would be good to kind of help um just restore brain function. I think restore brain function. I think restore brain function. I think cortagen, epitalon, if you can find the cortagen, epitalon, if you can find the cortagen, epitalon, if you can find the hypothalamus bioregulator, uh those hypothalamus bioregulator, uh those hypothalamus bioregulator, uh those could be good. I think there's a could be good. I think there's a could be good. I think there's a pituitary bioregulator now called pituitary bioregulator now called pituitary bioregulator now called Endocrine, and so you can check that one Endocrine, and so you can check that one Endocrine, and so you can check that one out. But I think the the obvious answer out. But I think the the obvious answer out. But I think the the obvious answer for this one is going to be hormone for this one is going to be hormone for this one is going to be hormone replacement therapy. replacement therapy. replacement therapy. Are there any peptides that help with Are there any peptides that help with Are there any peptides that help with social anxiety, confidence, and fear? social anxiety, confidence, and fear? social anxiety, confidence, and fear? Yeah, I would absolutely say there are. Yeah, I would absolutely say there are. Yeah, I would absolutely say there are. It's kind of like one of those things, It's kind of like one of those things, It's kind of like one of those things, how much time do you have? I would say how much time do you have? I would say how much time do you have? I would say hormones first would obviously for me as hormones first would obviously for me as hormones first would obviously for me as someone who's dealt with those things someone who's dealt with those things someone who's dealt with those things like hormones made my personality much like hormones made my personality much like hormones made my personality much more enhanced to the point where I more enhanced to the point where I more enhanced to the point where I didn't really struggle with those things didn't really struggle with those things didn't really struggle with those things as much as you know, especially like as much as you know, especially like as much as you know, especially like social anxiety. But I would say Dihexa social anxiety. But I would say Dihexa social anxiety. But I would say Dihexa can be a really good one. can be a really good one. can be a really good one. New Pept can be a really good one. New Pept can be a really good one. New Pept can be a really good one. Oxytocin can be a really good one. I Oxytocin can be a really good one. I Oxytocin can be a really good one. I think those things kind of will help think those things kind of will help think those things kind of will help with with all those things. But with with all those things. But with with all those things. But ultimately, when you look at someone ultimately, when you look at someone ultimately, when you look at someone that has anxiety, you know, confidence that has anxiety, you know, confidence that has anxiety, you know, confidence issues, and fear issues, issues, and fear issues, issues, and fear issues, um um um the chemical piece is likely a component the chemical piece is likely a component the chemical piece is likely a component of that. But there's also a very real of that. But there's also a very real of that. But there's also a very real psychological, emotional, mental piece psychological, emotional, mental piece psychological, emotional, mental piece of that. And so I'm sure, you know, if of that. And so I'm sure, you know, if of that. And so I'm sure, you know, if you're asking this question, you're you're asking this question, you're you're asking this question, you're probably working on all these things. probably working on all these things. probably working on all these things. But I would just say don't don't forget But I would just say don't don't forget But I would just say don't don't forget that. Let's talk about some and I got a few Let's talk about some and I got a few minutes here left. So let's talk some minutes here left. So let's talk some minutes here left. So let's talk some autoimmune. Can I Can Thymosin alpha 1 autoimmune. Can I Can Thymosin alpha 1 autoimmune. Can I Can Thymosin alpha 1 or any other peptides reduce or or any other peptides reduce or or any other peptides reduce or eliminate autoimmune disorders like eliminate autoimmune disorders like eliminate autoimmune disorders like lupus? Absolutely. I've done stacks on lupus? Absolutely. I've done stacks on lupus? Absolutely. I've done stacks on autoimmune disease, but autoimmune disease, but autoimmune disease, but absolutely they can they can help.",
-            "first_timestamp": "00:30:14.160"
-          },
-          {
-            "source_id": "E7GPNidicqY",
-            "source_type": "podcast",
-            "source_title": "Saturday Morning Coffee Talk 4/18/26",
-            "source_date": "2026-04-18",
-            "source_url": "https://youtu.be/E7GPNidicqY",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/podcast-transcripts/raw/2026-04-18-saturday-morning-coffee-talk-4-18-26-E7GPNidicqY.en.vtt",
-            "mention_count": 3,
-            "top_snippet": "a lot um dihexa",
-            "top_context": "mulch on Saturdays and I hated that. I mulch on Saturdays and I hated that. I used to spread mulch on Saturdays and I used to spread mulch on Saturdays and I used to spread mulch on Saturdays and I hated it. And they're just like grass hated it. And they're just like grass hated it. And they're just like grass clippings and mulch going everywhere and clippings and mulch going everywhere and clippings and mulch going everywhere and you're like I don't want to be here you're like I don't want to be here you're like I don't want to be here right now. right now. right now. And now I'm like oh there's grass And now I'm like oh there's grass And now I'm like oh there's grass clippings falling everywhere. clippings falling everywhere. clippings falling everywhere. Yeah. Yeah. Yeah. Such is life. Such is life. Such is life. Taylor can you go into detail on your Taylor can you go into detail on your Taylor can you go into detail on your newtropic protocol I heard you mention newtropic protocol I heard you mention newtropic protocol I heard you mention recently on the podcast I believe that recently on the podcast I believe that recently on the podcast I believe that was with the Drew P21 maybe? Yeah. So was with the Drew P21 maybe? Yeah. So was with the Drew P21 maybe? Yeah. So um um um P21 is definitely one that I like to use P21 is definitely one that I like to use P21 is definitely one that I like to use for neutro on my neutropic protocol. I for neutro on my neutropic protocol. I for neutro on my neutropic protocol. I would say P21 cerebralysin would say P21 cerebralysin would say P21 cerebralysin have been um have been um have been um my favorite and then like for oral I my favorite and then like for oral I my favorite and then like for oral I like using newpep like using newpep like using newpep a lot um a lot um a lot um dihexa dihexa dihexa is another great one. is another great one. is another great one. Yeah I mean for me the neutropic stuff Yeah I mean for me the neutropic stuff Yeah I mean for me the neutropic stuff like those like those like those those just do so well like I took newpep those just do so well like I took newpep those just do so well like I took newpep on Thursday cuz we're flying and I had a on Thursday cuz we're flying and I had a on Thursday cuz we're flying and I had a lot of work to do. I was like man it lot of work to do. I was like man it lot of work to do. I was like man it just worked so good. It does. just worked so good. It does. just worked so good. It does. &gt;&gt; what I'm saying is like I don't want to &gt;&gt; what I'm saying is like I don't want to &gt;&gt; what I'm saying is like I don't want to get to the point where those don't work get to the point where those don't work get to the point where those don't work anymore. anymore. anymore. Yeah and those are honestly like I don't Yeah and those are honestly like I don't Yeah and those are honestly like I don't run a lot of neutropic like cycles like run a lot of neutropic like cycles like run a lot of neutropic like cycles like honestly I just recently used honestly I just recently used honestly I just recently used cerebralysin cerebralysin cerebralysin like like like just like a month ago and that's the just like a month ago and that's the just like a month ago and that's the first time I've used it first time I've used it first time I've used it throughout my whole like peptide journey throughout my whole like peptide journey throughout my whole like peptide journey over the over the over the the last several years. That's the first the last several years. That's the first the last several years. That's the first time I've used it. Um time I've used it. Um time I've used it. Um so I do think so I do think so I do think it's not something that like I I focus",
-            "first_timestamp": "01:12:43.880"
-          },
-          {
-            "source_id": "19829deefaf29db8",
-            "source_type": "email",
-            "source_title": "Read Like Your Life Depends On It",
-            "source_date": "2025-07-20",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-07-20-read-like-your-life-depends-on-it.md",
-            "mention_count": 2,
-            "top_snippet": "reduce stress levels’, University of Sussex](https://www.telegraph.co.uk/news/health/news/5070874/Reading-can-help-reduce-stress.html) ——————————————————————————— **Hormones, Peptides, and Neuroplasti",
-            "top_context": "reduce stress levels’, University of Sussex](https://www.telegraph.co.uk/news/health/news/5070874/Reading-can-help-reduce-stress.html) ——————————————————————————— **Hormones, Peptides, and Neuroplasticity** Suppose you’re optimizing your life with peptides. Whether it’s nootropics like Dihexa and Cerebrolysin, mitochondrial agents like SS-31, or a solid hormone replacement protocol, you’re investing in your brain and body’s ability to adapt, repair, and evolve. Everyone wants to know the next best hack to “stave off” dementia. Yet, what’s wild is that reading rarely is a component",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "19d5563af433c548",
-            "source_type": "email",
-            "source_title": "March 2026 Q&A — Max Dose Tirz / Reta Horror / BPC Anhedonia",
-            "source_date": "2026-04-03",
-            "source_url": "https://open.spotify.com/episode/7Hp4gx4DNSSmXJAM8kliDO",
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-03-march-q-and-a-tirz-reta-bpc.md",
-            "mention_count": 2,
-            "top_snippet": "nnection** - What to use instead ### Pre + Post Surgery Peptide Protocol - Surgical context ### MOTS-C Paradox - Why MOTS-C makes some people **MORE tired instead of energized** - **ROS (reactive oxyg",
-            "top_context": "nnection** - What to use instead ### Pre + Post Surgery Peptide Protocol - Surgical context ### MOTS-C Paradox - Why MOTS-C makes some people **MORE tired instead of energized** - **ROS (reactive oxygen species) buildup** could be the culprit ### Peptides for Social Anxiety, Confidence, Fear - **Dihexa, Noopept, oxytocin** - Why chemical piece is only part of equation ### Mitophagy + Autophagy Background Players - **Urolithin A** dosing - **Spermidine** dosing ## Cross-Reference If a reader has these specific GLP-1 issues, this is the canonical Hunter Q&A episode they should check. Submit Q&A",
-            "first_timestamp": null
-          },
-          {
-            "source_id": "19d98523208598ae",
-            "source_type": "email",
-            "source_title": "New Peptide Announcement from the FDA (Category 2 → 503A)",
-            "source_date": "2026-04-16",
-            "source_url": null,
-            "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2026-04-16-fda-peptide-announcement-pcac-503a.md",
-            "mention_count": 2,
-            "top_snippet": "es stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-5",
-            "top_context": "es stopped compounding → doctors couldn't prescribe → research peptide market exploded ## ⭐ April 15, 2026 — FDA Removes 12 Peptides from Category 2 ### The 12 removed - **BPC-157** - **KPV** - **TB-500** - **MOTS-c** - **DSIP** - **Semax** - **Epitalon** - **GHK-Cu** (injectable) - **LL-37** - **Dihexa** - **PEG-MGF** - **Melanotan II** ## ⭐ April 16, 2026 — PCAC Meeting Scheduled (July 23-24, 2026) Federal Register notice — Pharmacy Compounding Advisory Committee (PCAC) meeting at FDA's White Oak Campus, Silver Spring, MD. ### July 23 agenda — Round 1 (4 peptides) - **BPC-157** — for ulcerati",
-            "first_timestamp": null
+            "source_id": "peptide-qa-january-2026--7994649b",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · January 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-january-2026--7994649b/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-january-2026--7994649b.json",
+            "mention_count": 4,
+            "top_snippet": "The best thing for me is I either take walks throughout the day. I will move around. desk or under my desk and walk while I'm at my desks. But I think the best thing is to one, just minimize your exposure to screens as much as you can. Now I realize that that's not possible for some people, including myself. So we have some of the nootropic peptides. The stock answer to this would be like, yeah, you could use C max. You could do C length. you Could use P 21. You could use even something like Nupep or Dihexa.",
+            "top_context": "In practice. Can you stack the glow blend with glutathione? Absolutely, you can stack those together. You just don't put them in the same syringe. Glutathion would actually be one of the things that would mess with the GHK. It would not want to put glow and glutothione in same Syringe, although that kind of be nice because they're two of most painful injections that most people do. What is the best peptide when working from home on a computer all day? After a while, I can't focus or be productive and engaged. Well, the body is not designed to work on the computer. The best thing for me is I either take walks throughout the day. I will move around. desk or under my desk and walk while I'm at my desks. But I think the best thing is to one, just minimize your exposure to screens as much as you can. Now I realize that that's not possible for some people, including myself. So we have some of the nootropic peptides. The stock answer to this would be like, yeah, you could use C max. You could do C length. you Could use P 21. You could use even something like Nupep or Dihexa. I think probably NuPep and DiHexa would be ones that would more of a brute force peptide to have a good effect to make it where you're sitting down at your desk and can focus. But again, just be careful because you don't want to turn into a robot, right? We don' want use peptides to turns us into robots. There's people out there that want do that though. Next question, are you using glutathione in a plus and read it at a maintenance dose per the cheat sheet not interested in losing weight, just metabolic health and lower oxidative stress?",
+            "first_timestamp": "8:39"
           }
         ],
         "acute_signals": [
@@ -125,6 +162,27 @@
             "source_date": "2026-04-03",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "Let's look at some of these animal studies. So 2013 dihexate 2 milligrams per kilogram per day restored Morris water maze performance in cholinergic amnesic rats. to the level of unimpaired controls confirming oral bioavailability and pro-cognitive efficacy. In another 2013 study, 24-month-old rats treated with oral dihexa performed like young rats. Again, this is one of the papers though that I believe that author was involved with, so who knows how much of that data is actually accurate.",
+            "source_title": "Dihexa: A Deep Dive on the Synapse Building Nootropic Peptide",
+            "source_date": "2026-03-30",
+            "timestamp": "9:41",
+            "source_url": "https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/"
+          },
+          {
+            "snippet": "2021 study independent study Confirmed that oral dihexa for three months improved spatial learning, increased neuronal counts, and elevated synaptophysum and reduced neuroinflammation. And there were no, obviously, integrity concerns with that one. Then we have a 2025 study at Rowan University. Dihexadose-dependently improved working memory after repeated mild traumatic brain injury. An HEF antagonist hinge block the effects in the first external confirmation of HEF and CMED dependence and first evidence of cognitive TBI recovery via",
+            "source_title": "Dihexa: A Deep Dive on the Synapse Building Nootropic Peptide",
+            "source_date": "2026-03-30",
+            "timestamp": "10:13",
+            "source_url": "https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/"
+          },
+          {
+            "snippet": "this pathway. And so we do see some bit of dihexa actually helping with recovery from traumatic brain injury, which for me, if you know me is near and dear to me as someone that has had a lot of concussions via playing football. So you can kind of see the route there. There was a phase one These are actually human trials in the ATH 1017, but I did want to include these. And so phase one, we had 88 participants on the pro-drug of dihexa, dose proportional pharmacokinetics, no serious drug related adverse events.",
+            "source_title": "Dihexa: A Deep Dive on the Synapse Building Nootropic Peptide",
+            "source_date": "2026-03-30",
+            "timestamp": "10:53",
+            "source_url": "https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/"
           }
         ],
         "chronic_signals": [
@@ -150,14 +208,14 @@
             "source_url": "https://youtu.be/E7GPNidicqY"
           },
           {
-            "snippet": "reduce stress levels’, University of Sussex](https://www.telegraph.co.uk/news/health/news/5070874/Reading-can-help-reduce-stress.html) ——————————————————————————— **Hormones, Peptides, and Neuroplasti",
+            "snippet": "an help reduce stress levels’, University of Sussex](https://www.telegraph.co.uk/news/health/news/5070874/Reading-can-help-reduce-stress.html) ——————————————————————————— **Hormones, Peptides, and Neu",
             "source_title": "Read Like Your Life Depends On It",
             "source_date": "2025-07-20",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "For instance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combine t",
+            "snippet": "l. For instance, BDNF (brain-derived neurotrophic factor), a protein essential for neuroplasticity, is elevated by both physical exercise and intellectual stimulation, such as reading. When you combin",
             "source_title": "Read Like Your Life Depends On It",
             "source_date": "2025-07-20",
             "timestamp": null,
@@ -268,33 +326,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Dihexa's 12-13 day half-life as the operative gating factor — Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Half-life: 12-13 days. Extraordinarily long\" and Taylor (JC1poI1OEog 00:49:01.480): \"the Dihexa half-life is like 12 days\" both push 2-3x per week, not daily. We'd ask the prescribing physician to weigh sequencing because Trevor (hj0jqdfsg3o 00:18:30.880): \"here's when dihexa slides into this mix. After if you fuel with MS C right handle the mitochondria after you repair with the cerebral after you calm the system\" — synaptogenesis on an inflamed substrate is, per Trevor (hj0jqdfsg3o 00:18:21.679): \"expending energy at your expense in an inflammatory environment and wondering why you feel worse.\" For dose, Hunter email threadId 19d21e15f89c4e2f (2026-03-24) lists the oral range \"5 to 40 mg\" with \"Hunter's sweet spot: 10 mg\" and Taylor (JC1poI1OEog 00:49:11.720): \"I would start at like 5 to 10 milligrams.\"",
-    "caveats": "- Sleep impact at high cumulative dosing: Taylor (JC1poI1OEog 00:49:14.880): \"It can affect your sleep. That's why I That's why I say you don't want to use Dihexa every day\" and (JC1poI1OEog 00:49:19.920): \"If there's a cumulative use of it every single day for several weeks, you can kind of get a build up where some people will have their sleep affected.\"\n- Don't use as a standalone nootropic shortcut: Trevor (hj0jqdfsg3o 00:18:13.120): \"You can't just dump it into the mix and go synaptogenesis. Let's just build all the neurons we can that are going nowhere doing having no function expending energy at your expense in an inflammatory environment.\"\n- Sequencing matters: Trevor (hj0jqdfsg3o 00:19:17.840): \"That's how DHEXA is meant to be used. So throwing it together and putting it in with something else and wrapping it in a little package and going, 'This is going to be the next Limitless pill makes me want to slap somebody in the mouth.'\"\n- Cycle, don't run forever: Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Cycling: 8-12 weeks ON, 2-4 weeks OFF\" and \"Off-day support: Alpha-GPC to replenish neurotransmitters.\"\n- Discipline floor: Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Start low. Work up. Cycle responsibly. Don't jump to 40 mg/day because someone on the internet said so.\"\n- Pregnancy / seizure / severe psych contraindications surfaced for the BioMind dihexa-containing stack: Hunter email threadId 1981023143d4996d (2025-07-15): \"Who should avoid it? Pregnant/nursing women (not studied); Those with active seizure disorders or severe psychiatric illness; If you're on prescription meds, check with your doctor (especially blood thinners, SSRIs, or antipsychotics).\"\n- No clinical trial ceiling published: Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Will we ever have extensive clinical data on Dihexa itself? Probably not. No pharmaceutical company is going to invest hundreds of millions to take a simple peptide through FDA approval when they can't patent it.\"",
-    "cross_expert_consensus": "Dihexa is a synaptogenesis-driving nootropic worth using, with a 12-13 day half-life that mandates non-daily dosing. Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Half-life: 12-13 days. Extraordinarily long. Implications: Cumulative effect when dosing regularly; Don't need daily dosing — 2-3x/week is plenty.\" Taylor (JC1poI1OEog 00:49:01.480): \"the Dihexa half-life is like 12 days\" and (JC1poI1OEog 00:49:06.800): \"I would do three times a week tops if you were doing Dihexa.\" Trevor (hj0jqdfsg3o 00:19:43.120): \"It's going to be one of the top three I think anyone should take. Excuse me. That's how good it is.\" Mechanism / use-case agreement: Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Promotes synaptogenesis = forms NEW synaptic connections between neurons\" and Trevor (hj0jqdfsg3o 00:18:59.840): \"DHEXA becomes the construction crew that comes in and builds all of the new highways and infrastructure on ground that is solid.\" Cognitive-edge framing vs Modafinil also overlaps: Hunter email threadId 19d21e15f89c4e2f (2026-03-24) lists \"Healthy cognitive edge (vs Modafinil) — Great fit — clean processing power, no personality stripping\" and Taylor (JC1poI1OEog 00:48:46.359): \"To me, it it's way less mild than something like modafinil.\"",
-    "cross_expert_disagreement": "Dose ceiling and route. Hunter email threadId 19d21e15f89c4e2f (2026-03-24) gives an oral range \"5 to 40 mg\" with \"Hunter's sweet spot: 10 mg\" and an explicit injectable lane \"Subcutaneous injection — Dose: 1-3 mg, 2-3x per week — Bioavailability: 100% (vs 38% oral)\". Taylor (JC1poI1OEog 00:49:11.720) is narrower oral-only: \"I would start at like 5 to 10 milligrams\" with no injectable mention in the same conversation. Trevor (hj0jqdfsg3o) gives no specific Dihexa milligrams in the cited episode — instead frames Dihexa as part of a sequenced stack and warns against using it without first treating inflammation; he gives Dihexa a conceptual role (\"construction crew\") rather than a numeric protocol, so Hunter's numbers and Taylor's numbers stand without a Trevor counter-number. Frequency framing also splits: Hunter email threadId 19d21e15f89c4e2f (2026-03-24) writes \"Frequency: 3x per week, or just on days needing deep work\" while Taylor (JC1poI1OEog 00:49:06.800): \"I would do three times a week tops\" but cautions \"do whatever you want\" (JC1poI1OEog 00:49:10.480). Stack-context: Hunter pairs Dihexa as one of three actives in BioMind — Hunter email threadId 1981023143d4996d (2025-07-15): \"One capsule of BioMind contains: 10mg J-147; 10mg Dihexa; 10mg Noopept\" — whereas Trevor (hj0jqdfsg3o 00:18:05.760) treats it as terminal-stage only: \"Dhexa, it's useful. So, believe me, I'll put it in here, but you have to know what you're doing with it. You can use it after.\"",
+    "recommendation": "Reset Biology suggests asking the practitioner to weigh Hunter Williams (2026-04-30) [Peptide Q&A · April 2026](https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/) @ 19:20: \"I would obviously lean into cerebral lyosin first\" and \"But dihexa can be great.\" Hunter Williams (2026-03-30) [Dihexa: A Deep Dive on the Synapse Building Nootropic Peptide](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 17:22: \"As with everything, we want to use it in moderation. It's not something that I would abuse.\"",
+    "caveats": "- Hunter Williams (2026-03-30) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 14:14: \"the pathway dihecta activates drives tumor genesis and lung cancer, glioblastoma, gastric breast and liver concerns. Does that mean the dihexyl will cause cancer? No, we don't know.\"\n- Hunter Williams (2026-03-30) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 15:14: \"Anecdotal side effects, some people have vivid dreams, headaches, irritability, and mounting attention deficits with daily use, anxiety, sleep disruption, mood swings.\"\n- Taylor Williams (2026-03-14) [Saturday Morning Coffee Talk 3/14/2026](https://youtu.be/JC1poI1OEog) @ 00:49:14.880: \"It can affect your sleep. That's why I That's why I say you don't want to use Dihexa every day\"\n- Dr Trevor Bachmeyer (2025-08-06) [The Real LIMITLESS Stack - Unbreakable Podcast 216](https://youtu.be/hj0jqdfsg3o) @ 00:18:13.120: \"You can't just dump it into the mix and go synaptogenesis. Let's just build all the neurons we can that are going nowhere doing having no function expending energy at your expense in an inflammatory environment.\"",
+    "cross_expert_consensus": "Hunter Williams (2026-03-30) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 2:12: \"I would say dihexa for me is the perfect middle ground.\" Taylor Williams (2026-03-14) [Saturday Morning Coffee Talk 3/14/2026](https://youtu.be/JC1poI1OEog) @ 00:48:26.800: \"I think Dihexa is great.\" Dr Trevor Bachmeyer (2025-08-06) [The Real LIMITLESS Stack - Unbreakable Podcast 216](https://youtu.be/hj0jqdfsg3o) @ 00:18:05.760: \"Dhexa, it's useful.\"",
+    "cross_expert_disagreement": "Hunter Williams (2026-04-30, newer; Alzheimer's context) [Peptide Q&A · April 2026](https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/) @ 19:20: \"I think for the case of Alzheimer's, 10 milligrams is usually the daily dose of diHEXA. And so you could probably take someone to like 20 to 25 milligrams of DiHExA per day and they would do pretty well there.\" Hunter Williams (2026-03-30, older; general framework) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 13:38: \"And I like the three times per week. So Monday, Wednesday, Friday is good.\" Taylor Williams (2026-03-14) [Saturday Morning Coffee Talk 3/14/2026](https://youtu.be/JC1poI1OEog) @ 00:49:06.800: \"like I would do three times a week tops if you were doing Dihexa.\" Dr Trevor Bachmeyer (2025-08-06) [The Real LIMITLESS Stack - Unbreakable Podcast 216](https://youtu.be/hj0jqdfsg3o) @ 00:18:30.880: \"But here's when dihexa slides into this mix. After if you fuel with MS C right handle the mitochondria after you repair with the cerebral after you calm the system\".",
     "acute_chronic_split": {
-      "acute": {
-        "dose": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Range: 5 to 40 mg\"; \"Hunter's sweet spot: 10 mg\"; \"5 mg = subtle\"; \"10 mg = solid cognitive bump without being pushed too far.\" Taylor (JC1poI1OEog 00:49:11.720): \"I would start at like 5 to 10 milligrams.\"",
-        "route": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Oral capsules (most common route)\" with \"Bioavailability: ~38% oral\"; alternative \"Subcutaneous injection — Dose: 1-3 mg, 2-3x per week — Bioavailability: 100% (vs 38% oral).\"",
-        "frequency": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Frequency: 3x per week, or just on days needing deep work.\"",
-        "duration": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Take oral capsules that day\" — i.e., single-day deep-work pulse with no ramp.",
-        "verbatim_citation": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Deep work focus days — Take oral capsules that day.\" Taylor (JC1poI1OEog 00:48:50.560): \"that you can use on a two to three a day a week basis. Yeah, you don't want to overuse that.\"",
-        "episode_url": "https://open.spotify.com/episode/1AgU8pUfumBRW3W5UiYpnu",
-        "timestamp": "Hunter email 2026-03-24; Taylor JC1poI1OEog 00:48:50.560; 00:49:11.720"
-      },
+      "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Hunter's sweet spot: 10 mg\" oral or \"Subcutaneous injection — Dose: 1-3 mg, 2-3x per week.\" Taylor (JC1poI1OEog 00:49:11.720): \"I would start at like 5 to 10 milligrams\" with sleep-driven cap.",
-        "route": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): oral 38% bioavailability vs subq 100% — \"Crosses BBB orally — most neurotrophic factors can't.\"",
-        "frequency": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"3x per week, or just on days needing deep work\"; Taylor (JC1poI1OEog 00:49:06.800): \"I would do three times a week tops if you were doing Dihexa\"; both say not daily because Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Half-life: 12-13 days. Extraordinarily long\" and Taylor (JC1poI1OEog 00:49:14.880): \"It can affect your sleep. That's why I That's why I say you don't want to use Dihexa every day.\"",
-        "duration": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Cycling: 8-12 weeks ON, 2-4 weeks OFF\" with \"Off-day support: Alpha-GPC to replenish neurotransmitters.\"",
-        "verbatim_citation": "Hunter email threadId 19d21e15f89c4e2f (2026-03-24): \"Half-life: 12-13 days. Extraordinarily long. Implications: Cumulative effect when dosing regularly; Don't need daily dosing — 2-3x/week is plenty\"; Trevor (hj0jqdfsg3o 00:18:59.840): \"DHEXA becomes the construction crew that comes in and builds all of the new highways and infrastructure on ground that is solid. No liquefaction.\"",
-        "episode_url": "https://open.spotify.com/episode/1AgU8pUfumBRW3W5UiYpnu",
-        "timestamp": "Hunter email 2026-03-24; Taylor JC1poI1OEog 00:49:01.480-00:49:19.920; Trevor hj0jqdfsg3o 00:18:30.880-00:19:20.080"
+        "dose": "Hunter Williams (2026-03-30) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 12:03: \"five to 40 milligrams\"; \"I love 10 milligrams.\" @ 12:34: \"a sublingual 10 to 20 milligrams\"; \"the 1 to 3 milligrams 2 to three times per week.\" @ 13:06: \"10 to 20 milligrams per day\"; \"two to five milligrams.\" Hunter Williams (2026-04-30) [Peptide Q&A · April 2026](https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/) @ 19:20: \"10 milligrams is usually the daily dose of diHEXA\"; \"20 to 25 milligrams of DiHExA per day.\" Hunter Williams (2026-03-29) [The Best Nootropic You Dont Know About J-147 Dihexa and Noopept Explained](https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/) @ 33:45: \"two capsules, 10 milligrams, five milligrams of each per capsule.\" Taylor Williams (2026-03-14) [Saturday Morning Coffee Talk 3/14/2026](https://youtu.be/JC1poI1OEog) @ 00:49:11.720: \"I would start at like 5 to 10 milligrams.\"",
+        "route": "Hunter Williams (2026-03-30) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 12:03: \"the oral capsules\"; @ 12:34: \"a sublingual\"; \"a SubQ injection\"; @ 13:06: \"Transdermal in DMSO\"; \"it does work intransnasally\"; \"I just always take the oral capsules and they work great for me.\"",
+        "frequency": "Hunter Williams (2026-04-30, newer; Alzheimer's context) [Peptide Q&A · April 2026](https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/) @ 19:20: \"10 milligrams is usually the daily dose of diHEXA.\" Hunter Williams (2026-03-30, older; general framework) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 13:38: \"And I like the three times per week. So Monday, Wednesday, Friday is good.\" Taylor Williams (2026-03-14) [Saturday Morning Coffee Talk 3/14/2026](https://youtu.be/JC1poI1OEog) @ 00:49:06.800: \"like I would do three times a week tops if you were doing Dihexa.\"",
+        "duration": "Hunter Williams (2026-03-30) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 13:38: \"I like eight to 12 weeks.\" \"take a two to four week break.\"",
+        "verbatim_citation": "Hunter Williams (2026-03-30) [Dihexa Deep Dive](https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/) @ 18:23: \"I like using AlphaGPC in between those days just to help replenish neurotransmitters.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e/; https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/; https://youtu.be/JC1poI1OEog",
+        "timestamp": "dihexa-a-deep-dive-on-the-synapse-building-nootropic-peptide--5bd08b9e 12:03, 12:34, 13:06, 13:38, 18:23; peptide-qa-april-2026--9bc7fd8c 19:20; JC1poI1OEog 00:49:06.800, 00:49:11.720"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:32:25.781Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T09:10:27.0402380Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.956Z"
+  "generated_at": "2026-07-17T10:59:07.971Z",
+  "mentions_fingerprint": "d9bd68174287"
 }

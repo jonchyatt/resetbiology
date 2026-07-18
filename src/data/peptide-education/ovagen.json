@@ -5,47 +5,59 @@
     "Ovagen",
     "ovagen"
   ],
-  "category": "Uncategorized",
+  "category": "Healing",
   "experts": {
     "hunter-williams": {
       "baseline_protocol": null,
       "summary": {
-        "mention_count": 35,
+        "mention_count": 98,
         "top_doses": [
           {
-            "dose": "50 mg",
-            "count": 9
-          },
-          {
             "dose": "20 mg",
-            "count": 9
+            "count": 11
           },
           {
-            "dose": "1 mg",
-            "count": 8
+            "dose": "50 mg",
+            "count": 10
           },
           {
             "dose": "10 units",
-            "count": 7
+            "count": 10
+          },
+          {
+            "dose": "1 mg",
+            "count": 9
           },
           {
             "dose": "2 mg",
-            "count": 5
+            "count": 9
+          },
+          {
+            "dose": "10 milligrams",
+            "count": 9
           },
           {
             "dose": "10 mg",
-            "count": 3
+            "count": 5
           },
           {
             "dose": "5 mg",
-            "count": 2
-          },
-          {
-            "dose": "20 units",
-            "count": 1
+            "count": 3
           }
         ],
         "top_sources": [
+          {
+            "source_id": "this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f",
+            "source_type": "library-video",
+            "source_title": "This Peptide Heals The Liver | A Look At Ovagen For Hepatic Health",
+            "source_date": "2026-03-29",
+            "source_url": "https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f.json",
+            "mention_count": 42,
+            "top_snippet": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today's video is gonna be all about Ovagen, which you would think would be the peptide bioregular for the ovaries, but it's actually not. It's for liver. So I'm not sure of the etymology or the root trace, I guess, origin of, the word would it be. But Ovogen is for livers. And today we're gonna talk about ovagen. Kind of what it is doing to help turn back time on the liver.",
+            "top_context": "Hey everybody, this is Hunter Williams. I hope you're doing amazing wherever you are in the world. Today's video is gonna be all about Ovagen, which you would think would be the peptide bioregular for the ovaries, but it's actually not. It's for liver. So I'm not sure of the etymology or the root trace, I guess, origin of, the word would it be. But Ovogen is for livers. And today we're gonna talk about ovagen. Kind of what it is doing to help turn back time on the liver. And I think liver health is one of those things that a lot of people kind of associate with someone that either has like fatty liver, or maybe they have like alcohol addiction or something like that. I thing it's something that like actually is much more important to a of us than we realize. and I'm a big proponent of using injectable glutathione. If you're going to do anything to help the livers, please use injectible glutothione, I thnk it is amazing. But oidine is really really cool, especially when you look into the mechanisms of what it doing. Again, remember with these peptide bioregulators, are you necessarily going to feel anything like you just drank four cups of coffee?",
+            "first_timestamp": "0:09"
+          },
           {
             "source_id": "198d3d2fb0cab918",
             "source_type": "email",
@@ -54,9 +66,33 @@
             "source_url": null,
             "source_file": "data/peptide-libraries/by-expert/hunter-williams/email-extracts/raw/2025-08-22-the-peptide-for-liver-health.md",
             "mention_count": 28,
-            "top_snippet": "ecommend considering it **one to two times per year**, even if you’re optimized, just to signal the liver back into a youthful state. Given how central the liver is to hormones, digestion, metabolism,",
-            "top_context": "ecommend considering it **one to two times per year**, even if you’re optimized, just to signal the liver back into a youthful state. Given how central the liver is to hormones, digestion, metabolism, and immunity, I think almost anyone serious about long-term health could make a case for using Ovagen. ——————————————————————————— **How to Dose Ovagen ** Let’s get specific, because this is the part people always ask me about. If you get a **20 mg vial of Ovagen**, you want to reconstitute it with **2 mL of bacteriostatic water**. That means each 10 units on an insulin syringe (0.",
+            "top_snippet": "recommend considering it **one to two times per year**, even if you’re optimized, just to signal the liver back into a youthful state. Given how central the liver is to hormones, digestion, metabolism",
+            "top_context": "recommend considering it **one to two times per year**, even if you’re optimized, just to signal the liver back into a youthful state. Given how central the liver is to hormones, digestion, metabolism, and immunity, I think almost anyone serious about long-term health could make a case for using Ovagen. ——————————————————————————— **How to Dose Ovagen ** Let’s get specific, because this is the part people always ask me about. If you get a **20 mg vial of Ovagen**, you want to reconstitute it with **2 mL of bacteriostatic water**. That means each 10 units on an insulin syringe (0.1 mL) equa",
             "first_timestamp": null
+          },
+          {
+            "source_id": "saturday-morning-coffee-talk-31426--deb3667a",
+            "source_type": "library-video",
+            "source_title": "Saturday Morning Coffee Talk · 3/14/26",
+            "source_date": "2026-04-08",
+            "source_url": "https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/saturday-morning-coffee-talk-31426--deb3667a.json",
+            "mention_count": 8,
+            "top_snippet": "That point, that. Not what the, when my industry was about, and I'd have to worry about business stuff at, because I was working in salons that took care of a lot of that, yeah. you ever think we'll look back 30 years from now? I'd be like back in my day, I had to search for stuff and chat GPT to whatever they're going to have then. I don't know. That's kind of scary to think what will be out then? Yeah. Are there side effects if you take too high a dose of bioregulators currently using a livagen and ovagen?",
+            "top_context": "So maybe not the extent to which I cared about health only related to my job as a football player. Yeah. I also didn't like, yeah, I didn' really have a laptop at that age. Like I really did. It was also a different time. Different time, like I I don't even think iPads didn't have an iPad. No, like I didn' have a laptop at that age. Like I think I did, but like, I, didn, do like. I. Didn't do anything with the internet. Cause that's not what my, at. That point, that. Not what the, when my industry was about, and I'd have to worry about business stuff at, because I was working in salons that took care of a lot of that, yeah. you ever think we'll look back 30 years from now? I'd be like back in my day, I had to search for stuff and chat GPT to whatever they're going to have then. I don't know. That's kind of scary to think what will be out then? Yeah. Are there side effects if you take too high a dose of bioregulators currently using a livagen and ovagen? Not that I would know of. I mean, there are every possibility exists with livagen and ovagen, specifically we're doing the injectable ones. If you took the whole bottle, I've never even seen people that do higher doses, 10 milligrams, 20 milligrams that have had anything bad happen. And the reason is, is one, they're just amino acids. So they've, the body uses them, breaks it down. It just excretes it as waste, meaning that it's not a pharmaceutical drug that has the signaling molecules or even like another peptide.",
+            "first_timestamp": "29:10"
+          },
+          {
+            "source_id": "the-peptide-stack-for-liver-health--f509f742",
+            "source_type": "library-video",
+            "source_title": "The Peptide Stack for Liver Health",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/the-peptide-stack-for-liver-health--f509f742.json",
+            "mention_count": 8,
+            "top_snippet": "MAT C basically revs up the mitochondrial engine while SS31 protects and repairs it. I always make the analogy SS 31 is the hardware repair for the liver or in the case of liver for a lot of things, but to the Mitochondria in general, and then SS31 is the hardware, Mozi is software, and they work great together. Again, you can rotate them. In the case of a liver stack, I would add them together The next one, this is the one you probably haven't heard of, is called Ovagen. And Ovogen is a liver bioregulator peptide, meaning that it is peptides specifically designed to work on liver tissue, specifically,",
+            "top_context": "You could do a one milligram dose with Matzi. But in the case of liver, i like the five milligram dos. And again, that probably becomes cost prohibitive for some people. When we get a five-milligram dose of SS 31, it's going to be really powerful at doing some of those things we just mentioned. Again, this provides the longevity effect. It makes metabolically stressed livers act more youthful and resilient in over 12 weeks. Reduces ongoing damage, lowers oxidative stress biomarkers and creates a supportive environment for sustained healing. Again it does work in this instance synergistically with MATC. MAT C basically revs up the mitochondrial engine while SS31 protects and repairs it. I always make the analogy SS 31 is the hardware repair for the liver or in the case of liver for a lot of things, but to the Mitochondria in general, and then SS31 is the hardware, Mozi is software, and they work great together. Again, you can rotate them. In the case of a liver stack, I would add them together The next one, this is the one you probably haven't heard of, is called Ovagen. And Ovogen is a liver bioregulator peptide, meaning that it is peptides specifically designed to work on liver tissue, specifically, which is pretty cool. It is tripeptide derived from liver tissues that signals liver cells to normalize function and activate regeneration programs. It modulates DNA and histone proteins, promotes gene expression for tissue repair and healthy cell metabolism. And when we look at the actions, it ends up reducing oxidative stress markers, decreasing collagen deposition in the liver, encouraging hepatocyte protein synthesis and signals stellate cells to reduce scarring. Again, when you talk about these bi-regular peptides, think of them as a little messenger that when take it, inject it.",
+            "first_timestamp": "20:46"
           },
           {
             "source_id": "19ae14e47514bea3",
@@ -81,55 +117,100 @@
             "top_snippet": "the cheech and chong. One of those being Ovagen and the other being Livagen. So,",
             "top_context": "I would say those that I just answered I would say those that I just answered um really stack well with uh um really stack well with uh um really stack well with uh Tirzepatide. And I think if you're going Tirzepatide. And I think if you're going Tirzepatide. And I think if you're going to do one, it would probably be a growth to do one, it would probably be a growth to do one, it would probably be a growth hormone peptide. I would go to a growth hormone peptide. I would go to a growth hormone peptide. I would go to a growth hormone peptide for body recomp much hormone peptide for body recomp much hormone peptide for body recomp much more than I would a peptide like MOTS-c more than I would a peptide like MOTS-c more than I would a peptide like MOTS-c or SS-31. or SS-31. or SS-31. Retat and microdosing. Also, what can I Retat and microdosing. Also, what can I Retat and microdosing. Also, what can I add for liver support while on Retat? add for liver support while on Retat? add for liver support while on Retat? Well, hopefully if you are just living Well, hopefully if you are just living Well, hopefully if you are just living healthy, the Retat is going to be really healthy, the Retat is going to be really healthy, the Retat is going to be really good liver support on its own. I would good liver support on its own. I would good liver support on its own. I would say things that you could add uh SS-31 say things that you could add uh SS-31 say things that you could add uh SS-31 is going to be very good for the liver is going to be very good for the liver is going to be very good for the liver and the kidneys, but then injectable and the kidneys, but then injectable and the kidneys, but then injectable glutathione is going to be great for the glutathione is going to be great for the glutathione is going to be great for the liver. You can take some oral Tudca and liver. You can take some oral Tudca and liver. You can take some oral Tudca and some oral N-acetylcysteine or NAC. Those some oral N-acetylcysteine or NAC. Those some oral N-acetylcysteine or NAC. Those are really great for the liver. And then are really great for the liver. And then are really great for the liver. And then if you wanted to throw in a if you wanted to throw in a if you wanted to throw in a bioregulator, you could take uh there's bioregulator, you could take uh there's bioregulator, you could take uh there's two injectable bioregulators which I've two injectable bioregulators which I've two injectable bioregulators which I've got dosing guides on and everything on got dosing guides on and everything on got dosing guides on and everything on the cheech and chong. One of those being the cheech and chong. One of those being the cheech and chong. One of those being Ovagen and the other being Livagen. So, Ovagen and the other being Livagen. So, Ovagen and the other being Livagen. So, I would check those out. Uh but Retat is I would check those out. Uh but Retat is I would check those out. Uh but Retat is great itself for the liver and then if great itself for the liver and then if great itself for the liver and then if someone is really concerned about liver someone is really concerned about liver someone is really concerned about liver health, adding those things on top of it health, adding those things on top of it health, adding those things on top of it should be beneficial. should be beneficial. should be beneficial. What are your thoughts on Retat stacked What are your thoughts on Retat stacked What are your thoughts on Retat stacked with 5-amino? I think it's amazing. I with 5-amino? I think it's amazing. I with 5-amino? I think it's amazing. I think stacking Retat with 5-amino can be think stacking Retat with 5-amino can be think stacking Retat with 5-amino can be amazing. I would just caution people to amazing. I would just caution people to amazing. I would just caution people to ease into it. There's a lot of people ease into it. There's a lot of people ease into it. There's a lot of people out there talking about taking like 10 out there talking about taking like 10 out there talking about taking like 10 mg or 50 mg of injectable 5-amino, mg or 50 mg of injectable 5-amino, mg or 50 mg of injectable 5-amino, injectable, not the oral. injectable, not the oral. injectable, not the oral. And while I say And while I say And while I say do you, cuz I don't really doesn't do you, cuz I don't really doesn't do you, cuz I don't really doesn't matter to me what you do, just be matter to me what you do, just be matter to me what you do, just be cautious with it because it is one of cautious with it because it is one of cautious with it because it is one of those things if you take enough 5-amino, those things if you take enough 5-amino, those things if you take enough 5-amino, it can definitely it can definitely it can definitely kind of raise your heart rate and cause kind of raise your heart rate and cause kind of raise your heart rate and cause this overstimulation. So, if you're this overstimulation. So, if you're this overstimulation. So, if you're going to do it, I would start with like going to do it, I would start with like going to do it, I would start with like half to 1 mg of injectable 5-amino and",
             "first_timestamp": "00:12:29.000"
+          },
+          {
+            "source_id": "peptide-qa-february-2026--cba19117",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · February 2026",
+            "source_date": "2026-03-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-february-2026--cba19117.json",
+            "mention_count": 2,
+            "top_snippet": "So, Ovagen and Liveragen are two peptide biiregulators that help with the liver. Should I do, you know, one milligram a day to two milligrams a days of both of those, and those should help bring things back into balance. And also, too, Rhetatrutide, really powerful at reducing liver fat. I think that would only be beneficial, especially if you're using it as a microdose. been taking peptides that cause very high liver enzymes. How do you interpret that? And what would you stop and keep check? Um, I mean, typically most peptids are not going to like really raise liver, but depending on the ones that you do, if they are making you work out harder,",
+            "top_context": "Let's get into some questions around labs and overall health markers. Thought this was interesting. What peptide stack would support liver health when AST and ALT are turning the wrong way? I think the first thing is going to be glutathione. So if things are going bad for your liver, glutothione can do wonders for that. Also, another supplement called Tudka does well. Another supplement in acetylcysteine, otherwise known as NAC, does really well, You could also use some of the bioregulators. So, Ovagen and Liveragen are two peptide biiregulators that help with the liver. Should I do, you know, one milligram a day to two milligrams a days of both of those, and those should help bring things back into balance. And also, too, Rhetatrutide, really powerful at reducing liver fat. I think that would only be beneficial, especially if you're using it as a microdose. been taking peptides that cause very high liver enzymes. How do you interpret that? And what would you stop and keep check? Um, I mean, typically most peptids are not going to like really raise liver, but depending on the ones that you do, if they are making you work out harder, that could elevate liver. And so some peptide really can help people go into an anabolic phase where they're putting on muscle and that's what you're doing. That's true. Using them for, uh, do think that, you might experience some transient rays in your liver enzymes to which you could address it with some of those things we were just talking about. Who should not take peptides and what should be avoided? I think that's kind of, it's kinda a hard question to answer, like who should NOT take peptides.",
+            "first_timestamp": "20:28"
+          },
+          {
+            "source_id": "peptide-qa-march-2026--dd9aa173",
+            "source_type": "library-video",
+            "source_title": "Peptide Q&A · March 2026",
+            "source_date": "2026-04-30",
+            "source_url": "https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/",
+            "source_file": "data/peptide-libraries/by-expert/hunter-williams/library-site/raw/peptide-qa-march-2026--dd9aa173.json",
+            "mention_count": 2,
+            "top_snippet": "Those are really great for the liver. And then if you wanted to throw in a bioregulator, you could take, there's two injectable bi oregulators, which I've got dosing guides on and everything on the cheat sheet. One of those being Ovagen and the other being Livagen. So I would check those out. But Retta is great itself for liver and then, if someone is really concerned about liver health, adding those things on top of it should be beneficial. What are your thoughts on Reta stacked with five amino? I think it's amazing. I would just caution people to ease into it.",
+            "top_context": "And I think if you're going to do one, it would probably be a growth hormone peptide, I'd go to a Growth Hormone Peptide for Body Recomp much more than I will a peptid like MOTC or SS31. RETA and microdosing. Also, what can I add for liver support while on Reto? Well, hopefully if you are just living healthy, the Reta is going to be really good liver-support on its own. I would say things that you could add, SS31 is gonna be very good for the liver and the kidneys, but then injectable glutathione is great for your liver. You can take some oral TUDCA and some in acetylcysteine or NAC. Those are really great for the liver. And then if you wanted to throw in a bioregulator, you could take, there's two injectable bi oregulators, which I've got dosing guides on and everything on the cheat sheet. One of those being Ovagen and the other being Livagen. So I would check those out. But Retta is great itself for liver and then, if someone is really concerned about liver health, adding those things on top of it should be beneficial. What are your thoughts on Reta stacked with five amino? I think it's amazing. I would just caution people to ease into it. There's a lot of people out there talking about taking like 10 milligrams or 50 milligrams of injectable five-amino, injectible, not the oral. And while I say do you, because I don't really, it doesn't matter to me what you do, just be cautious with it because it is one of those things, if you take enough five amino you can definitely kind of raise your heart rate and cause this overstimulation. So if you're going to do it, I would start with like half to one milligram of injectable five amino and go from there, but it can work great. I'm a bigger fan, of doing the injectible five Amino than doing injectble NAD.",
+            "first_timestamp": "12:19"
           }
         ],
         "acute_signals": [
           {
-            "snippet": "dels back this up as well. Old rats treated with liver peptides saw their liver enzymes return closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——————————",
+            "snippet": "nimal models back this up as well. Old rats treated with liver peptides saw their liver enzymes return closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——",
             "source_title": "The Peptide For Liver Health",
             "source_date": "2025-08-22",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "n closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——————————————————————————— **What to Expect ** The truth is you’re probably not going to “feel” Ovagen",
+            "snippet": "es return closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——————————————————————————— **What to Expect ** The truth is you’re probably not going to “feel",
             "source_title": "The Peptide For Liver Health",
             "source_date": "2025-08-22",
             "timestamp": null,
             "source_url": null
+          },
+          {
+            "snippet": "But by blocking the protease, Ovigen prevents the virus from processing its proteins, thus yielding non-infectious viral particles. So while this finding is preliminary and Ovagen is not an approved HIV treatment, it opens an interesting avenue for research beyond liver health. Also to what's going on, even though the liver is recipient of benefit when you're taking ovagen. It's also been tested for protective effects outside the liver and demonstrated that its regulatory influence might extend to other organs, including the kidney. So in renal ischemia reperfusion injury models, rats pre-treated with ovogen had improved recovery of kidney function, which I guess makes sense.",
+            "source_title": "This Peptide Heals The Liver | A Look At Ovagen For Hepatic Health",
+            "source_date": "2026-03-29",
+            "timestamp": "4:36",
+            "source_url": "https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/"
+          },
+          {
+            "snippet": "But by blocking the protease, Ovigen prevents the virus from processing its proteins, thus yielding non-infectious viral particles. So while this finding is preliminary and Ovagen is not an approved HIV treatment, it opens an interesting avenue for research beyond liver health. Also to what's going on, even though the liver is recipient of benefit when you're taking ovagen. It's also been tested for protective effects outside the liver and demonstrated that its regulatory influence might extend to other organs, including the kidney. So in renal ischemia reperfusion injury models, rats pre-treated with ovogen had improved recovery of kidney function, which I guess makes sense.",
+            "source_title": "This Peptide Heals The Liver | A Look At Ovagen For Hepatic Health",
+            "source_date": "2026-03-29",
+            "timestamp": "4:36",
+            "source_url": "https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/"
+          },
+          {
+            "snippet": "I mean, the body's so tied together in the livers, like one of the most crucial organs of But also in toxic nephropathy models, Ovagen-treated rats showed preservation of kidney tissue and function. And then Ovogen aided in restoring kidney function in cisplatin-induced acute renal failure. It also had a mild diuretic effect in healthy old rats, increasing urine output without harming kidney filtration. So obviously there is some things going on downstream when we help heal the liver that it also helps the kidney. Some other regions, so like we talked about, viral hepatitis.",
+            "source_title": "This Peptide Heals The Liver | A Look At Ovagen For Hepatic Health",
+            "source_date": "2026-03-29",
+            "timestamp": "5:11",
+            "source_url": "https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/"
           }
         ],
         "chronic_signals": [
           {
-            "snippet": "dels back this up as well. Old rats treated with liver peptides saw their liver enzymes return closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——————————",
+            "snippet": "nimal models back this up as well. Old rats treated with liver peptides saw their liver enzymes return closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——",
             "source_title": "The Peptide For Liver Health",
             "source_date": "2025-08-22",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "n closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——————————————————————————— **What to Expect ** The truth is you’re probably not going to “feel” Ovagen",
+            "snippet": "es return closer to youthful levels and their liver tissue actually grew by 15–16% compared to controls. ——————————————————————————— **What to Expect ** The truth is you’re probably not going to “feel",
             "source_title": "The Peptide For Liver Health",
             "source_date": "2025-08-22",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "post-antibiotic gut issues, you may notice improvements in those areas. And even if you’re already optimized, Ovagen acts as an insurance policy, keeping your liver youthful so you can keep making pro",
+            "snippet": "r, or post-antibiotic gut issues, you may notice improvements in those areas. And even if you’re already optimized, Ovagen acts as an insurance policy, keeping your liver youthful so you can keep maki",
             "source_title": "The Peptide For Liver Health",
             "source_date": "2025-08-22",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "sider Ovagen** So who is the ideal candidate? First, **anyone with diagnosed liver issues** such as hepatitis, fatty liver, elevated liver enzymes, or even just a history of heavy alcohol or medicatio",
+            "snippet": "ld Consider Ovagen** So who is the ideal candidate? First, **anyone with diagnosed liver issues** such as hepatitis, fatty liver, elevated liver enzymes, or even just a history of heavy alcohol or med",
             "source_title": "The Peptide For Liver Health",
             "source_date": "2025-08-22",
             "timestamp": null,
             "source_url": null
           },
           {
-            "snippet": "r medication use. Second, for people undergoing **chemotherapy or long-term medication protocols**, Ovagen can help reduce side effects and protect the liver during those treatments. Third, **aging po",
+            "snippet": "ohol or medication use. Second, for people undergoing **chemotherapy or long-term medication protocols**, Ovagen can help reduce side effects and protect the liver during those treatments. Third, **ag",
             "source_title": "The Peptide For Liver Health",
             "source_date": "2025-08-22",
             "timestamp": null,
@@ -141,25 +222,26 @@
   },
   "reset_biology_synthesis": {
     "status": "distilled",
-    "recommendation": "Reset Biology suggests asking the practitioner to consider Ovagen as a Khavinson liver-bioregulator cycle rather than a daily-feel peptide: Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"the dosing protocol is **1–2 mg per day** for **30 to 60 days**\" subcutaneous, paired with his 12-week fatty-liver stack at Hunter email threadId 19ae14e47514bea3 (2025-12-02): \"Ovagen | 2 mg | Daily | Subq | 12 weeks.\" We'd ask the prescribing physician to weigh the candidate profile Hunter calls out — diagnosed liver issues, chemotherapy or long-term medication exposure, aging populations, and biohacker maintenance — and to plan repeat cycles per Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"recommend considering it **one to two times per year**, even if you’re optimized.\" Taylor and Trevor have no Ovagen content in the indexed corpus, so this synthesis is single-expert by necessity — the practitioner should not infer cross-expert validation that doesn't exist.",
-    "caveats": "- Single-expert source: only Hunter Williams discusses Ovagen in the indexed Reset Biology corpus; Taylor Williams and Dr Trevor Bachmeyer have no mentions, so cross-expert validation is unavailable.\n- Subjective experience hedge: Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"you’re probably not going to “feel” Ovagen the way you feel caffeine or even something like BPC-157 for acute healing. Instead, Ovagen is about **long-term organ rejuvenation**.\" Expect lab-work changes, not subjective changes.\n- Reconstitution math is dose-critical: Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"If you get a **20 mg vial of Ovagen**, you want to reconstitute it with **2 mL of bacteriostatic water**. That means each 10 units on an insulin syringe (0.1 mL) equals **1 mg** of Ovagen.\" Mis-reconstitution makes the unit-mark math wrong.\n- Route preference: Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"You’ll inject this subcutaneously (belly fat or love handle area is fine). Intramuscular is also an option, but I don’t think it’s necessary.\"\n- Cycling/frequency hedge: Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"recommend considering it **one to two times per year**, even if you’re optimized\" — Hunter does not endorse continuous open-ended use.\n- Stack pairing note (not a contraindication): Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"Ovagen pairs extremely well with **injectable glutathione**.\"\n- Mechanistic safety claim is from Russian human + animal data only: Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"there were **no adverse effects** reported\" in the 47-patient Russian study; this is not FDA / Western RCT data and the practitioner should weigh that.\n- HIV-protease in-vitro mechanism is documented but not a clinical claim: Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"a documented ability to inhibit **HIV protease** in vitro, one of the smallest molecules known to do so.\"",
-    "cross_expert_consensus": "Cross-expert consensus is not available for Ovagen. Only Hunter Williams discusses this peptide in the indexed Reset Biology corpus (35 mentions across his BeehiiV emails and one March-2026 podcast Q&A). Taylor Williams (women-focused podcast) and Dr Trevor Bachmeyer (SmashweRx) have zero indexed Ovagen mentions. Where Hunter is internally consistent across his own primary sources: dose anchor at 1–2 mg subq daily — Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"the dosing protocol is **1–2 mg per day** for **30 to 60 days**\" and Hunter email threadId 19ae14e47514bea3 (2025-12-02): \"Ovagen | 2 mg | Daily | Subq | 12 weeks\"; positioning as a Khavinson-class \"liver bioregulator\" — Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"Ovagen is the **liver bioregulator peptide** that originates from decades of research on organ extracts\" and Hunter (4igc2UpFr7Q 00:12:29.000): \"two injectable bioregulators which I've got dosing guides on… One of those being Ovagen and the other being Livagen.\"",
-    "cross_expert_disagreement": "Cross-expert disagreement cannot be assessed for Ovagen — Taylor Williams and Dr Trevor Bachmeyer have no indexed Ovagen content, so no contrasting expert positions exist in the corpus. The only internal tension within Hunter's own sources is duration framing: the standalone deep-dive at Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"**1–2 mg per day** for **30 to 60 days**\" reads as a 30–60 day cycle, while the 7-agent fatty-liver stack at Hunter email threadId 19ae14e47514bea3 (2025-12-02): \"Ovagen | 2 mg | Daily | Subq | 12 weeks\" extends the duration to 12 weeks within an aggressive fatty-liver protocol — the stack context is the operative justification for the longer window. Both are Hunter, both stand; the practitioner picks the duration that matches the clinical indication.",
+    "recommendation": "Reset Biology suggests asking the prescribing clinician to consider Hunter's newer, directly stated dose: Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"I'd say to take two milligrams per day for 30-60 days, you do that sub-q.\" The dated older email remains retained: Hunter Williams — email threadId 198d3d2fb0cab918 (2025-08-22, https://huntershealthhacks.beehiiv.com/p/the-peptide-for-liver-health-2292e848d83ee39b): \"the dosing protocol is 1–2 mg per day for 30 to 60 days.\"",
+    "caveats": "- Hunter Williams — saturday-morning-coffee-talk-31426--deb3667a (2026-04-08, 29:45, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/): \"Not that I would know of.\"\n- Hunter Williams — saturday-morning-coffee-talk-31426--deb3667a (2026-04-08, 29:45, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/): \"I've never even seen people that do higher doses, 10 milligrams, 20 milligrams that have had anything bad happen.\"\n- Hunter Williams — saturday-morning-coffee-talk-31426--deb3667a (2026-04-08, 30:46, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/): \"Obviously, this is me speaking from anecdotal user experience, much than the chemical side of things, but that's what I seem to notice.\"\n- Hunter Williams — saturday-morning-coffee-talk-31426--deb3667a (2026-04-08, 30:46, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-31426--deb3667a/): \"I don't know specifically with livagen and ovagen, maybe ovogen, sometimes the dosing is 10 milligrams intramuscularly per day for 10 days in Russian literature.\"\n- Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 4:36, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"Ovagen is not an approved HIV treatment.\"",
+    "cross_expert_consensus": null,
+    "cross_expert_disagreement": null,
     "acute_chronic_split": {
       "acute": null,
       "chronic": {
-        "dose": "Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"the dosing protocol is **1–2 mg per day** for **30 to 60 days**\"; Hunter email threadId 19ae14e47514bea3 (2025-12-02): \"Ovagen | 2 mg | Daily | Subq | 12 weeks.\"",
-        "route": "Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"You’ll inject this subcutaneously (belly fat or love handle area is fine). Intramuscular is also an option, but I don’t think it’s necessary.\"",
-        "frequency": "Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"Draw **10 units per day** for 1 mg, or Draw **20 units per day** for 2 mg.\" Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"recommend considering it **one to two times per year**, even if you’re optimized.\"",
-        "duration": "Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"the dosing protocol is **1–2 mg per day** for **30 to 60 days**\"; longer 12-week duration appears in the fatty-liver stack at Hunter email threadId 19ae14e47514bea3 (2025-12-02): \"Ovagen | 2 mg | Daily | Subq | 12 weeks.\"",
-        "verbatim_citation": "Hunter email threadId 198d3d2fb0cab918 (2025-08-22): \"If you get a **20 mg vial of Ovagen**, you want to reconstitute it with **2 mL of bacteriostatic water**. That means each 10 units on an insulin syringe (0.1 mL) equals **1 mg** of Ovagen. From there, the dosing protocol is **1–2 mg per day** for **30 to 60 days**.\"",
-        "episode_url": "https://huntershealthhacks.beehiiv.com/p/the-peptide-for-liver-health-2292e848d83ee39b",
-        "timestamp": "email threadId 198d3d2fb0cab918 (2025-08-22); stack-context email threadId 19ae14e47514bea3 (2025-12-02)"
+        "dose": "Newer direct Hunter guidance: Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"I'd say to take two milligrams per day for 30-60 days.\" Hunter Williams — the-peptide-stack-for-liver-health--f509f742 (2026-03-30, 24:05, https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/): \"Again, the dosage for this is gonna be the same as Ovagen. Its gonna 2 mg per day.\" Retained older email: Hunter Williams — email threadId 198d3d2fb0cab918 (2025-08-22, https://huntershealthhacks.beehiiv.com/p/the-peptide-for-liver-health-2292e848d83ee39b): \"the dosing protocol is 1–2 mg per day for 30 to 60 days.\"",
+        "route": "Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"you do that sub-q. You could do it IM if wanted to, but I think subq is totally fine.\"",
+        "frequency": "Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 1:15, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"I think that this one specifically for the liver, meaning ovagen, definitely has a place at least one to two times per year.\" Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"I'd say to take two milligrams per day.\"",
+        "duration": "Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"I'd say to take two milligrams per day for 30-60 days.\" Hunter Williams — the-peptide-stack-for-liver-health--f509f742 (2026-03-30, 24:35, https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/): \"over that 12 weeks to ensure a fully functioning liver is restored.\" Retained older email: Hunter Williams — email threadId 198d3d2fb0cab918 (2025-08-22, https://huntershealthhacks.beehiiv.com/p/the-peptide-for-liver-health-2292e848d83ee39b): \"the dosing protocol is 1–2 mg per day for 30 to 60 days.\"",
+        "verbatim_citation": "Hunter Williams — this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/): \"What I would do is if you get a 20-milligram vial of Ovagen for the dose, I will add two mLs of bacteriostatic water to that. That makes each 10 units or 0.1 mls, one milligram. And I'd say to take two milligrams per day for 30-60 days, you do that sub-q.\"",
+        "episode_url": "https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/",
+        "timestamp": "this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f 13:17 (2026-03-29); the-peptide-stack-for-liver-health--f509f742 24:05 and 24:35 (2026-03-30); email threadId 198d3d2fb0cab918 (2025-08-22)"
       }
     },
     "female_specific_notes": null,
-    "distilled_at": "2026-04-27T05:40:03.132Z",
-    "distilled_by": "claude"
+    "distilled_at": "2026-07-17T09:25:03.897Z",
+    "distilled_by": "codex"
   },
-  "generated_at": "2026-04-27T02:02:34.945Z"
+  "generated_at": "2026-07-17T10:59:07.603Z",
+  "mentions_fingerprint": "0e305705e5a9"
 }

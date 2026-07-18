@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
+import { Footer } from '@/components/Navigation/Footer';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
 import { ToastProvider } from '@/components/ui/Toast';
 import './globals.css';
@@ -27,9 +28,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           aria-hidden="true"
         />
         <ClientAuth0Provider>
-          <ToastProvider>
+<ToastProvider>
             <Header />
             {children}
+            <Footer />
           </ToastProvider>
         </ClientAuth0Provider>
 

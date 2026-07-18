@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "STAGING_ONLY_NOT_INTEGRATED",
+  "tines": 1,
+  "frame_w": 16,
+  "frame_h": 24,
+  "walk_frames": 4,
+  "facing": "right",
+  "sourceGridColumns": 5,
+  "burnFrameCount": 0,
+  "ashOnStrike": 1,
+  "fork_base": {
+    "x": 14,
+    "y": 11
+  }
+}

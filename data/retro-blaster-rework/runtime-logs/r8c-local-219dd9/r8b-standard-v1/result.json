@@ -1,0 +1,376 @@
+{
+  "verdict": "PASS",
+  "lane": "helium-hawkeye",
+  "transport": "http://127.0.0.1:9224",
+  "mode": "standard",
+  "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=r8c-local-219dd9-standard",
+  "deployedSha": "d34edf4090eacd8fd051361d27bec754033aac9c",
+  "pageErrors": [],
+  "correctAnswers": 10,
+  "beforeGameplayStorage": "{\"retro_blaster_color_hints\":\"0\",\"retro_difficulty\":\"easy\",\"retro_tutorial_seen\":\"1\"}",
+  "ceremonyStorage": "{\"pitch_fsrs_memory_ear\":\"{\\\"C4\\\":{\\\"note\\\":\\\"C4\\\",\\\"S\\\":15.4722,\\\"D\\\":1.1845685942301354,\\\"due\\\":1784110127764,\\\"lastReview\\\":1784109527764,\\\"lapses\\\":0,\\\"phase\\\":\\\"learning\\\",\\\"learningReps\\\":1},\\\"A4\\\":{\\\"note\\\":\\\"A4\\\",\\\"S\\\":15.4722,\\\"D\\\":1.4340497056708525,\\\"due\\\":1785405537347,\\\"lastReview\\\":1784109537347,\\\"lapses\\\":0,\\\"phase\\\":\\\"review\\\",\\\"learningReps\\\":2},\\\"G4\\\":{\\\"note\\\":\\\"G4\\\",\\\"S\\\":15.4722,\\\"D\\\":2.237042550896802,\\\"due\\\":1784110133751,\\\"lastReview\\\":1784109533751,\\\"lapses\\\":0,\\\"phase\\\":\\\"learning\\\",\\\"learningReps\\\":1},\\\"E4\\\":{\\\"note\\\":\\\"E4\\\",\\\"S\\\":15.474024599846814,\\\"D\\\":1,\\\"due\\\":1785405539640,\\\"lastReview\\\":1784109539640,\\\"lapses\\\":0,\\\"phase\\\":\\\"review\\\",\\\"learningReps\\\":2}}\",\"retro_blaster_color_hints\":\"0\",\"retro_difficulty\":\"easy\",\"retro_tutorial_seen\":\"1\"}",
+  "responsive": [
+    {
+      "name": "portrait-390x844",
+      "viewport": [
+        390,
+        844
+      ],
+      "rect": [
+        13,
+        115,
+        364,
+        204.75
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 63.96875,
+          "y": 271.75,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 168.75,
+          "y": 271.75,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "QUIT",
+          "x": 280.421875,
+          "y": 271.75,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          13,
+          115,
+          364,
+          204.75
+        ],
+        "canvasScale": [
+          0.56875,
+          0.56875
+        ],
+        "toastRect": [
+          17,
+          251.75,
+          356,
+          16
+        ],
+        "canvasCopyBottom": 217.375,
+        "toastClearance": 34.375,
+        "panelRect": [
+          33.474999999999994,
+          141.8734375,
+          323.04999999999995,
+          176.59687499999998
+        ],
+        "panelBorderClearance": 2.7203124999999773,
+        "preflightEffectiveFontPx": 9.1,
+        "preflightInkHeight": 5.6875
+      }
+    },
+    {
+      "name": "landscape-844x390",
+      "viewport": [
+        844,
+        390
+      ],
+      "rect": [
+        263,
+        132.5,
+        318,
+        178.875
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 290.96875,
+          "y": 263.375,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 395.75,
+          "y": 263.375,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "QUIT",
+          "x": 507.421875,
+          "y": 263.375,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          263,
+          132.5,
+          318,
+          178.875
+        ],
+        "canvasScale": [
+          0.496875,
+          0.496875
+        ],
+        "toastRect": [
+          267,
+          243.375,
+          310,
+          16
+        ],
+        "canvasCopyBottom": 221.9375,
+        "toastClearance": 21.4375,
+        "panelRect": [
+          280.8875,
+          155.97734375,
+          282.22499999999997,
+          154.27968750000002
+        ],
+        "panelBorderClearance": 2.8820312500000114,
+        "preflightEffectiveFontPx": 9.440625,
+        "preflightInkHeight": 5.962500000000006
+      }
+    },
+    {
+      "name": "desktop-1280x800",
+      "viewport": [
+        1280,
+        800
+      ],
+      "rect": [
+        175,
+        132.5,
+        930,
+        523.125
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 508.96875,
+          "y": 607.625,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": false
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 613.75,
+          "y": 607.625,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": false
+        },
+        {
+          "text": "QUIT",
+          "x": 725.421875,
+          "y": 607.625,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": false
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          175,
+          132.5,
+          930,
+          523.125
+        ],
+        "canvasScale": [
+          1.453125,
+          1.453125
+        ],
+        "toastRect": [
+          179,
+          587.625,
+          922,
+          16
+        ],
+        "canvasCopyBottom": 531.3828125,
+        "toastClearance": 56.2421875,
+        "panelRect": [
+          299.2421875,
+          201.16015625,
+          681.515625,
+          385.8046875
+        ],
+        "panelBorderClearance": -64.66015625,
+        "preflightEffectiveFontPx": 14.53125,
+        "preflightInkHeight": 11.625
+      }
+    },
+    {
+      "name": "zoom-200-equivalent-640x400",
+      "viewport": [
+        640,
+        400
+      ],
+      "rect": [
+        138.109375,
+        97,
+        363.765625,
+        190
+      ],
+      "actions": [
+        {
+          "text": "RETRY SIGNAL",
+          "x": 188.96875,
+          "y": 239,
+          "width": 100.78125,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "REPLAY SIGNAL",
+          "x": 293.75,
+          "y": 239,
+          "width": 107.671875,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        },
+        {
+          "text": "QUIT",
+          "x": 405.421875,
+          "y": 239,
+          "width": 45.59375,
+          "height": 44,
+          "insideRegion": true,
+          "insideViewport": true,
+          "insidePanel": true
+        }
+      ],
+      "geometry": {
+        "canvasRect": [
+          138.109375,
+          97,
+          363.765625,
+          190
+        ],
+        "canvasScale": [
+          0.5683837890625,
+          0.5277777777777778
+        ],
+        "toastRect": [
+          142.109375,
+          219,
+          355.765625,
+          16
+        ],
+        "canvasCopyBottom": 192,
+        "toastClearance": 27,
+        "panelRect": [
+          158.57119140625,
+          121.9375,
+          322.84199218749995,
+          163.875
+        ],
+        "panelBorderClearance": 2.8125,
+        "preflightEffectiveFontPx": 9.5,
+        "preflightInkHeight": 5.805555555555557
+      }
+    }
+  ],
+  "temporalConsistency": {
+    "active": false,
+    "sampleCount": 88,
+    "mutationSampleCount": 86,
+    "mutationRecordCount": 90,
+    "mismatches": [],
+    "status": "PASS"
+  },
+  "behaviorManifest": [
+    {
+      "behaviorId": "pre-ack-hidden-freeze",
+      "startedAtMs": 22637.90000000596,
+      "startFrame": 1060,
+      "endedAtMs": 28675.09999999404,
+      "endFrame": 1319,
+      "durationMs": 6037.199999988079,
+      "frameDelta": 259
+    },
+    {
+      "behaviorId": "real-unlock-to-new-signal",
+      "startedAtMs": 1181.0999999940395,
+      "startFrame": 67,
+      "endedAtMs": 28712.09999999404,
+      "endFrame": 1321,
+      "durationMs": 27531,
+      "frameDelta": 1254
+    },
+    {
+      "behaviorId": "blocked-output-freeze-and-responsive-actions",
+      "startedAtMs": 29262.09999999404,
+      "startFrame": 1340,
+      "endedAtMs": 35298.20000001788,
+      "endFrame": 1616,
+      "durationMs": 6036.100000023842,
+      "frameDelta": 276
+    },
+    {
+      "behaviorId": "post-ack-hidden-freeze",
+      "startedAtMs": 35823.09999999404,
+      "startFrame": 1644,
+      "endedAtMs": 41855.90000000596,
+      "endFrame": 1917,
+      "durationMs": 6032.800000011921,
+      "frameDelta": 273
+    },
+    {
+      "behaviorId": "acknowledged-resume-to-one-next-wave",
+      "startedAtMs": 42342.20000001788,
+      "startFrame": 1936,
+      "endedAtMs": 48387.70000001788,
+      "endFrame": 2177,
+      "durationMs": 6045.5,
+      "frameDelta": 241
+    }
+  ],
+  "videoPath": "C:\\Users\\jonch\\rbw-retro-blaster\\data\\retro-blaster-rework\\runtime-logs\\r8c-local-219dd9\\r8b-standard-v1\\video\\34ffe2a4bad8ed871fb03453bda8a49c.webm",
+  "contract": {
+    "firstSignal": "D4 after >=10 real correct attacks",
+    "blockedOutput": "PASS - forced suspended observer produced blocked elapsed-zero ceremony",
+    "keyInertness": "PASS - whole exposed engine snapshot and family storage exact",
+    "hiddenFreeze": "PASS - acknowledged ceremony whole snapshot exact for >=6s",
+    "toneDispatch": "PASS - exactly one AudioBufferSource start on retry",
+    "ceremonyToPlayingAtomicity": "PASS - 0 mismatches across 86 mutation samples",
+    "quitCleanup": "covered by native quit lane",
+    "r8c": "CLOSED - no SIGNAL CHECK behavior exercised"
+  }
+}

@@ -1,14 +1,20 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff, Cloud, ExternalLink, RefreshCw } from "lucide-react"
+import { useState, useEffect, Suspense } from "react"
+import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff, Cloud, ExternalLink, RefreshCw, CheckCircle, AlertCircle, AlertTriangle } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
+import { DisconnectVaultModal } from "@/components/Vault/DisconnectVaultModal"
 import { useUser } from "@auth0/nextjs-auth0"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
-export default function ProfilePage() {
+const CONNECTED_CONFIRMATION_COPY =
+  "Your data lives in your Google Drive — we ship the app, you own the data. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
+
+function ProfilePageContent() {
   const { user, isLoading } = useUser()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const driveQueryStatus = searchParams.get("drive")
   const [activeTab, setActiveTab] = useState("account")
   const [showPassword, setShowPassword] = useState(false)
   const [notifications, setNotifications] = useState({
@@ -27,7 +33,10 @@ export default function ProfilePage() {
   // Google Drive sync state
   const [driveConnected, setDriveConnected] = useState(false)
   const [driveLoading, setDriveLoading] = useState(false)
-  
+  const [driveFolderUrl, setDriveFolderUrl] = useState<string | null>(null)
+  const [needsFolderReconciliation, setNeedsFolderReconciliation] = useState(false)
+  const [showDisconnectModal, setShowDisconnectModal] = useState(false)
+
   // Load user data when available
   useEffect(() => {
     if (user) {
@@ -41,12 +50,24 @@ export default function ProfilePage() {
     }
   }, [user])
 
+  // Returning from the OAuth callback (?drive=connected|denied|needs_reconciliation|error) —
+  // jump straight to the Privacy tab so the confirmation/guidance is visible without an
+  // extra click, and re-check status so the just-connected folder link is fresh.
+  useEffect(() => {
+    if (driveQueryStatus) {
+      setActiveTab("privacy")
+      checkDriveConnection()
+    }
+  }, [driveQueryStatus])
+
   const checkDriveConnection = async () => {
     try {
       const res = await fetch('/api/integrations/google-drive/status')
       if (res.ok) {
         const data = await res.json()
         setDriveConnected(data.connected || false)
+        setDriveFolderUrl(data.folderUrl || null)
+        setNeedsFolderReconciliation(!!data.needsFolderReconciliation)
       }
     } catch (error) {
       console.error('Error checking Drive status:', error)
@@ -59,18 +80,23 @@ export default function ProfilePage() {
     window.location.href = '/api/integrations/google-drive/connect'
   }
 
-  const disconnectGoogleDrive = async () => {
-    if (!confirm('Disconnect Google Drive? Your synced files will remain in Drive.')) return
+  const disconnectGoogleDrive = () => {
+    setShowDisconnectModal(true)
+  }
+
+  const confirmDisconnectGoogleDrive = async () => {
     setDriveLoading(true)
     try {
       const res = await fetch('/api/integrations/google-drive/disconnect', { method: 'POST' })
       if (res.ok) {
         setDriveConnected(false)
+        setDriveFolderUrl(null)
       }
     } catch (error) {
       console.error('Error disconnecting Drive:', error)
     } finally {
       setDriveLoading(false)
+      setShowDisconnectModal(false)
     }
   }
 
@@ -168,6 +194,79 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
+
+          {/* Unmissable Drive connect-flow feedback — visible regardless of which tab loads */}
+          {driveQueryStatus === "connected" && driveConnected && (
+            <div className="mb-8 bg-gradient-to-r from-secondary-600/25 to-primary-600/25 border-2 border-secondary-400/50 rounded-xl p-6 shadow-lg backdrop-blur-sm">
+              <div className="flex items-start gap-4">
+                <CheckCircle className="w-8 h-8 text-secondary-300 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-white mb-2">Your Vault is connected</h3>
+                  <p className="text-gray-100 mb-4">{CONNECTED_CONFIRMATION_COPY}</p>
+                  {driveFolderUrl && (
+                    <a
+                      href={driveFolderUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      View your folder in Google Drive
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          {driveQueryStatus === "denied" && (
+            <div className="mb-8 flex items-start gap-3 bg-amber-600/20 border border-amber-400/40 rounded-xl p-5 backdrop-blur-sm">
+              <AlertCircle className="w-6 h-6 text-amber-300 flex-shrink-0 mt-0.5" />
+              <p className="text-amber-100">
+                No worries — you canceled before finishing. Nothing was connected. Whenever you&apos;re ready, hit{" "}
+                <span className="font-semibold">Connect Google Drive</span> below to try again.
+              </p>
+            </div>
+          )}
+          {driveQueryStatus === "needs_reconciliation" && (
+            <div className="mb-8 flex items-start gap-3 bg-amber-600/20 border border-amber-400/40 rounded-xl p-5 backdrop-blur-sm">
+              <AlertTriangle className="w-6 h-6 text-amber-300 flex-shrink-0 mt-0.5" />
+              <p className="text-amber-100">
+                We found more than one Reset Biology folder in your Drive, so syncing is paused until it&apos;s sorted out.
+                Email{" "}
+                <a href="mailto:support@resetbiology.com" className="underline hover:text-amber-50">
+                  support@resetbiology.com
+                </a>{" "}
+                and we&apos;ll help you pick the right one — nothing has been changed or deleted.
+              </p>
+            </div>
+          )}
+          {driveQueryStatus === "error" && (
+            <div className="mb-8 flex items-start gap-3 bg-red-600/20 border border-red-400/40 rounded-xl p-5 backdrop-blur-sm">
+              <AlertCircle className="w-6 h-6 text-red-300 flex-shrink-0 mt-0.5" />
+              <p className="text-red-100">
+                Something went wrong connecting Drive. Try again below, or email{" "}
+                <a href="mailto:support@resetbiology.com" className="underline hover:text-red-50">
+                  support@resetbiology.com
+                </a>{" "}
+                if it keeps happening.
+              </p>
+            </div>
+          )}
+          {/* Persistent (not just post-redirect) reconciliation notice — driven by
+              driveVaultState.needsFolderReconciliation, so it survives page reloads. */}
+          {needsFolderReconciliation && driveQueryStatus !== "needs_reconciliation" && (
+            <div className="mb-8 flex items-start gap-3 bg-amber-600/20 border border-amber-400/40 rounded-xl p-5 backdrop-blur-sm">
+              <AlertTriangle className="w-6 h-6 text-amber-300 flex-shrink-0 mt-0.5" />
+              <p className="text-amber-100">
+                We found more than one Reset Biology folder in your Drive, so syncing is paused until it&apos;s sorted out.
+                Email{" "}
+                <a href="mailto:support@resetbiology.com" className="underline hover:text-amber-50">
+                  support@resetbiology.com
+                </a>{" "}
+                and we&apos;ll help you pick the right one.
+              </p>
+            </div>
+          )}
 
           {/* Tab Navigation */}
           <div className="card-hover-secondary mb-8">
@@ -406,7 +505,7 @@ export default function ProfilePage() {
                                   {driveLoading ? 'Processing...' : 'Disconnect'}
                                 </button>
                                 <button
-                                  onClick={() => window.open('https://drive.google.com', '_blank')}
+                                  onClick={() => window.open(driveFolderUrl || 'https://drive.google.com', '_blank')}
                                   className="px-4 py-2 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                                 >
                                   <ExternalLink className="w-4 h-4" />
@@ -415,23 +514,48 @@ export default function ProfilePage() {
                               </div>
                             </div>
                           ) : (
-                            <button
-                              onClick={connectGoogleDrive}
-                              disabled={driveLoading}
-                              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center gap-2"
-                            >
-                              {driveLoading ? (
-                                <>
-                                  <RefreshCw className="w-5 h-5 animate-spin" />
-                                  Connecting...
-                                </>
-                              ) : (
-                                <>
-                                  <Cloud className="w-5 h-5" />
-                                  Connect Google Drive
-                                </>
-                              )}
-                            </button>
+                            <>
+                              {/* Pre-consent guidance — what Google will ask, what we can
+                                  and can't touch, and why a Google trust warning may still
+                                  appear while our app verification is in review. */}
+                              <div className="text-xs text-gray-300 bg-gray-800/40 border border-gray-700/40 rounded-lg p-3 mb-4 space-y-1.5">
+                                <p>
+                                  Google will ask permission to create files in your Drive — we use the{" "}
+                                  <code className="text-primary-300 bg-gray-900/60 px-1 py-0.5 rounded">drive.file</code>{" "}
+                                  scope, so this app can only touch files it creates. It can&apos;t see or read
+                                  the rest of your Drive.
+                                </p>
+                                <p>
+                                  Google may show an &quot;unverified app&quot; or trust warning during this step —
+                                  that&apos;s because our app verification with Google is still in review, not because
+                                  anything is wrong. It&apos;s safe to continue.
+                                </p>
+                                <p>
+                                  See our{" "}
+                                  <a href="/privacy" className="underline hover:text-gray-100">
+                                    Privacy Policy
+                                  </a>{" "}
+                                  for the full picture of what we do (and don&apos;t) access.
+                                </p>
+                              </div>
+                              <button
+                                onClick={connectGoogleDrive}
+                                disabled={driveLoading}
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50 flex items-center gap-2"
+                              >
+                                {driveLoading ? (
+                                  <>
+                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                    Connecting...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Cloud className="w-5 h-5" />
+                                    Connect Google Drive
+                                  </>
+                                )}
+                              </button>
+                            </>
                           )}
 
                           <div className="mt-4 text-xs text-gray-400">
@@ -507,6 +631,27 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <DisconnectVaultModal
+        open={showDisconnectModal}
+        loading={driveLoading}
+        onConfirm={confirmDisconnectGoogleDrive}
+        onCancel={() => setShowDisconnectModal(false)}
+      />
     </div>
+  )
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
+          <div className="text-white text-2xl">Loading...</div>
+        </div>
+      }
+    >
+      <ProfilePageContent />
+    </Suspense>
   )
 }

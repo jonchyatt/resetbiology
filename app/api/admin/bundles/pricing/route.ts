@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { calculateBundlePrice } from '@/lib/bundlePricing'
+import { isAdminRequest } from '@/lib/adminGuard';
 
 /**
  * POST: Set manual price override for a bundle
  */
 export async function POST(req: NextRequest) {
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   try {
     const { bundleId, priceOverride } = await req.json()
 

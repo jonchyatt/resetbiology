@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
+import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { syncUserDataForDate } from '@/lib/google-drive'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
 
 // GET: Load user's vision training history
@@ -13,23 +14,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      if (user) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -97,23 +82,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Find user by Auth0 sub OR email
-    let user = await prisma.user.findUnique({
-      where: { auth0Sub: session.user.sub }
-    })
-
-    if (!user && session.user.email) {
-      user = await prisma.user.findUnique({
-        where: { email: session.user.email }
-      })
-
-      if (user) {
-        user = await prisma.user.update({
-          where: { id: user.id },
-          data: { auth0Sub: session.user.sub }
-        })
-      }
-    }
+    const user = await getUserFromSession(session)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -229,10 +198,8 @@ export async function POST(request: Request) {
       }
     })
 
-    // Sync to Google Drive (non-blocking)
-    syncUserDataForDate(user.id, new Date()).catch(err => {
-      console.error('Drive sync failed:', err)
-    })
+    // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
+    await enqueueDriveSync(user.id, new Date(), ['vision']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

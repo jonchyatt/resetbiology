@@ -1,0 +1,990 @@
+{
+  "verdict": "PASS",
+  "lane": "helium-hawkeye",
+  "transport": "http://127.0.0.1:9224",
+  "mode": "voice",
+  "url": "http://127.0.0.1:3336/pitch-defender/retro-2?v=r8c-local-219dd9-voice",
+  "deployedSha": "d34edf4090eacd8fd051361d27bec754033aac9c",
+  "pageErrors": [],
+  "beforeGameplayStorage": "{\"retro_blaster_color_hints\":\"0\",\"retro_difficulty\":\"easy\",\"retro_tutorial_seen\":\"1\"}",
+  "ceremonyStorage": "{\"pitch_fsrs_memory\":\"{\\\"C4\\\":{\\\"note\\\":\\\"C4\\\",\\\"S\\\":15.4722,\\\"D\\\":1.1845685942301354,\\\"due\\\":1784110187124,\\\"lastReview\\\":1784109587124,\\\"lapses\\\":0,\\\"phase\\\":\\\"learning\\\",\\\"learningReps\\\":1},\\\"A4\\\":{\\\"note\\\":\\\"A4\\\",\\\"S\\\":15.4722,\\\"D\\\":1.4340497056708525,\\\"due\\\":1785405599047,\\\"lastReview\\\":1784109599047,\\\"lapses\\\":0,\\\"phase\\\":\\\"review\\\",\\\"learningReps\\\":2},\\\"G4\\\":{\\\"note\\\":\\\"G4\\\",\\\"S\\\":15.4722,\\\"D\\\":2.237042550896802,\\\"due\\\":1784110194728,\\\"lastReview\\\":1784109594728,\\\"lapses\\\":0,\\\"phase\\\":\\\"learning\\\",\\\"learningReps\\\":1},\\\"E4\\\":{\\\"note\\\":\\\"E4\\\",\\\"S\\\":15.474532464311649,\\\"D\\\":1,\\\"due\\\":1785405602424,\\\"lastReview\\\":1784109602424,\\\"lapses\\\":0,\\\"phase\\\":\\\"review\\\",\\\"learningReps\\\":2}}\",\"retro_blaster_color_hints\":\"0\",\"retro_difficulty\":\"easy\",\"retro_tutorial_seen\":\"1\"}",
+  "behaviorManifest": [
+    {
+      "behaviorId": "voice-live-to-new-signal",
+      "startedAtMs": 1315,
+      "startFrame": 69,
+      "endedAtMs": 29319.69999998808,
+      "endFrame": 1236,
+      "durationMs": 28004.69999998808,
+      "frameDelta": 1167
+    },
+    {
+      "behaviorId": "voice-ceremony-to-live-meter-resume",
+      "startedAtMs": 29776.399999976158,
+      "startFrame": 1253,
+      "endedAtMs": 36634.39999997616,
+      "endFrame": 1470,
+      "durationMs": 6858,
+      "frameDelta": 217
+    }
+  ],
+  "videoPath": "C:\\Users\\jonch\\rbw-retro-blaster\\data\\retro-blaster-rework\\runtime-logs\\r8c-local-219dd9\\r8b-voice-v1\\video\\276cbfb4f7e02ea70a3fb63d664af199.webm",
+  "startState": {
+    "formation": {},
+    "signalCheck": {},
+    "micAuthority": {},
+    "mic": {
+      "gumCalls": 1,
+      "matchingCalls": 1,
+      "sourceCount": 1,
+      "sourceContextStates": [
+        "running"
+      ],
+      "sourceTrackStates": [
+        "live"
+      ],
+      "productContextStates": [
+        "running"
+      ],
+      "sourceIsProductContext": false
+    },
+    "vocalMeter": {
+      "present": false,
+      "visible": false,
+      "widthPct": 0
+    },
+    "toneAgeMs": null,
+    "reducedMotion": true,
+    "colorHintsLabel": "COLOR HINTS OFF",
+    "gainRanges": []
+  },
+  "earned": {
+    "answers": [
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:1",
+        "note": "E4",
+        "octaveProbe": false,
+        "injectedFrequency": 329.6275569128699,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:1",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:0",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 118,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 3633.0999999940395,
+          "demandAtMs": 3983.2999999940394,
+          "deadlineAtMs": 5983.299999994039,
+          "outboundT": 0.5601600000000005,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 4683.49999999404,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:2",
+        "note": "E4",
+        "octaveProbe": true,
+        "injectedFrequency": 682.5036952068433,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:2",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:1",
+          "note": "E4",
+          "side": -1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 191,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 5199.99999999404,
+          "demandAtMs": 5549.99999999404,
+          "deadlineAtMs": 7549.99999999404,
+          "outboundT": 0.5867200000000005,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 6283.399999994041,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:3",
+        "note": "A4",
+        "octaveProbe": false,
+        "injectedFrequency": 440,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:3",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:2:0",
+          "note": "A4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 364,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 9382.89999999404,
+          "demandAtMs": 9749.39999999404,
+          "deadlineAtMs": 11749.39999999404,
+          "outboundT": 0.5867199999999997,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 10482.79999999404,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:4",
+        "note": "C4",
+        "octaveProbe": false,
+        "injectedFrequency": 261.6255653005986,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:4",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:2:1",
+          "note": "C4",
+          "side": -1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 426,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 10999.499999994041,
+          "demandAtMs": 11366.099999994041,
+          "deadlineAtMs": 13366.099999994041,
+          "outboundT": 0.56,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 12066.099999994041,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:5",
+        "note": "E4",
+        "octaveProbe": false,
+        "injectedFrequency": 329.6275569128699,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:5",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:3:0",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 620,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 15148.999999994043,
+          "demandAtMs": 15499.199999994042,
+          "deadlineAtMs": 17499.19999999404,
+          "outboundT": 0.56,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 16199.199999994042,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:6",
+        "note": "E4",
+        "octaveProbe": false,
+        "injectedFrequency": 329.6275569128699,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:6",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:3:1",
+          "note": "E4",
+          "side": -1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 699,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 16715.79999999404,
+          "demandAtMs": 17065.79999999404,
+          "deadlineAtMs": 19065.79999999404,
+          "outboundT": 0.52,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 17715.79999999404,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:7",
+        "note": "G4",
+        "octaveProbe": false,
+        "injectedFrequency": 391.99543598174927,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:7",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:3:2",
+          "note": "G4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 772,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 18215.79999999404,
+          "demandAtMs": 18582.89999999404,
+          "deadlineAtMs": 20582.89999999404,
+          "outboundT": 0.5600800000000018,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 19282.99999999404,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:8",
+        "note": "A4",
+        "octaveProbe": false,
+        "injectedFrequency": 440,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:8",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:0",
+          "note": "A4",
+          "side": -1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 952,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 22399.299999994044,
+          "demandAtMs": 22765.899999994046,
+          "deadlineAtMs": 24765.899999994046,
+          "outboundT": 0.5466399999999995,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 23449.199999994045,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:9",
+        "note": "E4",
+        "octaveProbe": false,
+        "injectedFrequency": 329.6275569128699,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:9",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:1",
+          "note": "E4",
+          "side": -1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 1035,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 23965.999999994045,
+          "demandAtMs": 24316.099999994047,
+          "deadlineAtMs": 26316.099999994047,
+          "outboundT": 0.5999199999999982,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 25065.999999994045,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      },
+      {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:10",
+        "note": "E4",
+        "octaveProbe": false,
+        "injectedFrequency": 329.6275569128699,
+        "resolved": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:10",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:2",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 1099,
+          "stimulusRequest": null,
+          "phase": "hit-locked",
+          "telegraphStartedAtMs": 25566.19999999405,
+          "demandAtMs": 25932.799999994048,
+          "deadlineAtMs": 27932.799999994048,
+          "outboundT": 0.4798400000000023,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": "correct",
+          "resolvedAtMs": 26532.59999999405,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": true
+        }
+      }
+    ],
+    "suppressionReceipt": {
+      "formation": {
+        "phase": "playing",
+        "wave": 1,
+        "directorClockMs": 3999.9999999940396,
+        "gameId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e",
+        "introductionCeremony": null,
+        "pendingIntroductions": [],
+        "activeAttack": {
+          "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:1",
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:0",
+          "note": "E4",
+          "side": 1,
+          "cuePolicy": "guided",
+          "readinessObservationId": 118,
+          "stimulusRequest": null,
+          "phase": "outbound",
+          "telegraphStartedAtMs": 3633.0999999940395,
+          "demandAtMs": 3983.2999999940394,
+          "deadlineAtMs": 5983.299999994039,
+          "outboundT": 0.013360000000000219,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": true,
+          "voiceHeardPhonation": false
+        },
+        "requiredAnswerEventsMs": [
+          3983.2999999940394
+        ],
+        "lastCompletedWavePacing": null,
+        "ships": [
+          {
+            "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:0",
+            "visualId": "1:0",
+            "slot": 0,
+            "x": 306.5,
+            "y": 76.5,
+            "formationX": 306.5,
+            "formationY": 76.5,
+            "entering": false,
+            "alive": true,
+            "flightState": "outbound"
+          }
+        ]
+      },
+      "signalCheck": {
+        "wave": 1,
+        "pending": false,
+        "cuePolicy": "guided",
+        "phase": "outbound",
+        "disposition": "wave-1",
+        "requestId": null,
+        "maskActive": false
+      },
+      "micAuthority": {
+        "isListening": true,
+        "isVisible": true,
+        "audioContextState": "running",
+        "trackReadyState": "live",
+        "trackMuted": false,
+        "generation": 141,
+        "staleGameFrames": 0,
+        "hasFreshGeneration": true,
+        "signalActive": false
+      },
+      "mic": {
+        "gumCalls": 1,
+        "matchingCalls": 1,
+        "sourceCount": 1,
+        "sourceContextStates": [
+          "running"
+        ],
+        "sourceTrackStates": [
+          "live"
+        ],
+        "productContextStates": [
+          "running"
+        ],
+        "sourceIsProductContext": false
+      },
+      "vocalMeter": {
+        "present": false,
+        "visible": false,
+        "widthPct": 0
+      },
+      "toneAgeMs": 27.099999994039536,
+      "reducedMotion": true,
+      "colorHintsLabel": "COLOR HINTS OFF",
+      "gainRanges": []
+    },
+    "octaveReceipt": {
+      "attack": {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:2",
+        "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:1",
+        "note": "E4",
+        "side": -1,
+        "cuePolicy": "guided",
+        "readinessObservationId": 191,
+        "stimulusRequest": null,
+        "phase": "outbound",
+        "telegraphStartedAtMs": 5199.99999999404,
+        "demandAtMs": 5549.99999999404,
+        "deadlineAtMs": 7549.99999999404,
+        "outboundT": 0.013360000000000581,
+        "returnFromT": 0,
+        "returnStartedAtMs": null,
+        "outcome": null,
+        "resolvedAtMs": null,
+        "voiceWindowEligible": true,
+        "voiceHeardPhonation": false
+      },
+      "injectedFrequency": 682.5036952068433,
+      "live": {
+        "formation": {
+          "phase": "playing",
+          "wave": 1,
+          "directorClockMs": 6033.499999994041,
+          "gameId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e",
+          "introductionCeremony": null,
+          "pendingIntroductions": [],
+          "activeAttack": {
+            "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:2",
+            "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:1",
+            "note": "E4",
+            "side": -1,
+            "cuePolicy": "guided",
+            "readinessObservationId": 191,
+            "stimulusRequest": null,
+            "phase": "outbound",
+            "telegraphStartedAtMs": 5199.99999999404,
+            "demandAtMs": 5549.99999999404,
+            "deadlineAtMs": 7549.99999999404,
+            "outboundT": 0.38680000000000075,
+            "returnFromT": 0,
+            "returnStartedAtMs": null,
+            "outcome": null,
+            "resolvedAtMs": null,
+            "voiceWindowEligible": true,
+            "voiceHeardPhonation": true
+          },
+          "requiredAnswerEventsMs": [
+            3983.2999999940394,
+            5549.99999999404
+          ],
+          "lastCompletedWavePacing": null,
+          "ships": [
+            {
+              "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:0",
+              "visualId": "1:0",
+              "slot": 0,
+              "x": 306.5,
+              "y": 76.5,
+              "formationX": 306.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": false,
+              "flightState": "formation"
+            },
+            {
+              "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:1:1",
+              "visualId": "1:1",
+              "slot": 1,
+              "x": 216.5,
+              "y": 76.5,
+              "formationX": 216.5,
+              "formationY": 76.5,
+              "entering": false,
+              "alive": true,
+              "flightState": "outbound"
+            }
+          ]
+        },
+        "signalCheck": {
+          "wave": 1,
+          "pending": false,
+          "cuePolicy": "guided",
+          "phase": "outbound",
+          "disposition": "wave-1",
+          "requestId": null,
+          "maskActive": false
+        },
+        "micAuthority": {
+          "isListening": true,
+          "isVisible": true,
+          "audioContextState": "running",
+          "trackReadyState": "live",
+          "trackMuted": false,
+          "generation": 246,
+          "staleGameFrames": 0,
+          "hasFreshGeneration": true,
+          "signalActive": true
+        },
+        "mic": {
+          "gumCalls": 1,
+          "matchingCalls": 1,
+          "sourceCount": 1,
+          "sourceContextStates": [
+            "running"
+          ],
+          "sourceTrackStates": [
+            "live"
+          ],
+          "productContextStates": [
+            "running"
+          ],
+          "sourceIsProductContext": false
+        },
+        "vocalMeter": {
+          "present": true,
+          "visible": true,
+          "widthPct": 22.2
+        },
+        "toneAgeMs": 555,
+        "reducedMotion": true,
+        "colorHintsLabel": "COLOR HINTS OFF",
+        "gainRanges": []
+      }
+    },
+    "firstWave2SignalCheck": {
+      "wave": 2,
+      "pending": false,
+      "cuePolicy": "guided",
+      "phase": "telegraph",
+      "disposition": "guided-voice",
+      "requestId": null,
+      "maskActive": false
+    }
+  },
+  "ceremonyEntry": {
+    "formation": {
+      "phase": "ceremony",
+      "wave": 4,
+      "directorClockMs": 27315.699999994053,
+      "gameId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e",
+      "introductionCeremony": {
+        "ceremonyId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:ceremony:0",
+        "note": "D4",
+        "elapsedMs": 16.799999999999272,
+        "durationMs": 2400,
+        "toneStatus": "acknowledged"
+      },
+      "pendingIntroductions": [],
+      "activeAttack": null,
+      "requiredAnswerEventsMs": [
+        22765.899999994046,
+        24316.099999994047,
+        25932.799999994048
+      ],
+      "lastCompletedWavePacing": {
+        "difficulty": "easy",
+        "wave": 4,
+        "waveStartedAtMs": 20099.499999994045,
+        "waveEndedAtMs": 27315.699999994053,
+        "waveDurationMs": 7216.200000000008,
+        "requiredAnswerEventsMs": [
+          22765.899999994046,
+          24316.099999994047,
+          25932.799999994048
+        ]
+      },
+      "ships": [
+        {
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:0",
+          "visualId": "4:0",
+          "slot": 0,
+          "x": 306.5,
+          "y": 76.5,
+          "formationX": 306.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": false,
+          "flightState": "formation"
+        },
+        {
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:1",
+          "visualId": "4:1",
+          "slot": 1,
+          "x": 216.5,
+          "y": 76.5,
+          "formationX": 216.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": false,
+          "flightState": "formation"
+        },
+        {
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:2",
+          "visualId": "4:2",
+          "slot": 2,
+          "x": 396.5,
+          "y": 76.5,
+          "formationX": 396.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": false,
+          "flightState": "formation"
+        }
+      ]
+    },
+    "signalCheck": {
+      "wave": 4,
+      "pending": false,
+      "cuePolicy": null,
+      "phase": null,
+      "disposition": "guided-voice",
+      "requestId": null,
+      "maskActive": false
+    },
+    "micAuthority": {
+      "isListening": true,
+      "isVisible": true,
+      "audioContextState": "running",
+      "trackReadyState": "live",
+      "trackMuted": false,
+      "generation": 1179,
+      "staleGameFrames": 0,
+      "hasFreshGeneration": true,
+      "signalActive": false
+    },
+    "mic": {
+      "gumCalls": 1,
+      "matchingCalls": 1,
+      "sourceCount": 1,
+      "sourceContextStates": [
+        "running"
+      ],
+      "sourceTrackStates": [
+        "live"
+      ],
+      "productContextStates": [
+        "running"
+      ],
+      "sourceIsProductContext": false
+    },
+    "vocalMeter": {
+      "present": false,
+      "visible": false,
+      "widthPct": 0
+    },
+    "toneAgeMs": 31.200000017881393,
+    "reducedMotion": true,
+    "colorHintsLabel": null,
+    "gainRanges": []
+  },
+  "ceremonyHeld": {
+    "formation": {
+      "phase": "ceremony",
+      "wave": 4,
+      "directorClockMs": 27315.699999994053,
+      "gameId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e",
+      "introductionCeremony": {
+        "ceremonyId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:ceremony:0",
+        "note": "D4",
+        "elapsedMs": 1150.3999999999978,
+        "durationMs": 2400,
+        "toneStatus": "acknowledged"
+      },
+      "pendingIntroductions": [],
+      "activeAttack": null,
+      "requiredAnswerEventsMs": [
+        22765.899999994046,
+        24316.099999994047,
+        25932.799999994048
+      ],
+      "lastCompletedWavePacing": {
+        "difficulty": "easy",
+        "wave": 4,
+        "waveStartedAtMs": 20099.499999994045,
+        "waveEndedAtMs": 27315.699999994053,
+        "waveDurationMs": 7216.200000000008,
+        "requiredAnswerEventsMs": [
+          22765.899999994046,
+          24316.099999994047,
+          25932.799999994048
+        ]
+      },
+      "ships": [
+        {
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:0",
+          "visualId": "4:0",
+          "slot": 0,
+          "x": 306.5,
+          "y": 76.5,
+          "formationX": 306.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": false,
+          "flightState": "formation"
+        },
+        {
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:1",
+          "visualId": "4:1",
+          "slot": 1,
+          "x": 216.5,
+          "y": 76.5,
+          "formationX": 216.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": false,
+          "flightState": "formation"
+        },
+        {
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:4:2",
+          "visualId": "4:2",
+          "slot": 2,
+          "x": 396.5,
+          "y": 76.5,
+          "formationX": 396.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": false,
+          "flightState": "formation"
+        }
+      ]
+    },
+    "signalCheck": {
+      "wave": 4,
+      "pending": false,
+      "cuePolicy": null,
+      "phase": null,
+      "disposition": "guided-voice",
+      "requestId": null,
+      "maskActive": false
+    },
+    "micAuthority": {
+      "isListening": true,
+      "isVisible": true,
+      "audioContextState": "running",
+      "trackReadyState": "live",
+      "trackMuted": false,
+      "generation": 1227,
+      "staleGameFrames": 0,
+      "hasFreshGeneration": true,
+      "signalActive": false
+    },
+    "mic": {
+      "gumCalls": 1,
+      "matchingCalls": 1,
+      "sourceCount": 1,
+      "sourceContextStates": [
+        "running"
+      ],
+      "sourceTrackStates": [
+        "live"
+      ],
+      "productContextStates": [
+        "running"
+      ],
+      "sourceIsProductContext": false
+    },
+    "vocalMeter": {
+      "present": false,
+      "visible": false,
+      "widthPct": 0
+    },
+    "toneAgeMs": 1289.2000000178814,
+    "reducedMotion": true,
+    "colorHintsLabel": null,
+    "gainRanges": []
+  },
+  "resumed": {
+    "formation": {
+      "phase": "playing",
+      "wave": 5,
+      "directorClockMs": 27315.699999994053,
+      "gameId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e",
+      "introductionCeremony": null,
+      "pendingIntroductions": [],
+      "activeAttack": null,
+      "requiredAnswerEventsMs": [],
+      "lastCompletedWavePacing": {
+        "difficulty": "easy",
+        "wave": 4,
+        "waveStartedAtMs": 20099.499999994045,
+        "waveEndedAtMs": 27315.699999994053,
+        "waveDurationMs": 7216.200000000008,
+        "requiredAnswerEventsMs": [
+          22765.899999994046,
+          24316.099999994047,
+          25932.799999994048
+        ]
+      },
+      "ships": []
+    },
+    "signalCheck": {
+      "wave": 5,
+      "pending": true,
+      "cuePolicy": null,
+      "phase": null,
+      "disposition": "pending",
+      "requestId": null,
+      "maskActive": false
+    },
+    "micAuthority": {
+      "isListening": true,
+      "isVisible": true,
+      "audioContextState": "running",
+      "trackReadyState": "live",
+      "trackMuted": false,
+      "generation": 1274,
+      "staleGameFrames": 0,
+      "hasFreshGeneration": true,
+      "signalActive": false
+    },
+    "mic": {
+      "gumCalls": 1,
+      "matchingCalls": 1,
+      "sourceCount": 1,
+      "sourceContextStates": [
+        "running"
+      ],
+      "sourceTrackStates": [
+        "live"
+      ],
+      "productContextStates": [
+        "running"
+      ],
+      "sourceIsProductContext": false
+    },
+    "vocalMeter": {
+      "present": false,
+      "visible": false,
+      "widthPct": 0
+    },
+    "toneAgeMs": 3015.4000000059605,
+    "reducedMotion": true,
+    "colorHintsLabel": "COLOR HINTS OFF",
+    "gainRanges": []
+  },
+  "resumedLiveMeter": {
+    "formation": {
+      "phase": "playing",
+      "wave": 5,
+      "directorClockMs": 30565.399999994035,
+      "gameId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e",
+      "introductionCeremony": null,
+      "pendingIntroductions": [],
+      "activeAttack": {
+        "attackId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:attack:11",
+        "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:5:0",
+        "note": "C4",
+        "side": 1,
+        "cuePolicy": "guided",
+        "readinessObservationId": 1255,
+        "stimulusRequest": null,
+        "phase": "outbound",
+        "telegraphStartedAtMs": 29698.899999994035,
+        "demandAtMs": 30082.09999999404,
+        "deadlineAtMs": 32082.09999999404,
+        "outboundT": 0.3866399999999965,
+        "returnFromT": 0,
+        "returnStartedAtMs": null,
+        "outcome": null,
+        "resolvedAtMs": null,
+        "voiceWindowEligible": true,
+        "voiceHeardPhonation": true
+      },
+      "requiredAnswerEventsMs": [
+        30082.09999999404
+      ],
+      "lastCompletedWavePacing": {
+        "difficulty": "easy",
+        "wave": 4,
+        "waveStartedAtMs": 20099.499999994045,
+        "waveEndedAtMs": 27315.699999994053,
+        "waveDurationMs": 7216.200000000008,
+        "requiredAnswerEventsMs": [
+          22765.899999994046,
+          24316.099999994047,
+          25932.799999994048
+        ]
+      },
+      "ships": [
+        {
+          "alienId": "5b3f5b21-489c-41e9-b041-db61e7cfca3e:alien:5:0",
+          "visualId": "5:0",
+          "slot": 0,
+          "x": 306.5,
+          "y": 76.5,
+          "formationX": 306.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": true,
+          "flightState": "outbound"
+        }
+      ]
+    },
+    "signalCheck": {
+      "wave": 5,
+      "pending": false,
+      "cuePolicy": "guided",
+      "phase": "outbound",
+      "disposition": "guided-voice",
+      "requestId": null,
+      "maskActive": false
+    },
+    "micAuthority": {
+      "isListening": true,
+      "isVisible": true,
+      "audioContextState": "running",
+      "trackReadyState": "live",
+      "trackMuted": false,
+      "generation": 1397,
+      "staleGameFrames": 0,
+      "hasFreshGeneration": true,
+      "signalActive": true
+    },
+    "mic": {
+      "gumCalls": 1,
+      "matchingCalls": 1,
+      "sourceCount": 1,
+      "sourceContextStates": [
+        "running"
+      ],
+      "sourceTrackStates": [
+        "live"
+      ],
+      "productContextStates": [
+        "running"
+      ],
+      "sourceIsProductContext": false
+    },
+    "vocalMeter": {
+      "present": true,
+      "visible": true,
+      "widthPct": 16.6
+    },
+    "toneAgeMs": 502.80000001192093,
+    "reducedMotion": true,
+    "colorHintsLabel": "COLOR HINTS OFF",
+    "gainRanges": []
+  },
+  "contract": {
+    "voiceResume": "PASS - exactly one inherited live source before, during, and after NEW SIGNAL; protected meter resumed on the next real demand",
+    "micBaselines": {
+      "oneStartListeningTransition": "PASS - one getUserMedia, one matched MediaStreamSource, one live source",
+      "isActiveAuthority": "PASS - runtime mic authority and visible meter require signalActive=true; no settled-state proxy",
+      "octaveFoldedTolerance": "PASS - one-octave +60-cent injected frequency acquired authority and resolved correct inside inherited +/-70-cent law",
+      "postToneSuppression": "PASS - signal authority remained false at 27.10ms after the inherited tone",
+      "visibleProofOfHearing": "PASS - protected meter reached 16.6% immediately after ceremony resume"
+    },
+    "pacing": {
+      "difficulty": "easy",
+      "wave": 4,
+      "waveStartedAtMs": 20099.499999994045,
+      "waveEndedAtMs": 27315.699999994053,
+      "waveDurationMs": 7216.200000000008,
+      "requiredAnswerEventsMs": [
+        22765.899999994046,
+        24316.099999994047,
+        25932.799999994048
+      ],
+      "demandCount": 3,
+      "measuredApm": 24.943876278373633,
+      "minimumGapMs": 1550.2000000000007
+    },
+    "ceremonyDemandTimestamps": "PASS - byte-identical during ceremony; next wave reset to zero",
+    "ceremonyPersistence": "PASS - storage byte-identical from ceremony entry through next-wave resume",
+    "accessibilityParity": "PASS - prefers-reduced-motion active and COLOR HINTS OFF before and after ceremony",
+    "gains": "deferred-r14 - zero cabinet range controls",
+    "jonEar": "pending-act-boundary",
+    "r8c": "PASS - VOICE remains guided and mask-inactive; no blind SIGNAL CHECK is exercised",
+    "r8cVoiceOpportunity": "PASS - first observed wave-2+ opportunity was guided-voice with mask inactive"
+  }
+}
