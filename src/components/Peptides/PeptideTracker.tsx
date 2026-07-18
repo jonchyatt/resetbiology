@@ -20,7 +20,12 @@ import { QuickAddOralMed } from "./QuickAddOralMed";
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
 import type { PeptideIndexEntry } from "@/data/peptide-education/generated";
-import { resolveFrequency } from "@/lib/peptide-frequency";
+import {
+  resolveFrequency,
+  isDoseDayForProtocol,
+  hasKnownSchedule,
+  parseDoseTimes,
+} from "@/lib/peptide-frequency";
 
 // ---------------------------------------------------------------------------
 // H1 containment: the backend protocol shape (ProtocolInput/ApiProtocolShape
@@ -161,6 +166,14 @@ export function PeptideTracker() {
     // Create date at midnight in local timezone
     const date = new Date(year, month, day, 0, 0, 0, 0);
     return date;
+  };
+
+  // "08:00" -> "8:00 AM" for the Weekly Schedule grid display.
+  const formatTime12h = (time: string): string => {
+    const [h, m] = time.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    return `${h12}:${(m || 0).toString().padStart(2, "0")} ${period}`;
   };
 
   const [activeTab, setActiveTab] = useState<"current" | "calendar">("current");
@@ -2463,85 +2476,88 @@ export function PeptideTracker() {
                   <h4 className="font-semibold text-secondary-300 mb-3">
                     Weekly Schedule
                   </h4>
-                  <div className="grid grid-cols-7 gap-2">
-                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                      (day, index) => {
-                        // Determine if this day is active based on frequency
-                        const isActiveDay =
-                          selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("daily") ||
-                          selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("every day") ||
-                          (selectedProtocol.frequency.includes("5 days") &&
-                            index >= 1 &&
-                            index <= 5) ||
-                          (selectedProtocol.frequency.includes("3x per week") &&
-                            [1, 3, 5].includes(index)) ||
-                          (selectedProtocol.frequency.includes("2x per week") &&
-                            [1, 4].includes(index)) ||
-                          (selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("every other day") &&
-                            index % 2 === 1);
+                  {(() => {
+                    // H3: active days come from the SAME shared resolver the
+                    // reminder engine uses (peptide-frequency.ts), never an
+                    // invented Mon/Wed/Fri / Mon/Thu / index-parity guess.
+                    // A bare "3x per week"/"2x per week" with no explicit
+                    // days chosen is an unknown schedule — show a "set your
+                    // schedule" state instead of highlighting fabricated days.
+                    if (!hasKnownSchedule(selectedProtocol.frequency)) {
+                      return (
+                        <div className="text-sm text-gray-400 text-center py-6">
+                          Schedule not set — choose your days
+                        </div>
+                      );
+                    }
 
-                        // Determine dose times based on timing
-                        const doseTimes: string[] = [];
-                        if (isActiveDay) {
-                          const timing = selectedProtocol.timing.toLowerCase();
-                          if (
-                            timing.includes("am/pm") ||
-                            timing.includes("twice")
-                          ) {
-                            doseTimes.push("8:00 AM", "8:00 PM");
-                          } else if (timing.includes("am")) {
-                            doseTimes.push("8:00 AM");
-                          } else if (timing.includes("pm")) {
-                            doseTimes.push("8:00 PM");
-                          } else if (timing.includes("before meals")) {
-                            doseTimes.push("7:00 AM", "12:00 PM", "6:00 PM");
-                          } else if (timing.includes("after meals")) {
-                            doseTimes.push("9:00 AM", "2:00 PM", "8:00 PM");
-                          } else {
-                            doseTimes.push("Scheduled");
-                          }
-                        }
+                    const protocolStartDate = selectedProtocol.startDate
+                      ? parseLocalDateKey(selectedProtocol.startDate)
+                      : new Date();
+                    protocolStartDate.setHours(0, 0, 0, 0);
 
-                        return (
-                          <div key={day} className="text-center">
-                            <div className="text-xs font-semibold text-gray-300 mb-2">
-                              {day}
-                            </div>
-                            <div
-                              className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
-                                isActiveDay
-                                  ? "bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200"
-                                  : "bg-gray-700/20 border border-gray-600/20 text-gray-500"
-                              }`}
-                            >
-                              {doseTimes.length > 0 ? (
-                                doseTimes.map((time, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="font-medium whitespace-nowrap"
-                                  >
-                                    {time}
+                    const gridToday = new Date();
+                    gridToday.setHours(0, 0, 0, 0);
+                    const weekStart = new Date(gridToday);
+                    weekStart.setDate(gridToday.getDate() - gridToday.getDay());
+
+                    return (
+                      <>
+                        <div className="grid grid-cols-7 gap-2">
+                          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                            (day, index) => {
+                              const cellDate = new Date(weekStart);
+                              cellDate.setDate(weekStart.getDate() + index);
+
+                              const isActiveDay = isDoseDayForProtocol(
+                                selectedProtocol.frequency,
+                                protocolStartDate,
+                                cellDate,
+                              );
+
+                              const doseTimes = isActiveDay
+                                ? parseDoseTimes(selectedProtocol.timing).map(
+                                    formatTime12h,
+                                  )
+                                : [];
+
+                              return (
+                                <div key={day} className="text-center">
+                                  <div className="text-xs font-semibold text-gray-300 mb-2">
+                                    {day}
                                   </div>
-                                ))
-                              ) : (
-                                <div className="text-gray-500">—</div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
-                  <div className="mt-3 text-xs text-gray-400 text-center">
-                    Times shown are suggested based on your protocol timing (
-                    {selectedProtocol.timing})
-                  </div>
+                                  <div
+                                    className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
+                                      isActiveDay
+                                        ? "bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200"
+                                        : "bg-gray-700/20 border border-gray-600/20 text-gray-500"
+                                    }`}
+                                  >
+                                    {doseTimes.length > 0 ? (
+                                      doseTimes.map((time, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="font-medium whitespace-nowrap"
+                                        >
+                                          {time}
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <div className="text-gray-500">—</div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            },
+                          )}
+                        </div>
+                        <div className="mt-3 text-xs text-gray-400 text-center">
+                          Times shown are suggested based on your protocol timing (
+                          {selectedProtocol.timing})
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
 
                 <div className="bg-amber-600/20 rounded-lg p-4">

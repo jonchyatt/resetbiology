@@ -17,7 +17,7 @@ import * as freqMod from "../src/lib/peptide-frequency.ts";
 import * as schedMod from "../src/lib/scheduleNotifications.ts";
 
 const { computeSyringeUnitsFromPrep, readPrepForProtocol } = trackerMod.default ?? trackerMod;
-const { resolveFrequency } = freqMod.default ?? freqMod;
+const { resolveFrequency, isDoseDayForProtocol, hasKnownSchedule } = freqMod.default ?? freqMod;
 const { shouldScheduleOnDate, parseDoseTimes } = schedMod.default ?? schedMod;
 
 let failures = 0;
@@ -137,6 +137,60 @@ console.log("\n--- H6: twice-daily protocol yields 2 dose slots/day ---");
   // when a member picks 2 dose times) also yields 2 slots.
   const explicitTimes = parseDoseTimes("08:00/20:00");
   assertEqual(explicitTimes.length, 2, "H6: explicit '08:00/20:00' timing also yields 2 slots");
+}
+
+console.log("\n--- H3 fix-wave: Weekly Schedule grid routes through the shared resolver ---");
+{
+  // Bare "3x per week"/"2x per week" with no explicit days chosen: the
+  // grid must show NO active days at all (an unknown schedule renders
+  // "set your schedule" instead), never the old hardcoded [1,3,5]/[1,4].
+  assertEqual(
+    hasKnownSchedule("3x per week"),
+    false,
+    "H3 grid: bare '3x per week' has no known schedule -> grid renders 'Schedule not set', not invented highlights",
+  );
+  assertEqual(
+    hasKnownSchedule("2x per week"),
+    false,
+    "H3 grid: bare '2x per week' has no known schedule -> grid renders 'Schedule not set', not invented highlights",
+  );
+
+  const anchor = new Date("2026-07-01"); // arbitrary startDate, a Wednesday
+  const weekStart = new Date(anchor);
+  weekStart.setDate(anchor.getDate() - anchor.getDay());
+
+  const activeDaysOf = (frequency) => {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const cellDate = new Date(weekStart);
+      cellDate.setDate(weekStart.getDate() + i);
+      if (isDoseDayForProtocol(frequency, anchor, cellDate)) days.push(i);
+    }
+    return days;
+  };
+
+  assertEqual(
+    activeDaysOf("3x per week"),
+    [],
+    "H3 grid: '3x per week' active-day set (via the shared helper the grid calls) is EMPTY, NOT {Mon,Wed,Fri}",
+  );
+  assertEqual(
+    activeDaysOf("2x per week"),
+    [],
+    "H3 grid: '2x per week' active-day set (via the shared helper the grid calls) is EMPTY, NOT {Mon,Thu}",
+  );
+
+  // Weekly protocol: the grid's active day is the protocol's OWN startDate
+  // weekday — never a hardcoded Monday.
+  assertEqual(
+    activeDaysOf("Once per week"),
+    [anchor.getDay()],
+    "H3 grid: weekly protocol's active day equals startDate's weekday, not Monday",
+  );
+  assertTrue(
+    hasKnownSchedule("Once per week"),
+    "H3 grid: weekly is a known schedule -> grid renders real highlights, not the 'set your schedule' state",
+  );
 }
 
 console.log(

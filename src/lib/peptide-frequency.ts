@@ -93,6 +93,99 @@ export function resolveFrequency(text: string): FrequencyResolution {
   return { kind: "unknown" };
 }
 
+/**
+ * Single source of truth for "is a dose scheduled on this calendar date",
+ * shared by the reminder scheduler (scheduleNotifications.ts) and the
+ * Weekly Schedule display grid (PeptideTracker.tsx) so they can never
+ * disagree again (H3). Both callers already resolve `startDate` to a Date
+ * their own (correct) way before calling this — kept a pure primitive
+ * rather than accepting raw protocol/string shapes.
+ */
+export function isDoseDayForProtocol(
+  frequency: string,
+  startDate: Date,
+  date: Date,
+): boolean {
+  const lower = (frequency || "").trim().toLowerCase();
+
+  // "Every other day" is an alternating-parity rule, not a day-of-week
+  // rule — it anchors directly to startDate and stays outside the kinds
+  // resolveFrequency classifies.
+  if (lower.includes("every other day")) {
+    const daysSinceStart = Math.floor(
+      (date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
+    return daysSinceStart >= 0 && daysSinceStart % 2 === 0;
+  }
+
+  const resolved = resolveFrequency(frequency);
+  const dayOfWeek = date.getDay();
+
+  switch (resolved.kind) {
+    case "daily":
+    case "twice-daily":
+      return true;
+    case "weekly":
+      // H3: anchors to the protocol's OWN startDate weekday, never a
+      // hardcoded Monday.
+      return dayOfWeek === startDate.getDay();
+    case "days-of-week":
+      return (resolved.daysOfWeek ?? []).includes(dayOfWeek);
+    case "unknown":
+    default:
+      // H2/H3: an unrecognized frequency schedules NOTHING — never
+      // invents Mon/Wed/Fri, Mon/Thu, or an index-parity pattern.
+      return false;
+  }
+}
+
+/**
+ * True when `frequency` resolves to a concrete, known schedule — either a
+ * resolveFrequency kind other than 'unknown', or the special-cased "every
+ * other day" alternation. False means the display layer must show a
+ * "schedule not set" state instead of inventing active days (H3).
+ */
+export function hasKnownSchedule(frequency: string): boolean {
+  const lower = (frequency || "").trim().toLowerCase();
+  return lower.includes("every other day") || resolveFrequency(frequency).kind !== "unknown";
+}
+
+/**
+ * Parse dose times out of a protocol's timing string. Moved here (from
+ * scheduleNotifications.ts, which is server-only via its `prisma` import)
+ * so the client-side Weekly Schedule grid can reuse the exact same parse
+ * instead of hardcoding "8:00 AM" — scheduleNotifications.ts re-exports
+ * this for backward compatibility.
+ * Examples: "08:00", "08:00/20:00", "Daily 08:00", "AM & PM (twice daily)".
+ */
+export function parseDoseTimes(text: string): string[] {
+  const times: string[] = [];
+
+  const timeRegex = /\b(\d{1,2}):(\d{2})\b/g;
+  let match: RegExpExecArray | null;
+  while ((match = timeRegex.exec(text)) !== null) {
+    const hours = match[1].padStart(2, "0");
+    const minutes = match[2];
+    times.push(`${hours}:${minutes}`);
+  }
+
+  if (times.length === 0) {
+    const lowerText = text.toLowerCase();
+
+    if (lowerText.includes("twice") || (lowerText.includes("am") && lowerText.includes("pm"))) {
+      times.push("08:00", "20:00");
+    } else if (lowerText.includes("am") || lowerText.includes("morning")) {
+      times.push("08:00");
+    } else if (lowerText.includes("pm") || lowerText.includes("evening")) {
+      times.push("20:00");
+    } else if (lowerText.includes("daily") || lowerText.includes("once")) {
+      times.push("12:00");
+    }
+  }
+
+  return [...new Set(times)];
+}
+
 // ---------------------------------------------------------------------------
 // Self-test — run directly with `npx tsx src/lib/peptide-frequency.ts`.
 // ---------------------------------------------------------------------------
@@ -125,6 +218,35 @@ export function runSelfTest() {
     { kind: "days-of-week", daysOfWeek: [1, 3, 5] },
     "explicit day list from custom picker",
   );
+
+  // H3: shared (frequency, startDate, date) -> active-day primitive used by
+  // both the reminder scheduler and the display grid.
+  const aSunday = new Date(2026, 6, 19); // 2026-07-19 is a Sunday
+  const aMonday = new Date(2026, 6, 20);
+  assertEqual(
+    isDoseDayForProtocol("3x per week", aSunday, aMonday),
+    false,
+    "3x/week with no explicit days never invents an active day",
+  );
+  assertEqual(
+    isDoseDayForProtocol("2x per week", aSunday, aMonday),
+    false,
+    "2x/week with no explicit days never invents an active day",
+  );
+  assertEqual(
+    isDoseDayForProtocol("Once per week", aSunday, aSunday),
+    true,
+    "weekly is active on the protocol's own startDate weekday",
+  );
+  assertEqual(
+    isDoseDayForProtocol("Once per week", aSunday, aMonday),
+    false,
+    "weekly is NOT active on a non-anchor weekday (never hardcoded Monday)",
+  );
+  assertEqual(hasKnownSchedule("3x per week"), false, "bare 3x/week has no known schedule");
+  assertEqual(hasKnownSchedule("Every other day"), true, "every-other-day is a known schedule");
+  assertEqual(hasKnownSchedule("Daily"), true, "daily is a known schedule");
+
   console.log("peptide-frequency self-test: all assertions passed");
 }
 
