@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Bell,
   Pill,
+  Check,
 } from "lucide-react";
 import { DosageCalculator, calculateDosage } from "./DosageCalculator";
 import { SyringeModel } from "./SyringeModel";
@@ -177,6 +178,26 @@ export function PeptideTracker() {
     return `${h12}:${(m || 0).toString().padStart(2, "0")} ${period}`;
   };
 
+  // Presentation-only header framing — "your daily protocol" greeting + date.
+  // ponytail: computed once at mount, not re-derived on a tick; a header
+  // greeting doesn't need live-clock precision.
+  const dayGreeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }, []);
+
+  const todayLongLabel = useMemo(
+    () =>
+      new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+    [],
+  );
+
   const [activeTab, setActiveTab] = useState<"current" | "calendar">("current");
   const [currentProtocols, setCurrentProtocols] = useState<PeptideProtocol[]>(
     [],
@@ -227,6 +248,11 @@ export function PeptideTracker() {
   const [protocolNotifications, setProtocolNotifications] = useState<
     Record<string, boolean>
   >({});
+  // Presentation-only: drives the Today's Doses skeleton-vs-content switch.
+  // Set true once fetchUserProtocols resolves (success or failure) and never
+  // reset — a later re-fetch (e.g. after saving an edit) must not re-flash
+  // the skeleton.
+  const [protocolsLoaded, setProtocolsLoaded] = useState(false);
   const bootstrapped = useRef(false);
 
   const fetchTodaysDoses = useCallback(
@@ -849,6 +875,8 @@ export function PeptideTracker() {
       }
     } catch (error) {
       console.error("Error fetching user protocols:", error);
+    } finally {
+      setProtocolsLoaded(true);
     }
   };
 
@@ -1638,6 +1666,80 @@ export function PeptideTracker() {
     }
   };
 
+  // Today's-doses lead-block row — presentational only. Reads the same
+  // todaysDoses/DoseEntry shape and calls the same openDoseModal handler
+  // fetchTodaysDoses/logDose already populate; adds no new data flow.
+  const TodayDoseRow = ({
+    protocol,
+    dose,
+    onLog,
+  }: {
+    protocol: PeptideProtocol | undefined;
+    dose: DoseEntry;
+    onLog: () => void;
+  }) => {
+    const name = (protocol?.name || "Peptide")
+      .replace(/\s*-\s*peptide\s*$/i, "")
+      .replace(/\s+Package\s*$/i, "")
+      .trim();
+    const Icon = protocol?.administrationType === "oral" ? Pill : Syringe;
+    const timeLabel = formatTime12h(dose.scheduledTime);
+
+    if (dose.completed) {
+      const loggedAtLabel = dose.actualTime
+        ? new Date(dose.actualTime).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+          })
+        : null;
+
+      return (
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-secondary-400/30 bg-secondary-500/10 px-4 py-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary-500/20 text-secondary-300">
+              <Check className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-semibold text-white truncate">{name}</p>
+              <p className="text-sm text-white/70 truncate">
+                {protocol?.dosage ? `${protocol.dosage} · ` : ""}
+                {timeLabel}
+              </p>
+            </div>
+          </div>
+          <span className="text-sm font-medium text-secondary-300 shrink-0">
+            Logged{loggedAtLabel ? ` ${loggedAtLabel}` : ""}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex items-center justify-between gap-4 rounded-xl border border-white/15 bg-black/20 px-4 py-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-500/15 text-primary-300">
+            <Icon className="w-5 h-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="font-semibold text-white truncate">{name}</p>
+            <p className="text-sm text-white/70 truncate">
+              {protocol?.dosage ? `${protocol.dosage} · ` : ""}
+              {timeLabel}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onLog}
+          disabled={!protocol}
+          className="shrink-0 rounded-lg bg-primary-500 hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-4 py-2 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+        >
+          Log dose
+        </button>
+      </div>
+    );
+  };
+
   const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -1949,29 +2051,131 @@ export function PeptideTracker() {
           </div>
         </div>
 
-        {/* Title Section */}
-        <div className="text-center py-8">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
-            <span className="text-primary-400">Peptide</span> Tracker
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Comprehensive peptide management system. Schedule doses, track
-            progress, monitor side effects with IRB-compliant data sharing.
-          </p>
+        {/* Daily Protocol Header — calm product framing, not a marketing hero */}
+        <div className="container mx-auto px-4 pt-8">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-sm font-semibold text-primary-300 uppercase tracking-wide">
+              {dayGreeting}
+            </p>
+            <div className="flex items-baseline justify-between flex-wrap gap-x-4 gap-y-1 mt-1 mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                Your daily protocol
+              </h1>
+              <span className="text-sm text-white/70">{todayLongLabel}</span>
+            </div>
+
+            {/* Today's Doses — the lead block. Real todaysDoses state, real
+                openDoseModal handler; no fabricated data, no decorative glow. */}
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-white">
+                  Today's doses
+                </h2>
+                {protocolsLoaded && currentProtocols.length > 0 && (
+                  <span className="text-sm text-white/60">
+                    {todaysDoseBuckets.completed.length} of{" "}
+                    {todaysDoseBuckets.pending.length +
+                      todaysDoseBuckets.completed.length}{" "}
+                    logged
+                  </span>
+                )}
+              </div>
+
+              {!protocolsLoaded ? (
+                <div className="space-y-3" aria-hidden="true">
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="h-14 rounded-xl bg-white/5 border border-white/10 animate-pulse motion-reduce:animate-none"
+                    />
+                  ))}
+                </div>
+              ) : currentProtocols.length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-white font-medium mb-1">
+                    No protocols yet
+                  </p>
+                  <p className="text-sm text-white/70 mb-4">
+                    Add your first peptide protocol to start your daily
+                    tracking.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddProtocolModal(true)}
+                    className="rounded-lg bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold px-5 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                  >
+                    Add your first protocol
+                  </button>
+                </div>
+              ) : todaysDoseBuckets.pending.length === 0 &&
+                todaysDoseBuckets.completed.length === 0 ? (
+                <p className="text-center text-white/70 py-6">
+                  Nothing due today — check Dosing Calendar for your next
+                  scheduled dose.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {todaysDoseBuckets.pending.length === 0 ? (
+                    <p className="text-center text-secondary-300 font-medium py-2">
+                      All doses logged for today ✓ — see you tomorrow.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {todaysDoseBuckets.pending.map((dose) => (
+                        <TodayDoseRow
+                          key={dose.id}
+                          dose={dose}
+                          protocol={currentProtocols.find(
+                            (p) => p.id === dose.peptideId,
+                          )}
+                          onLog={() => {
+                            const protocol = currentProtocols.find(
+                              (p) => p.id === dose.peptideId,
+                            );
+                            if (protocol) openDoseModal(protocol);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {todaysDoseBuckets.completed.length > 0 && (
+                    <div className="space-y-2">
+                      {todaysDoseBuckets.pending.length > 0 && (
+                        <p className="text-xs uppercase tracking-wide text-white/60 pt-1">
+                          Logged today
+                        </p>
+                      )}
+                      {todaysDoseBuckets.completed.map((dose) => (
+                        <TodayDoseRow
+                          key={dose.id}
+                          dose={dose}
+                          protocol={currentProtocols.find(
+                            (p) => p.id === dose.peptideId,
+                          )}
+                          onLog={() => {}}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="container mx-auto px-4 pb-8">
           {/* Navigation Tabs */}
           <div className="flex justify-center mb-8">
-            <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20">
               {(["current", "calendar"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all capitalize ${
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
                     activeTab === tab
-                      ? "bg-primary-500 text-white shadow-lg"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      ? "bg-primary-500 text-white"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {tab === "current" ? "Current Protocols" : "Dosing Calendar"}
@@ -1993,14 +2197,14 @@ export function PeptideTracker() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setShowAddProtocolModal(true)}
-                        className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
+                        className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         Add Research Protocol
                       </button>
                       <button
                         onClick={() => setShowQuickAddOral(true)}
-                        className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
+                        className="bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
                       >
                         <Pill className="w-4 h-4 mr-2" />
                         Add Oral Med
