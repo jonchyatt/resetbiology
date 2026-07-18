@@ -2,46 +2,25 @@
 
 // Renders each cited dosing regimen for a library peptide as a selectable
 // source, and exposes the citation-grounded dose value(s) it contains.
-// CITATION-GROUNDED DOSING CONTRACT: every value shown here is either the
-// regimen's own dose_value (verbatim) or a number found verbatim inside its
-// quote — never computed, averaged, or invented.
+// CITATION-GROUNDED DOSING CONTRACT: a tappable dose value is shown ONLY when
+// the regimen's own structured dose_value is set (verbatim, never scraped
+// from free text) AND is_range_or_multi is false. Free-text quotes are never
+// number-scraped — a range/multi or dose_value-null regimen shows the quote
+// + citation only, dose is left for manual entry. (Verifier S1, 2026-07-18:
+// the prior regex-based extractDoseChips scraped peptide-name digits,
+// durations, and frequencies out of quotes and presented them as cited
+// doses — deleted, not patched.)
 import type { PeptideCard, StructuredRegimen } from "@/data/peptide-education/generated";
 
 export type AdministrationType = "injection" | "oral" | "nasal" | "topical";
 
-export interface DoseChip {
-  value: number;
-  unit: "mg" | "mcg" | null;
-  raw: string;
-}
-
-// ponytail: digit-based numbers only (e.g. "250 mcg", "0.5 milligrams").
-// Spelled-out numbers ("one milligram") are not extracted — no chip beats a
-// wrong chip; the quote is still shown verbatim for the user to read.
-const NUMBER_UNIT_RE = /(\d+(?:\.\d+)?)\s*(mcg|micrograms?|mg|milligrams?|iu|units?)?/gi;
-
-export function extractDoseChips(quote: string, doseUnit: StructuredRegimen["dose_unit"]): DoseChip[] {
-  if (!quote) return [];
-  const chips: DoseChip[] = [];
-  const seen = new Set<string>();
-  let match: RegExpExecArray | null;
-  NUMBER_UNIT_RE.lastIndex = 0;
-  while ((match = NUMBER_UNIT_RE.exec(quote))) {
-    const value = Number.parseFloat(match[1]);
-    if (!Number.isFinite(value) || value <= 0) continue;
-    const wordUnit = match[2]?.toLowerCase();
-    let unit: "mg" | "mcg" | null = doseUnit === "mg" || doseUnit === "mcg" ? doseUnit : null;
-    if (!unit && wordUnit) {
-      if (wordUnit.startsWith("mcg") || wordUnit.startsWith("micro")) unit = "mcg";
-      else if (wordUnit.startsWith("mg") || wordUnit.startsWith("milli")) unit = "mg";
-    }
-    const key = `${value}-${unit ?? ""}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    chips.push({ value, unit, raw: match[0].trim() });
-    if (chips.length >= 6) break;
-  }
-  return chips;
+// mg<->mcg is the only conversion this app defines (existing ×1000
+// convention, reused from DosageCalculator's calculateDosage). IU has no
+// defined conversion — callers must pass it through verbatim.
+export function formatUnitConversion(value: number, unit: "mg" | "mcg" | "iu" | null): string | null {
+  if (unit === "mg") return `= ${(value * 1000).toLocaleString()} mcg`;
+  if (unit === "mcg") return `= ${(value / 1000).toLocaleString(undefined, { maximumFractionDigits: 3 })} mg`;
+  return null;
 }
 
 const ROUTE_PATTERNS: Array<{ type: AdministrationType; re: RegExp }> = [
@@ -115,38 +94,31 @@ export function RegimenSourcePicker({ card, loading, onSelectDose }: RegimenSour
       <p className="text-xs text-amber-300/80 font-medium">Cited dosing sources — pick one, then edit freely</p>
       <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
         {doseRegimens.map((r, i) => {
-          const chips = r.dose_value == null && r.is_range_or_multi ? extractDoseChips(r.quote, r.dose_unit) : [];
+          // Structured-value gate only — no free-text scraping. See
+          // CITATION-GROUNDED DOSING CONTRACT above.
+          const hasCitableDose = r.dose_value != null && !r.is_range_or_multi;
+          const unit = r.dose_unit === "mg" || r.dose_unit === "mcg" ? r.dose_unit : null;
+          const conversion = hasCitableDose ? formatUnitConversion(r.dose_value as number, r.dose_unit) : null;
           return (
             <div key={i} className="bg-gray-800/50 rounded-lg p-2.5 border border-gray-600/20 text-xs space-y-1.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-gray-300 font-medium">{r.speaker || r.source_expert || "Unknown source"}</span>
-                {r.dose_value != null && (
-                  <button
-                    type="button"
-                    onClick={() => onSelectDose(r.dose_value as number, r.dose_unit === "mg" || r.dose_unit === "mcg" ? r.dose_unit : null)}
-                    className="flex-shrink-0 bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 border border-amber-200/40 px-2.5 py-1 rounded-md font-semibold transition-all"
-                  >
-                    Use {r.dose_value}{r.dose_unit ?? ""}
-                  </button>
+                {hasCitableDose && (
+                  <div className="flex-shrink-0 flex flex-col items-end gap-0.5">
+                    <button
+                      type="button"
+                      onClick={() => onSelectDose(r.dose_value as number, unit)}
+                      className="bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 border border-amber-200/40 px-2.5 py-1 rounded-md font-semibold transition-all"
+                    >
+                      Use {r.dose_value}{r.dose_unit ?? ""}
+                    </button>
+                    {conversion && <span className="text-amber-300/50">{conversion}</span>}
+                  </div>
                 )}
               </div>
               <p className="text-gray-400 leading-snug">&ldquo;{r.quote}&rdquo;</p>
-              {chips.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {chips.map((c, ci) => (
-                    <button
-                      key={ci}
-                      type="button"
-                      onClick={() => onSelectDose(c.value, c.unit)}
-                      className="bg-amber-300/15 hover:bg-amber-300/35 text-amber-200 border border-amber-200/30 px-2 py-0.5 rounded font-medium transition-all"
-                    >
-                      {c.raw}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {r.dose_value == null && chips.length === 0 && (
-                <p className="text-gray-500 italic">cited, no extractable number — enter your own</p>
+              {!hasCitableDose && (
+                <p className="text-gray-500 italic">cited, no single dose value — enter your own</p>
               )}
               <div className="pt-0.5 border-t border-gray-700/50 mt-1">
                 <CitationRef citation={r.citation} />
