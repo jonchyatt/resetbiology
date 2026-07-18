@@ -24,7 +24,10 @@ export async function GET(request: NextRequest) {
       user.quizSubmissionId
         ? prisma.nEPQSubmission.findUnique({ where: { id: user.quizSubmissionId } })
         : Promise.resolve(null),
-      user.email
+      // Email fallback ONLY for a session whose email is VERIFIED (Auth0 claim):
+      // an unverified signup with someone else's address must never read that
+      // person's funnel submission (REASON CONTRACT v1.1 / verifier F1).
+      user.email && session?.user?.email_verified === true
         ? prisma.nEPQSubmission.findMany({
             where: { email: { equals: user.email, mode: 'insensitive' } },
             orderBy: { createdAt: 'desc' },

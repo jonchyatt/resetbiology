@@ -588,7 +588,7 @@ export function EnhancedDashboard() {
             {reason ? (
               <p className="mt-3 text-gray-400 text-sm italic">Your why: &ldquo;{reason}&rdquo;</p>
             ) : (
-              <p className="mt-3 text-gray-500 text-sm italic">Your first check-in asks for your reason — it powers everything here.</p>
+              <p className="mt-3 text-gray-500 text-sm italic">What are you doing this for? Write your reason into today’s check-in below — we’ll keep it in front of you.</p>
             )}
           </div>
 
