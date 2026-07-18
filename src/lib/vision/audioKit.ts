@@ -106,12 +106,15 @@ export class SpeechQueue {
   set muted(value: boolean) {
     this._muted = value
     if (value) {
+      // Unconditional: mute must recover `speaking` even when nothing is
+      // currently in currentAudio — a pending manifest fetch (speakOne's
+      // resolveVoiceCue) or a live speechSynthesis utterance both leave
+      // currentAudio null while speaking is true (verifier finding 1).
       this.epoch++
-      if (this.currentAudio) {
-        this.stopCurrentAudio()
-        this.speaking = false
-        this.drain()
-      }
+      this.stopCurrentAudio()
+      this.synth?.cancel()
+      this.speaking = false
+      this.drain()
     }
   }
 
