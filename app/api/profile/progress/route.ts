@@ -45,9 +45,12 @@ export async function GET(request: NextRequest) {
 
     const modulesCompleted = new Set(moduleCompletions.map((m) => m.moduleId)).size
     const protocolDays = new Set(peptideTaskDays.map((t) => utcMidnightToDayKey(new Date(t.date)))).size
+    // Streak anchors on the member's browser day when provided; server day is the fallback.
+    const clientDay = request.nextUrl.searchParams.get('localDate')
+    const anchorDay = clientDay && /^\d{4}-\d{2}-\d{2}$/.test(clientDay) ? clientDay : todayLocalKey()
     const dayStreak = computeDayStreak(
       completedTaskDays.map((t) => utcMidnightToDayKey(new Date(t.date))),
-      todayLocalKey()
+      anchorDay
     )
 
     return NextResponse.json({

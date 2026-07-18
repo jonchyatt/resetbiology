@@ -6,6 +6,7 @@ import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { DisconnectVaultModal } from "@/components/Vault/DisconnectVaultModal"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter, useSearchParams } from "next/navigation"
+import { localDayKey } from "@/lib/localDay"
 
 const CONNECTED_CONFIRMATION_COPY =
   "Your data lives in your Google Drive — we ship the app, you own the data. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
@@ -16,7 +17,6 @@ function ProfilePageContent() {
   const searchParams = useSearchParams()
   const driveQueryStatus = searchParams.get("drive")
   const [activeTab, setActiveTab] = useState("account")
-  const [showPassword, setShowPassword] = useState(false)
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
@@ -66,7 +66,7 @@ function ProfilePageContent() {
   const loadProgress = async () => {
     try {
       setProgressError(null)
-      const res = await fetch('/api/profile/progress')
+      const res = await fetch(`/api/profile/progress?localDate=${localDayKey(new Date())}`)
       const data = await res.json().catch(() => null)
       if (!res.ok || !data?.success) {
         throw new Error(data?.error || 'Failed to load progress')
@@ -361,21 +361,7 @@ function ProfilePageContent() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-                      <div className="relative">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          defaultValue="••••••••••"
-                          className="input-primary pr-12"
-                          disabled
-                        />
-                        <button
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300"
-                        >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-1">Password management via Auth0</p>
+                      <p className="text-sm text-gray-300 bg-gray-800/50 border border-gray-600/30 rounded-lg px-4 py-3">Managed by your Auth0 login — use "Forgot password" on the sign-in screen to change it.</p>
                     </div>
                     <div className="pt-4">
                       <button
