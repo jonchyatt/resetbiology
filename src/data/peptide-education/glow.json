@@ -728,9 +728,10 @@
       "quote": "500 microgr",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
-      "flag": false
+      "flag": true,
+      "flag_reason": "foreman-override 2026-07-18: 2-word truncated quote on a multi-component blend card; not a groundable single-peptide dose (north-star show-nothing)"
     },
     {
       "source_expert": "taylor-williams",

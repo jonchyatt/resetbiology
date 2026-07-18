@@ -402,7 +402,7 @@
       "quote": "The sweet spot for most people is going be 500 micro grams, but to be honest, get as good a benefit at 250 grams as I do 500 grams.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },
@@ -467,7 +467,7 @@
       "quote": "Like 250 micro grams every other day for me That's a sweet spot because it has a long half-life.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

@@ -25,11 +25,17 @@ for (const file of files) {
     if (!hasCitableDose) continue; // no chip rendered for this regimen — nothing to assert
     cardChips++;
     totalChips++;
-    // The only value a chip can ever carry is this regimen's own dose_value,
-    // gated by dose_value != null && is_range_or_multi === false.
-    if (r.dose_value == null || r.is_range_or_multi === true) {
+    // INDEPENDENT invariant (does NOT re-test the gate above): a chip's value
+    // must trace verbatim to its own quote. The killed bug fabricated numbers
+    // that appeared nowhere as a real dose; this fires if a dose_value doesn't
+    // literally occur as a number token in the regimen's own quote text.
+    const quoteNums = String(r.quote || "").match(/\d+(?:\.\d+)?/g) || [];
+    if (!quoteNums.includes(String(r.dose_value))) {
       violations++;
-      console.error(`VIOLATION ${file}: chip derived from a regimen that fails the gate ->`, r);
+      console.error(
+        `VIOLATION ${file}: chip dose_value ${r.dose_value} not found in its quote ->`,
+        JSON.stringify(r.quote),
+      );
     }
   }
   console.log(`${file}: ${cardChips} chip(s)`);

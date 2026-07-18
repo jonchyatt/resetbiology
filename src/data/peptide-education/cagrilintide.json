@@ -451,7 +451,7 @@
       "quote": "Some people need to get up to three to four milligrams before they really notice the appetite suppression. But for me, if I take 250 to 500 micro grams per week, It is perfect.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

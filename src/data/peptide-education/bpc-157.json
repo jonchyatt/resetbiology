@@ -715,9 +715,9 @@
       "field": "dose",
       "citation": "(O_hbAtgMSE8 00:04:04.799)",
       "quote": "Took 2 millig of BPC and 500 micrograms of KPV",
-      "dose_value": 500,
-      "dose_unit": "mcg",
-      "is_range_or_multi": false,
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },
@@ -730,7 +730,7 @@
       "quote": "do not take 2 milligs every day or anything like that.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

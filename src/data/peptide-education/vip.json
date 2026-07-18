@@ -712,7 +712,7 @@
       "quote": "I've gone as high as like 150 micro-grams",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },
@@ -777,7 +777,7 @@
       "quote": "Start with one spray and one nostril two times daily, build to one, spray in each natural four times, daily. You can do up to around 400 micro grams intranasally daily",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

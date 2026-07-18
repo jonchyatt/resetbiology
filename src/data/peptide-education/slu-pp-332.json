@@ -532,7 +532,7 @@
       "quote": "started around a hundred micrograms to 200 micro grams per day",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": true
     },

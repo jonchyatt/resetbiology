@@ -582,7 +582,7 @@
       "quote": "for me the sweet spot seemed to be 50 to 100 micro grams.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },
@@ -684,9 +684,9 @@
       "field": "dose",
       "citation": "(2026-03-30, oxytocin-for-fat-loss-and-muscle-preservation-what-the-data-shows--065dd6e2 20:27, https://library.hunterwilliamshealth.com/p/oxytocin-for-fat-loss-and-muscle-preservation-what-the-data-shows--065dd6e2/)",
       "quote": "24 IUs is roughly 40 micrograms.",
-      "dose_value": 40,
-      "dose_unit": "mcg",
-      "is_range_or_multi": false,
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

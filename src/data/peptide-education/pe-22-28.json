@@ -375,7 +375,7 @@
       "quote": "you could probably go up to 500 micro-gram per day",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": true
     },

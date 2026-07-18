@@ -324,7 +324,7 @@
       "quote": "For individuals with severe anxiety or chronic stress, I would recommend just go straight to the in acetyloversion and probably start around 500 micro grams and then go up to like one milligram per.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     }

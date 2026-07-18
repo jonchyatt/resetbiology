@@ -678,7 +678,7 @@
       "quote": "Obviously that can change if you are hurt, I would probably do it every, twice a day at 200 micro grams if he were hurt.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

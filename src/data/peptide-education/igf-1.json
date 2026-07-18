@@ -678,7 +678,7 @@
       "quote": "if are someone that's like more experienced with this, would start at 50 micro grams per 50, micro-gram per-day.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },
@@ -704,7 +704,7 @@
       "quote": "you could go up to 100 micro grams and even some bodybuilders will go to like 250 or 500 micro-gram.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

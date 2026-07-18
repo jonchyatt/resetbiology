@@ -341,7 +341,7 @@
       "quote": "a lower dose of 100 to 300 micro grams taken one to two times per day of the Amidate version is often enough",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },

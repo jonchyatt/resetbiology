@@ -562,7 +562,7 @@
       "quote": "You can titrate that up to 500 micro grams per days.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },
@@ -692,7 +692,7 @@
       "quote": "if wanted do 500 micro grams, you can do 250 morning and 250 evening.",
       "dose_value": null,
       "dose_unit": null,
-      "is_range_or_multi": false,
+      "is_range_or_multi": true,
       "frozen_2023": false,
       "flag": false
     },
