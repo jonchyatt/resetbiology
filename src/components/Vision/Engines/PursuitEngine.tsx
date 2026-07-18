@@ -87,10 +87,16 @@ export default function PursuitEngine({ exercise, prescription, muted, onProgres
   const targetSeconds = Math.max(30, prescription.targetSeconds || 180)
   const loopSeconds = Math.max(1, BASE_LOOP_SECONDS / (prescription.speedMultiplier || 1))
 
+  // ponytail: exercise.checkpoints describe stage-specific / time-anchored
+  // structure ("for 60 sec", "each minute") already spoken at the right
+  // moment by STAGE_ANNOUNCE (stage change) / the figure8 label switch in
+  // draw() below — cycling them here on a blind CUE_SECONDS clock would
+  // recite stale or mismatched stage instructions (S: "for 60 sec" while
+  // already on the vertical stage). Only stage-agnostic coaching cues rotate.
   const cueList = useMemo(() => {
-    const list = [...(exercise.checkpoints ?? []), ...(prescription.coachingCues ?? [])]
+    const list = [...(prescription.coachingCues ?? [])]
     return list.length ? list : ['Keep your head still. Eyes only.']
-  }, [exercise.checkpoints, prescription.coachingCues])
+  }, [prescription.coachingCues])
 
   // rAF loop bookkeeping — refs so the recursive frame closure never goes stale.
   const rafRef = useRef<number | undefined>(undefined)

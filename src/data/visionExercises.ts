@@ -75,7 +75,7 @@ export const visionExercises: VisionExercise[] = [
     checkpoints: [
       'Anchor chin with a light nod; imagine ears growing tall.',
       'Trace horizontal infinity sign with eyes only for 60 sec.',
-      'Switch to vertical loops, then diagonal sequences.',
+      'Switch to vertical loops, then the infinity path.',
     ],
     guidance: [
       { heading: 'Tempo cue', detail: 'Count 4 seconds per loop; no jerky jumps allowed.' },
@@ -193,8 +193,8 @@ export const visionExercises: VisionExercise[] = [
     equipment: ['Printed/onscreen chart'],
     checkpoints: [
       'Start 2 m from chart, heel-to-toe walk toward/away.',
-      'Read next lower line each step.',
-      'Switch to E-directional cues midday to vary stimulus.',
+      'Read the line, then call it clear or blurry — it updates every few steps.',
+      'Switch to E-directional cues midway to vary stimulus.',
     ],
     guidance: [
       { heading: 'Anchor', detail: 'Keep crown lifted, imagine strings pulling upward.' },
@@ -228,8 +228,8 @@ export const visionExercises: VisionExercise[] = [
     focus: ['fixation', 'endurance'],
     checkpoints: [
       'Project or imagine a 1m-wide infinity symbol.',
-      'Follow path clockwise 60 sec, counterclockwise 60 sec.',
-      'Change symbol size (large > small) each minute.',
+      'Follow the loop with smooth, continuous motion — eyes only, no head movement.',
+      'Notice the loop grow wide, then shrink tight, over the course of the set.',
     ],
     guidance: [
       { heading: 'Distance layering', detail: 'Alternate near (40 cm) vs. far (2 m) projections every loop.' },
