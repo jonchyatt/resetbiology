@@ -6,25 +6,25 @@
       "name": "R0 parity",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 219,
+      "durationMs": 155,
       "stdoutSha256": "340934de7b52cfe97cd807c4275b7742891ca27a9e8b761cc6adfaba12789a02",
-      "stderrSha256": "1561658861b0deced2ce1877e886251a64c3f5e1dc7e66ca84917e6f7e4607aa",
+      "stderrSha256": "9e5a16e879c83184335605b23df5d4cbfca6c7ae2b76ab7bbd399d7af345c6ab",
       "finalLine": "R0 PARITY: ALL PASS"
     },
     {
       "name": "E1 data purity",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 1078,
-      "stdoutSha256": "c5b92297c1418317bd068d1773d08801b56827952f41b17264c5cc693f51a4b8",
-      "stderrSha256": "f8aba6dafd84aa44e4e918c2a76c92b63ea77c6be3f116c1139a41297be982f6",
+      "durationMs": 803,
+      "stdoutSha256": "ce40b1064288876ee1ce5c6404a595fe02fc531d7fadb6a9adb3b6aed229cba7",
+      "stderrSha256": "50d1fdbb69b95fec3992e56ac0db85db91dc7ba27c00f5931e1089c5bae47dd3",
       "finalLine": "E1 DATA PURITY: ALL PASS"
     },
     {
       "name": "R1.5a parity",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 964,
+      "durationMs": 561,
       "stdoutSha256": "ed0d26c37770e44b13c1e67923996dd6b715f114976c7bc67d12aaad1c8e7b39",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "PASS R1.5a semantic parity: 22 event payloads/channels preserve inherited timing; no event earlier; max declared R3c authored delay 0ms; R7 note identity/order plus cross-channel interleaving, spawn X, and attack identity excluded as declared FSRS/timing/geometry/ownership"
@@ -33,16 +33,16 @@
       "name": "R1.5a visual contract",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 263,
+      "durationMs": 126,
       "stdoutSha256": "315e05556271d679238894ce7a7231d45cf4d8af04efb08b38f8204aa0791b07",
-      "stderrSha256": "6c6a88c69343fdf0db1178e6a1bf8f694e66ca0a2d9641e42aceaa40d23965ba",
+      "stderrSha256": "ee1bf64e163726817614bdcbd915a01797a1837b34d87d3d8bb1ce568aac15ad",
       "finalLine": "PASS R1.5a visual contract: protected diff clean; backdrop=640x360 PNG sha256=7c093a99e0c37e24f685941fc19530611f5d99173cb1ed457e45d924379bdc59; load failure/reduced-motion/CRT/vocal-meter contracts present"
     },
     {
       "name": "R1.5b roster",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 625,
+      "durationMs": 377,
       "stdoutSha256": "7466bfee92d790cbc82819bf44cff25195a2e78163e30a95982b6c2c4039a693",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "late load cannot morph an existing alien; scout/procedural fallbacks remain available"
@@ -51,7 +51,7 @@
       "name": "R2 sprite atlas",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 176,
+      "durationMs": 84,
       "stdoutSha256": "4e4dd630f2700a517f4ec39b472497b1b0694dedfc5421a42a231870470439dd",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "PASS chip anchor unchanged at (149, 88)"
@@ -60,7 +60,7 @@
       "name": "R3b formation",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 809,
+      "durationMs": 363,
       "stdoutSha256": "481bda437f23038f187ff946a337f6dfc7502743352481e3d6cabcf67fb5a910",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "targetability, long-frame mic parity, state recovery, silence contract PASS"
@@ -69,8 +69,8 @@
       "name": "R3c authored dives",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 638,
-      "stdoutSha256": "42da25e841d1f588909cafe8f6ebdc5c20906fd02d624216d6040706b76521c0",
+      "durationMs": 340,
+      "stdoutSha256": "f0bf5dba6ca75934ea810817ee57a37f22a2b69220e105343511abfcd289d457",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
     },
@@ -78,7 +78,7 @@
       "name": "R4 causal weapon VFX",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 565,
+      "durationMs": 549,
       "stdoutSha256": "5b20d6430caddd77f4e3d9238e7592a11e88ba87b1883ce3eb26bc1776c32397",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
@@ -87,7 +87,7 @@
       "name": "R7 FSRS soul-binding",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 1236,
+      "durationMs": 1257,
       "stdoutSha256": "f53b72199f6ca16b7b3d8db79773d5e9f872d81beb55aeb9be842e78a6bdded6",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
@@ -96,7 +96,7 @@
       "name": "R8a radio check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 453,
+      "durationMs": 317,
       "stdoutSha256": "e02e22030b81282cbfca50025a672ef3aef9382d5f2f1825e00b0075088ac73c",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
@@ -105,18 +105,18 @@
       "name": "R9a curriculum",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 790,
-      "stdoutSha256": "3da23352a80b6bc7d4005656bbff1abccdf8f5154b80bb680ea75fcee87d09de",
-      "stderrSha256": "4196726e59bedbeb3008891b35f175350958da48ea418792022350e45f0cc393",
+      "durationMs": 648,
+      "stdoutSha256": "a82212441b28b2dd4a9a6c2761c5bfbbd42121865781b641223d29d7f46af7b8",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
     },
     {
       "name": "R8c signal check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 789,
-      "stdoutSha256": "19e372311fc9d320c8cbeea1d8dcb1aa8fa08069a91245bccec433c27aa245f3",
-      "stderrSha256": "5780bbb60c54d7fa49651a27594b8848d2397f7044abc220982ee5b160aadef2",
+      "durationMs": 454,
+      "stdoutSha256": "534f6e36e0ec2f2f5240b5d0fa5f12c20444bdaa2b20daaec09ba99699912089",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
     }
   ]
