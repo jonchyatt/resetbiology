@@ -89,6 +89,10 @@ export class SpeechQueue {
   private _muted = false
   /** Currently-playing pre-rendered cue, if any (T5 manifest-backed asset path). */
   private currentAudio: HTMLAudioElement | null = null
+  /** Bumped on stop()/interrupt/mute-on so async continuations (manifest
+   * resolve, play() promise, onended/onerror, fallback) that captured a
+   * stale epoch at dispatch no-op instead of racing a since-invalidated cue. */
+  private epoch = 0
   rate = 0.95
   pitch = 1.0
   volume = 0.85
@@ -101,10 +105,13 @@ export class SpeechQueue {
    * in-flight asset cue immediately (mobile safety contract C3). */
   set muted(value: boolean) {
     this._muted = value
-    if (value && this.currentAudio) {
-      this.stopCurrentAudio()
-      this.speaking = false
-      this.drain()
+    if (value) {
+      this.epoch++
+      if (this.currentAudio) {
+        this.stopCurrentAudio()
+        this.speaking = false
+        this.drain()
+      }
     }
   }
 
@@ -125,6 +132,7 @@ export class SpeechQueue {
     const synth = this.synth
     if (!synth || this.muted || !text) return
     if (opts?.interrupt) {
+      this.epoch++
       this.queue = []
       synth.cancel()
       this.stopCurrentAudio()
@@ -143,36 +151,53 @@ export class SpeechQueue {
   }
 
   private speakOne(text: string): void {
+    const epoch = this.epoch
     void resolveVoiceCue(text)
       .then((url) => {
+        if (epoch !== this.epoch) return
         if (this.muted) {
           this.finishOne()
           return
         }
         if (url) {
-          this.playAsset(text, url)
+          this.playAsset(text, url, epoch)
           return
         }
         if (!loggedManifestMisses.has(text)) {
           loggedManifestMisses.add(text)
           console.debug('[SpeechQueue] no pre-rendered cue, falling back to speechSynthesis:', text)
         }
-        this.speakSynth(text)
+        this.speakSynth(text, epoch)
       })
-      .catch(() => this.speakSynth(text))
+      .catch(() => {
+        if (epoch !== this.epoch) return
+        this.speakSynth(text, epoch)
+      })
   }
 
-  private playAsset(text: string, url: string): void {
+  private playAsset(text: string, url: string, epoch: number): void {
+    if (epoch !== this.epoch) return
+    if (this.muted) {
+      this.finishOne()
+      return
+    }
     const audio = new Audio(url)
     audio.volume = this.volume
     this.currentAudio = audio
+    // once-guard: onerror + play().catch can both fire for one bad asset —
+    // make sure only the first one triggers a fallback/finish.
+    let settled = false
     const fallbackToSynth = () => {
+      if (settled) return
+      settled = true
       if (this.currentAudio === audio) this.currentAudio = null
       // Asset failure (missing file / decode error / blocked play) must
       // never block instructions — fall back to the existing TTS path.
-      this.speakSynth(text)
+      this.speakSynth(text, epoch)
     }
     audio.onended = () => {
+      if (settled) return
+      settled = true
       if (this.currentAudio === audio) this.currentAudio = null
       this.finishOne()
     }
@@ -180,9 +205,10 @@ export class SpeechQueue {
     audio.play().catch(fallbackToSynth)
   }
 
-  private speakSynth(text: string): void {
+  private speakSynth(text: string, epoch: number): void {
+    if (epoch !== this.epoch) return
     const synth = this.synth
-    if (!synth) {
+    if (!synth || this.muted) {
       this.finishOne()
       return
     }
@@ -190,7 +216,10 @@ export class SpeechQueue {
     u.rate = this.rate
     u.pitch = this.pitch
     u.volume = this.volume
-    u.onend = u.onerror = () => this.finishOne()
+    u.onend = u.onerror = () => {
+      if (epoch !== this.epoch) return
+      this.finishOne()
+    }
     synth.speak(u)
   }
 
@@ -209,6 +238,7 @@ export class SpeechQueue {
   }
 
   stop(): void {
+    this.epoch++
     this.queue = []
     this.synth?.cancel()
     this.stopCurrentAudio()
