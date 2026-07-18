@@ -418,7 +418,16 @@ async function main() {
   const { getDriveClient } = await import('../src/lib/google-drive')
 
   const byEmail = await prisma.user.findUnique({ where: { email: userArg }, select: { id: true, driveFolder: true } })
-  const user = byEmail ?? (await prisma.user.findUnique({ where: { id: userArg }, select: { id: true, driveFolder: true } }))
+  // Only attempt the id lookup if userArg is even shaped like a Mongo
+  // ObjectId (24 hex chars) — otherwise Prisma throws P2023 on a malformed
+  // id instead of returning null, which would surface as a confusing crash
+  // for the common case of a typo'd email.
+  const looksLikeObjectId = /^[0-9a-fA-F]{24}$/.test(userArg)
+  const user =
+    byEmail ??
+    (looksLikeObjectId
+      ? await prisma.user.findUnique({ where: { id: userArg }, select: { id: true, driveFolder: true } })
+      : null)
   if (!user) throw new Error(`BLOCKED: no user found for '${userArg}'`)
 
   const drive = await getDriveClient(user.id)
