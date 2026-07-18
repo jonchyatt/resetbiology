@@ -39,7 +39,8 @@ import type { drive_v3 } from 'googleapis'
 // harness documents for its own static import of this file.
 import { formatJournalDayFile, foldGoalsIntoContent, type JournalDayRow } from '../src/lib/journal-day-file'
 import {
-  classifyBucket,
+  classifyCanonicalBucket,
+  classifyManifestRecord,
   matchCanonicalDayFileName,
   runSelfTest as runClassifySelfTest,
   type DriftClassification,
@@ -196,6 +197,8 @@ interface DriftRow {
   actualFileName: string | null
   actualHash: string | null
   actualModifiedTime: string | null
+  /** true when this row is one of >=2 files sharing the exact canonical name for its day (fix-wave F2 hazard). */
+  hazard: boolean
 }
 
 async function runDriftReport(
@@ -217,12 +220,21 @@ async function runDriftReport(
   const folderId = await getSubfolderId(drive, driveFolder, adapter.driveFolderName)
   const allFiles = folderId ? await listAndHashFolder(drive, folderId) : []
 
-  const canonical = new Map<string, DriveFileRecord>()
+  // Fix-wave F2: NEVER collapse duplicate canonical names into a Map (the
+  // prior version's `Map.set` silently dropped every loser). Bucket ALL
+  // matches per date into an array — nothing is order-dependent, nothing is
+  // dropped.
+  const canonical = new Map<string, DriveFileRecord[]>()
   const nonCanonical: DriveFileRecord[] = []
   for (const f of allFiles) {
     const dateStr = adapter.parseCanonicalName(f.name)
-    if (dateStr) canonical.set(dateStr, f)
-    else nonCanonical.push(f)
+    if (dateStr) {
+      const bucket = canonical.get(dateStr) ?? []
+      bucket.push(f)
+      canonical.set(dateStr, bucket)
+    } else {
+      nonCanonical.push(f)
+    }
   }
 
   const consumed = new Set<string>()
@@ -231,21 +243,39 @@ async function runDriftReport(
 
   for (const dateStr of [...allDates].sort()) {
     const expectedHash = expectedHashByDay.get(dateStr) ?? null
-    const canonicalRec = canonical.get(dateStr) ?? null
+    const canonicalRecs = canonical.get(dateStr) ?? []
     let divergentMatch: DriveFileRecord | null = null
 
-    if (expectedHash !== null && canonicalRec === null) {
+    if (expectedHash !== null && canonicalRecs.length === 0) {
       divergentMatch = nonCanonical.find((f) => !consumed.has(f.fileId) && f.hash === expectedHash) ?? null
       if (divergentMatch) consumed.add(divergentMatch.fileId)
     }
 
-    const classification = classifyBucket({
+    const classification = classifyCanonicalBucket({
       expectedHash,
-      canonicalActualHash: canonicalRec?.hash ?? null,
+      canonicalActualHashes: canonicalRecs.map((r) => r.hash),
       divergentMatchHash: divergentMatch?.hash ?? null,
     })
 
-    const actual = canonicalRec ?? divergentMatch
+    if (classification === 'DUPLICATE_NAME') {
+      // Every copy reported, each with its own hash comparison — no winner
+      // picked, the day flagged as a hazard.
+      for (const copy of canonicalRecs) {
+        rows.push({
+          dateStr,
+          classification: 'DUPLICATE_NAME',
+          expectedHash,
+          actualFileId: copy.fileId,
+          actualFileName: copy.name,
+          actualHash: copy.hash,
+          actualModifiedTime: copy.modifiedTime,
+          hazard: true,
+        })
+      }
+      continue
+    }
+
+    const actual = canonicalRecs[0] ?? divergentMatch
     rows.push({
       dateStr,
       classification,
@@ -254,6 +284,7 @@ async function runDriftReport(
       actualFileName: actual?.name ?? null,
       actualHash: actual?.hash ?? null,
       actualModifiedTime: actual?.modifiedTime ?? null,
+      hazard: false,
     })
   }
 
@@ -268,6 +299,7 @@ async function runDriftReport(
       actualFileName: f.name,
       actualHash: f.hash,
       actualModifiedTime: f.modifiedTime,
+      hazard: false,
     })
   }
 
@@ -277,6 +309,7 @@ async function runDriftReport(
     MISSING: 0,
     ORPHAN: 0,
     DIVERGENT_NAME: 0,
+    DUPLICATE_NAME: 0,
   }
   for (const r of rows) summary[r.classification] += 1
 
@@ -284,36 +317,49 @@ async function runDriftReport(
 }
 
 function printDriftTable(rows: DriftRow[]): void {
-  const header = ['DATE', 'CLASS', 'ACTUAL FILE', 'MODIFIED', 'HASH (expected/actual)']
+  const header = ['DATE', 'CLASS', 'HAZARD', 'ACTUAL FILE', 'FILE ID', 'MODIFIED', 'HASH (expected/actual)']
   console.log(header.join(' | '))
   for (const r of rows) {
     const hashCol = `${(r.expectedHash ?? '-').slice(0, 10)} / ${(r.actualHash ?? '-').slice(0, 10)}`
     console.log(
-      [r.dateStr ?? '(no date)', r.classification, r.actualFileName ?? '-', r.actualModifiedTime ?? '-', hashCol].join(
-        ' | '
-      )
+      [
+        r.dateStr ?? '(no date)',
+        r.classification,
+        r.hazard ? 'HAZARD' : '-',
+        r.actualFileName ?? '-',
+        r.actualFileId ?? '-',
+        r.actualModifiedTime ?? '-',
+        hashCol,
+      ].join(' | ')
     )
   }
 }
 
 // ---------------------------------------------------------------------------
 // --check-manifest: re-verify hook (HIGH-3). Read-only, no status mutation.
+//
+// Fix-wave F1: two INDEPENDENT staleness checks per record (see
+// classifyManifestRecord's doc comment for the bytes-vs-emitter comparator
+// reasoning) — a record can be bytesStatus VALID and emitterStatus STALE at
+// the same time (the P6 pre-payload-era scenario), so they are never
+// collapsed into one flag.
 // ---------------------------------------------------------------------------
 interface ManifestCheckRow {
   mongoId: string
   driveFileId: string | null
-  status: 'VALID' | 'STALE'
-  reason?: string
+  bytesStatus: 'VALID' | 'STALE'
+  emitterStatus: 'VALID' | 'STALE'
+  reasons: string[]
 }
 
 async function runCheckManifest(
   prisma: any,
   drive: drive_v3.Drive,
   userId: string,
-  domain: string
+  adapter: DriftAdapter
 ): Promise<{ manifestFound: boolean; manifestStatus: string | null; rows: ManifestCheckRow[]; overall: 'VALID' | 'STALE' | 'NO_MANIFEST' }> {
   const manifest = await prisma.migrationManifest.findFirst({
-    where: { userId, domain },
+    where: { userId, domain: adapter.domain },
     orderBy: { startedAt: 'desc' },
   })
   if (!manifest) {
@@ -321,43 +367,60 @@ async function runCheckManifest(
   }
 
   const blob = readManifestBlob(manifest.records)
+  // Computed ONCE for the whole manifest (not per-record) — the live emitter
+  // check is per-DAY, not per-mongoId (a day file can hold several rows).
+  const expectedContentByDay = await adapter.fetchExpectedContentByDay(prisma, userId)
   const rows: ManifestCheckRow[] = []
 
   for (const rec of blob.items) {
     if (!rec.driveFileId) {
-      rows.push({ mongoId: rec.mongoId, driveFileId: null, status: 'STALE', reason: 'no driveFileId recorded' })
-      continue
-    }
-    try {
-      const meta = await drive.files.get({ fileId: rec.driveFileId, fields: 'id,trashed' })
-      if (meta.data.trashed) {
-        rows.push({ mongoId: rec.mongoId, driveFileId: rec.driveFileId, status: 'STALE', reason: 'Drive file is trashed' })
-        continue
-      }
-      const currentHash = await downloadAndHash(drive, rec.driveFileId)
-      if (currentHash !== rec.driveContentHash) {
-        rows.push({ mongoId: rec.mongoId, driveFileId: rec.driveFileId, status: 'STALE', reason: 'content hash mismatch vs manifest' })
-        continue
-      }
-      rows.push({ mongoId: rec.mongoId, driveFileId: rec.driveFileId, status: 'VALID' })
-    } catch (error) {
       rows.push({
         mongoId: rec.mongoId,
-        driveFileId: rec.driveFileId,
-        status: 'STALE',
-        reason: `Drive lookup failed: ${errorMessage(error)}`,
+        driveFileId: null,
+        bytesStatus: 'STALE',
+        emitterStatus: 'STALE',
+        reasons: ['no driveFileId recorded'],
       })
+      continue
     }
+
+    let currentDriveContentHash: string | null = null
+    try {
+      const meta = await drive.files.get({ fileId: rec.driveFileId, fields: 'id,trashed' })
+      if (!meta.data.trashed) {
+        currentDriveContentHash = await downloadAndHash(drive, rec.driveFileId)
+      }
+    } catch {
+      currentDriveContentHash = null // unreachable — classifyManifestRecord treats this as both-STALE
+    }
+
+    const dateStr = rec.driveFileName ? adapter.parseCanonicalName(rec.driveFileName) : null
+    const expectedContent = dateStr ? expectedContentByDay.get(dateStr) : undefined
+    const currentEmitterHash = expectedContent !== undefined ? sha256(Buffer.from(expectedContent, 'utf8')) : null
+
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: rec.driveContentHash ?? null,
+      currentDriveContentHash,
+      currentEmitterHash,
+    })
+
+    rows.push({
+      mongoId: rec.mongoId,
+      driveFileId: rec.driveFileId,
+      bytesStatus: result.bytesStatus,
+      emitterStatus: result.emitterStatus,
+      reasons: result.reasons,
+    })
   }
 
-  const allValid = rows.every((r) => r.status === 'VALID') && manifest.status === 'verified'
+  const allValid = rows.every((r) => r.bytesStatus === 'VALID' && r.emitterStatus === 'VALID') && manifest.status === 'verified'
   return { manifestFound: true, manifestStatus: manifest.status, rows, overall: allValid ? 'VALID' : 'STALE' }
 }
 
 function printManifestCheckTable(rows: ManifestCheckRow[]): void {
-  console.log('MONGO ID | DRIVE FILE ID | STATUS | REASON')
+  console.log('MONGO ID | DRIVE FILE ID | BYTES | EMITTER | REASONS')
   for (const r of rows) {
-    console.log([r.mongoId, r.driveFileId ?? '-', r.status, r.reason ?? '-'].join(' | '))
+    console.log([r.mongoId, r.driveFileId ?? '-', r.bytesStatus, r.emitterStatus, r.reasons.join('; ') || '-'].join(' | '))
   }
 }
 
@@ -443,7 +506,7 @@ async function main() {
   }
 
   if (flags['check-manifest']) {
-    const result = await runCheckManifest(prisma, drive, user.id, domain)
+    const result = await runCheckManifest(prisma, drive, user.id, adapter)
     console.log(`MANIFEST RE-VERIFY — user=${userArg} domain=${domain}`)
     if (!result.manifestFound) {
       console.log('No MigrationManifest found for this user/domain.')
