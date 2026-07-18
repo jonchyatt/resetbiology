@@ -388,5 +388,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:06.561Z",
-  "mentions_fingerprint": "b7464a80fddc"
+  "mentions_fingerprint": "b7464a80fddc",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— 2025-02-11 — Cagrilintide (threadId 194f7321ecf3fdae)",
+      "quote": "Begin at 0.25 mg per week for a mild appetite-suppression effect. Adjust gradually based on tolerance.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— 2025-07-29 — New Cagrilintide Studies Out (threadId 1985855730c4a97f) — https://huntershealthhacks.beehiiv.com/p/new-cagrilintide-studies-out-79070e625a312fd4",
+      "quote": "Begin by injecting 0.25mg (10 units) subcutaneously, 2-3 times per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 8:19 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/",
+      "quote": "Nova Nordis trial suggests that 2.4 to 4.5 milligrams per week provides optimal weight loss effects while balancing the side effects.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 17:16 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/",
+      "quote": "I think category, I'm going say start at 0.25 milligrams per week, and then you can tighten it up to 2.5 to 4.50 milligrams.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— 2026-05-25 — 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f @ 19:06 — https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/",
+      "quote": "Some people need to get up to three to four milligrams before they really notice the appetite suppression. But for me, if I take 250 to 500 micro grams per week, It is perfect.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "— 2025-07-29 — New Cagrilintide Studies Out (threadId 1985855730c4a97f) — https://huntershealthhacks.beehiiv.com/p/new-cagrilintide-studies-out-79070e625a312fd4",
+      "quote": "subcutaneously.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— 2025-07-29 — New Cagrilintide Studies Out (threadId 1985855730c4a97f) — https://huntershealthhacks.beehiiv.com/p/new-cagrilintide-studies-out-79070e625a312fd4",
+      "quote": "2-3 times per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— 2026-03-29 — cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6 @ 8:19 — https://library.hunterwilliamshealth.com/p/cagrilintide-explained-the-next-big-peptide-for-fat-loss--9aacaef6/",
+      "quote": "0.25 milligrams once a week.",
+      "dose_value": 0.25,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

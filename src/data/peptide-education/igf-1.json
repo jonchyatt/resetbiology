@@ -654,5 +654,137 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:05.974Z",
-  "mentions_fingerprint": "4256966d4b1f"
+  "mentions_fingerprint": "4256966d4b1f",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 18:00, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "If you've never done this before, start very low, which is like 20 to 30 micrograms per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 18:00, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "if are someone that's like more experienced with this, would start at 50 micro grams per 50, micro-gram per-day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 18:00, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "a lot of clinical protocols suggest only 10 to 20 micrograms.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 18:00, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "you could go up to 100 micro grams and even some bodybuilders will go to like 250 or 500 micro-gram.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5, 2026-03-29, 13:05, https://library.hunterwilliamshealth.com/p/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5/)",
+      "quote": "she used 50 micrograms per day and felt really, really good.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 20:13, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "you can it subcutaneously, get a systemic effect. I like injecting it, I am into the muscle that I just trained.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 19:08, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "I like injecting once daily.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 19:40, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "I like four to eight weeks on, then equal or longer off period.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(igf-1-lr3-for-body-recomposition-and-longevity--435267af, 2026-03-30, 19:40, https://library.hunterwilliamshealth.com/p/igf-1-lr3-for-body-recomposition-and-longevity--435267af/)",
+      "quote": "the typical is four, to six weeks at 50 micrograms per day, than six to 8 weeks off maximum of two or three cycles per year.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5, 2026-03-29, 16:30, https://library.hunterwilliamshealth.com/p/igf-1-lr3-a-use-guide-for-practical-research-purposes--d337bad5/)",
+      "quote": "most schools will thought it would be like four to six weeks. Honestly, I felt a tolerance after like 10 days.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

@@ -648,5 +648,98 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:06.228Z",
-  "mentions_fingerprint": "0959342a8b26"
+  "mentions_fingerprint": "0959342a8b26",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "older (email threadId 19544a0246974d8d, 2025-02-26)",
+      "quote": "1,000 mg of metformin daily",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859, 2026-03-29, 17:00, https://library.hunterwilliamshealth.com/p/sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859/)",
+      "quote": "I was taking 1500 to 2000 milligrams of Metformins, split up into two doses. What I've done is moving to 500mg Met formin in the evening.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "newer (saturday-morning-coffee-talk-with-taylor--18e31bfe, 2026-04-08, 00:44:43, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/)",
+      "quote": "I take 500 milligrams of metormin and 25 milligrams Jartians.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(ovNE9d4xFsk, 2024-09-03, 00:15:33.839, https://youtu.be/ovNE9d4xFsk)",
+      "quote": "I now take 500 milligrams in the morning and 500 milligrams at night.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859, 2026-03-29, 17:00, https://library.hunterwilliamshealth.com/p/sglt2-inhibitors-explained-benefits-risks-and-my-personal-experience--9aa6a859/)",
+      "quote": "What I've done is moving to 500mg Met formin in the evening.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(ovNE9d4xFsk, 2024-09-03, 00:15:33.839, https://youtu.be/ovNE9d4xFsk)",
+      "quote": "I now take 500 milligrams in the morning and 500 milligrams at night.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(100-reasons-everyone-should-use-metformin-studies-included--43918476, 2026-03-29, 30:18, https://library.hunterwilliamshealth.com/p/100-reasons-everyone-should-use-metformin-studies-included--43918476/)",
+      "quote": "I will use met for men for life, until I find conflicting over the unless I find conflicting evidence otherwise.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

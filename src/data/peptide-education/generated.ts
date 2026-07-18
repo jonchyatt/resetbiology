@@ -35,6 +35,30 @@ export type ExpertSummary = {
   chronic_signals: { snippet: string; source_title: string | null; source_date: string | null; timestamp: string | null; source_url: string | null }[];
 };
 
+export type AcuteChronicPhase = {
+  dose: string | null;
+  route: string | null;
+  frequency: string | null;
+  duration: string | null;
+  verbatim_citation: string | null;
+  episode_url: string | null;
+  timestamp: string | null;
+};
+
+export type StructuredRegimen = {
+  source_expert: string | null;
+  speaker: string | null;
+  context: 'acute' | 'chronic' | 'baseline';
+  field: 'dose' | 'route' | 'frequency' | 'duration';
+  citation: string;
+  quote: string;
+  dose_value: number | null;
+  dose_unit: 'mcg' | 'mg' | 'iu' | null;
+  is_range_or_multi: boolean;
+  flag: boolean;
+  frozen_2023?: boolean;
+};
+
 export type PeptideCard = {
   peptide: string;
   slug: string;
@@ -51,7 +75,15 @@ export type PeptideCard = {
     caveats: string | null;
     cross_expert_consensus: string | null;
     cross_expert_disagreement: string | null;
+    acute_chronic_split: {
+      acute: AcuteChronicPhase | null;
+      chronic: AcuteChronicPhase | null;
+    } | null;
+    female_specific_notes: string | null;
+    distilled_at: string | null;
+    distilled_by: string | null;
   };
+  structured_regimens: StructuredRegimen[];
   generated_at: string;
 };
 

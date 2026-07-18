@@ -301,5 +301,20 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.233Z",
-  "mentions_fingerprint": "112f685189b3"
+  "mentions_fingerprint": "112f685189b3",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, Peptide Q&A Â· January 2026, library article, timestamp unavailable, https://library.hunterwilliamshealth.com/p/peptide-qa-january-2026--7994649b/)",
+      "quote": "If you want Sermorelin, 200 to 400 micrograms is where most people land.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

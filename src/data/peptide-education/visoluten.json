@@ -241,5 +241,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.985Z",
-  "mentions_fingerprint": "5720b8223393"
+  "mentions_fingerprint": "5720b8223393",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "dose",
+      "citation": "(2026-03-29, 7:06)",
+      "quote": "Post-traumatic corneal dystrophies, 2 to 3 capsulas per day, to 2-3 times daily for fifteen to thirty days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "route",
+      "citation": "(2026-03-29, 4:23)",
+      "quote": "Vesolutin was administered orally",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "frequency",
+      "citation": "(2026-03-29, 7:06)",
+      "quote": "2-3 times daily",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "duration",
+      "citation": "(2026-03-29, 7:06)",
+      "quote": "for fifteen to thirty days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29, 7:38)",
+      "quote": "one capsule two times a day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-03-29, 4:23)",
+      "quote": "Vesolutin was administered orally",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29, 7:38)",
+      "quote": "one capsule two times a day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-29, 7:38)",
+      "quote": "for 15 to 30 days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

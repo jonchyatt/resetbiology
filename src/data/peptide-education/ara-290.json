@@ -320,5 +320,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:07.079Z",
-  "mentions_fingerprint": "46242905d65d"
+  "mentions_fingerprint": "46242905d65d",
+  "structured_regimens": [
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "You could start at one milligram.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "I know a lot of people that get really good results at like one to two milligrams per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "around the eight to 12 week mark, you're probably going to have to go up from like two milligrams or three milligrams to maybe four milligrams",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "it's 1.3 milligrams per day",
+      "dose_value": 1.3,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "route",
+      "citation": "",
+      "quote": "administered subcutaneously",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "",
+      "quote": "per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "duration",
+      "citation": "",
+      "quote": "they ran four milligram for 30 days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "duration",
+      "citation": "",
+      "quote": "If you use it for three to four months, see how it goes, and then potentially cycle off. 46 weeks off",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    }
+  ]
 }

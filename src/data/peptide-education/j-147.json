@@ -301,5 +301,33 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:09.364Z",
-  "mentions_fingerprint": "f6623292d346"
+  "mentions_fingerprint": "f6623292d346",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-05-25)",
+      "quote": "Yes, I would start at 10 milligrams per day. I will not go higher than 20 milligrams to 30 milligrams. If you were doing J one 47 in isolation.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-03-30)",
+      "quote": "One's called J147 and that's actually an, it's an orally bioavailable peptide that you can take.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

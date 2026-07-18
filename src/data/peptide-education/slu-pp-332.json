@@ -521,5 +521,137 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:05.417Z",
-  "mentions_fingerprint": "de7ea2c2e084"
+  "mentions_fingerprint": "de7ea2c2e084",
+  "structured_regimens": [
+    {
+      "source_expert": null,
+      "speaker": "Older",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "started around a hundred micrograms to 200 micro grams per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": "Older",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "Eventually went to like 500 micro-gram per And it was amazing at 500 micrograms per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": "Older",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "I think that dosing sweet spot is going to be somewhere between a thousand and 2000 micrograms per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", updated as of November 2024, slug slu-pp-332-dosage-update-my-3-month-transformation-insights--95390ece, 1:10 and 12:01, https://library.hunterwilliamshealth.com/p/slu-pp-332-dosage-update-my-3-month-transformation-insights--95390ece/) Newer",
+      "quote": "Please do not do that right away. If you've never used SL you, don't ever take more than 500 to 750 micrograms of SL.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", updated as of November 2024, slug slu-pp-332-dosage-update-my-3-month-transformation-insights--95390ece, 1:10 and 12:01, https://library.hunterwilliamshealth.com/p/slu-pp-332-dosage-update-my-3-month-transformation-insights--95390ece/) Newer",
+      "quote": "You can get all the results you need at like 250 to 750 micrograms of slu",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "start at 250 micrograms per day, work your way up on the high end. I would say 750 micrograms to 1 milligram and then kind of sit there.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "trevor-bachmeyer",
+      "speaker": "Trevor Bachmeyer",
+      "context": "chronic",
+      "field": "route",
+      "citation": "",
+      "quote": "Yes, it has to be injected",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "trevor-bachmeyer",
+      "speaker": "Trevor Bachmeyer",
+      "context": "chronic",
+      "field": "route",
+      "citation": "",
+      "quote": "Subcutaneous injection of SLU-PP 332",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "",
+      "quote": "with a capsule that's 250 micrograms",
+      "dose_value": 250,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "",
+      "quote": "per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    }
+  ]
 }

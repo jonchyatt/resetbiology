@@ -213,5 +213,98 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:09.590Z",
-  "mentions_fingerprint": "c01be31639d6"
+  "mentions_fingerprint": "c01be31639d6",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:22; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/)",
+      "quote": "A small open-label clinical study in Russia followed 56 days of NUPEP, where they took 10 milligrams twice daily in patients with mild cognitive impairment.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:54; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/)",
+      "quote": "Many people like it around 10 to 30 milligrams per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 33:13; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/)",
+      "quote": "we're using two capsules, 10 milligrams, five milligrams of each per capsule.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:22; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/)",
+      "quote": "they took 10 milligrams twice daily in patients with mild cognitive impairment.",
+      "dose_value": 10,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:54; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/)",
+      "quote": "Many people like it around 10 to 30 milligrams per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 33:45; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/)",
+      "quote": "If you use two, it'd be 10mg. first thing in the morning, two to three days per week, and then on the non-U stage, use 600 milligrams of Alpha GPC.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-29; the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390 13:22; https://library.hunterwilliamshealth.com/p/the-best-nootropic-you-dont-know-about-j-147-dihexa-and-noopept-explained--dded4390/)",
+      "quote": "A small open-label clinical study in Russia followed 56 days of NUPEP.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

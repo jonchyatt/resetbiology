@@ -243,5 +243,124 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:07.603Z",
-  "mentions_fingerprint": "0e305705e5a9"
+  "mentions_fingerprint": "0e305705e5a9",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/)",
+      "quote": "I'd say to take two milligrams per day for 30-60 days.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— the-peptide-stack-for-liver-health--f509f742 (2026-03-30, 24:05, https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/)",
+      "quote": "Again, the dosage for this is gonna be the same as Ovagen. Its gonna 2 mg per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— email threadId 198d3d2fb0cab918 (2025-08-22, https://huntershealthhacks.beehiiv.com/p/the-peptide-for-liver-health-2292e848d83ee39b)",
+      "quote": "the dosing protocol is 1–2 mg per day for 30 to 60 days.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "— this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/)",
+      "quote": "you do that sub-q. You could do it IM if wanted to, but I think subq is totally fine.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 1:15, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/)",
+      "quote": "I think that this one specifically for the liver, meaning ovagen, definitely has a place at least one to two times per year.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/)",
+      "quote": "I'd say to take two milligrams per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "— this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f (2026-03-29, 13:17, https://library.hunterwilliamshealth.com/p/this-peptide-heals-the-liver-a-look-at-ovagen-for-hepatic-health--8e2a059f/)",
+      "quote": "I'd say to take two milligrams per day for 30-60 days.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "— the-peptide-stack-for-liver-health--f509f742 (2026-03-30, 24:35, https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/)",
+      "quote": "over that 12 weeks to ensure a fully functioning liver is restored.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "— email threadId 198d3d2fb0cab918 (2025-08-22, https://huntershealthhacks.beehiiv.com/p/the-peptide-for-liver-health-2292e848d83ee39b)",
+      "quote": "the dosing protocol is 1–2 mg per day for 30 to 60 days.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

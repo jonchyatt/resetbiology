@@ -306,5 +306,72 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:06.379Z",
-  "mentions_fingerprint": "23b0fea7412f"
+  "mentions_fingerprint": "23b0fea7412f",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(saturday-morning-coffee-talk-5226--3cf808ca 40:26; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25)",
+      "quote": "I think if you wanted to do like six milligrams once a week of rapamycin, I don't have an issue with that. I would probably say that would be someone in their fifties and sixties.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(0TyW-wlJMxo 00:24:54.120; https://youtu.be/0TyW-wlJMxo; 2026-03-28)",
+      "quote": "6 mg pill of rapamycin",
+      "dose_value": 6,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352 41:15; https://library.hunterwilliamshealth.com/p/may-2026-qa-retatrutide-testosterone-autoimmune-and-beyond--ea9ba352/; 2026-06-17)",
+      "quote": "do you think you could do it once a week on a rest day to potentially improve, uh, longevity?",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(saturday-morning-coffee-talk-5226--3cf808ca 41:35; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25)",
+      "quote": "once a week or once every two weeks",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(saturday-morning-coffee-talk-5226--3cf808ca 41:35; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/; 2026-05-25)",
+      "quote": "could be used like for a day or two for like a recovery phase",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

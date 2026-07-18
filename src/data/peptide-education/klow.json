@@ -237,5 +237,98 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:09.827Z",
-  "mentions_fingerprint": "efccfe3b5a92"
+  "mentions_fingerprint": "efccfe3b5a92",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", video_slug=the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43 (2026-04-08, cue 00:21:23, https://library.hunterwilliamshealth.com/p/the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43/)",
+      "quote": "I would have 50mg of GHK, I'd have 10mgs of TB500, 10 mg of BPC, and 10 mgs KPV. I mix all of those into one vial with 3ml of bacteriostatic water and then I take 10 units of that per day. So what that ends up coming out to be is somewhere around the neighborhood of two milligrams of GHK and 500 micrograms of each of the other ones.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", email threadId=198c4537f0cfbd90 (2025-08-19, https://youtu.be/mX9Gim98OEw)",
+      "quote": "Each dose provides approximately: * 2.5 mg GHK-Cu * 500 mcg BPC-157 * 500 mcg TB-500 * 500 mcg KPV.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": ", video_slug=the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43 (2026-04-08, cue 00:21:23, https://library.hunterwilliamshealth.com/p/the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43/)",
+      "quote": "I mix all of those into one vial with 3ml of bacteriostatic water and then I take 10 units of that per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", video_slug=the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43 (2026-04-08, cue 00:21:23, https://library.hunterwilliamshealth.com/p/the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43/)",
+      "quote": "I take 10 units of that per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", video_slug=the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, cue 00:31:35, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/)",
+      "quote": "250 to 500 micrograms of each, one to two times daily for six to eight weeks.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", video_slug=the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43 (2026-04-08, cue 00:18:44, https://library.hunterwilliamshealth.com/p/the-klow-stack-bpc-157-tb-500-ghk-cu-kpv--239cdf43/)",
+      "quote": "Typically, you're going to use this for four to six weeks.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", video_slug=the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, cue 00:31:35, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/)",
+      "quote": "250 to 500 micrograms of each, one to two times daily for six to eight weeks.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

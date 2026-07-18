@@ -155,5 +155,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:10.061Z",
-  "mentions_fingerprint": "059cec797563"
+  "mentions_fingerprint": "059cec797563",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "1-2 mg/wk to begin (either compound)",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "Phase 3 target: 3.6 mg + 6.0 mg",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "Survodutide | 4.8 mg/wk | GLP-1 + Glucagon | 46 wk | ~18.7% | ~67% (>30% ↓)",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "Example: 6 mg/wk → 2 mg Mon + 2 mg Wed + 2 mg Fri.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "Once weekly",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "Always prefer to split weekly total across 2-3 injections rather than all at once.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "Minimum 4 weeks at each dose before moving up",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2026-03-31, email threadId 19d45fc334be87a7, https://open.spotify.com/episode/2IADOstRyI6FrZlNHriPJB",
+      "quote": "Phase 3 = 4-week titration intervals + dose flexibility + pause/restart option.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }
