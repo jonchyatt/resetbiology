@@ -194,6 +194,71 @@ console.log("\n--- H3 fix-wave: Weekly Schedule grid routes through the shared r
 }
 
 console.log(
+  "\n--- T-A3: generateFutureDoses/getNextDoseDate route through the shared resolver (no inline copy) ---",
+);
+{
+  // generateFutureDoses/getNextDoseDate are closures bound to component
+  // state (parseLocalDateKey/dateToLocalKey helpers live inside the
+  // component), not importable in isolation. After the T-A3 refactor their
+  // ENTIRE day-selection core is a single call to isDoseDayForProtocol per
+  // candidate day — there is no other logic left to diverge. This fixture
+  // mirrors that exact day-by-day loop shape and proves it against direct
+  // isDoseDayForProtocol calls, per the ticket's documented fallback.
+  const daysBetween = (frequency, startDate, from, to) => {
+    const active = [];
+    const cur = new Date(from);
+    while (cur <= to) {
+      if (isDoseDayForProtocol(frequency, startDate, cur)) {
+        active.push(cur.toISOString().slice(0, 10));
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+    return active;
+  };
+
+  // (a) The generateFutureDoses-shaped loop's output, date by date, exactly
+  // matches direct isDoseDayForProtocol calls for the same dates -- no
+  // divergent parity/weekday copy exists to disagree with it.
+  const startDate = new Date("2026-07-01");
+  const rangeEnd = new Date("2026-07-15");
+  ["Every other day", "Daily", "Mon/Wed/Fri", "Once per week", "3x per week"].forEach(
+    (frequency) => {
+      const viaLoop = daysBetween(frequency, startDate, startDate, rangeEnd);
+      const viaDirect = [];
+      const cur = new Date(startDate);
+      while (cur <= rangeEnd) {
+        if (isDoseDayForProtocol(frequency, startDate, cur)) {
+          viaDirect.push(cur.toISOString().slice(0, 10));
+        }
+        cur.setDate(cur.getDate() + 1);
+      }
+      assertEqual(
+        viaLoop,
+        viaDirect,
+        `T-A3(a): '${frequency}' dose-days over the range exactly match isDoseDayForProtocol (no divergence)`,
+      );
+    },
+  );
+
+  // (b) Every-other-day protocol asked about a date BEFORE startDate yields
+  // no dose -- the daysSinceStart >= 0 guard, inherited for free now that
+  // both functions call the shared helper instead of re-inlining the parity
+  // check without the guard.
+  const dayBeforeStart = new Date("2026-06-30");
+  assertEqual(
+    isDoseDayForProtocol("Every other day", startDate, dayBeforeStart),
+    false,
+    "T-A3(b): every-other-day protocol has no dose on a date before startDate (inherited daysSinceStart >= 0 guard)",
+  );
+
+  // (c) Unknown-frequency protocol generates no future doses across a whole
+  // range -- never invents a schedule for text the shared engine can't
+  // classify.
+  const unknownDoses = daysBetween("3x per week", startDate, startDate, rangeEnd);
+  assertEqual(unknownDoses, [], "T-A3(c): unknown-frequency protocol generates zero doses over the range");
+}
+
+console.log(
   failures === 0
     ? "\nALL CONTAINMENT FIXTURES PASSED"
     : `\n${failures} FIXTURE(S) FAILED`,

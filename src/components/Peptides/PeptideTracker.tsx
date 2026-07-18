@@ -347,7 +347,6 @@ export function PeptideTracker() {
             startDate.setHours(0, 0, 0, 0);
           }
 
-          const frequency = protocol.frequency.toLowerCase();
           let currentDate = new Date(
             Math.max(today.getTime(), startDate.getTime()),
           );
@@ -355,38 +354,14 @@ export function PeptideTracker() {
 
           // Generate doses until endDate
           while (currentDate <= endDate) {
-            let shouldSchedule = false;
-
-            // "Every other day" is an alternating-parity rule, not a
-            // day-of-week rule — already anchors correctly to startDate, so
-            // it stays outside the shared resolver (H2/H3 containment scope
-            // is the divergent/broken day-of-week logic below, not this).
-            if (frequency.includes("every other day")) {
-              const daysSinceStart = Math.floor(
-                (currentDate.getTime() - startDate.getTime()) /
-                  (1000 * 60 * 60 * 24),
-              );
-              shouldSchedule = daysSinceStart % 2 === 0;
-            } else {
-              // H2/H3: single shared resolver replaces the divergent
-              // daily/3x-per-week/2x-per-week/mon-fri/once-per-week checks.
-              // Unrecognized frequency text schedules NOTHING (never
-              // silently defaults to daily); "weekly" anchors to this
-              // protocol's own startDate weekday (never hardcoded Monday);
-              // Nx-per-week text with no explicit days never invents
-              // Mon/Wed/Fri or Mon/Thu.
-              const resolved = resolveFrequency(protocol.frequency);
-              const dayOfWeek = currentDate.getDay();
-              if (resolved.kind === "daily" || resolved.kind === "twice-daily") {
-                shouldSchedule = true;
-              } else if (resolved.kind === "weekly") {
-                shouldSchedule = dayOfWeek === startDate.getDay();
-              } else if (resolved.kind === "days-of-week") {
-                shouldSchedule = (resolved.daysOfWeek ?? []).includes(dayOfWeek);
-              } else {
-                shouldSchedule = false;
-              }
-            }
+            // H2/H3: single shared resolver (isDoseDayForProtocol) is the
+            // only place day-of-week/every-other-day/unknown-frequency logic
+            // lives — this function must never re-inline it (T-A3).
+            const shouldSchedule = isDoseDayForProtocol(
+              protocol.frequency,
+              startDate,
+              currentDate,
+            );
 
             if (shouldSchedule) {
               futureDoses.push({
@@ -604,8 +579,6 @@ export function PeptideTracker() {
         startDate.setHours(0, 0, 0, 0);
       }
 
-      const frequency = protocol.frequency.toLowerCase();
-
       // Check if already completed today - use local date
       const todayKey = getTodayKey();
       const completedToday = doseHistory.some((dose: any) => {
@@ -655,31 +628,13 @@ export function PeptideTracker() {
       let daysChecked = 0;
 
       while (daysChecked < maxDays) {
-        let shouldSchedule = false;
-
-        // See generateFutureDoses above for the H2/H3 rationale — "every
-        // other day" stays a local parity check (already correct); every
-        // other case routes through the shared resolver so this function
-        // and generateFutureDoses can't disagree with each other.
-        if (frequency.includes("every other day")) {
-          const daysSinceStart = Math.floor(
-            (currentDate.getTime() - startDate.getTime()) /
-              (1000 * 60 * 60 * 24),
-          );
-          shouldSchedule = daysSinceStart % 2 === 0;
-        } else {
-          const resolved = resolveFrequency(protocol.frequency);
-          const dayOfWeek = currentDate.getDay();
-          if (resolved.kind === "daily" || resolved.kind === "twice-daily") {
-            shouldSchedule = true;
-          } else if (resolved.kind === "weekly") {
-            shouldSchedule = dayOfWeek === startDate.getDay();
-          } else if (resolved.kind === "days-of-week") {
-            shouldSchedule = (resolved.daysOfWeek ?? []).includes(dayOfWeek);
-          } else {
-            shouldSchedule = false;
-          }
-        }
+        // See generateFutureDoses above — both routed through the shared
+        // isDoseDayForProtocol resolver (T-A3) so they can never disagree.
+        const shouldSchedule = isDoseDayForProtocol(
+          protocol.frequency,
+          startDate,
+          currentDate,
+        );
 
         if (shouldSchedule) {
           return currentDate;
