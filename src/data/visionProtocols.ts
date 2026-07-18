@@ -288,7 +288,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 3,
           exerciseMinutes: 15,
           exerciseIds: ['box-breath-vision', 'smooth-tracking', 'figure8-fixation'],
-          coachingCues: ['Count 4 seconds per loop', 'No head movement']
+          coachingCues: ['Smooth and steady, no jerky jumps', 'No head movement']
         },
         {
           day: 3,
