@@ -7,6 +7,7 @@ import { DisconnectVaultModal } from "@/components/Vault/DisconnectVaultModal"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter, useSearchParams } from "next/navigation"
 import { localDayKey } from "@/lib/localDay"
+import { useToast } from "@/components/ui/Toast"
 
 const CONNECTED_CONFIRMATION_COPY =
   "Your data lives in your Google Drive — we ship the app, you own the data. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
@@ -14,6 +15,7 @@ const CONNECTED_CONFIRMATION_COPY =
 function ProfilePageContent() {
   const { user, isLoading } = useUser()
   const router = useRouter()
+  const toast = useToast()
   const searchParams = useSearchParams()
   const driveQueryStatus = searchParams.get("drive")
   const [activeTab, setActiveTab] = useState("account")
@@ -138,13 +140,13 @@ function ProfilePageContent() {
       })
       
       if (response.ok) {
-        alert("Profile updated successfully!")
+        toast.success("Profile updated successfully!")
       } else {
-        alert("Failed to update profile")
+        toast.error("Failed to update profile")
       }
     } catch (error) {
       console.error("Error updating profile:", error)
-      alert("Error updating profile")
+      toast.error("Error updating profile")
     }
   }
 

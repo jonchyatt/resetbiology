@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Sparkles, Cloud, Apple, Compass, Check, X } from "lucide-react"
 import { useVaultStatus } from "@/hooks/useVaultStatus"
+import { useToast } from "@/components/ui/Toast"
 
 export interface OnboardingStatus {
   onboardingComplete: boolean
@@ -33,6 +34,7 @@ interface OnboardingGuideProps {
 export function OnboardingGuide({ reason, firstName, taskCount, status, onComplete }: OnboardingGuideProps) {
   const [expanded, setExpanded] = useState(true)
   const [completing, setCompleting] = useState(false)
+  const toast = useToast()
   // Drive connect/error/unavailable states already live in this hook
   // (VaultBanner uses the same one) — reused rather than re-implemented,
   // and it never touches rb-drive-vault's internals, just its public status API.
@@ -49,8 +51,10 @@ export function OnboardingGuide({ reason, firstName, taskCount, status, onComple
         onComplete()
         return
       }
+      toast.error("Couldn't save your setup — try again")
     } catch {
-      // network hiccup — button re-enables, member can just try again
+      // network hiccup — guide stays open, button re-enables so the member can retry
+      toast.error("Couldn't save your setup — try again")
     }
     setCompleting(false)
   }

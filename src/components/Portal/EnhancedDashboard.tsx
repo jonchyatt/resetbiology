@@ -241,15 +241,15 @@ export function EnhancedDashboard() {
       if (response.ok && result?.success) {
         setDailyTasks(prev => ({ ...prev, journal: true }))
         const bonus = result?.pointsAwarded ? ` +${result.pointsAwarded} pts` : ''
-        alert(`Daily journal entry saved!${bonus}`)
+        toast.success(`Daily journal entry saved!${bonus}`)
       } else {
         const message = result?.error || 'Unknown error'
         console.error('Journal save failed:', { status: response.status, result })
-        alert(`Failed to save journal: ${message}`)
+        toast.error(`Failed to save journal: ${message}`)
       }
     } catch (error) {
       console.error('Failed to save journal - exception:', error)
-      alert(`Failed to save journal entry: ${error instanceof Error ? error.message : 'Please try again.'}`)
+      toast.error(`Failed to save journal entry: ${error instanceof Error ? error.message : 'Please try again.'}`)
     }
   }
 
@@ -316,9 +316,11 @@ export function EnhancedDashboard() {
 
   // First-run onboarding status (FLOW-SPEC T6). Read-only GET; if the
   // account qualifies for the grandfather rule, fire the idempotent
-  // complete POST silently — on failure it's harmless, the guide (which we
-  // already suppress below via grandfatherEligible) just re-derives the
-  // same result next load (v2 GRANDFATHER MED-2).
+  // complete POST in the background. The member sees nothing either way —
+  // suppression comes from derived grandfatherEligible state, not from this
+  // write succeeding — so a failure here is self-healing by design: it just
+  // retries the same POST next load. We still log it (not an empty catch)
+  // so a persistently-failing write is visible in the console/telemetry.
   useEffect(() => {
     fetch('/api/onboarding/status')
       .then((res) => (res.ok ? res.json() : null))
@@ -326,10 +328,20 @@ export function EnhancedDashboard() {
         if (!data) return
         setOnboardingStatus(data)
         if (data.grandfatherEligible && !data.onboardingComplete) {
-          fetch('/api/onboarding/complete', { method: 'POST' }).catch(() => {})
+          fetch('/api/onboarding/complete', { method: 'POST' })
+            .then((res) => {
+              if (!res.ok) {
+                console.warn('[onboarding] grandfather flag write failed; guide stays suppressed via derived state and retries next load', { status: res.status })
+              }
+            })
+            .catch((error) => {
+              console.warn('[onboarding] grandfather flag write failed; guide stays suppressed via derived state and retries next load', { status: error?.message })
+            })
         }
       })
-      .catch(() => {})
+      .catch((error) => {
+        console.warn('[onboarding] status fetch failed; guide/grandfather state stays null this load, retries next load', { status: error?.message })
+      })
   }, [])
 
   useEffect(() => {
