@@ -8,6 +8,8 @@
  * Plan: docs/plans/vision-training-interactive-overhaul.md §Tier 0
  */
 
+import { resolveVoiceCue } from './voiceManifest'
+
 let sharedCtx: AudioContext | null = null
 
 export function getAudioContext(): AudioContext | null {
@@ -20,10 +22,27 @@ export function getAudioContext(): AudioContext | null {
   return sharedCtx
 }
 
-/** Call from a user-gesture handler (Start button) — unlocks iOS Safari audio. */
+// ponytail: standard silent-WAV iOS unlock trick — no new dependency, decoupled
+// from the vision-cues asset set so it works even before the manifest loads.
+const SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='
+let assetAudioUnlocked = false
+
+/** Call from a user-gesture handler (Start button) — unlocks iOS Safari audio
+ * for both WebAudio (tones/metronome) and HTMLAudioElement (voice-cue mp3s). */
 export function unlockAudio(): void {
   const ctx = getAudioContext()
   if (ctx && ctx.state === 'suspended') void ctx.resume()
+  if (typeof window === 'undefined' || assetAudioUnlocked) return
+  assetAudioUnlocked = true
+  try {
+    const el = new Audio(SILENT_WAV)
+    el.muted = true
+    void el.play().catch(() => {
+      /* best-effort — asset cues fall back to speechSynthesis if never unlocked */
+    })
+  } catch {
+    /* audio unavailable — engines must remain fully usable silent */
+  }
 }
 
 export function playTone(frequency = 440, durationMs = 100, volume = 0.3): void {
@@ -61,13 +80,33 @@ export function playVictoryMotif(): void {
 // SpeechQueue
 // ---------------------------------------------------------------------------
 
+// One console.debug per unpronounced text, ever — not per occurrence.
+const loggedManifestMisses = new Set<string>()
+
 export class SpeechQueue {
   private queue: string[] = []
   private speaking = false
-  muted = false
+  private _muted = false
+  /** Currently-playing pre-rendered cue, if any (T5 manifest-backed asset path). */
+  private currentAudio: HTMLAudioElement | null = null
   rate = 0.95
   pitch = 1.0
   volume = 0.85
+
+  get muted(): boolean {
+    return this._muted
+  }
+
+  /** Same public field contract as before — setting true also cancels an
+   * in-flight asset cue immediately (mobile safety contract C3). */
+  set muted(value: boolean) {
+    this._muted = value
+    if (value && this.currentAudio) {
+      this.stopCurrentAudio()
+      this.speaking = false
+      this.drain()
+    }
+  }
 
   private get synth(): SpeechSynthesis | null {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null
@@ -77,6 +116,10 @@ export class SpeechQueue {
   /**
    * Queue a phrase. `interrupt: true` drops anything pending/speaking first —
    * use for state changes ("Exercise complete"), not for rhythm cues.
+   *
+   * Resolution order per phrase: exact-text match against the pre-rendered
+   * voice-cue manifest (T5) plays the mp3; a miss falls back to
+   * speechSynthesis unchanged.
    */
   speak(text: string, opts?: { interrupt?: boolean }): void {
     const synth = this.synth
@@ -84,6 +127,7 @@ export class SpeechQueue {
     if (opts?.interrupt) {
       this.queue = []
       synth.cancel()
+      this.stopCurrentAudio()
       this.speaking = false
     }
     this.queue.push(text)
@@ -91,25 +135,83 @@ export class SpeechQueue {
   }
 
   private drain(): void {
-    const synth = this.synth
-    if (!synth || this.speaking) return
+    if (this.speaking) return
     const next = this.queue.shift()
     if (!next) return
     this.speaking = true
-    const u = new SpeechSynthesisUtterance(next)
+    this.speakOne(next)
+  }
+
+  private speakOne(text: string): void {
+    void resolveVoiceCue(text)
+      .then((url) => {
+        if (this.muted) {
+          this.finishOne()
+          return
+        }
+        if (url) {
+          this.playAsset(text, url)
+          return
+        }
+        if (!loggedManifestMisses.has(text)) {
+          loggedManifestMisses.add(text)
+          console.debug('[SpeechQueue] no pre-rendered cue, falling back to speechSynthesis:', text)
+        }
+        this.speakSynth(text)
+      })
+      .catch(() => this.speakSynth(text))
+  }
+
+  private playAsset(text: string, url: string): void {
+    const audio = new Audio(url)
+    audio.volume = this.volume
+    this.currentAudio = audio
+    const fallbackToSynth = () => {
+      if (this.currentAudio === audio) this.currentAudio = null
+      // Asset failure (missing file / decode error / blocked play) must
+      // never block instructions — fall back to the existing TTS path.
+      this.speakSynth(text)
+    }
+    audio.onended = () => {
+      if (this.currentAudio === audio) this.currentAudio = null
+      this.finishOne()
+    }
+    audio.onerror = fallbackToSynth
+    audio.play().catch(fallbackToSynth)
+  }
+
+  private speakSynth(text: string): void {
+    const synth = this.synth
+    if (!synth) {
+      this.finishOne()
+      return
+    }
+    const u = new SpeechSynthesisUtterance(text)
     u.rate = this.rate
     u.pitch = this.pitch
     u.volume = this.volume
-    u.onend = u.onerror = () => {
-      this.speaking = false
-      this.drain()
-    }
+    u.onend = u.onerror = () => this.finishOne()
     synth.speak(u)
+  }
+
+  private finishOne(): void {
+    this.speaking = false
+    this.drain()
+  }
+
+  private stopCurrentAudio(): void {
+    if (this.currentAudio) {
+      this.currentAudio.onended = null
+      this.currentAudio.onerror = null
+      this.currentAudio.pause()
+      this.currentAudio = null
+    }
   }
 
   stop(): void {
     this.queue = []
     this.synth?.cancel()
+    this.stopCurrentAudio()
     this.speaking = false
   }
 }
