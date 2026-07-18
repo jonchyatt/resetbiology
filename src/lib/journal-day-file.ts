@@ -13,6 +13,21 @@
 //
 // formatJournalDayFile: rows -> day-file string (never drops a row).
 // parseJournalDayFile: day-file string -> structured entries (never throws).
+//
+// Fix-wave 2 (blind-verify HIGH-1 finding #1, cf-c2-journal-inversion): the
+// front-matter contract above (schemaVersion/date/entries manifest) is
+// UNCHANGED — schemaVersion stays 1. What's new is an ADDITIVE, optional,
+// self-delimited machine block inside each entry's BODY section: a full
+// structured `payload` (the entire real dashboard EntryPayload — all 10
+// fields + tasksCompleted), JSON-encoded on a single reserved comment line
+// (`<!-- journal-payload:{...} -->`, guaranteed one physical line since
+// JSON.stringify with no indent never emits a raw newline). A human-readable
+// rendering of the payload's fields is ALSO emitted into the section (so the
+// file still reads as a journal to a person), sharing the same escaping as
+// free-text content. A file with no payload line (pre-fix-wave-2 files, or
+// hand-mangled ones) still parses exactly as before — `payload` comes back
+// null, never throws. Old readers of a NEW file are unaffected (the payload
+// line is just another reserved/escaped content line to them).
 
 export interface JournalDayRow {
   rowId: string
@@ -20,6 +35,8 @@ export interface JournalDayRow {
   content: string
   mood?: string | null
   weight?: number | null
+  /** Full structured entry (fix-wave 2, F1) — the real dashboard EntryPayload. Optional/undefined = no payload block emitted (legacy content-only row). */
+  payload?: Record<string, unknown> | null
 }
 
 export interface ParsedJournalEntry {
@@ -29,12 +46,15 @@ export interface ParsedJournalEntry {
   content: string | null
   createdAt: string | null
   rowId: string | null
+  /** Full structured entry recovered from the payload block (fix-wave 2, F1); null if absent or unparseable — never throws. */
+  payload: Record<string, unknown> | null
   parseDegraded?: true
 }
 
 const SCHEMA_VERSION = 1
 const FRONT_MATTER_DELIM = '---'
 const ENTRY_MARKER_PREFIX = '<!-- entry:'
+const PAYLOAD_MARKER_PREFIX = '<!-- journal-payload:'
 
 /**
  * The exact HTML-comment marker a row's section is delimited by in the
@@ -73,7 +93,7 @@ export function foldGoalsIntoContent(content: string, goals?: string | null): st
 // containing a sibling's literal marker text or an embedded/trailing `---`,
 // round-trip byte-exact.
 function isReservedLine(line: string): boolean {
-  return /^<!--\s*entry:/.test(line) || /^-{3,}\s*$/.test(line)
+  return /^<!--\s*entry:/.test(line) || /^-{3,}\s*$/.test(line) || /^<!--\s*journal-payload:/.test(line)
 }
 
 function escapeContentLines(content: string): string {
@@ -100,12 +120,56 @@ function formatHeadingTimeUTC(date: Date): string {
   return `${date.toISOString().slice(11, 16)} UTC`
 }
 
+// camelCase key -> "Title Case" label, generically — no hardcoded field list
+// to keep in sync if the dashboard's fields change (fix-wave 2, F1).
+function humanizeKey(key: string): string {
+  const spaced = key.replace(/([A-Z])/g, ' $1')
+  return (spaced.charAt(0).toUpperCase() + spaced.slice(1)).trim()
+}
+
+/**
+ * Human-readable rendering of a structured entry payload — decorative only;
+ * NOT part of the machine round-trip (that's the payload marker line below).
+ * Skips empty string fields and non-string values other than a boolean-map
+ * `tasksCompleted`, so the file still reads like a journal to a person.
+ */
+function renderPayloadHuman(payload: Record<string, unknown>): string {
+  const sections: string[] = []
+  for (const [key, value] of Object.entries(payload)) {
+    if (key === 'tasksCompleted') continue
+    if (typeof value === 'string' && value.trim()) {
+      sections.push(`### ${humanizeKey(key)}\n${value}`)
+    }
+  }
+  const tasks = payload.tasksCompleted
+  if (tasks && typeof tasks === 'object' && !Array.isArray(tasks)) {
+    const done = Object.entries(tasks as Record<string, unknown>)
+      .filter(([, v]) => v === true)
+      .map(([k]) => `- [x] ${humanizeKey(k)}`)
+    if (done.length > 0) {
+      sections.push(`### Tasks Completed\n${done.join('\n')}`)
+    }
+  }
+  return sections.join('\n\n')
+}
+
 function formatEntryBody(row: JournalDayRow): string {
   const time = formatHeadingTimeUTC(row.createdAt)
   let section = `${journalEntryMarker(row.rowId)}\n## Entry (${time})\n`
-  if (row.content) {
-    section += `${escapeContentLines(row.content)}\n`
+
+  const humanPayload = row.payload ? renderPayloadHuman(row.payload) : ''
+  const humanText = [humanPayload, row.content].filter(Boolean).join('\n\n')
+  if (humanText) {
+    section += `${escapeContentLines(humanText)}\n`
   }
+
+  // Machine round-trip block (fix-wave 2, F1) — single line, guaranteed no
+  // embedded raw newline (JSON.stringify with no indent), so the parser can
+  // find it purely by line-start match with no closing delimiter needed.
+  if (row.payload !== undefined && row.payload !== null) {
+    section += `${PAYLOAD_MARKER_PREFIX}${JSON.stringify(row.payload)}\n`
+  }
+
   return section
 }
 
@@ -264,11 +328,37 @@ function indexOfAtLineStart(text: string, needle: string, from = 0): number {
   }
 }
 
-/** Locates the body section for a given rowId's marker; null if not found (hand-deleted section). */
-function findSectionContent(body: string, rowId: string): string | null {
+/**
+ * Extracts the payload marker line (if present, fix-wave 2 F1) from a raw
+ * section, returning the parsed payload (null if absent/unparseable — NEVER
+ * throws) and the section with that exact line removed, so downstream
+ * content-extraction never sees the machine block as human text.
+ */
+function extractPayloadLine(section: string): { payload: Record<string, unknown> | null; rest: string } {
+  const idx = indexOfAtLineStart(section, PAYLOAD_MARKER_PREFIX)
+  if (idx === -1) return { payload: null, rest: section }
+
+  const lineEnd = section.indexOf('\n', idx)
+  const line = lineEnd === -1 ? section.slice(idx) : section.slice(idx, lineEnd)
+  const jsonText = line.slice(PAYLOAD_MARKER_PREFIX.length)
+
+  let payload: Record<string, unknown> | null = null
+  try {
+    const parsed = JSON.parse(jsonText)
+    payload = parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null
+  } catch {
+    payload = null // hand-mangled payload block — tolerant, never throws
+  }
+
+  const rest = lineEnd === -1 ? section.slice(0, idx) : section.slice(0, idx) + section.slice(lineEnd + 1)
+  return { payload, rest }
+}
+
+/** Locates the body section for a given rowId's marker; null content if not found (hand-deleted section). */
+function findSection(body: string, rowId: string): { content: string | null; payload: Record<string, unknown> | null } {
   const marker = journalEntryMarker(rowId)
   const idx = indexOfAtLineStart(body, marker)
-  if (idx === -1) return null
+  if (idx === -1) return { content: null, payload: null }
   const afterMarker = body.slice(idx + marker.length)
   // Any occurrence of a raw (unescaped) marker prefix AT A LINE START here
   // is guaranteed to be a REAL section boundary, never embedded content —
@@ -276,14 +366,20 @@ function findSectionContent(body: string, rowId: string): string | null {
   // pattern on emit, so an unescaped marker-prefix line can only be one we
   // wrote ourselves.
   const nextMarkerIdx = indexOfAtLineStart(afterMarker, ENTRY_MARKER_PREFIX)
-  const section = nextMarkerIdx === -1 ? afterMarker : afterMarker.slice(0, nextMarkerIdx)
+  const rawSection = nextMarkerIdx === -1 ? afterMarker : afterMarker.slice(0, nextMarkerIdx)
+
+  // Pull the machine payload block out BEFORE any content-shaped stripping
+  // (fix-wave 2, F1) — content extraction below is otherwise untouched.
+  const { payload, rest: section } = extractPayloadLine(rawSection)
+
   // Strip the leading "## Entry (...)" heading line.
   const withoutHeading = section.replace(/^\s*##\s*Entry[^\n]*\n/, '')
   // Strip a trailing "---" section divider — safe post-escaping: any content
   // line that was originally a bare "---" is now "\---" (escaped) and won't
   // match this regex, so only our own inserted divider is ever stripped here.
   const withoutDivider = withoutHeading.replace(/\n-{3,}\s*$/, '')
-  return unescapeContentLines(withoutDivider).trim()
+  const content = unescapeContentLines(withoutDivider).trim()
+  return { content, payload }
 }
 
 /**
@@ -305,6 +401,7 @@ export function parseJournalDayFile(raw: string): ParsedJournalEntry[] {
           content: raw.trim() || null,
           createdAt: null,
           rowId: null,
+          payload: null,
           parseDegraded: true,
         },
       ]
@@ -322,22 +419,27 @@ export function parseJournalDayFile(raw: string): ParsedJournalEntry[] {
           content: body.replace(/^#[^\n]*\n+/, '').trim() || null,
           createdAt: null,
           rowId: null,
+          payload: null,
           parseDegraded: true,
         },
       ]
     }
 
-    return fm.entries.map((entry) => ({
-      date: fm.date,
-      mood: entry.mood,
-      weight: entry.weight,
-      content: entry.rowId ? findSectionContent(body, entry.rowId) : null,
-      createdAt: entry.createdAt,
-      rowId: entry.rowId,
-    }))
+    return fm.entries.map((entry) => {
+      const found = entry.rowId ? findSection(body, entry.rowId) : { content: null, payload: null }
+      return {
+        date: fm.date,
+        mood: entry.mood,
+        weight: entry.weight,
+        content: found.content,
+        createdAt: entry.createdAt,
+        rowId: entry.rowId,
+        payload: found.payload,
+      }
+    })
   } catch {
-    // Belt-and-suspenders — parseFrontMatter/findSectionContent already
-    // catch internally, but a day file must never throw regardless of cause.
+    // Belt-and-suspenders — parseFrontMatter/findSection already catch
+    // internally, but a day file must never throw regardless of cause.
     return [
       {
         date: null,
@@ -346,6 +448,7 @@ export function parseJournalDayFile(raw: string): ParsedJournalEntry[] {
         content: raw.trim() || null,
         createdAt: null,
         rowId: null,
+        payload: null,
         parseDegraded: true,
       },
     ]
@@ -533,6 +636,76 @@ function runSelfTest(): boolean {
     assert.equal(parsed.length, 1)
     assert.equal(parsed[0].parseDegraded, true)
     assert.equal(parsed[0].date, '2026-07-18')
+  })
+
+  check('fix-wave 2 (F1): full REAL EntryPayload shape round-trips byte-exact via the payload block, all 10 fields + tasksCompleted, unicode, empties', () => {
+    const realPayload = {
+      reasonsValidation: 'Because I said I would. 日本語 test, "quotes", a colon: yes.',
+      affirmationGoal: '',
+      affirmationBecause: 'My future self depends on it 🎉',
+      affirmationMeans: 'Showing up daily.',
+      peptideNotes: '',
+      workoutNotes: 'Legs + core, 45 min.',
+      nutritionNotes: '',
+      breathNotes: 'Box breathing, 10 min.',
+      moduleNotes: '',
+      tasksCompleted: { journal: true, workout: true, meals: false, module: false, breath: true },
+    }
+    const row: JournalDayRow = {
+      rowId: 'row-real',
+      createdAt: new Date('2026-07-18T14:00:00.000Z'),
+      content: '',
+      mood: 'good',
+      weight: 181.2,
+      payload: realPayload,
+    }
+    const file = formatJournalDayFile('2026-07-18', [row])
+    const parsed = parseJournalDayFile(file)
+    assert.equal(parsed.length, 1)
+    assert.deepEqual(parsed[0].payload, realPayload)
+    assert.equal(parsed[0].mood, 'good')
+    assert.equal(parsed[0].weight, 181.2)
+    // Human-readable render is present in content for a person reading the file.
+    assert.ok(parsed[0].content?.includes('Because I said I would'))
+    assert.ok(parsed[0].content?.includes('Tasks Completed'))
+  })
+
+  check('fix-wave 2 (F1): row with no payload still parses with payload: null (backward compatible, pre-fix-wave-2 files)', () => {
+    const row: JournalDayRow = {
+      rowId: 'row-legacy',
+      createdAt: new Date('2026-07-18T09:00:00.000Z'),
+      content: 'Plain freeform note, no payload block.',
+      mood: null,
+      weight: null,
+    }
+    const file = formatJournalDayFile('2026-07-18', [row])
+    assert.ok(!file.includes('journal-payload'))
+    const parsed = parseJournalDayFile(file)
+    assert.equal(parsed[0].payload, null)
+    assert.equal(parsed[0].content, 'Plain freeform note, no payload block.')
+  })
+
+  check('fix-wave 2 (F1): hand-mangled payload block (invalid JSON) degrades payload to null, content still recovered, never throws', () => {
+    const row: JournalDayRow = { rowId: 'row-mangle', createdAt: new Date('2026-07-18T10:00:00.000Z'), content: 'note', mood: null, weight: null, payload: { a: 1 } }
+    const file = formatJournalDayFile('2026-07-18', [row])
+    const mangled = file.replace(/<!-- journal-payload:.*$/m, '<!-- journal-payload:{not valid json')
+    let parsed: ParsedJournalEntry[] = []
+    assert.doesNotThrow(() => {
+      parsed = parseJournalDayFile(mangled)
+    })
+    assert.equal(parsed[0].payload, null)
+  })
+
+  check('fix-wave 2 (F1): 2+ same-day rows each with their own payload — no cross-contamination', () => {
+    const rows: JournalDayRow[] = [
+      { rowId: 'p1', createdAt: new Date('2026-07-18T07:00:00.000Z'), content: '', mood: null, weight: null, payload: { reasonsValidation: 'first' } },
+      { rowId: 'p2', createdAt: new Date('2026-07-18T18:00:00.000Z'), content: '', mood: null, weight: null, payload: { reasonsValidation: 'second' } },
+    ]
+    const file = formatJournalDayFile('2026-07-18', rows)
+    const parsed = parseJournalDayFile(file)
+    const byRowId = new Map(parsed.map((p) => [p.rowId, p]))
+    assert.deepEqual(byRowId.get('p1')?.payload, { reasonsValidation: 'first' })
+    assert.deepEqual(byRowId.get('p2')?.payload, { reasonsValidation: 'second' })
   })
 
   console.log(results.join('\n'))
