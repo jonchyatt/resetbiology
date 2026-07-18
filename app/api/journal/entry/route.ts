@@ -112,7 +112,14 @@ function stableIdForDegradedEntry(content: string | null): string {
 async function writeJournalDayFileEntry(
   userId: string,
   dateStr: string,
-  row: { rowId: string; createdAt: Date; content: string; mood: string | null; weight: number | null }
+  row: {
+    rowId: string
+    createdAt: Date
+    content: string
+    mood: string | null
+    weight: number | null
+    payload: Record<string, unknown>
+  }
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const location = await journalFolderFor(userId)
@@ -126,7 +133,7 @@ async function writeJournalDayFileEntry(
     })
     const existingFileId = existing.data.files?.[0]?.id
 
-    let otherEntries: Array<{ rowId: string; createdAt: Date; content: string; mood?: string | null; weight?: number | null }> = []
+    let otherEntries: Array<{ rowId: string; createdAt: Date; content: string; mood?: string | null; weight?: number | null; payload?: Record<string, unknown> | null }> = []
     if (existingFileId) {
       const contentRes = await drive!.files.get({ fileId: existingFileId, alt: 'media' })
       const raw = typeof contentRes.data === 'string' ? contentRes.data : JSON.stringify(contentRes.data)
@@ -138,6 +145,9 @@ async function writeJournalDayFileEntry(
           content: e.content ?? '',
           mood: e.mood,
           weight: e.weight,
+          // Fix-wave 2 (F1): preserve a sibling same-day row's full payload
+          // too — merge/replace only touches THIS entry.
+          payload: e.payload,
         }))
         .filter((e) => e.rowId !== row.rowId) // merge/replace: drop the section we're about to re-emit
     }
@@ -154,12 +164,26 @@ async function writeJournalDayFileEntry(
   }
 }
 
-async function hasPendingOutboxRow(userId: string, dateStr: string): Promise<boolean> {
+/**
+ * Fix-wave 2 (F3): a single query serves BOTH the pending-outbox check AND
+ * driveLastConfirmedAt — no new schema field, no write amplification. The
+ * DriveSyncOutbox row's `updatedAt` (Prisma `@updatedAt`, auto-bumped) IS the
+ * last time this user/day/domain's background drain confirmed status 'done'
+ * against Drive; when status isn't 'done' there's no persisted confirmation
+ * signal to report (null — never a stale guess).
+ */
+async function getOutboxSignal(
+  userId: string,
+  dateStr: string
+): Promise<{ pending: boolean; lastConfirmedAt: Date | null }> {
   const row = await prisma.driveSyncOutbox.findUnique({
     where: { userId_domain_dateStr: { userId, domain: JOURNAL_DOMAIN, dateStr } },
-    select: { status: true },
+    select: { status: true, updatedAt: true },
   })
-  return row?.status === 'pending' || row?.status === 'inflight'
+  return {
+    pending: row?.status === 'pending' || row?.status === 'inflight',
+    lastConfirmedAt: row?.status === 'done' ? row.updatedAt : null,
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -241,6 +265,10 @@ export async function POST(request: NextRequest) {
         content: typeof (mergedEntry as any).content === 'string' ? (mergedEntry as any).content : '',
         mood: moodValue,
         weight: weightValue,
+        // Fix-wave 2 (F1): the FULL structured entry, not just the vestigial
+        // content/goals slot — this is what makes a Drive-truth read return
+        // the real 10 dashboard fields instead of an empty content string.
+        payload: mergedEntry as Record<string, unknown>,
       })
 
       if (!driveWrite.success) {
@@ -396,7 +424,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ entry: null })
     }
 
-    const dateStr = toUtcDateStr(today)
+    // Fix-wave 2 (F4): keyed on "right now" (matches POST's entryDate default
+    // of `new Date()`), NOT startOfDay(new Date()) — startOfDay is LOCAL
+    // midnight, so converting it to a UTC date string could diverge from
+    // POST's key by a day on a non-UTC host. `today`/`tomorrow` above remain
+    // untouched — they only bound the (pre-existing, flag-off-shared) Mongo
+    // row lookup, not the Drive dateStr.
+    const dateStr = toUtcDateStr(new Date())
 
     let driveModifiedTime: Date | null = null
     let driveContent: string | null = null
@@ -412,14 +446,14 @@ export async function GET(request: NextRequest) {
       driveReadFailed = true
     }
 
-    const pendingOutbox = await hasPendingOutboxRow(user.id, dateStr)
+    const outboxSignal = await getOutboxSignal(user.id, dateStr)
     const mongoUpdatedAt = journalEntry?.updatedAt ?? journalEntry?.createdAt ?? null
 
     const decision = decideJournalRead({
       ...authorityContext,
       mongoUpdatedAt,
       driveModifiedTime,
-      pendingOutbox,
+      pendingOutbox: outboxSignal.pending,
       driveReadFailed,
     })
 
@@ -444,14 +478,18 @@ export async function GET(request: NextRequest) {
         mood: matched.mood,
         weight: matched.weight,
         createdAt: matched.createdAt,
-        entry: { content: matched.content },
+        // Fix-wave 2 (F1): the full recovered structured entry — falls back
+        // to {content} only for pre-fix-wave-2 files that never got a
+        // payload block, so the dashboard prefill fields survive a 'drive'
+        // read instead of reading back blank.
+        entry: matched.payload ?? { content: matched.content },
         provenance: 'drive',
       })
     }
 
     // 'syncing' or 'app-cache' (HIGH-1 / MED-3): serve the Mongo copy — a
     // just-saved entry never vanishes or reads back stale, and a Drive outage
-    // is never silent.
+    // (or a missing Drive file per F2) is never silent.
     const basePayload = journalEntry
       ? { ...journalEntry, entry: journalEntry.entry ? JSON.parse(journalEntry.entry as string) : null }
       : { entry: null }
@@ -460,7 +498,7 @@ export async function GET(request: NextRequest) {
       ...basePayload,
       provenance: decision.provenance,
       ...(decision.provenance === 'app-cache'
-        ? { mongoUpdatedAt, driveLastConfirmedAt: driveModifiedTime }
+        ? { mongoUpdatedAt, driveLastConfirmedAt: outboxSignal.lastConfirmedAt }
         : {}),
     })
   } catch (error) {
