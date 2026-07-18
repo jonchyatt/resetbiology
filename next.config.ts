@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         destination: 'https://resetbiology.com/:path*',
         permanent: true,
       },
+      {
+        source: '/trial',
+        destination: '/get-started',
+        permanent: true,
+      },
     ];
   },
   // Required for @react-three packages to work with Next.js

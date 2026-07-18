@@ -79,8 +79,8 @@ export function PortalTeaser() {
             <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-2xl p-8 max-w-2xl mx-auto border border-teal-400/30 shadow-xl">
               <h3 className="text-2xl font-bold mb-4 text-white">Experience the Difference</h3>
               <p className="text-gray-300 mb-6">See how our Mental Mastery modules feel different from everything else you've tried.</p>
-              <Link href="/trial" className="bg-gradient-to-r from-teal-500/80 to-green-500/80 hover:from-teal-400/90 hover:to-green-400/90 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg backdrop-blur-sm border border-teal-400/30">
-                Try a Sample Module Free →
+              <Link href="/get-started" className="bg-gradient-to-r from-teal-500/80 to-green-500/80 hover:from-teal-400/90 hover:to-green-400/90 text-white font-bold py-4 px-8 rounded-xl transition-all duration-200 hover:scale-105 shadow-lg backdrop-blur-sm border border-teal-400/30">
+                Start Free →
               </Link>
             </div>
           </div>

@@ -650,12 +650,6 @@ export function EnhancedDashboard() {
                     Category: <span className="text-blue-300 font-semibold capitalize">{previousAssessment.scoreCategory || 'N/A'}</span>
                   </p>
                 </div>
-                <Link
-                  href={`/assessment/results?id=${previousAssessment.id}`}
-                  className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg transition-colors border border-blue-400/30"
-                >
-                  View Full Results →
-                </Link>
               </div>
             </div>
           )}

@@ -36,7 +36,7 @@ export function Footer() {
               <li><Link href="/quiz" className="text-gray-300 hover:text-primary-400 transition-colors">Tell us What WORKS for You</Link></li>
               <li><Link href="/process" className="text-gray-300 hover:text-primary-400 transition-colors">How It Works</Link></li>
               <li><Link href="/portal" className="text-gray-300 hover:text-primary-400 transition-colors">Client Portal</Link></li>
-              <li><Link href="/trial" className="text-gray-300 hover:text-primary-400 transition-colors">Try Sample Module</Link></li>
+              <li><Link href="/get-started" className="text-gray-300 hover:text-primary-400 transition-colors">Get Started Free</Link></li>
             </ul>
           </div>
           
