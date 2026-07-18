@@ -1345,3 +1345,23 @@ model PortalModule {
 
   @@map("portal_modules")
 }
+
+// Phase B — reversible-migration harness (data/rb-drive-vault/PHASE-2-SPEC.md
+// sibling rail). One row per (userId, domain) migration run. `records` holds
+// the full per-record manifest array (mongoId, canonicalHash, driveFileId,
+// driveContentHash, byteLength, status) — see
+// scripts/drive-migration-harness.ts for the shape and lifecycle. Durable so
+// an interrupted migrate/verify/rollback can resume from exactly where it
+// left off (idempotent resume keyed on canonicalHash match).
+model MigrationManifest {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  domain      String // "journal" (Phase B); more domains join later, unchanged shape
+  status      String // "incomplete" | "verified" | "failed" | "rollback-incomplete"
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  records     Json // per-record manifest array — see MigrationRecord in scripts/drive-migration-harness.ts
+
+  @@index([userId, domain])
+  @@map("migration_manifests")
+}
