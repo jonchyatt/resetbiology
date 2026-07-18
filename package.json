@@ -24,7 +24,8 @@
     "browser:edit": "ts-node tests/run-in-browser.ts click-edit",
     "browser:reload": "ts-node tests/run-in-browser.ts reload",
     "test:timezone": "tsx tests/timezone-notification-check.ts",
-    "test:retro-family": "node scripts/retro-blaster/family-regression.mjs"
+    "test:retro-family": "node scripts/retro-blaster/family-regression.mjs",
+    "test:journal-day-file": "tsx src/lib/journal-day-file.ts self-test"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
