@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { todayLocalKey, dayKeyToUtcMidnight } from '@/lib/localDay'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -244,19 +245,55 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    // Add to journal if accuracy is notable
+    // Add to journal if accuracy is notable. Every other writer
+    // (breath/foods/workouts/peptides/modules/journal) findFirst-then-merges
+    // into the day's existing entry — this used to unconditionally create a
+    // second JournalEntry row per day, breaking the one-entry-per-day
+    // invariant and letting the reader's "last entry wins the bucket" hide
+    // the member's real journal behind an nback stub (NEW-2).
     if (overallAccuracy >= 80 || levelAdvanced) {
       const journalNote = levelAdvanced
         ? `Advanced to ${nLevel + 1}-back in ${gameMode} N-Back training with ${Math.round(overallAccuracy)}% accuracy!`
         : `Completed ${gameMode} ${nLevel}-back training with ${Math.round(overallAccuracy)}% accuracy.`
 
-      await prisma.journalEntry.create({
-        data: {
+      const dayKey = todayLocalKey()
+      const dayStart = dayKeyToUtcMidnight(dayKey)
+      const nextDay = new Date(dayStart)
+      nextDay.setUTCDate(nextDay.getUTCDate() + 1)
+
+      const existingJournal = await prisma.journalEntry.findFirst({
+        where: {
           userId: user.id,
-          entry: JSON.stringify({ mentalTrainingNotes: journalNote }),
-          date: new Date()
-        }
+          date: { gte: dayStart, lt: nextDay }
+        },
+        orderBy: { createdAt: 'desc' }
       })
+
+      if (existingJournal) {
+        let entryData: Record<string, unknown> = {}
+        try {
+          entryData = existingJournal.entry ? JSON.parse(existingJournal.entry as string) : {}
+        } catch {
+          entryData = {}
+        }
+        const previousNotes = typeof entryData.mentalTrainingNotes === 'string' && entryData.mentalTrainingNotes
+          ? `${entryData.mentalTrainingNotes}\n`
+          : ''
+        entryData.mentalTrainingNotes = `${previousNotes}${journalNote}`
+
+        await prisma.journalEntry.update({
+          where: { id: existingJournal.id },
+          data: { entry: JSON.stringify(entryData) }
+        })
+      } else {
+        await prisma.journalEntry.create({
+          data: {
+            userId: user.id,
+            entry: JSON.stringify({ mentalTrainingNotes: journalNote, localDate: dayKey }),
+            date: new Date()
+          }
+        })
+      }
     }
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
