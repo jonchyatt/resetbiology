@@ -15,11 +15,21 @@ interface JournalHistoryDay {
     logs: any[]
     totals: { calories: number; protein: number; carbs: number; fats: number }
   }
+  dailyTasks: Array<{ id: string; taskName: string; completed: boolean }>
   workouts: any[]
   breathSessions: any[]
   peptideDoses: any[]
   modules: any[]
   eventCount: number
+}
+
+const CHECK_IN_TASK_LABELS: Record<string, string> = {
+  peptides: 'Peptides',
+  journal: 'Journal',
+  workout: 'Workout',
+  meals: 'Meals',
+  module: 'Mental Module',
+  breath: 'Breath',
 }
 
 interface JournalHistoryResponse {
@@ -654,11 +664,30 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
                 e.preventDefault()
                 setSaving(true)
                 try {
-                  const response = await fetch(`/api/nutrition/entries/${editModal.data.id}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(editForm)
-                  })
+                  // NEW-4/NEW-7: the day's meals come from two different
+                  // tables (FoodLog and the older FoodEntry stack) with two
+                  // different edit routes and payload shapes — `source`
+                  // (set by journal/history/route.ts) says which.
+                  const isFoodEntry = editModal.data.source === 'foodEntry'
+                  const response = isFoodEntry
+                    ? await fetch('/api/nutrition/entries', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          entryId: editModal.data.id,
+                          name: editForm.itemName ?? editModal.data.itemName,
+                          mealType: editForm.mealType ?? editModal.data.mealType,
+                          calories: editForm.nutrients?.kcal ?? editModal.data.nutrients?.kcal,
+                          protein: editForm.nutrients?.protein_g ?? editModal.data.nutrients?.protein_g,
+                          carbs: editForm.nutrients?.carb_g ?? editModal.data.nutrients?.carb_g,
+                          fats: editForm.nutrients?.fat_g ?? editModal.data.nutrients?.fat_g,
+                        })
+                      })
+                    : await fetch(`/api/nutrition/entries/${editModal.data.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(editForm)
+                      })
                   if (response.ok) {
                     toast.success('Nutrition entry updated')
                     closeEditModal()
@@ -749,9 +778,10 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
                     if (!confirmed) return
                     setSaving(true)
                     try {
-                      const response = await fetch(`/api/nutrition/entries/${editModal.data.id}`, {
-                        method: 'DELETE'
-                      })
+                      const isFoodEntry = editModal.data.source === 'foodEntry'
+                      const response = isFoodEntry
+                        ? await fetch(`/api/nutrition/entries?id=${editModal.data.id}`, { method: 'DELETE' })
+                        : await fetch(`/api/nutrition/entries/${editModal.data.id}`, { method: 'DELETE' })
                       if (response.ok) {
                         toast.success('Nutrition entry deleted')
                         closeEditModal()
@@ -1059,6 +1089,34 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
         ) : (
           <div className="rounded-xl border border-slate-700/40 bg-slate-800/50 p-4 text-sm text-slate-300">
             No journal entry saved for this day.
+          </div>
+        )}
+      </section>
+
+      {/* NEW-6: the site's own retention loop (6-task daily check-in,
+          streak) had zero historical surface — DailyTask rows were never
+          queried by the reader nor rendered anywhere in history. */}
+      <section className="rounded-2xl border border-secondary-400/30 bg-slate-900/70 backdrop-blur-md shadow-2xl shadow-black/30 p-6">
+        <h3 className="flex items-center text-sm font-semibold uppercase tracking-wide text-secondary-200 mb-3"><Flame className="mr-2 h-4 w-4" />Daily Check-in</h3>
+        {day.dailyTasks.length === 0 ? (
+          <p className="text-sm text-slate-400">No check-in tasks recorded for this day.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {day.dailyTasks.map((task) => (
+              <span
+                key={task.id}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium ${
+                  task.completed
+                    ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-200'
+                    : 'border-slate-600/40 bg-slate-800/50 text-slate-400'
+                }`}
+              >
+                {task.completed ? '✓' : '○'} {CHECK_IN_TASK_LABELS[task.taskName] ?? task.taskName}
+              </span>
+            ))}
+            <span className="inline-flex items-center rounded-full border border-secondary-400/30 bg-secondary-500/10 px-3 py-1 text-xs font-medium text-secondary-200">
+              {day.dailyTasks.filter((t) => t.completed).length} of 6 completed
+            </span>
           </div>
         )}
       </section>

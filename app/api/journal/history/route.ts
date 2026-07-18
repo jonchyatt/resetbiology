@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { localDayKey } from '@/lib/localDay'
+import { localDayKey, utcMidnightToDayKey } from '@/lib/localDay'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const { start, end } = getMonthRange(searchParams.get('month'))
 
-    const [journalEntries, foodLogs, workouts, breathSessions, peptideDoses, moduleCompletions] = await Promise.all([
+    const [journalEntries, foodLogs, foodEntries, dailyTasks, workouts, breathSessions, peptideDoses, moduleCompletions] = await Promise.all([
       prisma.journalEntry.findMany({
         where: {
           userId: user.id,
@@ -66,6 +66,30 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: { loggedAt: 'asc' },
+      }),
+      // NEW-7: the reader used to query foodLog only — anything logged
+      // through the older FoodEntry stack (app/api/nutrition/entries)
+      // never appeared in the timeline at all.
+      prisma.foodEntry.findMany({
+        where: {
+          userId: user.id,
+          loggedAt: {
+            gte: start,
+            lt: end,
+          },
+        },
+        orderBy: { loggedAt: 'asc' },
+      }),
+      // NEW-6: history never showed the daily check-in (DailyTask) even
+      // though the site's own retention loop is built on it.
+      prisma.dailyTask.findMany({
+        where: {
+          userId: user.id,
+          date: {
+            gte: start,
+            lt: end,
+          },
+        },
       }),
       prisma.workoutSession.findMany({
         where: {
@@ -118,14 +142,32 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
+    // Unified shape for both nutrition sources (NEW-7) — FoodLog and
+    // FoodEntry have different column names for the same facts. `source`
+    // tells the client which route owns edit/delete for this row (NEW-4
+    // pattern: label source so edit routes stay correct).
+    type NutritionLogItem = {
+      id: string
+      source: 'foodLog' | 'foodEntry'
+      itemName: string
+      brand: string | null
+      mealType: string
+      quantity: number
+      unit: string
+      loggedAt: Date
+      notes: string | null
+      nutrients: { kcal: number; protein_g: number; carb_g: number; fat_g: number }
+    }
+
     type DaySummary = {
       date: string
       iso: string
       journalEntry: any | null
       nutrition: {
-        logs: typeof foodLogs
+        logs: NutritionLogItem[]
         totals: { calories: number; protein: number; carbs: number; fats: number }
       }
+      dailyTasks: typeof dailyTasks
       workouts: typeof workouts
       breathSessions: typeof breathSessions
       peptideDoses: typeof peptideDoses
@@ -154,6 +196,7 @@ export async function GET(request: NextRequest) {
             logs: [],
             totals: { calories: 0, protein: 0, carbs: 0, fats: 0 },
           },
+          dailyTasks: [],
           workouts: [],
           breathSessions: [],
           peptideDoses: [],
@@ -185,17 +228,64 @@ export async function GET(request: NextRequest) {
     foodLogs.forEach((log: any) => {
       const date = log.loggedAt instanceof Date ? log.loggedAt : new Date(log.loggedAt)
       const bucket = ensureDay(date, log.localDate)
-      bucket.nutrition.logs.push(log)
       const nutrients = log.nutrients as any
       const kcal = typeof nutrients?.kcal === 'number' ? nutrients.kcal : 0
       const protein = typeof nutrients?.protein_g === 'number' ? nutrients.protein_g : 0
       const carbs = typeof nutrients?.carb_g === 'number' ? nutrients.carb_g : 0
       const fats = typeof nutrients?.fat_g === 'number' ? nutrients.fat_g : 0
+      bucket.nutrition.logs.push({
+        id: log.id,
+        source: 'foodLog',
+        itemName: log.itemName,
+        brand: log.brand ?? null,
+        mealType: log.mealType ?? 'snack',
+        quantity: log.quantity ?? 1,
+        unit: log.unit ?? 'serving',
+        loggedAt: date,
+        notes: log.notes ?? null,
+        nutrients: { kcal, protein_g: protein, carb_g: carbs, fat_g: fats },
+      })
       bucket.nutrition.totals.calories += kcal
       bucket.nutrition.totals.protein += protein
       bucket.nutrition.totals.carbs += carbs
       bucket.nutrition.totals.fats += fats
       bucket.eventCount += 1
+    })
+
+    // NEW-7 — FoodEntry has no localDate column, so it buckets through the
+    // shared helper's own-local-component fallback (same as any legacy row).
+    foodEntries.forEach((entry) => {
+      const date = entry.loggedAt instanceof Date ? entry.loggedAt : new Date(entry.loggedAt)
+      const bucket = ensureDay(date)
+      bucket.nutrition.logs.push({
+        id: entry.id,
+        source: 'foodEntry',
+        itemName: entry.name,
+        brand: null,
+        mealType: entry.mealType ?? 'snack',
+        quantity: 1,
+        unit: 'serving',
+        loggedAt: date,
+        notes: null,
+        nutrients: { kcal: entry.calories, protein_g: entry.protein, carb_g: entry.carbs, fat_g: entry.fats },
+      })
+      bucket.nutrition.totals.calories += entry.calories
+      bucket.nutrition.totals.protein += entry.protein
+      bucket.nutrition.totals.carbs += entry.carbs
+      bucket.nutrition.totals.fats += entry.fats
+      bucket.eventCount += 1
+    })
+
+    // NEW-6 — DailyTask has no localDate column, but (per F1.3) its `date`
+    // IS a UTC-midnight-stamped day-key container (daily-tasks/route.ts) —
+    // read the key straight back out rather than relying on the generic
+    // legacy-row fallback's server-timezone assumption.
+    dailyTasks.forEach((task) => {
+      const date = task.date instanceof Date ? task.date : new Date(task.date)
+      const bucket = ensureDay(date, utcMidnightToDayKey(date))
+      bucket.dailyTasks.push(task)
+      // Check-in completion isn't a "loggable event" the way a meal or
+      // workout is — it doesn't bump eventCount / the calendar density dot.
     })
 
     workouts.forEach((session: any) => {
