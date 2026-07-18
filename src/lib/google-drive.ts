@@ -1,7 +1,7 @@
 import { google, drive_v3 } from 'googleapis'
 import { prisma } from '@/lib/prisma'
 import { decryptToken, encryptToken } from '@/lib/vault-encryption'
-import { formatJournalDayFile, type JournalDayRow } from '@/lib/journal-day-file'
+import { formatJournalDayFile, foldGoalsIntoContent, type JournalDayRow } from '@/lib/journal-day-file'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -399,11 +399,9 @@ export function formatJournalEntry(
     createdAt: e.createdAt,
     mood: e.mood ?? null,
     weight: e.weight ?? null,
-    // `goals` has no dedicated slot in the structured parse contract
-    // ({date, mood, weight, content, createdAt, rowId}) — folded into the
-    // content section rather than dropped, matching the byte-preservation
-    // bar (no data loss on the round-trip).
-    content: e.goals ? `## Goals for Today\n${e.goals}\n\n${e.content}` : e.content,
+    // Shared fold-in rule (journal-day-file.ts) — single source so this and
+    // the migration harness can't drift (fix-wave F1).
+    content: foldGoalsIntoContent(e.content, e.goals),
   }))
   return formatJournalDayFile(dateStr, rows)
 }

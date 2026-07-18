@@ -24,7 +24,7 @@ import type { drive_v3 } from 'googleapis'
 // (unlike google-drive.ts, which reads process.env.GOOGLE_CLIENT_ID at
 // import time) it's safe to import statically here — shared emitter/parser,
 // no logic duplication (cf-c2-journal-inversion).
-import { formatJournalDayFile, parseJournalDayFile, journalEntryMarker, type JournalDayRow } from '../src/lib/journal-day-file'
+import { formatJournalDayFile, parseJournalDayFile, journalEntryMarker, foldGoalsIntoContent, type JournalDayRow } from '../src/lib/journal-day-file'
 
 // ---------------------------------------------------------------------------
 // Canonical form (HB1): deterministic JSON — object keys sorted recursively,
@@ -342,10 +342,9 @@ const journalAdapter: DomainAdapter<any> = {
         createdAt: row.createdAt,
         mood: row.mood ?? null,
         weight: row.weight ?? null,
-        // `goals` has no dedicated slot in the structured parse contract —
-        // folded into content, matching google-drive.ts's formatJournalEntry
-        // wrapper exactly (same shared emitter, same fold-in rule).
-        content: parsed.goals ? `## Goals for Today\n${parsed.goals}\n\n${parsed.content || ''}` : parsed.content || '',
+        // Shared fold-in rule (fix-wave F1) — single source with
+        // google-drive.ts's formatJournalEntry wrapper, can't drift.
+        content: foldGoalsIntoContent(parsed.content || '', parsed.goals),
       }
     })
     // Shared emitter with the live-sync path (google-drive.ts formatJournalEntry
@@ -574,19 +573,20 @@ function runSelfTest(): boolean {
     assert.equal(classifyPreExisted(null, ['f-ours']), false)
   })
 
-  check('multi-entry day case (HIGH-2): journalAdapter.formatGroupContent preserves every row, matches shared emitter byte-for-byte', () => {
+  check('multi-entry day case (HIGH-2): journalAdapter.formatGroupContent preserves every row (incl. a goals-bearing one), matches shared emitter byte-for-byte', () => {
     const groupRows = [
-      { id: 'm1', entry: JSON.stringify({ content: 'Morning row' }), mood: 'good', weight: 150, date: new Date('2026-02-02T07:00:00.000Z'), createdAt: new Date('2026-02-02T07:00:00.000Z') },
+      { id: 'm1', entry: JSON.stringify({ content: 'Morning row', goals: 'Drink more water' }), mood: 'good', weight: 150, date: new Date('2026-02-02T07:00:00.000Z'), createdAt: new Date('2026-02-02T07:00:00.000Z') },
       { id: 'm2', entry: JSON.stringify({ content: 'Evening row' }), mood: 'tired', weight: null, date: new Date('2026-02-02T20:00:00.000Z'), createdAt: new Date('2026-02-02T20:00:00.000Z') },
     ]
     const fileName = journalAdapter.driveFileNameOf(groupRows[0])
     assert.equal(fileName, 'journal-2026-02-02.md')
 
     const content = journalAdapter.formatGroupContent(fileName, groupRows)
-    // Direct call to the shared emitter with the same inputs must produce
+    // Direct call to the shared emitter with the same inputs (goals folded
+    // via the SAME shared foldGoalsIntoContent — fix-wave F1) must produce
     // byte-identical output — proves the adapter delegates, doesn't duplicate.
     const directContent = formatJournalDayFile('2026-02-02', [
-      { rowId: 'm1', createdAt: groupRows[0].createdAt, mood: 'good', weight: 150, content: 'Morning row' },
+      { rowId: 'm1', createdAt: groupRows[0].createdAt, mood: 'good', weight: 150, content: foldGoalsIntoContent('Morning row', 'Drink more water') },
       { rowId: 'm2', createdAt: groupRows[1].createdAt, mood: 'tired', weight: null, content: 'Evening row' },
     ])
     assert.equal(content, directContent)
@@ -596,7 +596,7 @@ function runSelfTest(): boolean {
     assert.equal(parsed.length, 2)
     assert.deepEqual(parsed.map((p) => p.rowId).sort(), ['m1', 'm2'])
     const byRowId = new Map(parsed.map((p) => [p.rowId, p]))
-    assert.equal(byRowId.get('m1')?.content, 'Morning row')
+    assert.equal(byRowId.get('m1')?.content, foldGoalsIntoContent('Morning row', 'Drink more water'))
     assert.equal(byRowId.get('m2')?.content, 'Evening row')
   })
 
@@ -868,9 +868,12 @@ async function main() {
             preExisted,
           })
           // HIGH-2 reversal map: record this row's provable section marker
-          // regardless of upload outcome — on success it resolves against
-          // the uploaded content; verify re-checks it against live Drive
-          // content each run (see 'verify' command below).
+          // on successful upload. NOTE (fix-wave F2): the 'verify' command
+          // does NOT currently re-check this map against live Drive content —
+          // only the self-test's pure-function checks
+          // (reversalMapEntryResolves, see runSelfTest) prove resolution
+          // today. Wiring a live re-check into 'verify' is follow-up work,
+          // not done by this ticket.
           if (status === 'verified') {
             reversalById.set(mongoId, {
               mongoId,
