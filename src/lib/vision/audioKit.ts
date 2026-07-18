@@ -83,10 +83,36 @@ export function playVictoryMotif(): void {
 // One console.debug per unpronounced text, ever — not per occurrence.
 const loggedManifestMisses = new Set<string>()
 
+// T7: mute is shared across every live SpeechQueue instance (session-level +
+// per-engine queues must not desync). `sharedMuted` is the single source of
+// truth; `instances` is the broadcast list.
+// ponytail: page-lifetime Set, no deregistration. `stop()` is called
+// mid-session by every engine (not just on unmount), so it can't double as a
+// dispose hook without wrongly dropping still-in-use instances from the
+// broadcast. No unmount-only lifecycle exists to hook a real deregister into.
+// SPA session lifetime is short (one training session), so the Set holding a
+// handful of engine instances for the page's life is the smallest correct
+// option — add a real dispose() only if instances start being created in a
+// loop (they aren't: one per SessionRunner mount, one per active engine).
+let sharedMuted = false
+const instances = new Set<SpeechQueue>()
+const muteListeners = new Set<() => void>()
+
+/** useSyncExternalStore glue (T7) — lets any mute button read the shared
+ * state directly instead of caching it in component state that can desync
+ * from a toggle fired by a different button/instance. */
+export function subscribeSharedMuted(listener: () => void): () => void {
+  muteListeners.add(listener)
+  return () => muteListeners.delete(listener)
+}
+
+export function getSharedMuted(): boolean {
+  return sharedMuted
+}
+
 export class SpeechQueue {
   private queue: string[] = []
   private speaking = false
-  private _muted = false
   /** Currently-playing pre-rendered cue, if any (T5 manifest-backed asset path). */
   private currentAudio: HTMLAudioElement | null = null
   /** Bumped on stop()/interrupt/mute-on so async continuations (manifest
@@ -97,24 +123,31 @@ export class SpeechQueue {
   pitch = 1.0
   volume = 0.85
 
+  constructor() {
+    instances.add(this)
+  }
+
   get muted(): boolean {
-    return this._muted
+    return sharedMuted
   }
 
   /** Same public field contract as before — setting true also cancels an
-   * in-flight asset cue immediately (mobile safety contract C3). */
+   * in-flight asset cue immediately (mobile safety contract C3). Now
+   * broadcasts to every live instance (T7) so muting one silences all. */
   set muted(value: boolean) {
-    this._muted = value
-    if (value) {
+    sharedMuted = value
+    for (const l of muteListeners) l()
+    if (!value) return
+    for (const q of instances) {
       // Unconditional: mute must recover `speaking` even when nothing is
       // currently in currentAudio — a pending manifest fetch (speakOne's
       // resolveVoiceCue) or a live speechSynthesis utterance both leave
       // currentAudio null while speaking is true (verifier finding 1).
-      this.epoch++
-      this.stopCurrentAudio()
-      this.synth?.cancel()
-      this.speaking = false
-      this.drain()
+      q.epoch++
+      q.stopCurrentAudio()
+      q.synth?.cancel()
+      q.speaking = false
+      q.drain()
     }
   }
 

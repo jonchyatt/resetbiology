@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo, useSyncExternalStore } from 'react'
 import { createPortal } from 'react-dom'
 import {
   Play,
@@ -18,7 +18,7 @@ import {
 import { visionExerciseMap, type VisionExercise } from '@/data/visionExercises'
 import { resolvePrescription, findSession } from '@/lib/vision/prescription'
 import { prefersReducedMotion } from '@/lib/vision/canvasKit'
-import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif } from '@/lib/vision/audioKit'
+import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 import { getEngine } from '@/components/Vision/Engines'
 import { clampScore, type EngineResult } from '@/components/Vision/Engines/types'
 import GuidedExercise from './GuidedExercise'
@@ -136,7 +136,9 @@ export default function SessionRunner({
   const [stage, setStage] = useState<RunnerStage>({ kind: 'intro' })
   const [results, setResults] = useState<EngineResult[]>([])
   const [skipped, setSkipped] = useState<string[]>([])
-  const [muted, setMuted] = useState(false)
+  // T7: read shared mute state directly (not local state) so this button
+  // can't desync from an engine-local mute button toggling the same queue.
+  const muted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [interludeLeft, setInterludeLeft] = useState(INTERLUDE_SECONDS)
   const [confirmExit, setConfirmExit] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -158,18 +160,14 @@ export default function SessionRunner({
     setMounted(true)
     speechRef.current = new SpeechQueue()
     const storedMute = typeof window !== 'undefined' && window.localStorage.getItem(MUTE_KEY) === 'true'
-    setMuted(storedMute)
     if (speechRef.current) speechRef.current.muted = storedMute
     return () => speechRef.current?.stop()
   }, [])
 
   const toggleMute = useCallback(() => {
-    setMuted(prev => {
-      const next = !prev
-      if (speechRef.current) speechRef.current.muted = next
-      if (typeof window !== 'undefined') window.localStorage.setItem(MUTE_KEY, String(next))
-      return next
-    })
+    const next = !getSharedMuted()
+    if (speechRef.current) speechRef.current.muted = next
+    if (typeof window !== 'undefined') window.localStorage.setItem(MUTE_KEY, String(next))
   }, [])
 
   const speak = useCallback((text: string, interrupt = false) => {

@@ -11,12 +11,12 @@
  * Ticket: jarvis data/rb-vision-interactive/runtime-logs/scratch-2026-07-15-adf3/ticket-T2.md
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Pause, Play, ShieldAlert, Volume2, VolumeX, X } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
 import { clampScore } from './types'
 import { fitCanvasToElement, drawGaborPatch, prefersReducedMotion } from '@/lib/vision/canvasKit'
-import { SpeechQueue, unlockAudio } from '@/lib/vision/audioKit'
+import { SpeechQueue, unlockAudio, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 
 // ---------------------------------------------------------------------------
 // Orientations — 4 fixed choices, diamond answer pad (never reshuffled).
@@ -82,7 +82,7 @@ type Phase = 'intro' | 'trial' | 'feedback' | 'paused' | 'complete'
 type PauseReason = 'manual' | 'lapse' | null
 type Feedback = 'correct' | 'wrong' | 'timeout' | null
 
-export default function GaborAcuityEngine({ exercise, prescription, muted, onProgress, onComplete, onExit }: EngineProps) {
+export default function GaborAcuityEngine({ exercise, prescription, onProgress, onComplete, onExit }: EngineProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const speechRef = useRef<SpeechQueue | null>(null)
@@ -95,13 +95,10 @@ export default function GaborAcuityEngine({ exercise, prescription, muted, onPro
   const [phase, setPhase] = useState<Phase>('intro')
   const [pauseReason, setPauseReason] = useState<PauseReason>(null)
   const [feedback, setFeedback] = useState<Feedback>(null)
-  const [isMuted, setIsMuted] = useState(!!muted)
+  // T7: read shared mute state directly — see DownshiftEngine.tsx.
+  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
   const [statsDisplay, setStatsDisplay] = useState({ trials: 0, correct: 0, reversals: 0 })
-
-  useEffect(() => {
-    speechRef.current!.muted = isMuted
-  }, [isMuted])
 
   // Trial / staircase state — refs so closures never go stale.
   const bagRef = useRef<OrientationKey[]>([])
@@ -396,7 +393,9 @@ export default function GaborAcuityEngine({ exercise, prescription, muted, onPro
             </button>
           )}
           <button
-            onClick={() => setIsMuted(v => !v)}
+            onClick={() => {
+              if (speechRef.current) speechRef.current.muted = !getSharedMuted()
+            }}
             className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-800/80 text-gray-400 backdrop-blur-sm hover:text-white"
             aria-label="Toggle sound"
           >

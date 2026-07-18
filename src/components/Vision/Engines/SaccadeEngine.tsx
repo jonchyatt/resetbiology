@@ -9,12 +9,12 @@
  * Plan: docs/plans/vision-training-interactive-overhaul.md §Tier 1 (W1.4)
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Volume2, VolumeX, X, Zap } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
 import { clampScore } from './types'
 import { fitCanvasToElement, drawGaborPatch, drawGlow, drawFixationCross, type Point } from '@/lib/vision/canvasKit'
-import { SpeechQueue, Metronome, unlockAudio } from '@/lib/vision/audioKit'
+import { SpeechQueue, Metronome, unlockAudio, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 
 const BEATS_PER_ROUND = 8
 const START_BPM_DEFAULT = 60
@@ -67,7 +67,7 @@ function pickProbeChoices(correct: string): string[] {
   return choices
 }
 
-export default function SaccadeEngine({ exercise, prescription, muted, onProgress, onComplete, onExit }: EngineProps) {
+export default function SaccadeEngine({ exercise, prescription, onProgress, onComplete, onExit }: EngineProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const speechRef = useRef<SpeechQueue | null>(null)
@@ -76,7 +76,8 @@ export default function SaccadeEngine({ exercise, prescription, muted, onProgres
   const startBpm = Math.max(MIN_BPM, Math.min(MAX_BPM, prescription.bpm || START_BPM_DEFAULT))
 
   const [phase, setPhase] = useState<'intro' | 'running' | 'probe' | 'complete'>('intro')
-  const [isMuted, setIsMuted] = useState(!!muted)
+  // T7: read shared mute state directly — see DownshiftEngine.tsx.
+  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
   const [bpmDisplay, setBpmDisplay] = useState(startBpm)
   const [activeLetter, setActiveLetter] = useState<string | null>(null)
@@ -85,8 +86,10 @@ export default function SaccadeEngine({ exercise, prescription, muted, onProgres
   const [lastRoundFeedback, setLastRoundFeedback] = useState<string | null>(null)
   const [speedAnnounce, setSpeedAnnounce] = useState<string | null>(null)
 
+  // speechRef reads the shared store directly (SpeechQueue.muted getter),
+  // no push needed. Metronome.muted is a local field, still needs syncing.
   useEffect(() => {
-    speechRef.current!.muted = isMuted
+    if (metronomeRef.current) metronomeRef.current.muted = isMuted
   }, [isMuted])
 
   const targetSeconds = Math.max(30, prescription.targetSeconds || 180)
@@ -390,11 +393,7 @@ export default function SaccadeEngine({ exercise, prescription, muted, onProgres
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
-              setIsMuted(v => {
-                const next = !v
-                if (metronomeRef.current) metronomeRef.current.muted = next
-                return next
-              })
+              if (speechRef.current) speechRef.current.muted = !getSharedMuted()
             }}
             className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-800/80 text-gray-400 backdrop-blur-sm transition-all duration-300 hover:text-white"
             aria-label="Toggle sound"

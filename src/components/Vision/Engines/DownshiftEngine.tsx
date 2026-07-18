@@ -11,11 +11,11 @@
  * user's eyes are covered, so the screen going dark is the point, not a bug.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Pause, Play, Volume2, VolumeX, X } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
 import { clampScore } from './types'
-import { SpeechQueue, playTone, unlockAudio } from '@/lib/vision/audioKit'
+import { SpeechQueue, playTone, unlockAudio, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 
 type BreathPhase = 'inhale' | 'hold' | 'exhale' | 'hold2'
 type BreathPattern = { inhale: number; hold: number; exhale: number; hold2: number }
@@ -62,7 +62,7 @@ function easeInOut(t: number): number {
 
 const PALMING_DIM_AT_SEC = 20
 
-export default function DownshiftEngine({ exercise, prescription, muted, onProgress, onComplete, onExit }: EngineProps) {
+export default function DownshiftEngine({ exercise, prescription, onProgress, onComplete, onExit }: EngineProps) {
   const isPalming = exercise.id === 'palming-reset'
   const pattern = useMemo(() => parseBreathPattern(exercise.id, exercise.breathingCue), [exercise.id, exercise.breathingCue])
   const phaseOrder = useMemo<BreathPhase[]>(() => PHASE_ORDER.filter(p => pattern[p] > 0), [pattern])
@@ -71,7 +71,10 @@ export default function DownshiftEngine({ exercise, prescription, muted, onProgr
   const expectedCycles = Math.max(1, Math.round(targetSeconds / cycleSeconds))
 
   const [running, setRunning] = useState(false)
-  const [isMuted, setIsMuted] = useState(!!muted)
+  // T7: read shared mute state directly (not local state) so this button
+  // can't desync from the session-level "Mute coach" control or another
+  // engine's mute button — SpeechQueue.muted is a single shared source.
+  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [phase, setPhase] = useState<BreathPhase>(phaseOrder[0] ?? 'inhale')
   const [cyclesCompleted, setCyclesCompleted] = useState(0)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
@@ -91,10 +94,6 @@ export default function DownshiftEngine({ exercise, prescription, muted, onProgr
   const cyclesRef = useRef(0)
   const speechRef = useRef<SpeechQueue | null>(null)
   if (!speechRef.current) speechRef.current = new SpeechQueue()
-
-  useEffect(() => {
-    if (speechRef.current) speechRef.current.muted = isMuted
-  }, [isMuted])
 
   const stopLoop = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -233,7 +232,9 @@ export default function DownshiftEngine({ exercise, prescription, muted, onProgr
           </p>
         </div>
         <button
-          onClick={() => setIsMuted(m => !m)}
+          onClick={() => {
+            if (speechRef.current) speechRef.current.muted = !getSharedMuted()
+          }}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
           className="p-2 rounded-lg bg-gray-800/40 backdrop-blur-sm hover:bg-gray-700/50 text-gray-300 hover:text-white transition-all min-w-11 min-h-11 flex items-center justify-center"
         >
