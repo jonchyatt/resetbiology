@@ -141,25 +141,34 @@ try {
   globalThis.fetch = originalFetch
 }
 
-assert.match(shell, /type ShellPhase = Phase \| 'readiness'/)
+assert.match(shell, /type ShellPhase = Phase \| 'readiness' \| 'practice' \| 'placement'/)
 assert.match(shell, /if \(seen\) enterReadiness\(\)/)
 assert.match(shell, /const finishTutorial[\s\S]*?enterReadiness\(\)/)
 assert.match(shell, /<button onClick=\{enterReadiness\}[\s\S]*?CONTINUE\?/)
 assert.match(shell, /document\.visibilityState === 'visible' && document\.hasFocus\(\)/)
-assert.match(shell, /readinessToneArmedRef\.current = false[\s\S]*?replay C/)
+assert.match(shell, /const enterReadiness[\s\S]*?readinessToneArmedRef\.current = false[\s\S]*?readinessHeardConfirmedRef\.current = false[\s\S]*?readinessVoiceHeardRef\.current = false/)
+assert.match(shell, /const exitReadiness[\s\S]*?readinessToneArmedRef\.current = false[\s\S]*?readinessHeardConfirmedRef\.current = false[\s\S]*?readinessVoiceHeardRef\.current = false/)
 assert.match(shell, /const replayEarReadiness[\s\S]*?if \(readinessBusyRef\.current\) return/)
 assert.match(shell, /getPianoReadiness\(RADIO_CHECK_NOTE\)[\s\S]*?playPianoNote\(RADIO_CHECK_NOTE\)/)
-assert.match(shell, /note !== RADIO_CHECK_NOTE[\s\S]*?no score, just a radio check/)
+assert.match(shell, /const answerEarReadiness[\s\S]*?!readinessToneArmedRef\.current[\s\S]*?!readinessHeardConfirmedRef\.current[\s\S]*?note !== RADIO_CHECK_NOTE[\s\S]*?no score, just a radio check/)
+assert.match(shell, /const confirmEarReadiness[\s\S]*?readinessHeardConfirmedRef\.current = true[\s\S]*?PRESS C \[1\]/)
+assert.match(shell, /const retryMissingEarSignal[\s\S]*?readinessHeardConfirmedRef\.current = false[\s\S]*?prepareEarReadiness\(\)/)
+assert.match(shell, /setReadinessStatus\('playing-audio'\)[\s\S]*?PLAYING TEST NOTE C[\s\S]*?setTimeout\([\s\S]*?450/)
 assert.match(shell, /pitchGenerationRef\.current > readinessGenerationBaselineRef\.current/)
 assert.match(shell, /const retryVoiceReadiness[\s\S]*?\+\+readinessIdRef\.current[\s\S]*?prepareVoiceReadiness\(readinessId\)/)
 assert.match(shell, /const prepareVoiceReadiness[\s\S]*?try \{[\s\S]*?catch \{[\s\S]*?finally \{[\s\S]*?readinessBusyRef\.current = false/)
+assert.match(shell, /const continueVoiceReadiness[\s\S]*?!readinessVoiceHeardRef\.current[\s\S]*?advanceFromReadiness\(\)/)
 assert.match(shell, /useEffect\(\(\) => \(\) => \{[\s\S]*?\+\+readinessIdRef\.current[\s\S]*?readinessBusyRef\.current = false/)
 assert.match(shell, /health\.audioContextState === 'running'[\s\S]*?health\.trackReadyState === 'live'[\s\S]*?health\.trackMuted === false/)
 assert.match(shell, /pitch\?\.isActive === true[\s\S]*?pitch\.confidence >= MIC_CONFIDENCE_FLOOR[\s\S]*?pitch\.frequency > 0/)
 assert.match(shell, /data-retro-readiness/)
 assert.match(shell, /role="status" aria-live="polite"/)
-assert.match(shell, /Keyboard mode sends a visibly named C signal/)
-assert.match(shell, /never measures ability/)
+assert.match(shell, /PLAY TEST NOTE C/)
+assert.match(shell, /YES, I HEARD IT/)
+assert.match(shell, /NO SOUND - RETRY/)
+assert.match(shell, /START MICROPHONE/)
+assert.match(shell, /USE KEYS \/ TAP INSTEAD/)
+assert.match(shell, /never your musical ability/)
 assert.match(shell, /@media \(orientation: landscape\) and \(max-height: 500px\)/)
 
 const enterReadinessStart = shell.indexOf('  const enterReadiness')
@@ -167,29 +176,27 @@ const readinessPhaseCommit = shell.indexOf("phaseRef.current = 'readiness'", ent
 const policyResolution = shell.indexOf('resolveRetroCurriculumSession(rawPolicy, activeLaneStore(stores, inputMode))', enterReadinessStart)
 assert.ok(enterReadinessStart >= 0 && policyResolution > enterReadinessStart && policyResolution < readinessPhaseCommit,
   'symbolic curriculum policy must resolve before readiness begins')
-assert.match(shell, /const radioCheckRoster = useMemo\([\s\S]*?sessionRoster\.slice\(0, Math\.min\(4, sessionRoster\.length\)\)/,
-  'RADIO CHECK must bind its controls to the bounded session roster')
-assert.match(shell, /\{radioCheckRoster\.map\(\(note, index\) => \{/,
-  'EAR readiness controls must render from the bounded roster')
 const readinessKeyStart = shell.indexOf('const onReadinessKey =')
 const readinessKeyEnd = shell.indexOf("window.addEventListener('keydown', onReadinessKey)", readinessKeyStart)
 const readinessKey = shell.slice(readinessKeyStart, readinessKeyEnd)
-const lookupIndex = readinessKey.indexOf('const note = radioCheckRoster[Number(event.key) - 1]')
-const missingIndex = readinessKey.indexOf('if (!note) return', lookupIndex)
-const preventIndex = readinessKey.indexOf('event.preventDefault()', missingIndex)
-const answerIndex = readinessKey.indexOf('answerEarReadiness(note)', preventIndex)
-assert.ok(lookupIndex >= 0 && missingIndex > lookupIndex && preventIndex > missingIndex && answerIndex > preventIndex,
-  'missing readiness keys must return before preventDefault and answer dispatch')
-const readinessRender = shell.slice(shell.indexOf("if (phase === 'readiness')"), shell.indexOf("if (phase === 'game_over')"))
-assert.match(readinessRender, /\{isEar \? \([\s\S]*?radioCheckRoster\.map[\s\S]*?\) : \([\s\S]*?retro-readiness-voice/,
+const filterIndex = readinessKey.indexOf("event.key !== '1' && event.key.toLowerCase() !== 'c'")
+const preventIndex = readinessKey.indexOf('event.preventDefault()', filterIndex)
+const answerIndex = readinessKey.indexOf('answerEarReadiness(RADIO_CHECK_NOTE)', preventIndex)
+assert.ok(filterIndex >= 0 && preventIndex > filterIndex && answerIndex > preventIndex,
+  'RADIO CHECK must accept only the explicitly named C or 1 control')
+const readinessRenderStart = shell.indexOf("if (phase === 'readiness')")
+const readinessRender = shell.slice(readinessRenderStart, shell.indexOf("if (phase === 'practice')", readinessRenderStart))
+assert.match(readinessRender, /\{isEar \? \([\s\S]*?YES, I HEARD IT[\s\S]*?C <span[\s\S]*?\) : \([\s\S]*?retro-readiness-voice/,
   'VOICE readiness must own no EAR response-control branch')
+assert.doesNotMatch(readinessRender.slice(readinessRender.indexOf('retro-readiness-voice')), /YES, I HEARD IT|NO SOUND - RETRY|aria-label="C, key 1"/,
+  'VOICE branch must not expose EAR acknowledgments or note controls')
 
 const readinessStart = shell.indexOf('  const prepareEarReadiness')
-const gameplayReplayStart = shell.indexOf('  const replayActiveNote', readinessStart)
-assert.ok(readinessStart >= 0 && gameplayReplayStart > readinessStart)
-const readinessImplementation = shell.slice(readinessStart, gameplayReplayStart)
-assert.doesNotMatch(readinessImplementation, /gradeEar|gradeVoice|saveStore|applyRetroBlasterFamilyEvent/,
-  'R8a readiness must remain outside every persistence-bearing seam')
+const handleInsertCoinStart = shell.indexOf('  const handleInsertCoin', readinessStart)
+assert.ok(readinessStart >= 0 && handleInsertCoinStart > readinessStart)
+const readinessImplementation = shell.slice(readinessStart, handleInsertCoinStart)
+assert.doesNotMatch(readinessImplementation, /gradeEar|gradeVoice|saveStore|applyRetroBlasterFamilyEvent|setScore|setShields/,
+  'R8a readiness must remain outside every grading and gameplay-mutation seam')
 
 console.log(JSON.stringify({
   status: 'PASS',
@@ -201,11 +208,11 @@ console.log(JSON.stringify({
     `whole-game exact-key parity (${INTRO_ORDER.length} notes)`,
     'decoded-direct-buffer readiness',
     'menu/tutorial/game-over routing',
-    'visible-focused EAR acknowledgment',
-    'fresh healthy VOICE phonation',
+    'explicit EAR hear-confirm-map flow',
+    'fresh healthy VOICE signal plus explicit continue',
     'VOICE failure and unmount cleanup',
     'zero persistence seam',
-    'tutorial and accessible status',
+    'practice-placement routing and accessible status',
   ],
 }, null, 2))
 }

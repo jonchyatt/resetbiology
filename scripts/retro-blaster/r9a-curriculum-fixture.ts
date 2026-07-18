@@ -296,10 +296,11 @@ function ackFor(request: PendingCurriculumUnlock, committed: boolean): Curriculu
 
 async function main(): Promise<void> {
 await add('P-01', 'protected-baseline', MODE === '--green'
-  ? 'exact shared product base is an ancestor of the candidate and remains the remote base'
+  ? 'exact shared product base is an ancestor and the candidate integrates the current remote base'
   : 'exact shared product base is checked out', 'PASS', 'source-backed', () => ({
   pass: MODE === '--green'
-    ? git('merge-base', BASE, 'HEAD') === BASE && git('rev-parse', 'origin/master') === BASE
+    ? git('merge-base', BASE, 'HEAD') === BASE &&
+      git('merge-base', git('rev-parse', 'origin/master'), 'HEAD') === git('rev-parse', 'origin/master')
     : git('rev-parse', 'HEAD') === BASE && git('rev-parse', 'origin/master') === BASE,
   evidence: {
     head: git('rev-parse', 'HEAD'),
@@ -319,6 +320,7 @@ await add('P-02', 'protected-baseline', MODE === '--green'
     'src/components/PitchDefender/RetroBlasterII.tsx',
     'src/components/PitchDefender/retroBlasterCurriculum.ts',
     'src/components/PitchDefender/retroBlasterEngine.ts',
+    'src/components/PitchDefender/retroBlasterPlacement.ts',
   ] : []
   return {
     pass: JSON.stringify(completeDelta) === JSON.stringify(expectedDelta),
@@ -885,34 +887,52 @@ await add('R-34', 'recovery-status', 'failed unlock exposes exact non-modal save
   evidence: { statusPresent: source.shell.includes('data-retro-curriculum-status="save-paused"') },
 }))
 
-await add('R-35', 'radio-check', 'RADIO CHECK roster derives dynamically from resolved session roster', 'RED', 'source-backed', () => ({
-  pass: source.shell.includes('sessionRoster.slice(0, Math.min(4, sessionRoster.length))') && !source.shell.includes('RADIO_CHECK_ROSTER = INTRO_ORDER.slice'),
-  evidence: { currentStaticRoster: source.shell.includes('RADIO_CHECK_ROSTER = INTRO_ORDER.slice') },
+await add('R-35', 'radio-check', 'RADIO CHECK verifies the single named C signal independently of curriculum breadth', 'RED', 'source-backed', () => ({
+  pass: source.shell.includes('const RADIO_CHECK_NOTE = INTRO_ORDER[0]') &&
+    source.shell.includes('answerEarReadiness(RADIO_CHECK_NOTE)') &&
+    !source.shell.includes('radioCheckRoster'),
+  evidence: { namedSignal: source.shell.includes('const RADIO_CHECK_NOTE = INTRO_ORDER[0]') },
 }))
 
-await add('R-36', 'radio-check', 'fresh readiness renders 2 controls, size 3 renders 3, and 4+ caps at 4', 'RED', 'source-backed', () => ({
-  pass: source.shell.includes('radioCheckRoster.map') && source.shell.includes('Math.min(4, sessionRoster.length)'),
-  evidence: { dynamicControlSource: source.shell.includes('radioCheckRoster.map') },
+await add('R-36', 'radio-check', 'EAR readiness exposes explicit play hear-confirm and C-map actions', 'RED', 'source-backed', () => ({
+  pass: sourceHasAll(source.shell, [
+    'PLAY TEST NOTE C',
+    'YES, I HEARD IT',
+    'NO SOUND - RETRY',
+    'C <span className="text-base">[1]</span>',
+  ]),
+  evidence: { explicitThreeStepSource: source.shell.includes('YES, I HEARD IT') },
 }))
 
-await add('R-37', 'radio-check', 'out-of-range number key returns before preventDefault and dispatch', 'RED', 'source-backed', () => {
+await add('R-37', 'radio-check', 'only C or 1 passes the readiness key filter before preventDefault and dispatch', 'RED', 'source-backed', () => {
   const handlerStart = source.shell.indexOf('const onReadinessKey =')
   const handlerEnd = source.shell.indexOf("window.addEventListener('keydown', onReadinessKey)", handlerStart)
   const handler = source.shell.slice(handlerStart, handlerEnd)
-  const lookupIndex = handler.indexOf('const note =')
-  const returnIndex = lookupIndex >= 0 ? handler.indexOf('if (!note) return', lookupIndex) : -1
+  const filterIndex = handler.indexOf("event.key !== '1' && event.key.toLowerCase() !== 'c'")
+  const returnIndex = handler.indexOf('return', filterIndex)
   const preventIndex = handler.indexOf('preventDefault')
-  const answerIndex = handler.indexOf('answerEarReadiness(note)')
+  const answerIndex = handler.indexOf('answerEarReadiness(RADIO_CHECK_NOTE)')
   return {
-    pass: lookupIndex >= 0 && returnIndex > lookupIndex && preventIndex > returnIndex && answerIndex > preventIndex,
-    evidence: { handler, lookupIndex, missingNoteReturnIndex: returnIndex, preventDefaultIndex: preventIndex, answerIndex },
+    pass: filterIndex >= 0 && returnIndex > filterIndex && preventIndex > returnIndex && answerIndex > preventIndex,
+    evidence: { handler, filterIndex, negativeReturnIndex: returnIndex, preventDefaultIndex: preventIndex, answerIndex },
   }
 })
 
-await add('R-38', 'radio-check', 'VOICE readiness renders no EAR controls while consuming the same product roster', 'RED', 'source-backed', () => ({
-  pass: source.shell.includes('sessionRoster') && source.shell.includes("inputMode === 'click'") && source.shell.includes('radioCheckRoster'),
-  evidence: { currentSessionRosterResolver: source.shell.includes('resolveRetroCurriculumSession') },
-}))
+await add('R-38', 'radio-check', 'VOICE readiness owns a fresh-signal gate and explicit continue without EAR controls', 'RED', 'source-backed', () => {
+  const renderStart = source.shell.indexOf("if (phase === 'readiness')")
+  const render = source.shell.slice(renderStart, source.shell.indexOf("if (phase === 'practice')", renderStart))
+  const voiceStart = render.indexOf('retro-readiness-voice')
+  const voiceBranch = render.slice(voiceStart)
+  return {
+    pass: voiceStart >= 0 && sourceHasAll(voiceBranch, [
+      'START MICROPHONE',
+      'CONTINUE TO PRACTICE',
+      'USE KEYS / TAP INSTEAD',
+    ]) && !voiceBranch.includes('YES, I HEARD IT') && !voiceBranch.includes('NO SOUND - RETRY') &&
+      !voiceBranch.includes('aria-label="C, key 1"'),
+    evidence: { voiceBranchPresent: voiceStart >= 0, explicitContinue: voiceBranch.includes('CONTINUE TO PRACTICE') },
+  }
+})
 
 await add('R-39', 'proof-amendments', 'E1 row label honestly names explicit roster pass-through and selector proof', 'RED', 'source-backed', () => ({
   pass: source.e1.includes('active-lane store selector with explicit session rosters') && !source.e1.includes("'active-lane roster source'"),
@@ -927,15 +947,15 @@ await add('R-40', 'proof-amendments', 'R8c fixture no longer asserts four-note o
   evidence: { obsoleteInitialUnlockAssertion: source.r8c.includes('engine.INITIAL_UNLOCK') },
 }))
 
-await add('R-41', 'proof-amendments', 'R8a fixture binds bounded roster and pre-preventDefault negative', 'RED', 'source-backed', () => ({
+await add('R-41', 'proof-amendments', 'R8a fixture proves the named C filter and separate VOICE branch', 'RED', 'source-backed', () => ({
   pass: sourceHasAll(source.r8a, [
     'symbolic curriculum policy must resolve before readiness begins',
-    'RADIO CHECK must bind its controls to the bounded session roster',
-    'missing readiness keys must return before preventDefault and answer dispatch',
+    'RADIO CHECK must accept only the explicitly named C or 1 control',
     'VOICE readiness must own no EAR response-control branch',
+    'VOICE branch must not expose EAR acknowledgments or note controls',
   ]),
   evidence: {
-    currentR9aAmendmentPresent: source.r8a.includes('missing readiness keys must return before preventDefault and answer dispatch'),
+    currentFirstPlayerAmendmentPresent: source.r8a.includes('RADIO CHECK must accept only the explicitly named C or 1 control'),
   },
 }))
 

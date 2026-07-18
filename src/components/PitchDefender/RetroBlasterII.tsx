@@ -3,7 +3,7 @@
 // Sibling of RetroBlaster v1. R0 view-seam build.
 // Rail: data/retro-blaster-rework/VANGUARD-SPEC-R0-view-seam.md
 
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { flushSync } from 'react-dom'
 import {
   NOTE_COLORS, createNote,
@@ -17,9 +17,24 @@ import { INTRO_ORDER } from './types'
 import {
   RETRO_CURRICULUM_KEY,
   commitRetroCurriculum,
+  commitRetroCurriculumExtension,
   resolveRetroCurriculumSession,
   type RetroCurriculumExtensionFields,
 } from './retroBlasterCurriculum'
+import { noteToFreq, octaveFoldedCents } from './pitchMath'
+import {
+  RETRO_PACES,
+  manualRetroPlacement,
+  placeRetroPace,
+  placementExtensionPatch,
+  placementForLane,
+  resolveRetroPlayPace,
+  retroPaceConfig,
+  type RetroPace,
+  type RetroPlacementLane,
+  type RetroPlacementSummary,
+  type RetroPlacementTrial,
+} from './retroBlasterPlacement'
 import { usePitchDetection } from './usePitchDetection'
 import { getPianoReadiness, initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
@@ -37,21 +52,29 @@ import {
   type MicVfxFreshnessState,
 } from './retroBlasterRenderer'
 
-const TUTORIAL_KEY = 'retro_tutorial_seen'
+const TUTORIAL_KEY = 'retro_tutorial_v2_seen'
 const RETRO_DIFFICULTY_KEY = 'retro_difficulty'
 const CRT_KEY = 'retro_blaster_crt'
 const COLOR_HINTS_KEY = 'retro_blaster_color_hints'
 const RADIO_CHECK_NOTE = INTRO_ORDER[0]
+const FIRST_SESSION_ROSTER = INTRO_ORDER.slice(0, 2)
+const PLACEMENT_SEQUENCE = ['C4', 'A4', 'A4', 'C4'] as const
 
-type ShellPhase = Phase | 'readiness'
+type ShellPhase = Phase | 'readiness' | 'practice' | 'placement'
 type ReadinessStatus =
   | 'idle'
   | 'loading-audio'
+  | 'playing-audio'
   | 'awaiting-ear'
+  | 'awaiting-map'
   | 'audio-error'
   | 'starting-mic'
   | 'awaiting-voice'
   | 'voice-error'
+
+function placementLane(inputMode: InputMode): RetroPlacementLane {
+  return inputMode === 'mic' ? 'voice' : 'ear'
+}
 
 interface RetroAudioReceipt {
   sequence: number
@@ -122,13 +145,14 @@ export function buildRetroBlasterState(
   clockMs: number,
   gameId = `fixture:${clockMs}`,
   memoryEpochMs = 0,
+  pace: RetroPace | null = null,
 ): GameState {
   const store = activeLaneStore(stores, inputMode)
   const unlocked = [...sessionRoster]
   for (const note of unlocked) {
     if (!store[note]) store[note] = createNote(note)
   }
-  const state = createInitialState(difficulty, unlocked, clockMs, gameId)
+  const state = createInitialState(difficulty, unlocked, clockMs, gameId, pace)
   beginWave(state, store, memoryEpochMs)
   return state
 }
@@ -194,7 +218,17 @@ export default function RetroBlasterII() {
   const readinessIdRef = useRef(0)
   const readinessBusyRef = useRef(false)
   const readinessToneArmedRef = useRef(false)
+  const readinessHeardConfirmedRef = useRef(false)
+  const readinessVoiceHeardRef = useRef(false)
   const readinessGenerationBaselineRef = useRef(0)
+  const activePaceRef = useRef<RetroPace>('cadet')
+  const practiceToneArmedRef = useRef(false)
+  const practiceHoldStartedRef = useRef(0)
+  const placementSignalStartedAtRef = useRef(0)
+  const placementSignalArmedRef = useRef(false)
+  const placementHoldStartedRef = useRef(0)
+  const placementWrongHoldStartedRef = useRef(0)
+  const firstKillStartedAtRef = useRef(0)
   const pendingCeremonyToneAckRef = useRef<CeremonyToneAck | null>(null)
   const pendingBlindStimulusAckRef = useRef<BlindStimulusAck | null>(null)
   const pendingCurriculumUnlockAckRef = useRef<CurriculumUnlockAck | null>(null)
@@ -226,13 +260,21 @@ export default function RetroBlasterII() {
   const [readinessStatus, setReadinessStatus] = useState<ReadinessStatus>('idle')
   const [readinessMessage, setReadinessMessage] = useState('')
   const [readinessToneArmed, setReadinessToneArmed] = useState(false)
+  const [readinessHeardConfirmed, setReadinessHeardConfirmed] = useState(false)
+  const [readinessVoiceHeard, setReadinessVoiceHeard] = useState(false)
   const [ceremonyMessage, setCeremonyMessage] = useState('')
-  const [sessionRoster, setSessionRoster] = useState<string[]>(() => INTRO_ORDER.slice(0, 2))
+  const [, setSessionRoster] = useState<string[]>(() => INTRO_ORDER.slice(0, 2))
   const [curriculumSavePaused, setCurriculumSavePaused] = useState(false)
-  const radioCheckRoster = useMemo(
-    () => sessionRoster.slice(0, Math.min(4, sessionRoster.length)),
-    [sessionRoster],
-  )
+  const [savedPlacement, setSavedPlacement] = useState<RetroPlacementSummary | null>(null)
+  const [activePace, setActivePace] = useState<RetroPace>('cadet')
+  const [practiceStage, setPracticeStage] = useState<'listen' | 'answer' | 'success'>('listen')
+  const [practiceMessage, setPracticeMessage] = useState('STEP 1 - PLAY THE C SIGNAL.')
+  const [placementTrialIndex, setPlacementTrialIndex] = useState(0)
+  const [placementAttempt, setPlacementAttempt] = useState(0)
+  const [placementSignalArmed, setPlacementSignalArmed] = useState(false)
+  const [placementTrials, setPlacementTrials] = useState<RetroPlacementTrial[]>([])
+  const [placementMessage, setPlacementMessage] = useState('PRESS PLAY WHEN YOU ARE READY. THERE IS NO TIMER.')
+  const [placementResult, setPlacementResult] = useState<RetroPlacementSummary | null>(null)
 
   const {
     isListening,
@@ -305,9 +347,51 @@ export default function RetroBlasterII() {
     })
   }, [])
 
+  const runPlacementCommit = useCallback(async (
+    summary: RetroPlacementSummary,
+    lane = placementLane(inputModeRef.current),
+  ): Promise<boolean> => {
+    const controller = new AbortController()
+    curriculumControllersRef.current.add(controller)
+    const locks = typeof navigator !== 'undefined' && 'locks' in navigator
+      ? navigator.locks
+      : undefined
+    const extensionPatch = placementExtensionPatch(lastCurriculumExtensionsRef.current, lane, summary)
+    try {
+      const result = await commitRetroCurriculumExtension({
+        storage: localStorage,
+        locks,
+        signal: controller.signal,
+        extensionPatch,
+        getLastDurableRoster: () => lastDurableRosterRef.current.length > 0
+          ? lastDurableRosterRef.current
+          : FIRST_SESSION_ROSTER,
+        getLastExtensionFields: () => lastCurriculumExtensionsRef.current,
+      })
+      if (!result.ok) return false
+      lastDurableRosterRef.current = [...result.durableRoster]
+      lastCurriculumExtensionsRef.current = { ...result.extensionFields }
+      if (lane === placementLane(inputModeRef.current)) setSavedPlacement(summary)
+      return true
+    } catch (error) {
+      if ((error as { name?: unknown } | null)?.name === 'AbortError') return false
+      return false
+    } finally {
+      curriculumControllersRef.current.delete(controller)
+    }
+  }, [])
+
   useEffect(() => { inputModeRef.current = inputMode }, [inputMode])
+  useEffect(() => {
+    const placement = placementForLane(lastCurriculumExtensionsRef.current, placementLane(inputMode))
+    setSavedPlacement(placement)
+    const nextPace = placement?.pace ?? 'cadet'
+    activePaceRef.current = nextPace
+    setActivePace(nextPace)
+  }, [inputMode])
   useEffect(() => { listeningRef.current = isListening }, [isListening])
   useEffect(() => { phaseRef.current = phase }, [phase])
+  useEffect(() => { activePaceRef.current = activePace }, [activePace])
   useEffect(() => () => {
     ++readinessIdRef.current
     readinessBusyRef.current = false
@@ -368,7 +452,8 @@ export default function RetroBlasterII() {
   }, [])
 
   useEffect(() => {
-    familyStoresRef.current = loadRetroBlasterFamilyStores()
+    const stores = loadRetroBlasterFamilyStores()
+    familyStoresRef.current = stores
     let initialCrt = window.innerWidth >= 768
     try {
       const d = localStorage.getItem(RETRO_DIFFICULTY_KEY)
@@ -381,6 +466,19 @@ export default function RetroBlasterII() {
         colorHintsRef.current = enabled
         setColorHints(enabled)
       }
+      const resolution = resolveRetroCurriculumSession(
+        localStorage.getItem(RETRO_CURRICULUM_KEY),
+        activeLaneStore(stores, 'click'),
+      )
+      sessionRosterRef.current = [...resolution.sessionRoster]
+      setSessionRoster([...resolution.sessionRoster])
+      lastDurableRosterRef.current = [...resolution.durableRoster]
+      lastCurriculumExtensionsRef.current = { ...resolution.extensionFields }
+      const placement = placementForLane(resolution.extensionFields, 'ear')
+      setSavedPlacement(placement)
+      const initialPace = placement?.pace ?? 'cadet'
+      activePaceRef.current = initialPace
+      setActivePace(initialPace)
     } catch {}
     setCrtEnabled(initialCrt)
     loadPianoSamples()
@@ -495,6 +593,9 @@ export default function RetroBlasterII() {
       } else if (event.kind === 'ceremonyToneRequest') {
         setCeremonyMessage('REFERENCE SIGNAL PENDING...')
         dispatchCeremonyTone(event.ceremonyId, event.note)
+      } else if (event.kind === 'paceAdjusted') {
+        activePaceRef.current = event.to
+        setActivePace(event.to)
       } else if (event.kind === 'gameOver') {
         abortCurriculumSession()
         setFinalStats({ score: gs.score, wave: gs.wave, maxCombo: gs.maxCombo })
@@ -574,6 +675,7 @@ export default function RetroBlasterII() {
       pianoReadiness,
       blindStimulusAck,
       curriculumUnlockAck,
+      colorHints: colorHintsRef.current,
     }, dtMs, Math.random)
     stateRef.current = result.state
     const micLockSignalActive = deriveMicLockSignalActive({
@@ -674,6 +776,7 @@ export default function RetroBlasterII() {
       performance.now(),
       crypto.randomUUID(),
       Date.now(),
+      activePaceRef.current,
     )
   }, [difficulty, inputMode])
 
@@ -682,6 +785,8 @@ export default function RetroBlasterII() {
     readinessBusyRef.current = true
     readinessToneArmedRef.current = false
     setReadinessToneArmed(false)
+    readinessHeardConfirmedRef.current = false
+    setReadinessHeardConfirmed(false)
     setReadinessStatus('loading-audio')
     setReadinessMessage('TUNING THE C CHANNEL...')
     try {
@@ -701,11 +806,15 @@ export default function RetroBlasterII() {
         kind: 'piano', note: RADIO_CHECK_NOTE, guard: 'radio-check', requestId: null,
         gameId: null, attackId: null, ceremonyId: null, terminalAlreadyRecorded: false,
       })
+      setReadinessStatus('playing-audio')
+      setReadinessMessage('PLAYING TEST NOTE C...')
       playPianoNote(RADIO_CHECK_NOTE)
+      await new Promise(resolve => window.setTimeout(resolve, 450))
+      if (readinessId !== readinessIdRef.current || phaseRef.current !== 'readiness') return
       readinessToneArmedRef.current = true
       setReadinessToneArmed(true)
       setReadinessStatus('awaiting-ear')
-      setReadinessMessage('SIGNAL C SENT - press C [1].')
+      setReadinessMessage('DID YOU HEAR THE TEST NOTE C?')
     } catch {
       if (readinessId === readinessIdRef.current) {
         setReadinessStatus('audio-error')
@@ -725,20 +834,51 @@ export default function RetroBlasterII() {
       void prepareEarReadiness()
       return
     }
+    readinessBusyRef.current = true
     writeAudioReceipt({
       kind: 'piano', note: RADIO_CHECK_NOTE, guard: 'radio-check-replay', requestId: null,
       gameId: null, attackId: null, ceremonyId: null, terminalAlreadyRecorded: false,
     })
+    setReadinessStatus('playing-audio')
+    setReadinessMessage('PLAYING TEST NOTE C...')
     playPianoNote(RADIO_CHECK_NOTE)
-    readinessToneArmedRef.current = true
-    setReadinessToneArmed(true)
-    setReadinessStatus('awaiting-ear')
-    setReadinessMessage('SIGNAL C SENT - press C [1].')
+    readinessHeardConfirmedRef.current = false
+    setReadinessHeardConfirmed(false)
+    const readinessId = readinessIdRef.current
+    window.setTimeout(() => {
+      if (readinessId !== readinessIdRef.current || phaseRef.current !== 'readiness' || inputModeRef.current !== 'click') return
+      readinessToneArmedRef.current = true
+      setReadinessToneArmed(true)
+      setReadinessStatus('awaiting-ear')
+      setReadinessMessage('DID YOU HEAR THE TEST NOTE C?')
+      readinessBusyRef.current = false
+    }, 450)
   }, [prepareEarReadiness, writeAudioReceipt])
+
+  const confirmEarReadiness = useCallback(() => {
+    if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'click' || !readinessToneArmedRef.current) return
+    readinessHeardConfirmedRef.current = true
+    setReadinessHeardConfirmed(true)
+    setReadinessStatus('awaiting-map')
+    setReadinessMessage('STEP 2 - PRESS C [1] TO PROVE THE CONTROL MAPPING.')
+  }, [])
+
+  const retryMissingEarSignal = useCallback(() => {
+    if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'click') return
+    readinessBusyRef.current = false
+    readinessToneArmedRef.current = false
+    setReadinessToneArmed(false)
+    readinessHeardConfirmedRef.current = false
+    setReadinessHeardConfirmed(false)
+    setReadinessMessage('NO SOUND CONFIRMED - RETRYING TEST NOTE C...')
+    void prepareEarReadiness()
+  }, [prepareEarReadiness])
 
   const prepareVoiceReadiness = useCallback(async (readinessId = readinessIdRef.current) => {
     if (readinessBusyRef.current || readinessId !== readinessIdRef.current) return
     readinessBusyRef.current = true
+    readinessVoiceHeardRef.current = false
+    setReadinessVoiceHeard(false)
     readinessGenerationBaselineRef.current = pitchGenerationRef.current
     setReadinessStatus('starting-mic')
     setReadinessMessage('OPENING VOICE CHANNEL...')
@@ -777,6 +917,23 @@ export default function RetroBlasterII() {
     readinessBusyRef.current = false
     readinessToneArmedRef.current = false
     setReadinessToneArmed(false)
+    readinessHeardConfirmedRef.current = false
+    setReadinessHeardConfirmed(false)
+    readinessVoiceHeardRef.current = false
+    setReadinessVoiceHeard(false)
+    practiceToneArmedRef.current = false
+    practiceHoldStartedRef.current = 0
+    placementSignalStartedAtRef.current = 0
+    placementSignalArmedRef.current = false
+    placementHoldStartedRef.current = 0
+    setPracticeStage('listen')
+    setPracticeMessage('STEP 1 - PLAY THE C SIGNAL.')
+    setPlacementTrialIndex(0)
+    setPlacementAttempt(0)
+    setPlacementSignalArmed(false)
+    setPlacementTrials([])
+    setPlacementResult(null)
+    setPlacementMessage('PRESS PLAY WHEN YOU ARE READY. THERE IS NO TIMER.')
     setCurriculumSavePaused(false)
     const stores = loadRetroBlasterFamilyStores()
     familyStoresRef.current = stores
@@ -787,6 +944,11 @@ export default function RetroBlasterII() {
     setSessionRoster([...resolution.sessionRoster])
     lastDurableRosterRef.current = [...resolution.durableRoster]
     lastCurriculumExtensionsRef.current = { ...resolution.extensionFields }
+    const placement = placementForLane(resolution.extensionFields, placementLane(inputMode))
+    setSavedPlacement(placement)
+    const nextPace = resolveRetroPlayPace(placement?.pace ?? 'cadet', difficulty)
+    activePaceRef.current = nextPace
+    setActivePace(nextPace)
     const curriculumSessionId = curriculumSessionIdRef.current
     if (resolution.needsWrite) {
       runCurriculumCommit(resolution.sessionRoster, 'initial', null, curriculumSessionId)
@@ -794,9 +956,12 @@ export default function RetroBlasterII() {
     const readinessId = ++readinessIdRef.current
     phaseRef.current = 'readiness'
     setPhase('readiness')
-    if (inputMode === 'mic') void prepareVoiceReadiness(readinessId)
-    else void prepareEarReadiness(readinessId)
-  }, [abortCurriculumSession, inputMode, prepareEarReadiness, prepareVoiceReadiness, runCurriculumCommit, stopListening])
+    setReadinessStatus('idle')
+    setReadinessMessage(inputMode === 'mic'
+      ? 'STEP 1 - PRESS START MICROPHONE. WE WILL ONLY CHECK FOR A LIVE SIGNAL.'
+      : 'STEP 1 - PRESS PLAY TEST NOTE C.')
+    void readinessId
+  }, [abortCurriculumSession, difficulty, inputMode, runCurriculumCommit, stopListening])
 
   const retryVoiceReadiness = useCallback(() => {
     if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'mic') return
@@ -811,6 +976,10 @@ export default function RetroBlasterII() {
     readinessBusyRef.current = false
     readinessToneArmedRef.current = false
     setReadinessToneArmed(false)
+    readinessHeardConfirmedRef.current = false
+    setReadinessHeardConfirmed(false)
+    readinessVoiceHeardRef.current = false
+    setReadinessVoiceHeard(false)
     setReadinessStatus('idle')
     setReadinessMessage('')
     pendingAnswerRef.current = null
@@ -853,13 +1022,33 @@ export default function RetroBlasterII() {
     if (inputMode === 'mic' && !listeningRef.current) startListening()
     const gs = buildState()
     stateRef.current = gs
-    const view = toViewState(gs, inputMode)
+    const view = toViewState(gs, inputMode, colorHintsRef.current)
     setDisplayView(view)
     phaseRef.current = 'playing'
     setPhase('playing')
     lastTimeRef.current = performance.now()
     rafRef.current = requestAnimationFrame(gameLoop)
   }, [inputMode, startListening, buildState, gameLoop, pitchGenerationRef])
+
+  const advanceFromReadiness = useCallback(() => {
+    firstKillStartedAtRef.current = performance.now()
+    const placement = placementForLane(
+      lastCurriculumExtensionsRef.current,
+      placementLane(inputModeRef.current),
+    )
+    if (placement) {
+      startGame()
+      return
+    }
+    practiceToneArmedRef.current = false
+    practiceHoldStartedRef.current = 0
+    setPracticeStage('listen')
+    setPracticeMessage(inputModeRef.current === 'mic'
+      ? 'STEP 1 - LISTEN TO C. THEN SING AND HOLD THAT PITCH.'
+      : 'STEP 1 - LISTEN TO C. THEN PRESS C [1].')
+    phaseRef.current = 'practice'
+    setPhase('practice')
+  }, [startGame])
 
   const retryCeremonySignal = useCallback(async () => {
     const live = stateRef.current?.introductionCeremony
@@ -923,14 +1112,22 @@ export default function RetroBlasterII() {
       setReadinessMessage('PLAY SIGNAL C FIRST.')
       return
     }
+    if (!readinessHeardConfirmedRef.current) {
+      setReadinessMessage('FIRST TELL US WHETHER YOU HEARD C.')
+      return
+    }
     if (note !== RADIO_CHECK_NOTE) {
       setReadinessMessage('USE THE NAMED C [1] CONTROL - no score, just a radio check.')
       return
     }
     readinessToneArmedRef.current = false
     setReadinessToneArmed(false)
-    startGame()
-  }, [startGame])
+    readinessHeardConfirmedRef.current = false
+    setReadinessHeardConfirmed(false)
+    readinessVoiceHeardRef.current = false
+    setReadinessVoiceHeard(false)
+    advanceFromReadiness()
+  }, [advanceFromReadiness])
 
   useEffect(() => {
     if (phase !== 'readiness' || inputMode !== 'mic') return
@@ -945,21 +1142,28 @@ export default function RetroBlasterII() {
       health.audioContextState === 'running' && health.trackReadyState === 'live' &&
       health.trackMuted === false
     const heard = pitch?.isActive === true && pitch.confidence >= MIC_CONFIDENCE_FLOOR && pitch.frequency > 0
-    if (healthy && fresh && heard) startGame()
-  }, [phase, inputMode, isListening, micError, pitch, micSourceHealthRef, pitchGenerationRef, startGame])
+    if (healthy && fresh && heard) {
+      readinessVoiceHeardRef.current = true
+      setReadinessVoiceHeard(true)
+      setReadinessMessage('LIVE SIGNAL HEARD - PRESS CONTINUE TO PRACTICE.')
+    }
+  }, [phase, inputMode, isListening, micError, pitch, micSourceHealthRef, pitchGenerationRef])
+
+  const continueVoiceReadiness = useCallback(() => {
+    if (phaseRef.current !== 'readiness' || inputModeRef.current !== 'mic' || !readinessVoiceHeardRef.current) return
+    advanceFromReadiness()
+  }, [advanceFromReadiness])
 
   useEffect(() => {
     if (phase !== 'readiness' || inputMode !== 'click') return
     const onReadinessKey = (event: KeyboardEvent) => {
-      if (!/^[1-4]$/.test(event.key)) return
-      const note = radioCheckRoster[Number(event.key) - 1]
-      if (!note) return
+      if (event.key !== '1' && event.key.toLowerCase() !== 'c') return
       event.preventDefault()
-      answerEarReadiness(note)
+      answerEarReadiness(RADIO_CHECK_NOTE)
     }
     window.addEventListener('keydown', onReadinessKey)
     return () => window.removeEventListener('keydown', onReadinessKey)
-  }, [phase, inputMode, answerEarReadiness, radioCheckRoster])
+  }, [phase, inputMode, answerEarReadiness])
 
   const handleInsertCoin = useCallback(() => {
     let seen = false
@@ -972,6 +1176,231 @@ export default function RetroBlasterII() {
     try { localStorage.setItem(TUTORIAL_KEY, '1') } catch {}
     enterReadiness()
   }, [enterReadiness])
+
+  const playCoachingSignal = useCallback(async (
+    note: string,
+    guard: 'practice' | 'placement',
+  ): Promise<boolean> => {
+    try {
+      initAudio()
+      await loadPianoSamples()
+      if (phaseRef.current !== guard) return false
+      const ready = getPianoReadiness(note)
+      if (!visibilityActiveRef.current || !focusActiveRef.current ||
+          !ready.sampleReady || ready.contextState !== 'running') return false
+      writeAudioReceipt({
+        kind: 'piano', note, guard, requestId: null,
+        gameId: null, attackId: null, ceremonyId: null, terminalAlreadyRecorded: false,
+      })
+      playPianoNote(note)
+      notePlayTimeRef.current = Date.now()
+      return true
+    } catch {
+      return false
+    }
+  }, [writeAudioReceipt])
+
+  const markPracticeSuccess = useCallback(() => {
+    if (practiceStage === 'success') return
+    practiceToneArmedRef.current = false
+    practiceHoldStartedRef.current = 0
+    setPracticeStage('success')
+    setPracticeMessage('DIRECT HIT - YOU LISTENED, ANSWERED, AND FIRED.')
+    sfxShoot()
+    window.setTimeout(sfxExplosion, 180)
+    const completedAt = performance.now()
+    document.documentElement.dataset.retroFirstKill = JSON.stringify({
+      readinessPassedAt: firstKillStartedAtRef.current,
+      tutorialKillAt: completedAt,
+      activeDurationMs: Math.max(0, completedAt - firstKillStartedAtRef.current),
+      lane: placementLane(inputModeRef.current),
+    })
+  }, [practiceStage])
+
+  const playPracticeSignal = useCallback(async () => {
+    setPracticeMessage('PLAYING C - LISTEN FIRST...')
+    const played = await playCoachingSignal('C4', 'practice')
+    if (!played) {
+      setPracticeMessage('SIGNAL PATH NOT READY - RETRY C.')
+      return
+    }
+    practiceToneArmedRef.current = true
+    practiceHoldStartedRef.current = 0
+    setPracticeStage('answer')
+    setPracticeMessage(inputModeRef.current === 'mic'
+      ? 'YOUR TURN - SING AND HOLD THE C YOU HEARD.'
+      : 'YOUR TURN - PRESS C [1].')
+  }, [playCoachingSignal])
+
+  const answerPractice = useCallback((note: 'C4' | 'A4') => {
+    if (phaseRef.current !== 'practice' || inputModeRef.current !== 'click') return
+    if (!practiceToneArmedRef.current || practiceStage !== 'answer') {
+      setPracticeMessage('PLAY C FIRST, THEN ANSWER.')
+      return
+    }
+    if (note !== 'C4') {
+      practiceToneArmedRef.current = false
+      setPracticeStage('listen')
+      setPracticeMessage('NOT THAT ONE - NO SHIELD LOST. PLAY C AND TRY AGAIN.')
+      sfxWrong()
+      return
+    }
+    markPracticeSuccess()
+  }, [markPracticeSuccess, practiceStage])
+
+  const beginPlacement = useCallback(() => {
+    setPlacementTrialIndex(0)
+    setPlacementAttempt(0)
+    placementSignalArmedRef.current = false
+    setPlacementSignalArmed(false)
+    setPlacementTrials([])
+    setPlacementResult(null)
+    setPlacementMessage('TRIAL 1 OF 4 - PRESS PLAY WHEN READY. THERE IS NO TIMER.')
+    phaseRef.current = 'placement'
+    setPhase('placement')
+  }, [])
+
+  const finishPlacement = useCallback(async (trials: RetroPlacementTrial[]) => {
+    const summary = placeRetroPace(trials, Date.now())
+    setPlacementMessage('SAVING YOUR COMFORTABLE STARTING PACE...')
+    const committed = await runPlacementCommit(summary)
+    if (!committed) {
+      setPlacementResult(null)
+      setPlacementMessage('LOCAL SAVE PAUSED - RETRY SAVE OR START AT CADET.')
+      return
+    }
+    setPlacementResult(summary)
+    setPlacementMessage(`PACE FOUND: ${summary.pace.toUpperCase()} - YOU CAN CHANGE IT BEFORE LAUNCH.`)
+  }, [runPlacementCommit])
+
+  const acceptPlacementAnswer = useCallback((answeredNote: 'C4' | 'A4') => {
+    if (phaseRef.current !== 'placement' || !placementSignalArmedRef.current || placementResult) return
+    const target = PLACEMENT_SEQUENCE[placementTrialIndex]
+    const latencyMs = Math.max(0, performance.now() - placementSignalStartedAtRef.current)
+    if (answeredNote !== target) {
+      placementSignalArmedRef.current = false
+      setPlacementSignalArmed(false)
+      setPlacementAttempt(value => value + 1)
+      setPlacementMessage('NOT THAT ONE - NO PENALTY. PLAY THE SAME SIGNAL AGAIN.')
+      sfxWrong()
+      return
+    }
+    placementSignalArmedRef.current = false
+    setPlacementSignalArmed(false)
+    const nextTrials = [...placementTrials, {
+      note: target,
+      firstAttemptCorrect: placementAttempt === 0,
+      latencyMs,
+    }]
+    setPlacementTrials(nextTrials)
+    sfxShoot()
+    if (placementTrialIndex >= PLACEMENT_SEQUENCE.length - 1) {
+      void finishPlacement(nextTrials)
+      return
+    }
+    const nextIndex = placementTrialIndex + 1
+    setPlacementTrialIndex(nextIndex)
+    setPlacementAttempt(0)
+    setPlacementMessage(`GOOD. TRIAL ${nextIndex + 1} OF 4 - PLAY THE NEXT SIGNAL WHEN READY.`)
+  }, [finishPlacement, placementAttempt, placementResult, placementTrialIndex, placementTrials])
+
+  const playPlacementSignal = useCallback(async () => {
+    if (placementResult) return
+    const target = PLACEMENT_SEQUENCE[placementTrialIndex]
+    setPlacementMessage(`PLAYING TRIAL ${placementTrialIndex + 1} - LISTEN...`)
+    const played = await playCoachingSignal(target, 'placement')
+    if (!played) {
+      setPlacementMessage('SIGNAL PATH NOT READY - RETRY THIS TRIAL.')
+      return
+    }
+    placementSignalStartedAtRef.current = performance.now()
+    placementHoldStartedRef.current = 0
+    placementWrongHoldStartedRef.current = 0
+    placementSignalArmedRef.current = true
+    setPlacementSignalArmed(true)
+    setPlacementMessage(inputModeRef.current === 'mic'
+      ? 'YOUR TURN - SING AND HOLD THE NOTE YOU HEARD.'
+      : 'YOUR TURN - CHOOSE C [1] OR A [2].')
+  }, [placementResult, placementTrialIndex, playCoachingSignal])
+
+  const choosePlacementPace = useCallback(async (pace: RetroPace) => {
+    const summary = manualRetroPlacement(pace, Date.now())
+    setPlacementMessage(`SAVING ${pace.toUpperCase()} PACE...`)
+    const committed = await runPlacementCommit(summary)
+    if (!committed) {
+      setPlacementMessage('LOCAL SAVE PAUSED - RETRY YOUR PACE SELECTION.')
+      return
+    }
+    setPlacementResult(summary)
+    setPlacementMessage(`PACE SET: ${pace.toUpperCase()}.`)
+  }, [runPlacementCommit])
+
+  const startFirstTimedSession = useCallback(() => {
+    const placement = placementResult ?? savedPlacement
+    if (!placement) return
+    const pace = resolveRetroPlayPace(placement.pace, difficulty)
+    activePaceRef.current = pace
+    setActivePace(pace)
+    sessionRosterRef.current = [...FIRST_SESSION_ROSTER]
+    setSessionRoster([...FIRST_SESSION_ROSTER])
+    startGame()
+  }, [difficulty, placementResult, savedPlacement, startGame])
+
+  useEffect(() => {
+    if (inputMode !== 'mic' || (phase !== 'practice' && phase !== 'placement')) return
+    const now = performance.now()
+    const echoClear = Date.now() - notePlayTimeRef.current >= 650
+    const healthyPitch = echoClear && pitch?.isActive === true &&
+      pitch.confidence >= MIC_CONFIDENCE_FLOOR && pitch.frequency > 0
+    const target = phase === 'practice' ? 'C4' : PLACEMENT_SEQUENCE[placementTrialIndex]
+    const matches = healthyPitch && Math.abs(octaveFoldedCents(pitch.frequency, noteToFreq(target))) <= 70
+
+    if (phase === 'practice') {
+      if (!practiceToneArmedRef.current || practiceStage !== 'answer') return
+      if (matches) {
+        if (practiceHoldStartedRef.current === 0) practiceHoldStartedRef.current = now
+        if (now - practiceHoldStartedRef.current >= 300) markPracticeSuccess()
+      } else if (healthyPitch) {
+        practiceHoldStartedRef.current = 0
+        setPracticeMessage('KEEP LISTENING - THAT PITCH IS DIFFERENT. REPLAY C AND TRY AGAIN.')
+      }
+      return
+    }
+
+    if (!placementSignalArmedRef.current || placementResult) return
+    if (matches) {
+      placementWrongHoldStartedRef.current = 0
+      if (placementHoldStartedRef.current === 0) placementHoldStartedRef.current = now
+      if (now - placementHoldStartedRef.current >= 300) acceptPlacementAnswer(target)
+    } else if (healthyPitch) {
+      placementHoldStartedRef.current = 0
+      if (placementWrongHoldStartedRef.current === 0) placementWrongHoldStartedRef.current = now
+      if (now - placementWrongHoldStartedRef.current >= 300) {
+        placementWrongHoldStartedRef.current = 0
+        placementSignalArmedRef.current = false
+        setPlacementSignalArmed(false)
+        setPlacementAttempt(value => value + 1)
+        setPlacementMessage('THAT WAS A DIFFERENT PITCH - NO PENALTY. REPLAY AND TRY AGAIN.')
+      }
+    }
+  }, [acceptPlacementAnswer, inputMode, markPracticeSuccess, phase, pitch, placementResult, placementTrialIndex, practiceStage])
+
+  useEffect(() => {
+    if (inputMode !== 'click' || (phase !== 'practice' && phase !== 'placement')) return
+    const onCoachKey = (event: KeyboardEvent) => {
+      const note = event.key === '1' || event.key.toLowerCase() === 'c'
+        ? 'C4'
+        : event.key === '2' || event.key.toLowerCase() === 'a'
+          ? 'A4'
+          : null
+      if (!note) return
+      event.preventDefault()
+      if (phase === 'practice') answerPractice(note)
+      else acceptPlacementAnswer(note)
+    }
+    window.addEventListener('keydown', onCoachKey)
+    return () => window.removeEventListener('keydown', onCoachKey)
+  }, [acceptPlacementAnswer, answerPractice, inputMode, phase])
 
   const replayActiveNote = useCallback(() => {
     const gs = stateRef.current
@@ -1064,74 +1493,102 @@ export default function RetroBlasterII() {
 
   if (phase === 'menu') {
     return (
-      <div className="fixed inset-0 bg-black flex flex-col items-center justify-center px-6"
-        style={{ fontFamily: 'monospace' }}>
-        <h1 className="text-4xl font-black text-[#3FBFB5] mb-2"
+      <div className="fixed inset-0 overflow-y-auto bg-black px-5 py-8 text-white"
+        style={{ fontFamily: 'monospace' }} data-retro-first-player-menu>
+        <main className="mx-auto flex min-h-full w-full max-w-3xl flex-col items-center justify-center">
+        <h1 className="mb-2 text-center text-4xl font-black text-[#3FBFB5] sm:text-5xl"
           style={{ textShadow: '0 0 20px rgba(60,191,181,0.5)', letterSpacing: '0.2em' }}>
           RETRO BLASTER
         </h1>
-        <p className="text-gray-500 text-xs mb-8 tracking-wider">PIXEL-ART EAR TRAINING</p>
-        <div className="flex gap-2 mb-3">
+        <p className="mb-7 text-center text-base font-bold tracking-wider text-cyan-100">LISTEN. ANSWER. FIRE.</p>
+        <h2 className="mb-3 text-sm font-black tracking-[0.22em] text-cyan-200">HOW YOU ANSWER</h2>
+        <div className="mb-5 grid w-full gap-3 sm:grid-cols-2">
           <button onClick={() => setInputMode('click')}
-            className="px-4 py-2 text-xs tracking-wider transition-all"
+            className="min-h-20 border p-4 text-left transition-all"
             style={{
               background: inputMode === 'click' ? '#3FBFB5' : '#111',
-              color: inputMode === 'click' ? '#000' : '#555',
+              color: inputMode === 'click' ? '#000' : '#d7e7eb',
               border: `1px solid ${inputMode === 'click' ? '#3FBFB5' : '#333'}`,
             }}>
-            KEYBOARD
+            <span className="block text-base font-black">KEYS / TAP</span>
+            <span className="mt-1 block text-sm leading-5 opacity-80">Hear a note, then press its number key or tap its note button.</span>
           </button>
           <button onClick={() => setInputMode('mic')}
-            className="px-4 py-2 text-xs tracking-wider transition-all"
+            className="min-h-20 border p-4 text-left transition-all"
             style={{
               background: inputMode === 'mic' ? '#8b5cf6' : '#111',
-              color: inputMode === 'mic' ? '#fff' : '#555',
+              color: inputMode === 'mic' ? '#fff' : '#d7e7eb',
               border: `1px solid ${inputMode === 'mic' ? '#8b5cf6' : '#333'}`,
             }}>
-            MICROPHONE
+            <span className="block text-base font-black">VOICE</span>
+            <span className="mt-1 block text-sm leading-5 opacity-80">Hear a note, then sing and hold that pitch to fire.</span>
           </button>
         </div>
-        <div className="flex gap-2 mb-1">
+        <h2 className="mb-3 text-sm font-black tracking-[0.22em] text-emerald-200">CHALLENGE</h2>
+        <div className="mb-2 grid w-full gap-3 sm:grid-cols-2">
           <button onClick={() => {
             setDifficulty('easy')
             try { localStorage.setItem(RETRO_DIFFICULTY_KEY, 'easy') } catch {}
-          }} className="px-4 py-2 text-xs tracking-wider transition-all"
+          }} className="min-h-20 border p-4 text-left transition-all"
             style={{
               background: difficulty === 'easy' ? '#7dffb0' : '#111',
-              color: difficulty === 'easy' ? '#000' : '#555',
+              color: difficulty === 'easy' ? '#000' : '#d7e7eb',
               border: `1px solid ${difficulty === 'easy' ? '#7dffb0' : '#333'}`,
             }}>
-            EASY
+            <span className="block text-base font-black">COACHED / EASY</span>
+            <span className="mt-1 block text-sm leading-5 opacity-80">Your placed pace, generous listening time, and two protected early misses.</span>
           </button>
           <button onClick={() => {
             setDifficulty('true')
             try { localStorage.setItem(RETRO_DIFFICULTY_KEY, 'true') } catch {}
-          }} className="px-4 py-2 text-xs tracking-wider transition-all"
+          }} className="min-h-20 border p-4 text-left transition-all"
             style={{
               background: difficulty === 'true' ? '#ff6090' : '#111',
-              color: difficulty === 'true' ? '#fff' : '#555',
+              color: difficulty === 'true' ? '#fff' : '#d7e7eb',
               border: `1px solid ${difficulty === 'true' ? '#ff6090' : '#333'}`,
             }}>
-            TRUE PLAY
+            <span className="block text-base font-black">ARCADE / TRUE PLAY</span>
+            <span className="mt-1 block text-sm leading-5 opacity-80">One pace hotter than your placement; never under 2.4 seconds.</span>
           </button>
         </div>
-        <p className="text-[10px] text-gray-600 mb-6 tracking-wider text-center max-w-xs">
+        <p className="mb-5 max-w-xl text-center text-sm leading-6 text-gray-300">
           {difficulty === 'easy'
-            ? 'Gentle training — slower descent, fewer aliens, every wave beatable.'
-            : 'Full speed — faster ramp, more aliens, harder formations. No mercy.'}
+            ? 'Recommended: your placed pace, generous listening time, and early coaching saves.'
+            : 'Your placed pace, one level hotter. Recommended after the coached path.'}
         </p>
+        <section className="mb-6 w-full border border-white/10 bg-white/5 p-4 text-center" aria-label="Starting pace">
+          {savedPlacement ? (
+            <>
+              <div className="text-sm font-bold tracking-wider">STARTING PACE: <span className="text-yellow-200">{savedPlacement.pace.toUpperCase()}</span></div>
+              <div className="mt-1 text-sm text-gray-300">{retroPaceConfig(resolveRetroPlayPace(savedPlacement.pace, difficulty)).responseWindowMs / 1000} seconds to answer in this challenge.</div>
+              <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="Change starting pace">
+                {RETRO_PACES.map(pace => (
+                  <button key={pace} onClick={() => void choosePlacementPace(pace)}
+                    className="min-h-11 border border-white/25 px-3 py-2 text-sm font-bold text-gray-200"
+                    aria-pressed={savedPlacement.pace === pace}>{pace.toUpperCase()}</button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-sm font-bold tracking-wider text-yellow-200">FIRST LAUNCH: FIND YOUR PACE</div>
+              <div className="mt-2 text-sm leading-6 text-gray-300">Check your gear, destroy one practice alien, then answer four untimed C/A signals. This finds a comfortable starting pace; it does not grade talent.</div>
+            </>
+          )}
+        </section>
         <button onClick={handleInsertCoin}
-          className="px-10 py-3 text-lg font-bold tracking-widest transition-all active:scale-95"
+          className="min-h-14 px-10 py-3 text-lg font-bold tracking-widest transition-all active:scale-95"
           style={{ background: '#3FBFB5', color: '#000', border: '2px solid #5dddd3', boxShadow: '0 0 24px rgba(60,191,181,0.4)' }}>
-          INSERT COIN
+          INSERT COIN - START
         </button>
         <button onClick={() => { try { localStorage.removeItem(TUTORIAL_KEY) } catch {}; setPhase('tutorial') }}
-          className="mt-4 text-xs text-gray-600 hover:text-gray-400 tracking-wider">
+          className="mt-4 min-h-11 px-4 text-sm text-gray-300 hover:text-white tracking-wider">
           HOW TO PLAY
         </button>
         <a href="/pitch-defender" className="mt-8 text-xs text-gray-700 hover:text-gray-500 transition-colors tracking-wider">
           ← BACK TO PITCH DEFENDER
         </a>
+        </main>
       </div>
     )
   }
@@ -1144,34 +1601,33 @@ export default function RetroBlasterII() {
           style={{ textShadow: '0 0 20px rgba(60,191,181,0.4)', letterSpacing: '0.15em' }}>
           WELCOME TO RETRO BLASTER
         </h2>
-        <p className="text-xs text-gray-500 mb-6 tracking-widest">HOW TO PLAY</p>
-        <div className="max-w-lg space-y-4 mb-6">
+        <p className="mb-6 text-sm font-bold tracking-widest text-gray-300">YOUR FIRST MISSION</p>
+        <div className="mb-6 max-w-2xl space-y-5 text-base leading-6">
           <div className="flex items-start gap-3">
             <div className="text-2xl">👾</div>
             <div>
-              <div className="text-sm text-[#3FBFB5] font-bold">Aliens are descending</div>
-              <div className="text-xs text-gray-400">Each alien plays a musical note. The alien with the glowing <span className="text-yellow-300 font-bold">?</span> is your active target.</div>
+              <div className="text-base text-[#3FBFB5] font-bold">One active alien shows a glowing ?</div>
+              <div className="text-sm text-gray-300">That alien sends the target note. Ignore the other formation ships until a new target becomes active.</div>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <div className="text-2xl">🔊</div>
             <div>
-              <div className="text-sm text-yellow-300 font-bold">Listen, then press the matching key</div>
-              <div className="text-xs text-gray-400">When the active alien plays its note, hit the matching number key (or click its colored button) to fire your laser. Press <span className="text-white font-bold">SPACE</span> any time to replay the note.</div>
+              <div className="text-base text-yellow-300 font-bold">Listen, answer, fire</div>
+              <div className="text-sm text-gray-300">{inputMode === 'mic' ? 'Hear the active alien, then sing and hold the same pitch.' : 'Hear the active alien, then press its number key or tap its note button.'} Replay is always available before you answer.</div>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <div className="text-2xl">⌨️</div>
             <div>
-              <div className="text-sm text-purple-300 font-bold">Keyboard layout</div>
-              <div className="mt-1 grid grid-cols-8 gap-1 text-center">
+              <div className="text-base text-purple-300 font-bold">Your first two signals</div>
+              <div className="mt-2 grid grid-cols-2 gap-2 text-center">
                 {[
-                  { k: '1', n: 'C' }, { k: '2', n: 'D' }, { k: '3', n: 'E' }, { k: '4', n: 'F' },
-                  { k: '5', n: 'G' }, { k: '6', n: 'A' }, { k: '7', n: 'B' }, { k: '8', n: 'C' },
+                  { k: '1', n: 'C' }, { k: '2', n: 'A' },
                 ].map((x) => (
-                  <div key={x.k} className="px-2 py-1 border border-cyan-700 rounded">
-                    <div className="text-cyan-300 text-sm font-bold">{x.n}</div>
-                    <div className="text-gray-500 text-[9px]">[{x.k}]</div>
+                  <div key={x.k} className="min-h-14 border border-cyan-700 px-4 py-2">
+                    <div className="text-cyan-200 text-lg font-bold">{x.n}</div>
+                    <div className="text-gray-300 text-sm">KEY [{x.k}]</div>
                   </div>
                 ))}
               </div>
@@ -1180,36 +1636,36 @@ export default function RetroBlasterII() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">🛡️</div>
             <div>
-              <div className="text-sm text-red-300 font-bold">Wrong answers cost a shield</div>
-              <div className="text-xs text-gray-400">You start with 5 shields. A wrong key drops one shield AND replays the correct note so you learn it. Lose all 5 = game over.</div>
+              <div className="text-base text-emerald-300 font-bold">Practice is safe</div>
+              <div className="text-sm text-gray-300">Your practice alien and four pace signals are untimed and unscored. Wrong answers teach and replay; they never remove a shield or write a grade.</div>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <div className="text-2xl">🐢</div>
             <div>
-              <div className="text-sm text-gray-300 font-bold">Aliens come one at a time</div>
-              <div className="text-xs text-gray-400">Aliens drop in slowly. EASY mode caps how many are on screen so every wave is beatable. TRUE PLAY ramps up faster — try EASY first.</div>
+              <div className="text-base text-gray-100 font-bold">The game finds a comfortable pace</div>
+              <div className="text-sm text-gray-300">Four untimed C/A signals choose a provisional pace. EASY uses it; TRUE PLAY goes one level hotter. Two early misses are protected and can slow the run automatically.</div>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <div className="text-2xl">🎯</div>
             <div>
-              <div className="text-sm text-cyan-300 font-bold">Aim is automatic</div>
-              <div className="text-xs text-gray-400">Sing or click ANY alien&apos;s note — the cannon swings to the most-urgent matching alien and fires. The glowing alien is the one to beat.</div>
+              <div className="text-base text-cyan-300 font-bold">Answer only the active target</div>
+              <div className="text-sm text-gray-300">The cannon aims automatically after your answer. The alien marked <span className="font-black text-yellow-200">?</span> is the one you are answering now.</div>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <div className="text-2xl" aria-hidden="true">RADIO</div>
             <div>
-              <div className="text-sm text-emerald-300 font-bold">First: a quick radio check</div>
-              <div className="text-xs text-gray-400">Keyboard mode sends a visibly named C signal, then asks for C [1]. Microphone mode asks you to hum or sing anything. It is untimed, unscored, and never measures ability.</div>
+              <div className="text-base text-emerald-300 font-bold">First: prove the gear works</div>
+              <div className="text-sm text-gray-300">{inputMode === 'mic' ? 'You start the microphone, prove a fresh live signal, then explicitly continue.' : 'You play test note C, tell us whether you heard it, then press C [1].'} This checks hardware and controls, never ability.</div>
             </div>
           </div>
         </div>
         <button onClick={finishTutorial}
           className="px-12 py-4 text-lg font-bold tracking-widest transition-all active:scale-95"
           style={{ background: '#3FBFB5', color: '#000', border: '2px solid #5dddd3', boxShadow: '0 0 24px rgba(60,191,181,0.4)' }}>
-          START GAME
+          BEGIN PRE-FLIGHT
         </button>
         <button onClick={() => {
           abortCurriculumSession()
@@ -1257,10 +1713,10 @@ export default function RetroBlasterII() {
                 style={{ textShadow: '0 0 18px rgba(94,234,212,0.42)' }}>
                 RADIO CHECK
               </h2>
-              <p className="retro-readiness-copy mx-auto mb-7 max-w-lg text-center text-xs leading-5 text-gray-400">
+              <p className="retro-readiness-copy mx-auto mb-7 max-w-lg text-center text-base leading-7 text-gray-200">
                 {isEar
-                  ? 'Signal C is visibly named. Hear the ping, then operate C [1]. This is a systems check, not a score.'
-                  : 'Hum or sing anything. We only need a fresh live signal - no target note, range judgment, or score.'}
+                  ? '1. Play test note C. 2. Tell us whether you heard it. 3. Press C [1]. This checks audio and controls, never your musical ability.'
+                  : 'Start the microphone, make any comfortable sound, wait for LIVE SIGNAL HEARD, then explicitly continue. This is not a singing score.'}
               </p>
 
               {isEar ? (
@@ -1270,29 +1726,25 @@ export default function RetroBlasterII() {
                     style={{ borderColor: `hsl(${radioHue}, 80%, 62%)`, boxShadow: `0 0 28px hsla(${radioHue}, 80%, 55%, 0.22)` }}>
                     <span className="text-6xl font-black" style={{ color: `hsl(${radioHue}, 92%, 74%)` }}>C</span>
                   </div>
-                  <div className="retro-readiness-grid mb-5 grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Radio check response controls">
-                    {radioCheckRoster.map((note, index) => {
-                      const hue = NOTE_COLORS[note]?.hue ?? 0
-                      return (
-                        <button key={note} onClick={() => answerEarReadiness(note)}
-                          className="min-h-14 border px-3 py-2 text-sm font-bold tracking-wider outline-none transition-transform focus-visible:ring-2 focus-visible:ring-white active:scale-95"
-                          style={{
-                            color: colorHints ? `hsl(${hue}, 90%, 78%)` : '#e7f5fa',
-                            borderColor: colorHints ? `hsl(${hue}, 72%, 55%)` : '#718694',
-                            background: colorHints ? `hsla(${hue}, 70%, 30%, 0.18)` : '#111923',
-                          }}
-                          aria-label={`${note.replace(/\d/, '')}, key ${index + 1}`}>
-                          {note.replace(/\d/, '')} <span className="text-[10px] opacity-60">[{index + 1}]</span>
-                        </button>
-                      )
-                    })}
-                  </div>
                   <div className="retro-readiness-replay flex flex-wrap justify-center gap-3">
                     <button onClick={replayEarReadiness}
-                      className="min-h-11 border border-yellow-300 px-5 py-2 text-xs font-bold tracking-widest text-yellow-200 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95">
-                      {readinessStatus === 'audio-error' ? 'RETRY AUDIO' : 'PLAY C SIGNAL'}
+                      className="min-h-12 border border-yellow-300 px-5 py-3 text-sm font-bold tracking-widest text-yellow-100 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95">
+                      {readinessStatus === 'audio-error' ? 'RETRY AUDIO' : 'PLAY TEST NOTE C'}
                     </button>
+                    {readinessToneArmed && !readinessHeardConfirmed && (
+                      <>
+                        <button onClick={confirmEarReadiness}
+                          className="min-h-12 border border-emerald-300 bg-emerald-300/15 px-5 py-3 text-sm font-bold text-emerald-100">YES, I HEARD IT</button>
+                        <button onClick={retryMissingEarSignal}
+                          className="min-h-12 border border-red-300 px-5 py-3 text-sm font-bold text-red-100">NO SOUND - RETRY</button>
+                      </>
+                    )}
                   </div>
+                  {readinessHeardConfirmed && (
+                    <button onClick={() => answerEarReadiness(RADIO_CHECK_NOTE)}
+                      className="mx-auto mt-5 block min-h-16 min-w-48 border-2 border-cyan-300 bg-cyan-300/15 px-8 py-3 text-xl font-black text-cyan-100"
+                      aria-label="C, key 1">C <span className="text-base">[1]</span></button>
+                  )}
                 </>
               ) : (
                 <div className="retro-readiness-voice mb-6">
@@ -1309,21 +1761,27 @@ export default function RetroBlasterII() {
                         }} />
                     ))}
                   </div>
-                  <div className="text-center text-sm font-bold tracking-[0.18em] text-violet-200">
-                    {voiceSignalActive ? 'SIGNAL HEARD' : 'HUM OR SING ANYTHING'}
+                  <div className="text-center text-base font-bold tracking-[0.18em] text-violet-100">
+                    {readinessVoiceHeard ? 'LIVE SIGNAL HEARD' : readinessStatus === 'idle' ? 'MICROPHONE NOT STARTED' : 'HUM OR SING ANYTHING'}
                   </div>
-                  {(readinessStatus === 'voice-error' || readinessStatus === 'awaiting-voice') && (
-                    <div className="mt-5 flex justify-center">
+                  <div className="mt-5 flex flex-wrap justify-center gap-3">
+                    {!readinessVoiceHeard && (
                       <button onClick={retryVoiceReadiness}
-                        className="min-h-11 border border-violet-300 px-5 py-2 text-xs font-bold tracking-widest text-violet-200 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95">
-                        RETRY MIC
+                        className="min-h-12 border border-violet-300 px-5 py-3 text-sm font-bold tracking-widest text-violet-100 outline-none focus-visible:ring-2 focus-visible:ring-white active:scale-95">
+                        {readinessStatus === 'idle' ? 'START MICROPHONE' : 'RETRY MICROPHONE'}
                       </button>
-                    </div>
-                  )}
+                    )}
+                    {readinessVoiceHeard && (
+                      <button onClick={continueVoiceReadiness}
+                        className="min-h-12 border border-emerald-300 bg-emerald-300/15 px-5 py-3 text-sm font-bold text-emerald-100">CONTINUE TO PRACTICE</button>
+                    )}
+                    <button onClick={() => { stopListening(); setInputMode('click'); inputModeRef.current = 'click'; setPhase('menu') }}
+                      className="min-h-12 border border-cyan-300 px-5 py-3 text-sm font-bold text-cyan-100">USE KEYS / TAP INSTEAD</button>
+                  </div>
                 </div>
               )}
 
-              <div className="retro-readiness-message mt-6 min-h-10 border border-white/10 bg-black/60 px-3 py-2 text-center text-[11px] leading-5 tracking-wider text-cyan-100"
+              <div className="retro-readiness-message mt-6 min-h-12 border border-white/10 bg-black/60 px-3 py-3 text-center text-base font-bold leading-6 tracking-wide text-cyan-100"
                 role="status" aria-live="polite">
                 {readinessMessage || (isEar ? 'PREPARING SIGNAL C...' : 'PREPARING VOICE CHANNEL...')}
               </div>
@@ -1354,6 +1812,116 @@ export default function RetroBlasterII() {
             .retro-readiness-back { margin-top: 0; }
           }
         `}</style>
+      </div>
+    )
+  }
+
+  if (phase === 'practice') {
+    return (
+      <div className="fixed inset-0 overflow-y-auto bg-black px-5 py-8 text-white" style={{ fontFamily: 'monospace' }} data-retro-practice={practiceStage}>
+        <main className="mx-auto flex min-h-full w-full max-w-2xl flex-col items-center justify-center">
+          <div className="mb-2 text-sm font-bold tracking-[0.3em] text-emerald-300">SAFE PRACTICE - NO TIMER - NO SHIELDS</div>
+          <h2 className="mb-5 text-center text-3xl font-black tracking-[0.16em] text-cyan-200">DESTROY ONE C ALIEN</h2>
+          <div className="relative mb-5 flex h-56 w-full items-center justify-center overflow-hidden border-2 border-cyan-300/50 bg-[#050812]">
+            <div className={`absolute top-7 flex h-20 w-20 items-center justify-center border-2 text-4xl font-black ${practiceStage === 'success' ? 'border-red-300 text-red-300 opacity-30' : 'border-yellow-300 text-yellow-200'}`}
+              style={{ transform: practiceStage === 'success' ? 'scale(1.4) rotate(18deg)' : 'none', transition: reducedMotion ? 'none' : 'all 300ms ease-out' }}>
+              {practiceStage === 'success' ? '✦' : '?'}
+            </div>
+            <div className="absolute bottom-5 text-5xl text-cyan-300">▲</div>
+            {practiceStage === 'success' && <div className="absolute bottom-14 h-24 w-1 bg-cyan-100 shadow-[0_0_18px_#67e8f9]" aria-hidden="true" />}
+          </div>
+
+          <div className="mb-5 grid w-full gap-3 sm:grid-cols-2">
+            <div className={`border p-4 ${practiceStage === 'listen' ? 'border-yellow-300 bg-yellow-300/10' : 'border-white/15'}`}>
+              <div className="text-sm font-black text-yellow-200">1 - LISTEN</div>
+              <div className="mt-1 text-sm text-gray-200">Play the known C signal. Replay whenever you need it.</div>
+            </div>
+            <div className={`border p-4 ${practiceStage === 'answer' ? 'border-cyan-300 bg-cyan-300/10' : 'border-white/15'}`}>
+              <div className="text-sm font-black text-cyan-200">2 - ANSWER</div>
+              <div className="mt-1 text-sm text-gray-200">{inputMode === 'mic' ? 'Sing and hold C.' : 'Press C [1] or tap C.'}</div>
+            </div>
+          </div>
+
+          <div className="mb-5 min-h-14 w-full border border-white/15 bg-white/5 p-4 text-center text-base font-bold text-white" role="status" aria-live="polite">{practiceMessage}</div>
+          {practiceStage !== 'success' && (
+            <div className="flex flex-wrap justify-center gap-3">
+              <button onClick={() => void playPracticeSignal()}
+                className="min-h-12 border border-yellow-300 px-5 py-3 text-sm font-black text-yellow-100">{practiceStage === 'answer' ? 'REPLAY C' : 'PLAY C SIGNAL'}</button>
+              {inputMode === 'click' && (
+                <>
+                  <button onClick={() => answerPractice('C4')} disabled={practiceStage !== 'answer'}
+                    className="min-h-14 min-w-28 border-2 border-cyan-300 px-6 py-3 text-lg font-black text-cyan-100 disabled:opacity-35">C [1]</button>
+                  <button onClick={() => answerPractice('A4')} disabled={practiceStage !== 'answer'}
+                    className="min-h-14 min-w-28 border border-violet-300 px-6 py-3 text-lg font-black text-violet-100 disabled:opacity-35">A [2]</button>
+                </>
+              )}
+            </div>
+          )}
+          {practiceStage === 'success' && (
+            <button onClick={beginPlacement}
+              className="min-h-14 border-2 border-emerald-300 bg-emerald-300/15 px-8 py-3 text-lg font-black text-emerald-100">FIND MY PACE - 4 UNTIMED SIGNALS</button>
+          )}
+          <button onClick={() => { if (listeningRef.current) stopListening(); phaseRef.current = 'menu'; setPhase('menu') }}
+            className="mt-5 min-h-11 px-4 text-sm text-gray-400">BACK TO MENU</button>
+        </main>
+      </div>
+    )
+  }
+
+  if (phase === 'placement') {
+    const displayedTrial = Math.min(PLACEMENT_SEQUENCE.length, placementTrialIndex + 1)
+    return (
+      <div className="fixed inset-0 overflow-y-auto bg-black px-5 py-8 text-white" style={{ fontFamily: 'monospace' }} data-retro-placement={placementResult ? 'result' : 'trial'}>
+        <main className="mx-auto flex min-h-full w-full max-w-2xl flex-col items-center justify-center">
+          <div className="mb-2 text-sm font-bold tracking-[0.3em] text-emerald-300">FIND YOUR PACE - NOT A TALENT SCORE</div>
+          <h2 className="mb-3 text-center text-3xl font-black tracking-[0.14em] text-cyan-200">{placementResult ? 'STARTING PACE READY' : `UNTIMED SIGNAL ${displayedTrial} OF 4`}</h2>
+          <p className="mb-5 max-w-xl text-center text-sm leading-6 text-gray-300">Listen first. The target stays hidden until you answer. Wrong answers simply replay the same trial.</p>
+
+          <div className="mb-5 flex gap-3" aria-label={`${placementTrials.length} of 4 trials complete`}>
+            {PLACEMENT_SEQUENCE.map((_, index) => <span key={index} className={`h-4 w-10 border ${index < placementTrials.length ? 'border-emerald-300 bg-emerald-300' : index === placementTrialIndex && !placementResult ? 'border-yellow-300 bg-yellow-300/20' : 'border-gray-600'}`} />)}
+          </div>
+
+          {!placementResult && (
+            <div className="mb-5 flex h-40 w-40 items-center justify-center border-2 border-yellow-300/70 bg-[#050812] text-6xl font-black text-yellow-200"
+              aria-label="Target identity hidden until response">?</div>
+          )}
+          {placementResult && (
+            <div className="mb-5 border-2 border-emerald-300 bg-emerald-300/10 px-10 py-6 text-center">
+              <div className="text-sm tracking-widest text-emerald-200">COMFORTABLE START</div>
+              <div className="mt-2 text-4xl font-black text-white">{placementResult.pace.toUpperCase()}</div>
+              <div className="mt-2 text-sm text-gray-200">{retroPaceConfig(resolveRetroPlayPace(placementResult.pace, difficulty)).responseWindowMs / 1000} seconds to answer in {difficulty === 'true' ? 'True Play' : 'Easy'}.</div>
+            </div>
+          )}
+
+          <div className="mb-5 min-h-14 w-full border border-white/15 bg-white/5 p-4 text-center text-base font-bold" role="status" aria-live="polite">{placementMessage}</div>
+          {!placementResult ? (
+            <div className="flex flex-wrap justify-center gap-3">
+              <button onClick={() => void playPlacementSignal()} disabled={placementSignalArmed}
+                className="min-h-12 border border-yellow-300 px-5 py-3 text-sm font-black text-yellow-100 disabled:opacity-40">{placementAttempt > 0 ? 'REPLAY SAME SIGNAL' : 'PLAY SIGNAL'}</button>
+              {inputMode === 'click' && (
+                <>
+                  <button onClick={() => acceptPlacementAnswer('C4')} disabled={!placementSignalArmed}
+                    className="min-h-14 min-w-28 border-2 border-cyan-300 px-6 py-3 text-lg font-black text-cyan-100 disabled:opacity-35">C [1]</button>
+                  <button onClick={() => acceptPlacementAnswer('A4')} disabled={!placementSignalArmed}
+                    className="min-h-14 min-w-28 border-2 border-violet-300 px-6 py-3 text-lg font-black text-violet-100 disabled:opacity-35">A [2]</button>
+                </>
+              )}
+              <button onClick={() => void choosePlacementPace('cadet')}
+                className="min-h-12 border border-gray-500 px-5 py-3 text-sm font-bold text-gray-200">START AT CADET</button>
+            </div>
+          ) : (
+            <>
+              <div className="mb-4 flex flex-wrap justify-center gap-2" aria-label="Override starting pace">
+                {RETRO_PACES.map(pace => <button key={pace} onClick={() => void choosePlacementPace(pace)}
+                  className="min-h-11 border border-white/25 px-3 py-2 text-sm font-bold text-gray-100" aria-pressed={placementResult.pace === pace}>{pace.toUpperCase()}</button>)}
+              </div>
+              <button onClick={startFirstTimedSession}
+                className="min-h-14 border-2 border-cyan-300 bg-cyan-300/15 px-8 py-3 text-lg font-black text-cyan-100">LAUNCH FIRST C/A WAVE</button>
+            </>
+          )}
+          <button onClick={() => { if (listeningRef.current) stopListening(); phaseRef.current = 'menu'; setPhase('menu') }}
+            className="mt-5 min-h-11 px-4 text-sm text-gray-400">BACK TO MENU</button>
+        </main>
       </div>
     )
   }
@@ -1393,8 +1961,9 @@ export default function RetroBlasterII() {
   }
 
   const identityMaskActive = displayView?.identityMaskActive === true
+  const showTargetIdentity = colorHints && !identityMaskActive
   const activeAlien = displayView?.aliens[displayView.spotlightIdx]
-  const activeNoteName = !identityMaskActive && activeAlien?.alive ? activeAlien.note.replace(/\d/, '') : null
+  const activeNoteName = showTargetIdentity && activeAlien?.alive ? activeAlien.note.replace(/\d/, '') : null
   const matchProgress = displayView?.charge.fraction ?? 0
   const matchTargetNote = displayView?.charge.targetNote ?? null
   const displayUnlocked = displayView?.hud.unlockedNotes ?? []
@@ -1421,7 +1990,9 @@ export default function RetroBlasterII() {
             ? 'SIGNAL CHECK → LISTEN ONCE → BUTTONS ARM AFTER THE TONE'
             : 'SIGNAL CHECK ARMED → FORMATION IDENTITIES HIDDEN'
         : responseOpen
-          ? 'LISTEN FOR THE NOTE → PRESS THE MATCHING KEY (OR TAP ITS BUTTON)'
+          ? activeNoteName
+            ? `ANSWER NOW → PRESS ${activeNoteName} [${displayUnlocked.findIndex(note => note.replace(/\d/, '') === activeNoteName) + 1}]`
+            : 'ANSWER NOW → PRESS THE MATCHING NOTE (OR TAP ITS BUTTON)'
           : 'STAND BY → LISTEN FOR THE NEXT TARGET SIGNAL'
   const helperCopy = !isCeremony && blindResponseOpen
     ? 'FORMATION IDENTITIES HIDDEN · REPLAY LOCKED UNTIL ANSWER'
@@ -1456,19 +2027,22 @@ export default function RetroBlasterII() {
       <div className="w-full min-w-0 max-w-[960px] mb-2 px-2 py-1 text-center"
         data-retro-instruction-rail
         style={{ background: '#02050d', borderBlock: '1px solid rgba(103,232,249,0.22)' }}>
-        <div className="mb-1 min-w-0 max-w-full break-words text-[12px] font-bold tracking-wide text-cyan-200"
-          data-retro-instruction>
+        <div className="mb-2 min-w-0 max-w-full break-words text-lg font-black tracking-wide text-cyan-100"
+          data-retro-instruction role="status" aria-live="polite">
           {instructionCopy}
         </div>
-        <div className="flex justify-center gap-2 flex-wrap text-[10px]">
+        <div className="mb-2 text-sm font-bold text-emerald-200" data-retro-active-pace>
+          PACE {activePace.toUpperCase()} · {retroPaceConfig(activePace).responseWindowMs / 1000}s ANSWER WINDOW
+        </div>
+        <div className="flex justify-center gap-2 flex-wrap text-sm">
           {displayUnlocked.map((note, i) => {
             const hue = NOTE_COLORS[note]?.hue ?? 0
-            const isActiveNote = activeNoteName === note.replace(/\d/, '')
+            const isActiveNote = showTargetIdentity && activeNoteName === note.replace(/\d/, '')
             const noteLabel = `${note.replace(/\d/, '')}=${i + 1}`
             const responseStyle = {
-              borderColor: colorHints ? `hsl(${hue}, 70%, 55%)` : isActiveNote ? '#c8f5ff' : '#607080',
+              borderColor: colorHints ? `hsl(${hue}, 70%, 55%)` : '#607080',
               background: isActiveNote
-                ? colorHints ? `hsla(${hue}, 70%, 35%, 0.6)` : 'rgba(39,78,94,0.72)'
+                ? `hsla(${hue}, 70%, 35%, 0.6)`
                 : 'transparent',
               color: colorHints ? `hsl(${hue}, 90%, 75%)` : '#dce9ef',
               fontWeight: isActiveNote ? 700 : 400,
@@ -1494,9 +2068,13 @@ export default function RetroBlasterII() {
           })}
         </div>
         {helperCopy && (
-          <div className="mt-1 min-w-0 max-w-full break-words text-[12px] font-bold text-slate-300" data-retro-helper>
+          <div className="mt-1 min-w-0 max-w-full break-words text-sm font-bold text-slate-200" data-retro-helper>
             {helperCopy}
           </div>
+        )}
+        {displayView?.wrongMessage && (
+          <div className="mt-2 min-h-11 border border-red-300/50 bg-red-300/10 px-3 py-2 text-base font-black text-red-100"
+            role="status" aria-live="assertive" data-retro-feedback>{displayView.wrongMessage}</div>
         )}
       </div>
       <div className="relative w-full min-w-0 max-w-[960px] md:border-2 md:p-3"

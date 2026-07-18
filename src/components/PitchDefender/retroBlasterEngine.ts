@@ -1,6 +1,12 @@
 import { NOTE_COLORS, retrievability, type NoteMemory } from '../../lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
+import {
+  gentlerRetroPace,
+  retroMinimumDemandIntervalMs,
+  retroPaceConfig,
+  type RetroPace,
+} from './retroBlasterPlacement'
 
 // Pure engine extraction from RetroBlaster v1. R0 changes only the view seam.
 
@@ -324,6 +330,7 @@ export interface PendingAttackAnswer {
 
 export interface WavePacingReceipt {
   difficulty: Difficulty
+  pace: RetroPace | null
   wave: number
   waveStartedAtMs: number
   waveEndedAtMs: number
@@ -388,6 +395,7 @@ export interface EngineInput {
   pianoReadiness?: PianoReadinessObservation | null
   blindStimulusAck?: BlindStimulusAck | null
   curriculumUnlockAck?: CurriculumUnlockAck | null
+  colorHints?: boolean
 }
 
 export type EngineEvent =
@@ -401,6 +409,8 @@ export type EngineEvent =
   | { kind: 'spawn'; note: string; x: number }
   | { kind: 'waveComplete' }
   | { kind: 'ceremonyToneRequest'; ceremonyId: string; note: string }
+  | { kind: 'coachingFailure'; outcome: 'wrong' | 'timeout'; protectedCount: number; note: string }
+  | { kind: 'paceAdjusted'; from: RetroPace; to: RetroPace; outcome: 'wrong' | 'timeout'; deadlineAtMs: number }
   | { kind: 'gameOver' }
 
 export interface GameState {
@@ -423,6 +433,13 @@ export interface GameState {
   wrongTimer: number
   chargeProgress: number
   difficulty: Difficulty
+  pace: RetroPace | null
+  paceProtection: {
+    protectedCount: number
+    wrongCount: number
+    timeoutCount: number
+    demotions: number
+  }
   spawnQueue: string[]
   spawnedThisWave: number
   alienCountThisWave: number
@@ -556,7 +573,18 @@ export function shuffle<T>(arr: T[], seed: number): T[] {
   return a
 }
 
-export function waveParams(wave: number, difficulty: Difficulty): WaveParams {
+export function waveParams(wave: number, difficulty: Difficulty, pace: RetroPace | null = null): WaveParams {
+  if (pace) {
+    const config = retroPaceConfig(pace)
+    const baseCount = config.waveOneAlienCount
+    const baseConcurrent = config.waveOneMaxConcurrent
+    return {
+      alienCount: Math.min(baseCount + Math.floor((wave - 1) / 2), pace === 'cadet' ? 7 : 12),
+      maxConcurrent: Math.min(baseConcurrent + Math.floor((wave - 1) / 3), pace === 'cadet' ? 4 : 7),
+      descentSpeed: Math.min(4 + RETRO_PACES_INDEX[pace] * 0.7 + 0.6 * (wave - 1), 14),
+      spawnInterval: Math.max(800, retroMinimumDemandIntervalMs(pace) / 2),
+    }
+  }
   if (difficulty === 'easy') {
     return {
       alienCount:    Math.min(2 + Math.floor((wave - 1) / 2), 7),
@@ -571,6 +599,13 @@ export function waveParams(wave: number, difficulty: Difficulty): WaveParams {
     descentSpeed:  Math.min(5.5 + 1.1 * (wave - 1), 14),
     spawnInterval: 800,
   }
+}
+
+const RETRO_PACES_INDEX: Record<RetroPace, number> = {
+  cadet: 0,
+  pilot: 1,
+  ace: 2,
+  commander: 3,
 }
 
 export const SPAWN_LANES_X = [W * 0.14, W * 0.30, W * 0.46, W * 0.62, W * 0.86]
@@ -606,7 +641,7 @@ export function buildWaveQueue(
   fsrs: Record<string, NoteMemory>,
   memoryEpochMs = 0,
 ): void {
-  const params = waveParams(gs.wave, gs.difficulty)
+  const params = waveParams(gs.wave, gs.difficulty, gs.pace)
   const pool = gs.unlockedNotes
   const count = params.alienCount
 
@@ -676,7 +711,9 @@ export function createInitialState(
   unlockedNotes: string[],
   clockMs = 1,
   gameId = `fixture:${clockMs}`,
+  pace: RetroPace | null = null,
 ): GameState {
+  const demandFloorMs = pace ? retroMinimumDemandIntervalMs(pace) : ENGINE_DEMAND_FLOOR_MS[difficulty]
   return {
     gameId,
     aliens: [], lasers: [], particles: [], playerX: W / 2,
@@ -684,14 +721,15 @@ export function createInitialState(
     cityHealth: STARTING_SHIELDS,
     unlockedNotes: [...unlockedNotes], consecutiveCorrect: 0,
     selectedNote: null, waveIntroTimer: 1.5, flashTimer: 0,
-    wrongMessage: '', wrongTimer: 0, chargeProgress: 0, difficulty,
+    wrongMessage: '', wrongTimer: 0, chargeProgress: 0, difficulty, pace,
+    paceProtection: { protectedCount: 0, wrongCount: 0, timeoutCount: 0, demotions: 0 },
     spawnQueue: [], spawnedThisWave: 0, alienCountThisWave: 0,
     nextSpawnAt: 0, lastProgressAt: 0, hintCount: 0,
     phase: 'playing', clockMs, directorClockMs: clockMs, matchStartAt: 0, matchTargetAlienId: null,
     micCooldownMs: 0, answerCooldownMs: 0,
     nextAttackSerial: 1, activeAttack: null,
     blindProbePending: false, signalCheckDisposition: 'wave-1',
-    nextAttackAtMs: clockMs + ENGINE_DEMAND_FLOOR_MS[difficulty] - DIVE_TELEGRAPH_MS,
+    nextAttackAtMs: clockMs + demandFloorMs - DIVE_TELEGRAPH_MS,
     directorCursorSlot: 0, lastDemandAtMs: null,
     requiredAnswerEventsMs: [], waveStartedAtMs: clockMs,
     lastCompletedWavePacing: null,
@@ -721,7 +759,8 @@ export function beginWave(
   gs.waveStartedAtMs = gs.directorClockMs
   gs.blindProbePending = gs.wave >= 2
   gs.signalCheckDisposition = gs.blindProbePending ? 'pending' : 'wave-1'
-  gs.nextAttackAtMs = gs.waveStartedAtMs + ENGINE_DEMAND_FLOOR_MS[gs.difficulty] - DIVE_TELEGRAPH_MS
+  const demandFloorMs = gs.pace ? retroMinimumDemandIntervalMs(gs.pace) : ENGINE_DEMAND_FLOOR_MS[gs.difficulty]
+  gs.nextAttackAtMs = gs.waveStartedAtMs + demandFloorMs - DIVE_TELEGRAPH_MS
   buildWaveQueue(gs, fsrs, memoryEpochMs)
 }
 
@@ -731,6 +770,7 @@ function cloneState(state: GameState): GameState {
     aliens: state.aliens.map(a => ({ ...a, soul: { ...a.soul } })),
     lasers: state.lasers.map(l => ({ ...l })),
     particles: state.particles.map(p => ({ ...p })),
+    paceProtection: { ...state.paceProtection },
     activeAttack: state.activeAttack
       ? {
           ...state.activeAttack,
@@ -760,7 +800,7 @@ function cloneState(state: GameState): GameState {
   }
 }
 
-export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
+export function toViewState(gs: GameState, inputMode: InputMode, colorHints = true): ViewState {
   const target = gs.matchTargetAlienId ? gs.aliens.find(item => item.alienId === gs.matchTargetAlienId) : null
   const spotlightIdx = gs.activeAttack
     ? gs.aliens.findIndex(item => item.alienId === gs.activeAttack?.alienId)
@@ -828,7 +868,7 @@ export function toViewState(gs: GameState, inputMode: InputMode): ViewState {
     noteButtons: gs.unlockedNotes.map((note, i) => ({
       note,
       hue: NOTE_COLORS[note]?.hue ?? 0,
-      active: Boolean(!identityMaskActive && answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
+      active: Boolean(colorHints && !identityMaskActive && answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
       keyNum: i + 1,
     })),
   }
@@ -848,8 +888,16 @@ function clearMicTarget(gs: GameState): void {
   gs.chargeProgress = 0
 }
 
+export function responseWindowMs(gs: Pick<GameState, 'pace'>): number {
+  return gs.pace ? retroPaceConfig(gs.pace).responseWindowMs : DIVE_RESPONSE_DEADLINE_MS
+}
+
+export function minimumDemandIntervalMs(gs: Pick<GameState, 'difficulty' | 'pace'>): number {
+  return gs.pace ? retroMinimumDemandIntervalMs(gs.pace) : ENGINE_DEMAND_FLOOR_MS[gs.difficulty]
+}
+
 function cadenceTelegraphFloorMs(gs: GameState): number {
-  const floor = ENGINE_DEMAND_FLOOR_MS[gs.difficulty]
+  const floor = minimumDemandIntervalMs(gs)
   return (gs.lastDemandAtMs ?? gs.waveStartedAtMs) + floor - DIVE_TELEGRAPH_MS
 }
 
@@ -970,6 +1018,68 @@ export function teardownResolvedAttackForGameOver(
   return true
 }
 
+function protectEarlyPaceFailure(
+  gs: GameState,
+  attack: ActiveAttack,
+  target: Alien,
+  outcome: 'wrong' | 'timeout',
+  events: EngineEvent[],
+): boolean {
+  if (!gs.pace || gs.wave > 2 || gs.paceProtection.protectedCount >= 2) return false
+  gs.paceProtection.protectedCount++
+  if (outcome === 'wrong') gs.paceProtection.wrongCount++
+  else gs.paceProtection.timeoutCount++
+  gs.combo = 0
+  gs.consecutiveCorrect = 0
+  gs.lastProgressAt = gs.directorClockMs
+  clearMicTarget(gs)
+  events.push({
+    kind: 'coachingFailure',
+    outcome,
+    protectedCount: gs.paceProtection.protectedCount,
+    note: target.note,
+  })
+
+  if (gs.paceProtection.protectedCount === 2) {
+    const from = gs.pace
+    const to = gentlerRetroPace(from)
+    if (to !== from && attack.demandAtMs !== null) {
+      gs.pace = to
+      gs.paceProtection.demotions++
+      attack.deadlineAtMs = attack.demandAtMs + responseWindowMs(gs)
+      attack.outboundT = 0
+      target.x = target.formationX
+      target.y = target.formationY
+      gs.wrongMessage = 'PACE ADJUSTED - MORE LISTENING TIME. SAME TARGET, TRY AGAIN.'
+      gs.wrongTimer = 3.2
+      events.push({ kind: 'paceAdjusted', from, to, outcome, deadlineAtMs: attack.deadlineAtMs })
+      events.push({
+        kind: 'playNote', note: target.note, delayMs: 200, guard: 'attack',
+        targetAlienId: target.alienId, attackId: attack.attackId,
+        terminalAlreadyRecorded: false,
+      })
+      return true
+    }
+  }
+
+  attack.outcome = outcome
+  attack.resolvedAtMs = gs.directorClockMs
+  attack.phase = 'returning'
+  attack.returnFromT = attack.outboundT
+  attack.returnStartedAtMs = gs.directorClockMs
+  armAfterResolution(gs)
+  gs.wrongMessage = gs.pace === 'cadet' && gs.paceProtection.protectedCount === 2
+    ? `CADET COACHING - no shield lost. Signal was ${target.note.replace(/\d/, '')}.`
+    : `COACHING SAVE - no shield lost. Signal was ${target.note.replace(/\d/, '')}.`
+  gs.wrongTimer = 2.8
+  events.push({
+    kind: 'playNote', note: target.note, delayMs: 300, guard: 'attack',
+    targetAlienId: target.alienId, attackId: attack.attackId,
+    terminalAlreadyRecorded: true,
+  })
+  return true
+}
+
 export function resolveAttack(
   gs: GameState,
   attackId: string,
@@ -981,6 +1091,8 @@ export function resolveAttack(
   const attack = gs.activeAttack
   if (!attack || attack.attackId !== attackId || attack.outcome !== null) return false
   const target = findAlienById(gs, attack.alienId)
+  if (target?.alive && (outcome === 'wrong' || outcome === 'timeout') &&
+      protectEarlyPaceFailure(gs, attack, target, outcome, events)) return true
   attack.outcome = outcome
   attack.resolvedAtMs = gs.directorClockMs
   if (attack.cuePolicy === 'blind' && outcome !== 'cancelled') gs.signalCheckDisposition = 'terminal'
@@ -1178,7 +1290,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   if (gs.phase === 'ceremony') {
     const activeCeremony = gs.introductionCeremony
     if (!isActive || !activeCeremony) {
-      return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+      return { state: gs, viewState: toViewState(gs, input.inputMode, input.colorHints !== false), events }
     }
     const toneAck = input.ceremonyToneAck
     if (toneAck && toneAck.ceremonyId === activeCeremony.ceremonyId && toneAck.note === activeCeremony.note) {
@@ -1190,7 +1302,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     }
     if (activeCeremony.elapsedMs >= activeCeremony.durationMs) {
       if (beginNextIntroduction(gs, events)) {
-        return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+        return { state: gs, viewState: toViewState(gs, input.inputMode, input.colorHints !== false), events }
       }
       gs.introductionCeremony = null
       gs.phase = 'playing'
@@ -1198,7 +1310,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       gs.waveIntroTimer = 1.6
       beginWave(gs, input.fsrs ?? {}, input.memoryEpochMs ?? 0)
     }
-    return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+    return { state: gs, viewState: toViewState(gs, input.inputMode, input.colorHints !== false), events }
   }
 
   const dt = stepMs / 1000
@@ -1209,7 +1321,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   if (gs.micCooldownMs === 0 && gs.matchStartAt === -1) gs.matchStartAt = 0
 
   if (gs.phase !== 'playing' || !isActive) {
-    return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+    return { state: gs, viewState: toViewState(gs, input.inputMode, input.colorHints !== false), events }
   }
 
   if (gs.waveIntroTimer > 0) gs.waveIntroTimer -= dt
@@ -1219,7 +1331,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     if (gs.wrongTimer <= 0) gs.wrongMessage = ''
   }
 
-  const params = waveParams(gs.wave, gs.difficulty)
+  const params = waveParams(gs.wave, gs.difficulty, gs.pace)
   if (gs.spawnQueue.length > 0 && gs.waveIntroTimer <= 0 && gs.directorClockMs >= gs.nextSpawnAt) {
     const aliveCount = gs.aliens.filter(a => a.alive).length
     if (aliveCount < params.maxConcurrent) {
@@ -1339,7 +1451,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
       } else {
         attack.phase = 'outbound'
         attack.demandAtMs = gs.directorClockMs
-        attack.deadlineAtMs = attack.demandAtMs + DIVE_RESPONSE_DEADLINE_MS
+        attack.deadlineAtMs = attack.demandAtMs + responseWindowMs(gs)
         attack.outboundT = 0
         gs.lastDemandAtMs = request.requestedAtDirectorClockMs
         gs.requiredAnswerEventsMs.push(request.requestedAtDirectorClockMs)
@@ -1379,7 +1491,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
         } else {
           attack.phase = 'outbound'
           attack.demandAtMs = gs.directorClockMs
-          attack.deadlineAtMs = gs.directorClockMs + DIVE_RESPONSE_DEADLINE_MS
+          attack.deadlineAtMs = gs.directorClockMs + responseWindowMs(gs)
           attack.outboundT = 0
           gs.lastDemandAtMs = gs.directorClockMs
           gs.requiredAnswerEventsMs.push(gs.directorClockMs)
@@ -1530,6 +1642,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     const waveEndedAtMs = gs.directorClockMs
     gs.lastCompletedWavePacing = {
       difficulty: gs.difficulty,
+      pace: gs.pace,
       wave: gs.wave,
       waveStartedAtMs: gs.waveStartedAtMs,
       waveEndedAtMs,
@@ -1547,5 +1660,5 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     }
   }
 
-  return { state: gs, viewState: toViewState(gs, input.inputMode), events }
+  return { state: gs, viewState: toViewState(gs, input.inputMode, input.colorHints !== false), events }
 }

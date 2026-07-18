@@ -58,6 +58,8 @@ const family = await import(new URL('../../src/lib/fsrsFamily.ts', import.meta.u
 const engine = await import(new URL('../../src/components/PitchDefender/retroBlasterEngine.ts', import.meta.url))
 const curriculum = await import(new URL('../../src/components/PitchDefender/retroBlasterCurriculum.ts', import.meta.url))
 const gameTypes = await import(new URL('../../src/components/PitchDefender/types.ts', import.meta.url))
+const pitchMath = await import(new URL('../../src/components/PitchDefender/pitchMath.ts', import.meta.url))
+const placement = await import(new URL('../../src/components/PitchDefender/retroBlasterPlacement.ts', import.meta.url))
 
 function loadRealShell() {
   const filename = resolve(root, 'src/components/PitchDefender/RetroBlasterII.tsx')
@@ -81,6 +83,8 @@ function loadRealShell() {
     ['./types', gameTypes],
     ['./retroBlasterEngine', engine],
     ['./retroBlasterCurriculum', curriculum],
+    ['./pitchMath', pitchMath],
+    ['./retroBlasterPlacement', placement],
     ['./usePitchDetection', { usePitchDetection() { throw new Error('Component mount is outside this fixture') } }],
     ['./audioEngine', { initAudio() {}, loadPianoSamples() {}, playPianoNote() {} }],
     ['./retroBlasterRenderer', { render() {} }],
@@ -284,8 +288,11 @@ const fixtures = [
     const baselineHub = execFileSync('git', ['show', `${protectedBase}:${hubPath}`], { cwd: root, encoding: 'utf8' })
       .replaceAll('\r\n', '\n')
     assert(currentHub.includes(authorizedHubCard), 'authorized Retro Blaster II hub card missing or changed')
-    assert(currentHub.replace(authorizedHubCard, '') === baselineHub, 'hub drift exceeds authorized Retro Blaster II card')
-    return `git diff clean for siblings against ${protectedBase}; exact Retro Blaster II hub exception; 4 legacy literals intact`
+    const hubMatches = baselineHub.includes(authorizedHubCard)
+      ? currentHub === baselineHub
+      : currentHub.replace(authorizedHubCard, '') === baselineHub
+    assert(hubMatches, 'hub drift exceeds authorized Retro Blaster II card')
+    return `git diff clean for siblings against ${protectedBase}; exact idempotent Retro Blaster II hub card; 4 legacy literals intact`
   }],
   ['6', 'active-lane store selector with explicit session rosters', () => {
     const earNotes = gameTypes.INTRO_ORDER.slice(0, 7)

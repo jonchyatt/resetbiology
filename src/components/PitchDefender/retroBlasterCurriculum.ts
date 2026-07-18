@@ -169,6 +169,54 @@ export function deriveMonotonicCurriculumRecord(
   }
 }
 
+export function deriveCurriculumExtensionRecord(
+  currentRaw: string | null,
+  fallbackRoster: readonly string[],
+  fallbackExtensionFields: RetroCurriculumExtensionFields,
+  extensionPatch: RetroCurriculumExtensionFields,
+): {
+  record: RetroCurriculumRecord
+  durableRoster: string[]
+  extensionFields: RetroCurriculumExtensionFields
+} {
+  const current = repairablePolicy(currentRaw)
+  const durableRoster = canonicalRetroRoster(current?.roster ?? fallbackRoster)
+  if (!isPlayableRoster(durableRoster)) throw new Error('Invalid Retro curriculum extension roster')
+  const currentFields = current?.extensionFields ?? {}
+  const normalizedPatch = normalizedExtensions(extensionPatch)
+  const currentPlacement = currentFields.retroPlacement
+  const patchPlacement = normalizedPatch.retroPlacement
+  if (currentPlacement && patchPlacement &&
+      typeof currentPlacement === 'object' && !Array.isArray(currentPlacement) &&
+      typeof patchPlacement === 'object' && !Array.isArray(patchPlacement)) {
+    const currentRecord = currentPlacement as Record<string, unknown>
+    const patchRecord = patchPlacement as Record<string, unknown>
+    if (currentRecord.version === 1 && patchRecord.version === 1 &&
+        currentRecord.lanes && patchRecord.lanes &&
+        typeof currentRecord.lanes === 'object' && !Array.isArray(currentRecord.lanes) &&
+        typeof patchRecord.lanes === 'object' && !Array.isArray(patchRecord.lanes)) {
+      normalizedPatch.retroPlacement = {
+        ...currentRecord,
+        ...patchRecord,
+        lanes: {
+          ...(currentRecord.lanes as Record<string, unknown>),
+          ...(patchRecord.lanes as Record<string, unknown>),
+        },
+      }
+    }
+  }
+  const extensionFields = {
+    ...normalizedExtensions(fallbackExtensionFields),
+    ...currentFields,
+    ...normalizedPatch,
+  }
+  return {
+    record: recordFor(durableRoster, extensionFields),
+    durableRoster,
+    extensionFields,
+  }
+}
+
 export function commitRetroCurriculum(options: {
   storage: RetroCurriculumStorage
   locks: LockManager | undefined
@@ -207,6 +255,48 @@ export function commitRetroCurriculum(options: {
           options.getLastDurableRoster(),
           candidate,
           options.getLastExtensionFields(),
+        )
+        options.storage.setItem(RETRO_CURRICULUM_KEY, JSON.stringify(merged.record))
+        return { ok: true, ...merged }
+      } catch {
+        return {
+          ok: false,
+          durableRoster: [...options.getLastDurableRoster()],
+          extensionFields: { ...options.getLastExtensionFields() },
+          reason: 'storage-failed' as const,
+        }
+      }
+    },
+  )
+}
+
+export function commitRetroCurriculumExtension(options: {
+  storage: RetroCurriculumStorage
+  locks: LockManager | undefined
+  signal: AbortSignal
+  extensionPatch: RetroCurriculumExtensionFields
+  getLastDurableRoster: () => readonly string[]
+  getLastExtensionFields: () => RetroCurriculumExtensionFields
+}): Promise<RetroCurriculumCommitResult> {
+  if (!options.locks) {
+    return Promise.resolve({
+      ok: false,
+      durableRoster: [...options.getLastDurableRoster()],
+      extensionFields: { ...options.getLastExtensionFields() },
+      reason: 'locks-unavailable',
+    })
+  }
+  return options.locks.request(
+    RETRO_CURRICULUM_LOCK_NAME,
+    { mode: 'exclusive', signal: options.signal },
+    () => {
+      // Deliberately synchronous: placement and roster share the same union-on-commit lock.
+      try {
+        const merged = deriveCurriculumExtensionRecord(
+          options.storage.getItem(RETRO_CURRICULUM_KEY),
+          options.getLastDurableRoster(),
+          options.getLastExtensionFields(),
+          options.extensionPatch,
         )
         options.storage.setItem(RETRO_CURRICULUM_KEY, JSON.stringify(merged.record))
         return { ok: true, ...merged }
