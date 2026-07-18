@@ -412,12 +412,26 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
                 {detailsModal.type === 'breath' && 'Breath Session Details'}
                 {detailsModal.type === 'peptide' && 'Peptide Dose Details'}
                 {detailsModal.type === 'module' && 'Mental Module Details'}
+                {detailsModal.type === 'nutrition' && 'Nutrition Entry Details'}
               </h3>
               <button onClick={() => setDetailsModal(null)} className="p-2 rounded-lg hover:bg-slate-700/50 transition-colors">
                 <X className="h-5 w-5 text-slate-300" />
               </button>
             </div>
             <div className="text-slate-200 space-y-3">
+              {detailsModal.type === 'nutrition' && (
+                <>
+                  <p><strong className="text-primary-300">Item:</strong> {detailsModal.data.itemName}{detailsModal.data.brand ? ` (${detailsModal.data.brand})` : ''}</p>
+                  <p><strong className="text-primary-300">Meal:</strong> {detailsModal.data.mealType ?? 'N/A'}</p>
+                  <p><strong className="text-primary-300">Quantity:</strong> {detailsModal.data.quantity ?? 1} {detailsModal.data.unit ?? 'serving'}</p>
+                  <p><strong className="text-primary-300">Calories:</strong> {Math.round(detailsModal.data.nutrients?.kcal ?? 0)} kcal</p>
+                  <p><strong className="text-primary-300">Protein:</strong> {Math.round(detailsModal.data.nutrients?.protein_g ?? 0)}g</p>
+                  <p><strong className="text-primary-300">Carbs:</strong> {Math.round(detailsModal.data.nutrients?.carb_g ?? 0)}g</p>
+                  <p><strong className="text-primary-300">Fat:</strong> {Math.round(detailsModal.data.nutrients?.fat_g ?? 0)}g</p>
+                  <p><strong className="text-primary-300">Logged:</strong> {new Date(detailsModal.data.loggedAt).toLocaleString()}</p>
+                  {detailsModal.data.notes && <p><strong className="text-primary-300">Notes:</strong> {detailsModal.data.notes}</p>}
+                </>
+              )}
               {detailsModal.type === 'workout' && (
                 <>
                   <p><strong className="text-primary-300">Exercises:</strong> {detailsModal.data.exercises?.map((e: any) => e.name).join(', ') || 'N/A'}</p>
@@ -539,6 +553,86 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
                   <textarea
                     value={editForm.reasonsValidation ?? editModal.data.entry?.reasonsValidation ?? ''}
                     onChange={(e) => setEditForm({ ...editForm, reasonsValidation: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={2}
+                  />
+                </div>
+                {/* NEW-3: the edit form used to expose only mood/weight/
+                    reasonsValidation — the affirmation trio and all 5
+                    activity notes were rendered read-only with no edit
+                    path. The PATCH route already accepted every one of
+                    these fields (F1.1). */}
+                <div className="space-y-3 p-4 bg-primary-600/10 rounded-lg border border-primary-400/30">
+                  <h4 className="font-medium text-primary-300 text-sm">Daily Affirmation</h4>
+                  <div>
+                    <label className="block text-sm text-slate-300 mb-1">I am...</label>
+                    <input
+                      type="text"
+                      value={editForm.affirmationGoal ?? editModal.data.entry?.affirmationGoal ?? ''}
+                      onChange={(e) => setEditForm({ ...editForm, affirmationGoal: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-slate-300 mb-1">Because...</label>
+                    <input
+                      type="text"
+                      value={editForm.affirmationBecause ?? editModal.data.entry?.affirmationBecause ?? ''}
+                      onChange={(e) => setEditForm({ ...editForm, affirmationBecause: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-slate-300 mb-1">And that means...</label>
+                    <input
+                      type="text"
+                      value={editForm.affirmationMeans ?? editModal.data.entry?.affirmationMeans ?? ''}
+                      onChange={(e) => setEditForm({ ...editForm, affirmationMeans: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Peptide Notes</label>
+                  <textarea
+                    value={editForm.peptideNotes ?? editModal.data.entry?.peptideNotes ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, peptideNotes: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Workout Notes</label>
+                  <textarea
+                    value={editForm.workoutNotes ?? editModal.data.entry?.workoutNotes ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, workoutNotes: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Nutrition Notes</label>
+                  <textarea
+                    value={editForm.nutritionNotes ?? editModal.data.entry?.nutritionNotes ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, nutritionNotes: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Breath Notes</label>
+                  <textarea
+                    value={editForm.breathNotes ?? editModal.data.entry?.breathNotes ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, breathNotes: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
+                    rows={2}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Mental Module Notes</label>
+                  <textarea
+                    value={editForm.moduleNotes ?? editModal.data.entry?.moduleNotes ?? ''}
+                    onChange={(e) => setEditForm({ ...editForm, moduleNotes: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white"
                     rows={2}
                   />
