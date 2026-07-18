@@ -15,11 +15,85 @@ import {
   Bell,
   Pill,
 } from "lucide-react";
-import { DosageCalculator } from "./DosageCalculator";
+import { DosageCalculator, calculateDosage } from "./DosageCalculator";
 import { QuickAddOralMed } from "./QuickAddOralMed";
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
 import type { PeptideIndexEntry } from "@/data/peptide-education/generated";
+import { resolveFrequency } from "@/lib/peptide-frequency";
+
+// ---------------------------------------------------------------------------
+// H1 containment: the backend protocol shape (ProtocolInput/ApiProtocolShape
+// in src/lib/protocols-store.ts, off-limits to this fix) has no vialAmount /
+// reconstitution / syringeUnits / duration fields at all — those only ever
+// existed as hardcoded constants stamped onto every protocol regardless of
+// what the member actually entered in the Dose Calculator. This localStorage
+// side-channel persists the member's REAL calculator inputs per protocolId
+// (survives reload, does not touch the off-limits store or POST payload) so
+// the UI can render real prep data or an honest empty state — never a
+// fabricated number.
+// ---------------------------------------------------------------------------
+const PREP_STORAGE_KEY = "rb-peptide-prep-v1";
+
+interface PersistedPrep {
+  vialAmount?: string;
+  reconstitution?: string;
+  duration?: string;
+}
+
+function readPrepStore(): Record<string, PersistedPrep> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(PREP_STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+// Exported (alongside writePrepForProtocol/computeSyringeUnitsFromPrep)
+// purely so scripts/verify-containment.mjs can exercise the exact H1
+// data-transform logic fetchUserProtocols/handleSaveProtocol call, without
+// duplicating it in the fixture.
+export function readPrepForProtocol(protocolId: string): PersistedPrep {
+  return readPrepStore()[protocolId] || {};
+}
+
+export function writePrepForProtocol(protocolId: string, prep: PersistedPrep) {
+  if (typeof window === "undefined") return;
+  try {
+    const store = readPrepStore();
+    store[protocolId] = { ...store[protocolId], ...prep };
+    window.localStorage.setItem(PREP_STORAGE_KEY, JSON.stringify(store));
+  } catch {
+    // best-effort only — never block the UI on storage failures
+  }
+}
+
+// syringeUnits must be COMPUTED from the member's real vial/reconstitution/
+// dose via the existing calculator arithmetic (calculateDosage), never a
+// constant. Returns 0 when any of the three inputs is missing/unparseable —
+// callers treat 0 as "prep not set up" and render an empty state, not a
+// fabricated unit count.
+export function computeSyringeUnitsFromPrep(
+  dosage: string,
+  vialAmount: string,
+  reconstitution: string,
+): number {
+  const doseMatch = (dosage || "").match(/(\d+\.?\d*)\s*(mcg|mg)/i);
+  const vialMatch = (vialAmount || "").match(/(\d+\.?\d*)/);
+  const volMatch = (reconstitution || "").match(/(\d+\.?\d*)/);
+  if (!doseMatch || !vialMatch || !volMatch) return 0;
+
+  const results = calculateDosage({
+    desiredDose: parseFloat(doseMatch[1]),
+    doseUnit: doseMatch[2].toLowerCase() === "mg" ? "mg" : "mcg",
+    peptideConcentration: 0,
+    totalVolume: parseFloat(volMatch[1]),
+    peptideAmount: parseFloat(vialMatch[1]),
+    insulinSyringeUnits: true,
+  });
+  return results.insulinUnits ?? 0;
+}
 
 // Convert base64 VAPID key to Uint8Array format required by Push API
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -270,30 +344,35 @@ export function PeptideTracker() {
           while (currentDate <= endDate) {
             let shouldSchedule = false;
 
-            // Determine if dose should be scheduled based on frequency
-            if (
-              frequency.includes("daily") ||
-              frequency.includes("every day")
-            ) {
-              shouldSchedule = true;
-            } else if (frequency.includes("every other day")) {
+            // "Every other day" is an alternating-parity rule, not a
+            // day-of-week rule — already anchors correctly to startDate, so
+            // it stays outside the shared resolver (H2/H3 containment scope
+            // is the divergent/broken day-of-week logic below, not this).
+            if (frequency.includes("every other day")) {
               const daysSinceStart = Math.floor(
                 (currentDate.getTime() - startDate.getTime()) /
                   (1000 * 60 * 60 * 24),
               );
               shouldSchedule = daysSinceStart % 2 === 0;
-            } else if (frequency.includes("3x per week")) {
+            } else {
+              // H2/H3: single shared resolver replaces the divergent
+              // daily/3x-per-week/2x-per-week/mon-fri/once-per-week checks.
+              // Unrecognized frequency text schedules NOTHING (never
+              // silently defaults to daily); "weekly" anchors to this
+              // protocol's own startDate weekday (never hardcoded Monday);
+              // Nx-per-week text with no explicit days never invents
+              // Mon/Wed/Fri or Mon/Thu.
+              const resolved = resolveFrequency(protocol.frequency);
               const dayOfWeek = currentDate.getDay();
-              shouldSchedule = [1, 3, 5].includes(dayOfWeek); // Mon, Wed, Fri
-            } else if (frequency.includes("2x per week")) {
-              const dayOfWeek = currentDate.getDay();
-              shouldSchedule = [1, 4].includes(dayOfWeek); // Mon, Thu
-            } else if (frequency.includes("5 days on")) {
-              const dayOfWeek = currentDate.getDay();
-              shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
-            } else if (frequency.includes("once per week")) {
-              const dayOfWeek = currentDate.getDay();
-              shouldSchedule = dayOfWeek === 1; // Monday
+              if (resolved.kind === "daily" || resolved.kind === "twice-daily") {
+                shouldSchedule = true;
+              } else if (resolved.kind === "weekly") {
+                shouldSchedule = dayOfWeek === startDate.getDay();
+              } else if (resolved.kind === "days-of-week") {
+                shouldSchedule = (resolved.daysOfWeek ?? []).includes(dayOfWeek);
+              } else {
+                shouldSchedule = false;
+              }
             }
 
             if (shouldSchedule) {
@@ -565,26 +644,28 @@ export function PeptideTracker() {
       while (daysChecked < maxDays) {
         let shouldSchedule = false;
 
-        if (frequency.includes("daily") || frequency.includes("every day")) {
-          shouldSchedule = true;
-        } else if (frequency.includes("every other day")) {
+        // See generateFutureDoses above for the H2/H3 rationale — "every
+        // other day" stays a local parity check (already correct); every
+        // other case routes through the shared resolver so this function
+        // and generateFutureDoses can't disagree with each other.
+        if (frequency.includes("every other day")) {
           const daysSinceStart = Math.floor(
             (currentDate.getTime() - startDate.getTime()) /
               (1000 * 60 * 60 * 24),
           );
           shouldSchedule = daysSinceStart % 2 === 0;
-        } else if (frequency.includes("3x per week")) {
+        } else {
+          const resolved = resolveFrequency(protocol.frequency);
           const dayOfWeek = currentDate.getDay();
-          shouldSchedule = [1, 3, 5].includes(dayOfWeek); // Mon, Wed, Fri
-        } else if (frequency.includes("2x per week")) {
-          const dayOfWeek = currentDate.getDay();
-          shouldSchedule = [1, 4].includes(dayOfWeek); // Mon, Thu
-        } else if (frequency.includes("5 days on")) {
-          const dayOfWeek = currentDate.getDay();
-          shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
-        } else if (frequency.includes("once per week")) {
-          const dayOfWeek = currentDate.getDay();
-          shouldSchedule = dayOfWeek === 1; // Monday
+          if (resolved.kind === "daily" || resolved.kind === "twice-daily") {
+            shouldSchedule = true;
+          } else if (resolved.kind === "weekly") {
+            shouldSchedule = dayOfWeek === startDate.getDay();
+          } else if (resolved.kind === "days-of-week") {
+            shouldSchedule = (resolved.daysOfWeek ?? []).includes(dayOfWeek);
+          } else {
+            shouldSchedule = false;
+          }
         }
 
         if (shouldSchedule) {
@@ -750,25 +831,44 @@ export function PeptideTracker() {
       const data = await response.json();
 
       if (data.success && data.protocols) {
-        // Transform API data to match our interface
-        const formattedProtocols = data.protocols.map((protocol: any) => ({
-          id: protocol.id,
-          name: protocol.peptides?.name || "Unknown",
-          purpose: protocol.peptides?.category || "General",
-          dosage: protocol.dosage,
-          timing: protocol.timing ?? "AM",
-          frequency: protocol.frequency,
-          duration: "8 weeks",
-          vialAmount: "10mg",
-          reconstitution: protocol.peptides?.reconstitution || "",
-          syringeUnits: 10,
-          startDate: protocol.startDate
-            ? dateToLocalKey(new Date(protocol.startDate))
-            : dateToLocalKey(new Date()),
-          currentCycle: 1,
-          isActive: protocol.isActive,
-          administrationType: protocol.administrationType || "injection",
-        }));
+        // Transform API data to match our interface.
+        // H1: prep fields (duration/vialAmount/reconstitution/syringeUnits)
+        // render ONLY from the member's own persisted input (the localStorage
+        // prep side-channel — see readPrepForProtocol above) or a cited card
+        // value (protocol.peptides?.reconstitution, the real catalog field).
+        // No hardcoded prep defaults. syringeUnits is COMPUTED from the real
+        // vial/reconstitution/dose, never a constant; it's 0 when prep hasn't
+        // been set up, and the render layer treats 0 as an empty state.
+        const formattedProtocols = data.protocols.map((protocol: any) => {
+          const persistedPrep = readPrepForProtocol(protocol.id);
+          const vialAmount = persistedPrep.vialAmount || "";
+          const reconstitution =
+            persistedPrep.reconstitution || protocol.peptides?.reconstitution || "";
+          const duration = persistedPrep.duration || "";
+          const syringeUnits = computeSyringeUnitsFromPrep(
+            protocol.dosage || "",
+            vialAmount,
+            reconstitution,
+          );
+          return {
+            id: protocol.id,
+            name: protocol.peptides?.name || "Unknown",
+            purpose: protocol.peptides?.category || "General",
+            dosage: protocol.dosage,
+            timing: protocol.timing ?? "AM",
+            frequency: protocol.frequency,
+            duration,
+            vialAmount,
+            reconstitution,
+            syringeUnits,
+            startDate: protocol.startDate
+              ? dateToLocalKey(new Date(protocol.startDate))
+              : dateToLocalKey(new Date()),
+            currentCycle: 1,
+            isActive: protocol.isActive,
+            administrationType: protocol.administrationType || "injection",
+          };
+        });
         setCurrentProtocols(formattedProtocols);
         console.log(
           `✅ Loaded ${formattedProtocols.length} protocols from database`,
@@ -815,11 +915,16 @@ export function PeptideTracker() {
 
       if (products && Array.isArray(products)) {
         // Transform storefront products to match our interface
-        // NOTE: dosage/reconstitution/syringeUnits below are NOT prefill
-        // defaults — the Add-Protocol dose field is now sourced from cited
-        // regimens (RegimenSourcePicker) or typed by the user, never from
-        // these placeholders. Kept empty/zero to satisfy the PeptideProtocol
-        // shape; DosageCalculator never reads peptideLibrary[].dosage.
+        // H1: dosage/duration/vialAmount/reconstitution/syringeUnits are NOT
+        // prefill defaults — none of them are grounded in a real per-product
+        // value (the catalog has no vialAmount field at all). Previously
+        // "10mg"/"8 weeks" were stamped onto EVERY storefront product; since
+        // DosageCalculator's picker DOES read peptideLibrary[].vialAmount to
+        // seed the "peptide in vial (mg)" field, that fabricated a false vial
+        // size for every product (including non-peptide items like
+        // Bacteriostatic Water). Kept empty/zero — the member must type or
+        // pick a real prep in the calculator (RegimenSourcePicker / manual
+        // entry), never inherit a placeholder as if it were real.
         const formattedLibrary = products.map((product: any) => ({
           id: product.id,
           name: product.name,
@@ -827,8 +932,8 @@ export function PeptideTracker() {
           dosage: "",
           timing: "AM",
           frequency: "Daily",
-          duration: "8 weeks",
-          vialAmount: "10mg",
+          duration: "",
+          vialAmount: "",
           reconstitution: "",
           syringeUnits: 0,
         }));
@@ -841,10 +946,10 @@ export function PeptideTracker() {
           dosage: "",
           timing: "AM",
           frequency: "Daily",
-          duration: "4 weeks",
-          vialAmount: "5mg",
-          reconstitution: "1ml",
-          syringeUnits: 10,
+          duration: "",
+          vialAmount: "",
+          reconstitution: "",
+          syringeUnits: 0,
         });
 
         setPeptideLibrary(formattedLibrary);
@@ -901,7 +1006,9 @@ export function PeptideTracker() {
     }
   };
 
-  // Fallback library in case API fails
+  // Fallback library in case API fails.
+  // H1: no fabricated prep (duration/vialAmount/reconstitution/syringeUnits)
+  // — same reasoning as the storefront mapping above.
   const fallbackLibrary: Omit<
     PeptideProtocol,
     "startDate" | "currentCycle" | "isActive"
@@ -913,8 +1020,8 @@ export function PeptideTracker() {
       dosage: "",
       timing: "AM",
       frequency: "Once per week",
-      duration: "8 weeks on, 8 weeks off",
-      vialAmount: "3mg",
+      duration: "",
+      vialAmount: "",
       reconstitution: "",
       syringeUnits: 0,
     },
@@ -925,10 +1032,10 @@ export function PeptideTracker() {
       dosage: "",
       timing: "AM & PM (twice daily)",
       frequency: "Daily",
-      duration: "4-6 weeks",
-      vialAmount: "10mg",
-      reconstitution: "3ml",
-      syringeUnits: 10,
+      duration: "",
+      vialAmount: "",
+      reconstitution: "",
+      syringeUnits: 0,
     },
   ];
 
@@ -1053,6 +1160,16 @@ export function PeptideTracker() {
           (p) => p.name === protocolData.peptideName,
         );
 
+        // H1: persist the member's real calculator inputs so they survive
+        // reload (the backend protocol shape has no prep fields at all —
+        // protocols-store.ts is off-limits to add them). syringeUnits is
+        // COMPUTED from those real inputs, never a hardcoded constant.
+        writePrepForProtocol(protocolId, {
+          vialAmount: protocolData.vialAmount,
+          reconstitution: protocolData.reconstitution,
+          duration: protocolData.duration,
+        });
+
         // Add to local state
         const newProtocol: PeptideProtocol = {
           id: protocolId,
@@ -1064,7 +1181,11 @@ export function PeptideTracker() {
           duration: protocolData.duration,
           vialAmount: protocolData.vialAmount,
           reconstitution: protocolData.reconstitution,
-          syringeUnits: 10,
+          syringeUnits: computeSyringeUnitsFromPrep(
+            protocolData.dosage,
+            protocolData.vialAmount,
+            protocolData.reconstitution,
+          ),
           startDate: dateToLocalKey(new Date()),
           currentCycle: 1,
           isActive: true,
@@ -1243,22 +1364,29 @@ export function PeptideTracker() {
       );
       if (!shouldProceed) return;
     }
-    // Check if this protocol already has completed doses today
-    const todaysCompletedDoses = todaysDoses.filter(
-      (dose) =>
-        dose.peptideId === protocol.id &&
-        dose.completed &&
-        new Date(dose.actualTime!).toDateString() === new Date().toDateString(),
-    );
 
-    if (todaysCompletedDoses.length > 0) {
+    // H6: a twice-daily (AM+PM) protocol has TWO independently-loggable
+    // slots today (see generateTodaysDosesPreservingLogged/slotsForProtocol
+    // above, which already generates them correctly). Block only when every
+    // scheduled slot today is completed — previously this blocked after ANY
+    // one completed dose, which made the second (PM) dose unloggable once
+    // the first (AM) was logged.
+    const todaysPendingDoses = todaysScheduledDoses.filter((dose) => !dose.completed);
+
+    if (todaysScheduledDoses.length > 0 && todaysPendingDoses.length === 0) {
       alert(
-        `${protocol.name} already logged today. Check completed doses in your history.`,
+        `${protocol.name} already logged for all doses today. Check completed doses in your history.`,
       );
       return;
     }
 
-    setSelectedProtocol(protocol);
+    // Target the earliest still-pending slot so logDose (below) only clears
+    // that one slot instead of every pending slot for this protocol.
+    const nextSlot = [...todaysPendingDoses].sort(
+      (a, b) => parseTimeToMinutes(a.scheduledTime) - parseTimeToMinutes(b.scheduledTime),
+    )[0];
+
+    setSelectedProtocol({ ...protocol, scheduledDoseId: nextSlot?.id });
     setShowDoseModal(true);
     setDoseNotes("");
     setDoseSideEffects([]);
@@ -1359,6 +1487,12 @@ export function PeptideTracker() {
       if (response.ok) {
         console.log("✅ Protocol saved successfully, timing:", timingString);
 
+        // H1: duration has no backend field to PATCH (protocols-store.ts is
+        // off-limits) — persist the member's edit to the same localStorage
+        // side-channel fetchUserProtocols reads, so it isn't silently
+        // discarded on save.
+        writePrepForProtocol(editingProtocol.id, { duration: customDuration });
+
         // Re-fetch protocols from database to ensure we have the saved data
         await fetchUserProtocols();
 
@@ -1434,13 +1568,23 @@ export function PeptideTracker() {
           dateKey: doseKey,
         };
 
-        // Remove ALL pending doses for this protocol and add the completed dose
+        // H6: remove only the SPECIFIC pending slot being completed (the
+        // twice-daily AM/PM slot targeted by openDoseModal), not every
+        // pending dose for this protocol — removing all of them wiped the
+        // sibling slot (e.g. PM) from state as soon as AM was logged,
+        // making it unloggable until the next full data refetch.
         setTodaysDoses((prev) => {
-          // Filter out any pending doses for this protocol
-          const withoutPending = prev.filter(
-            (dose) =>
-              !(dose.peptideId === selectedProtocol.id && !dose.completed),
-          );
+          const targetId = selectedProtocol.scheduledDoseId;
+          const withoutPending = prev.filter((dose) => {
+            if (dose.completed) return true;
+            if (dose.peptideId !== selectedProtocol.id) return true;
+            // No specific slot id (single-dose protocol, or the unscheduled-
+            // override path) — fall back to the old "remove all pending for
+            // this protocol" behavior, which is a no-op risk only when
+            // there's just one slot to begin with.
+            if (!targetId) return false;
+            return dose.id !== targetId;
+          });
           // Add the new completed dose
           return [
             ...withoutPending.filter((dose) => dose.dateKey === doseKey),
@@ -1659,6 +1803,21 @@ export function PeptideTracker() {
       }
     }
 
+    // H2: an unparseable frequency must surface to the member instead of
+    // silently showing nothing (which reads as "nothing to worry about").
+    if (!statusBadge) {
+      const freqLower = protocol.frequency.toLowerCase();
+      if (
+        !freqLower.includes("every other day") &&
+        resolveFrequency(protocol.frequency).kind === "unknown"
+      ) {
+        statusBadge = {
+          text: "Unrecognized schedule — set it up",
+          className: "bg-red-500/20 text-red-300 border-red-400/40",
+        };
+      }
+    }
+
     return (
       <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/30 rounded-lg p-6 border border-primary-400/30 backdrop-blur-sm shadow-xl hover:shadow-primary-400/20 transition-all duration-300">
         {/* Header - Always visible */}
@@ -1752,11 +1911,33 @@ export function PeptideTracker() {
 
               <div className="border-t border-gray-600 pt-3">
                 <span className="text-gray-400">Preparation:</span>
-                <p className="text-gray-300 text-xs mt-1">
-                  {protocol.vialAmount} vial + {protocol.reconstitution} BAC
-                  water = {protocol.syringeUnits} units per dose
-                </p>
-                <SyringeScale units={protocol.syringeUnits} />
+                {/* H1: never render a fabricated prep number. Real values
+                    only, computed syringe units only, or an honest empty
+                    state that sends the member to set it up. */}
+                {protocol.administrationType && protocol.administrationType !== "injection" ? (
+                  <p className="text-gray-300 text-xs mt-1">
+                    No injection prep needed for this administration type.
+                  </p>
+                ) : protocol.vialAmount && protocol.reconstitution && protocol.syringeUnits > 0 ? (
+                  <>
+                    <p className="text-gray-300 text-xs mt-1">
+                      {protocol.vialAmount} vial + {protocol.reconstitution} BAC
+                      water = {protocol.syringeUnits} units per dose
+                    </p>
+                    <SyringeScale units={protocol.syringeUnits} />
+                  </>
+                ) : (
+                  <div className="mt-1">
+                    <p className="text-amber-300 text-xs">Prep not set up yet.</p>
+                    <button
+                      type="button"
+                      onClick={() => openCalculatorModal(protocol)}
+                      className="mt-1 text-xs font-semibold text-amber-200 underline underline-offset-2 hover:text-amber-100"
+                    >
+                      Set up your prep in the Dose Calculator
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -2367,12 +2548,28 @@ export function PeptideTracker() {
                   <h4 className="font-semibold text-amber-300 mb-2">
                     Preparation Instructions
                   </h4>
-                  <p className="text-amber-100 text-sm">
-                    Reconstitute {selectedProtocol.vialAmount} vial with{" "}
-                    {selectedProtocol.reconstitution} of bacteriostatic water.
-                    Each dose requires {selectedProtocol.syringeUnits} units on
-                    an insulin syringe.
-                  </p>
+                  {/* H1: no fabricated prep numbers here either. */}
+                  {selectedProtocol.administrationType &&
+                  selectedProtocol.administrationType !== "injection" ? (
+                    <p className="text-amber-100 text-sm">
+                      No injection prep needed for this administration type.
+                    </p>
+                  ) : selectedProtocol.vialAmount &&
+                    selectedProtocol.reconstitution &&
+                    selectedProtocol.syringeUnits > 0 ? (
+                    <p className="text-amber-100 text-sm">
+                      Reconstitute {selectedProtocol.vialAmount} vial with{" "}
+                      {selectedProtocol.reconstitution} of bacteriostatic water.
+                      Each dose requires {selectedProtocol.syringeUnits} units on
+                      an insulin syringe.
+                    </p>
+                  ) : (
+                    <p className="text-amber-100 text-sm">
+                      Prep not set up yet — open the Dose Calculator from this
+                      protocol's card to set your vial size and reconstitution
+                      volume.
+                    </p>
+                  )}
                 </div>
               </div>
 

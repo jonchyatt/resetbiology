@@ -115,7 +115,7 @@ const PEPTIDE_PRESETS = [
 /*********************************
  * Core calculation engine
  *********************************/
-const calculateDosage = (inputs: CalculatorInputs): CalculatorOutputs => {
+export const calculateDosage = (inputs: CalculatorInputs): CalculatorOutputs => {
   const safeTotalVolume = Number(inputs.totalVolume) || 0;
   const safePeptideAmount = Number(inputs.peptideAmount) || 0;
   const safeDesired = Number(inputs.desiredDose) || 0;
@@ -347,7 +347,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   };
 
   const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
-  const [peptideName, setPeptideName] = useState<string>("BPC-157");
+  // addProtocol mode starts with NO peptide selected (H4) — auto-selecting
+  // peptideLibrary[0] previously landed on whatever the storefront listed
+  // first, which could be a diluent like Bacteriostatic Water, not a real
+  // peptide. "calculate" mode (standalone tool, no protocol attached) keeps
+  // a reasonable starting display name.
+  const [peptideName, setPeptideName] = useState<string>(mode === "addProtocol" ? "" : "BPC-157");
   const [selectedPeptideId, setSelectedPeptideId] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -592,15 +597,16 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     });
   }, [peptideLibrary]);
 
-  useEffect(() => {
-    if (mode !== 'addProtocol' || !peptideLibrary || peptideLibrary.length === 0) return;
-    if (selectedPeptideId) return;
-    loadPeptideFromLibrary(peptideLibrary[0].name);
-  }, [mode, peptideLibrary, loadPeptideFromLibrary, selectedPeptideId]);
+  // H4: no auto-select-first-item. The picker used to default to
+  // peptideLibrary[0], which could silently land on a diluent (e.g.
+  // "Bacteriostatic Water 10mL") if the storefront happened to list it
+  // first, then compute prep math for the diluent instead of a real
+  // peptide. The selector now starts empty ("Select a peptide" placeholder)
+  // until the member makes an explicit choice.
 
   // Deep-link preselect: ?peptide=<slug> from /education/peptides/[slug]'s
-  // "Start Protocol" link. Runs once per modal mount, after the
-  // "select first" effect above so it wins the final selection.
+  // "Start Protocol" link. Runs once per modal mount — this is an explicit
+  // navigation intent, not an indiscriminate first-item default.
   useEffect(() => {
     if (!initialPeptideSlug || appliedInitialSlugRef.current || !peptideLibrary) return;
     const match = peptideLibrary.find((item) => item.slug === initialPeptideSlug);
@@ -701,6 +707,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   onChange={(event) => loadPeptideFromLibrary(event.target.value)}
                   className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
+                  {/* H4: no item is auto-selected, so show an explicit
+                      placeholder until the member picks a real peptide. */}
+                  {!(selectedPeptideId || peptideName) && (
+                    <option value="" disabled>Select a peptide</option>
+                  )}
                   {(() => {
                     const renderOption = (peptide: NonNullable<typeof peptideLibrary>[number]) => {
                       const optionValue = peptide.id || peptide.name;
@@ -856,7 +867,26 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <select
                   aria-label="Dose unit"
                   value={inputs.doseUnit}
-                  onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
+                  onChange={(e) => {
+                    const nextUnit = e.target.value as "mg" | "mcg";
+                    setInputs((s) => {
+                      if (nextUnit === s.doseUnit) return s;
+                      // H5: switching units must convert the real value
+                      // (mg<->mcg is always x1000), never silently
+                      // reinterpret the same number under a new unit — that
+                      // would change the actual dose 1000x with no
+                      // confirmation. The displayed number updates to the
+                      // correctly-converted figure so the conversion is
+                      // visible, not hidden. IU is never touched here.
+                      const converted =
+                        s.desiredDose === 0
+                          ? 0
+                          : nextUnit === "mg"
+                            ? s.desiredDose / 1000
+                            : s.desiredDose * 1000;
+                      return { ...s, doseUnit: nextUnit, desiredDose: converted };
+                    });
+                  }}
                   className="w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
                   <option value="mcg" className="bg-gray-800 text-amber-100">mcg</option>

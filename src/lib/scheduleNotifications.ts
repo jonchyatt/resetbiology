@@ -1,5 +1,6 @@
 import { prisma } from './prisma'
 import { fromZonedTime } from 'date-fns-tz'
+import { resolveFrequency } from './peptide-frequency'
 
 /**
  * Schedules push notifications for a protocol based on user preferences
@@ -212,28 +213,39 @@ export function shouldScheduleOnDate(
   const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
   startDate.setHours(0, 0, 0, 0)
 
-  if (frequency.includes('daily') || frequency.includes('every day')) {
-    return true
-  }
+  // "Every other day" is an alternating-parity rule, not a day-of-week rule
+  // — it already anchors correctly to startDate, so it stays outside the
+  // shared resolver (H2/H3 containment scope is the divergent/broken
+  // day-of-week logic below).
   if (frequency.includes('every other day')) {
     const daysSinceStart = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
     return daysSinceStart >= 0 && daysSinceStart % 2 === 0
   }
+
+  // H2/H3: route through the single shared resolver (src/lib/peptide-
+  // frequency.ts) instead of this file's own divergent 3x/2x-per-week /
+  // mon-fri / once-per-week checks, which disagreed with the copies in
+  // PeptideTracker.tsx and didn't understand DosageCalculator's custom-day
+  // list format ("Mon/Wed/Fri") at all.
+  const resolved = resolveFrequency(protocol.frequency || '')
   const dayOfWeek = date.getDay()
-  if (frequency.includes('3x per week') || frequency.includes('3x/week')) {
-    return [1, 3, 5].includes(dayOfWeek)
+
+  switch (resolved.kind) {
+    case 'daily':
+    case 'twice-daily':
+      return true
+    case 'weekly':
+      // H3: anchors to the protocol's OWN startDate weekday, never a
+      // hardcoded Monday.
+      return dayOfWeek === startDate.getDay()
+    case 'days-of-week':
+      return (resolved.daysOfWeek ?? []).includes(dayOfWeek)
+    case 'unknown':
+    default:
+      // H2: an unrecognized frequency schedules NOTHING — it must never
+      // silently default to daily.
+      return false
   }
-  if (frequency.includes('2x per week') || frequency.includes('2x/week')) {
-    return [1, 4].includes(dayOfWeek)
-  }
-  if (frequency.includes('mon-fri') || frequency.includes('5 days on')) {
-    return dayOfWeek >= 1 && dayOfWeek <= 5
-  }
-  if (frequency.includes('once per week')) {
-    return dayOfWeek === 1
-  }
-  // Default to daily if frequency is unrecognized
-  return true
 }
 
 /**
