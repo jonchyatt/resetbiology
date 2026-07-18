@@ -19,10 +19,20 @@
 //   DIVERGENT_NAME — Mongo has data for this day, no canonically-named file
 //                     exists, but SOME other file in the folder has content
 //                     matching what that day would emit (renamed/duplicated).
+//   DUPLICATE_NAME — TWO OR MORE Drive files share the exact canonical name
+//                     for this day (Drive allows duplicate names in the same
+//                     folder; the report tool must never silently pick a
+//                     "winner" — every copy is reported, the day is a hazard).
 //
 // Run: npx tsx src/lib/drive-drift-classify.ts self-test
 
-export type DriftClassification = 'IN_SYNC' | 'HAND_EDITED' | 'MISSING' | 'ORPHAN' | 'DIVERGENT_NAME'
+export type DriftClassification =
+  | 'IN_SYNC'
+  | 'HAND_EDITED'
+  | 'MISSING'
+  | 'ORPHAN'
+  | 'DIVERGENT_NAME'
+  | 'DUPLICATE_NAME'
 
 export interface ClassifyBucketInput {
   /** sha256 of the content Mongo would emit for this day right now, or null if Mongo has no data for this day. */
@@ -57,6 +67,103 @@ export function classifyBucket(input: ClassifyBucketInput): DriftClassification 
   // expectedHash === null && canonicalActualHash === null: no real bucket.
   // Never emitted by the report tool's loop; defined only for totality.
   return 'ORPHAN'
+}
+
+export interface ClassifyCanonicalBucketInput {
+  expectedHash: string | null
+  /** ALL Drive files found at the canonical name for this day — 0, 1, or (hazard) many. Order never matters. */
+  canonicalActualHashes: string[]
+  divergentMatchHash: string | null
+}
+
+/**
+ * Duplicate-name-aware wrapper around classifyBucket (fix-wave F2): if two or
+ * more Drive files share the exact canonical name, NOTHING is collapsed by
+ * picking one (a Map keyed by name silently drops every loser — the bug this
+ * replaces) — the bucket is unconditionally DUPLICATE_NAME, decided purely by
+ * `.length`, so the order the caller's Drive listing happened to return the
+ * copies in can never change the outcome.
+ */
+export function classifyCanonicalBucket(input: ClassifyCanonicalBucketInput): DriftClassification {
+  if (input.canonicalActualHashes.length > 1) return 'DUPLICATE_NAME'
+  return classifyBucket({
+    expectedHash: input.expectedHash,
+    canonicalActualHash: input.canonicalActualHashes[0] ?? null,
+    divergentMatchHash: input.divergentMatchHash,
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Manifest re-verify (fix-wave F1) — HIGH-3's re-verify hook. Two
+// INDEPENDENT staleness checks, because they answer different questions:
+//
+//   bytesStatus   — has the Drive file's BYTES changed since the manifest
+//                   recorded them (currentDriveContentHash vs the manifest's
+//                   stored driveContentHash)? Detects hand-edits/corruption
+//                   AFTER migration/verify time.
+//   emitterStatus — does what's CURRENTLY in Drive match what the LIVE
+//                   emitter would produce from CURRENT Mongo data right now
+//                   (currentDriveContentHash vs a fresh re-emission, hashed)?
+//                   Detects emitter/format drift — a file can be byte-for-
+//                   byte unchanged since a perfectly good migration and still
+//                   be missing fields the emitter has since started writing
+//                   (the "pre-payload-era record" scenario). This is NOT the
+//                   same check as ManifestRecord.canonicalHash: canonicalHash
+//                   hashes the RAW MONGO ROW fields, so it only detects "did
+//                   the source row change" — it says nothing about whether
+//                   the FILE FORMAT moved on, which is exactly the blind spot
+//                   here. Re-emitting and comparing against Drive bytes is
+//                   the only check that can see emitter drift; canonicalHash
+//                   is the wrong comparator for it.
+//
+// A record can be BYTES valid AND EMITTER stale simultaneously (the P6 case:
+// untouched pre-payload bytes) — the two fields are reported independently,
+// never collapsed into one verdict.
+// ---------------------------------------------------------------------------
+export type ManifestFieldStatus = 'VALID' | 'STALE'
+
+export interface ManifestRecordCheckInput {
+  /** Manifest's stored content hash at migration/verify time, or null if the manifest never recorded one. */
+  recordedDriveContentHash: string | null
+  /** Re-downloaded current Drive bytes hash, or null if the file is unreachable (missing/trashed/read error). */
+  currentDriveContentHash: string | null
+  /** sha256 of re-emitting this day's content from CURRENT Mongo data right now, or null if it couldn't be derived (no current Mongo data for the day, or an unparseable canonical file name). */
+  currentEmitterHash: string | null
+}
+
+export interface ManifestRecordCheckResult {
+  bytesStatus: ManifestFieldStatus
+  emitterStatus: ManifestFieldStatus
+  reasons: string[]
+}
+
+export function classifyManifestRecord(input: ManifestRecordCheckInput): ManifestRecordCheckResult {
+  const reasons: string[] = []
+
+  if (input.currentDriveContentHash === null) {
+    return {
+      bytesStatus: 'STALE',
+      emitterStatus: 'STALE',
+      reasons: ['Drive file unreachable (missing/trashed/read error)'],
+    }
+  }
+
+  let bytesStatus: ManifestFieldStatus = 'VALID'
+  if (input.recordedDriveContentHash === null || input.currentDriveContentHash !== input.recordedDriveContentHash) {
+    bytesStatus = 'STALE'
+    reasons.push('content hash differs from manifest-recorded hash (bytes changed since migration/verify)')
+  }
+
+  let emitterStatus: ManifestFieldStatus = 'VALID'
+  if (input.currentEmitterHash === null) {
+    emitterStatus = 'STALE'
+    reasons.push('could not re-derive current emitter content (no current Mongo data for this day, or unparseable canonical name)')
+  } else if (input.currentEmitterHash !== input.currentDriveContentHash) {
+    emitterStatus = 'STALE'
+    reasons.push('current Drive bytes do not match what the live emitter would produce from Mongo right now (emitter/format drift)')
+  }
+
+  return { bytesStatus, emitterStatus, reasons }
 }
 
 // ---------------------------------------------------------------------------
@@ -151,6 +258,128 @@ export function runSelfTest(): boolean {
 
   check('no expected, no canonical actual (unreachable bucket) -> defined, does not throw', () => {
     assert.doesNotThrow(() => classifyBucket({ expectedHash: null, canonicalActualHash: null, divergentMatchHash: null }))
+  })
+
+  // ---- classifyCanonicalBucket (fix-wave F2: duplicate canonical names) ----
+
+  check('0 canonical copies -> falls through to classifyBucket (MISSING, matches prior behavior)', () => {
+    assert.equal(
+      classifyCanonicalBucket({ expectedHash: 'h1', canonicalActualHashes: [], divergentMatchHash: null }),
+      'MISSING'
+    )
+  })
+
+  check('1 canonical copy -> falls through to classifyBucket (IN_SYNC, matches prior behavior)', () => {
+    assert.equal(
+      classifyCanonicalBucket({ expectedHash: 'h1', canonicalActualHashes: ['h1'], divergentMatchHash: null }),
+      'IN_SYNC'
+    )
+  })
+
+  check('2 canonical copies, one matching expected + one hand-edited -> DUPLICATE_NAME regardless (ordering A: match first)', () => {
+    assert.equal(
+      classifyCanonicalBucket({ expectedHash: 'h1', canonicalActualHashes: ['h1', 'h9'], divergentMatchHash: null }),
+      'DUPLICATE_NAME'
+    )
+  })
+
+  check('2 canonical copies, same content, reversed order (ordering B: match second) -> DUPLICATE_NAME, order never matters', () => {
+    assert.equal(
+      classifyCanonicalBucket({ expectedHash: 'h1', canonicalActualHashes: ['h9', 'h1'], divergentMatchHash: null }),
+      'DUPLICATE_NAME'
+    )
+  })
+
+  check('3+ canonical copies -> still DUPLICATE_NAME, nothing dropped by length alone', () => {
+    assert.equal(
+      classifyCanonicalBucket({ expectedHash: 'h1', canonicalActualHashes: ['h1', 'h2', 'h3'], divergentMatchHash: null }),
+      'DUPLICATE_NAME'
+    )
+  })
+
+  // ---- classifyManifestRecord (fix-wave F1: manifest re-verify) ----------
+
+  check('bytes unchanged + emitter matches current Drive bytes -> VALID/VALID', () => {
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: 'bytesA',
+      currentDriveContentHash: 'bytesA',
+      currentEmitterHash: 'bytesA',
+    })
+    assert.equal(result.bytesStatus, 'VALID')
+    assert.equal(result.emitterStatus, 'VALID')
+    assert.equal(result.reasons.length, 0)
+  })
+
+  check('P6 (verifier exact scenario): pre-payload-era record, untouched pre-payload bytes -> BYTES VALID, EMITTER STALE', () => {
+    // Bytes are exactly what the manifest recorded at migration time (no
+    // hand-edit, nothing touched it since) — but the live emitter, run
+    // against current Mongo data right now, would produce different
+    // (payload-block-bearing) bytes. Bytes-only staleness checking would
+    // wrongly say VALID; this must come back EMITTER_STALE.
+    const preePayloadBytes = 'pre-payload-era-content-hash'
+    const currentEmitterOutput = 'post-payload-era-content-hash'
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: preePayloadBytes,
+      currentDriveContentHash: preePayloadBytes, // untouched since migration
+      currentEmitterHash: currentEmitterOutput, // emitter has moved on
+    })
+    assert.equal(result.bytesStatus, 'VALID')
+    assert.equal(result.emitterStatus, 'STALE')
+    assert.ok(result.reasons.some((r) => r.includes('emitter/format drift')))
+  })
+
+  check('hand-edited since manifest, but coincidentally matches current emitter output -> BYTES STALE, EMITTER VALID', () => {
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: 'original-bytes',
+      currentDriveContentHash: 'edited-bytes',
+      currentEmitterHash: 'edited-bytes',
+    })
+    assert.equal(result.bytesStatus, 'STALE')
+    assert.equal(result.emitterStatus, 'VALID')
+  })
+
+  check('both stale: hand-edited AND emitter-mismatched', () => {
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: 'original-bytes',
+      currentDriveContentHash: 'edited-bytes',
+      currentEmitterHash: 'expected-bytes',
+    })
+    assert.equal(result.bytesStatus, 'STALE')
+    assert.equal(result.emitterStatus, 'STALE')
+    assert.equal(result.reasons.length, 2)
+  })
+
+  check('Drive file unreachable -> both STALE with a single explicit reason, no further checks attempted', () => {
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: 'bytesA',
+      currentDriveContentHash: null,
+      currentEmitterHash: 'bytesA',
+    })
+    assert.equal(result.bytesStatus, 'STALE')
+    assert.equal(result.emitterStatus, 'STALE')
+    assert.equal(result.reasons.length, 1)
+    assert.ok(result.reasons[0].includes('unreachable'))
+  })
+
+  check('no current Mongo data for this day (rows deleted / unparseable name) -> emitter STALE, bytes unaffected', () => {
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: 'bytesA',
+      currentDriveContentHash: 'bytesA',
+      currentEmitterHash: null,
+    })
+    assert.equal(result.bytesStatus, 'VALID')
+    assert.equal(result.emitterStatus, 'STALE')
+    assert.ok(result.reasons.some((r) => r.includes('could not re-derive')))
+  })
+
+  check('manifest never recorded a driveContentHash -> bytes STALE even if current bytes happen to equal emitter output', () => {
+    const result = classifyManifestRecord({
+      recordedDriveContentHash: null,
+      currentDriveContentHash: 'bytesA',
+      currentEmitterHash: 'bytesA',
+    })
+    assert.equal(result.bytesStatus, 'STALE')
+    assert.equal(result.emitterStatus, 'VALID')
   })
 
   // ---- canonical-name matcher ------------------------------------------
