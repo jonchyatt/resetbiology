@@ -95,8 +95,9 @@ export async function syncUserToDatabase(session: Session): Promise<void> {
     // ONLY for a session with a VERIFIED email claim: the funnel is public and
     // unauthenticated, so linking by unverified email would let an attacker who
     // signs up with someone else's address inherit that person's private
-    // submission (reason, scores). Unverified sessions link on a later verified
-    // login instead (this sync runs every session).
+    // submission (reason, scores). Sync-created rows (subscriber tier) never
+    // DB-link retroactively; their reason resolves via the verified
+    // email-fallback in /api/user/reason instead.
     const quizSubmission = emailVerified
       ? await prisma.nEPQSubmission.findFirst({
           where: { email },
