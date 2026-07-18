@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import Link from "next/link"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell, X, Edit2, Eye } from "lucide-react"
 import { localDayKey, weekdayOfDayKey, dayOfMonthFromKey } from "@/lib/localDay"
+import { useToast } from "@/components/ui/Toast"
 
 interface JournalHistoryDay {
   date: string
@@ -47,38 +48,50 @@ export function JournalHistory() {
   const [error, setError] = useState<string | null>(null)
   const [selectedDayKey, setSelectedDayKey] = useState<string>(() => localDayKey(new Date()))
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const loadHistory = async () => {
-      try {
-        setLoading(true)
-        setError(null)
-        const response = await fetch(`/api/journal/history?month=${toMonthParam(currentMonth)}`, {
-          cache: 'no-store',
-          signal: controller.signal,
-        })
-        const data = await response.json()
-        if (!response.ok || !data?.success) {
-          throw new Error(data?.error || 'Failed to load journal history')
-        }
-        setHistory(data)
-        if (data.days?.length) {
-          const hasSelected = data.days.find((day: JournalHistoryDay) => day.date === selectedDayKey)
-          if (!hasSelected) {
-            setSelectedDayKey(data.days[data.days.length - 1].date)
-          }
-        }
-      } catch (err: any) {
-        if (err?.name === 'AbortError') return
-        console.error('Failed to load journal history:', err)
-        setError(err?.message || 'Failed to load journal history')
-      } finally {
-        setLoading(false)
-      }
-    }
+  const controllerRef = useRef<AbortController | null>(null)
 
+  // Plain function (not memoized) so it always closes over the latest
+  // currentMonth/selectedDayKey — re-created every render, which is fine
+  // since it's only ever invoked from an effect or a callback, never used
+  // as another hook's dependency. Exposed to DayDetail so a save/delete can
+  // refetch in place instead of window.location.reload()-ing the whole page
+  // (F1.4 — that reload dropped the selected day, scroll position, and open
+  // month).
+  const loadHistory = async () => {
+    controllerRef.current?.abort()
+    const controller = new AbortController()
+    controllerRef.current = controller
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await fetch(`/api/journal/history?month=${toMonthParam(currentMonth)}`, {
+        cache: 'no-store',
+        signal: controller.signal,
+      })
+      const data = await response.json()
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.error || 'Failed to load journal history')
+      }
+      setHistory(data)
+      if (data.days?.length) {
+        const hasSelected = data.days.find((day: JournalHistoryDay) => day.date === selectedDayKey)
+        if (!hasSelected) {
+          setSelectedDayKey(data.days[data.days.length - 1].date)
+        }
+      }
+    } catch (err: any) {
+      if (err?.name === 'AbortError') return
+      console.error('Failed to load journal history:', err)
+      setError(err?.message || 'Failed to load journal history')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
     loadHistory()
-    return () => controller.abort()
+    return () => controllerRef.current?.abort()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMonth])
 
   const dayLookup = useMemo(() => {
@@ -339,7 +352,7 @@ export function JournalHistory() {
 
                 {selectedDay ? (
 
-                  <DayDetail day={selectedDay} />
+                  <DayDetail day={selectedDay} onSaved={loadHistory} />
 
                 ) : (
 
@@ -373,13 +386,19 @@ function startOfMonth(date: Date) {
   return d
 }
 
-function DayDetail({ day }: { day: JournalHistoryDay }) {
+function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => void | Promise<void> }) {
   const displayDate = useMemo(() => new Date(day.iso), [day.iso])
   const entry = day.journalEntry?.entry ?? {}
   const [detailsModal, setDetailsModal] = useState<{ type: string; data: any } | null>(null)
   const [editModal, setEditModal] = useState<{ type: string; data: any } | null>(null)
   const [editForm, setEditForm] = useState<any>({})
   const [saving, setSaving] = useState(false)
+  const toast = useToast()
+
+  const closeEditModal = () => {
+    setEditModal(null)
+    setEditForm({})
+  }
 
   return (
     <div className="space-y-6">
@@ -477,13 +496,14 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                     body: JSON.stringify(editForm)
                   })
                   if (response.ok) {
-                    alert('Journal entry updated successfully!')
-                    window.location.reload()
+                    toast.success('Journal entry updated')
+                    closeEditModal()
+                    await onSaved()
                   } else {
                     throw new Error('Failed to update')
                   }
                 } catch (error) {
-                  alert('Failed to update journal entry')
+                  toast.error('Failed to update journal entry')
                 } finally {
                   setSaving(false)
                 }
@@ -546,13 +566,14 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                     body: JSON.stringify(editForm)
                   })
                   if (response.ok) {
-                    alert('Nutrition entry updated successfully!')
-                    window.location.reload()
+                    toast.success('Nutrition entry updated')
+                    closeEditModal()
+                    await onSaved()
                   } else {
                     throw new Error('Failed to update')
                   }
                 } catch (error) {
-                  alert('Failed to update nutrition entry')
+                  toast.error('Failed to update nutrition entry')
                 } finally {
                   setSaving(false)
                 }
@@ -626,20 +647,26 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button type="button" onClick={async () => {
-                    if (!confirm('Are you sure you want to delete this nutrition entry?')) return
+                    const confirmed = await toast.confirm({
+                      title: 'Delete nutrition entry?',
+                      body: 'This cannot be undone.',
+                      destructive: true,
+                    })
+                    if (!confirmed) return
                     setSaving(true)
                     try {
                       const response = await fetch(`/api/nutrition/entries/${editModal.data.id}`, {
                         method: 'DELETE'
                       })
                       if (response.ok) {
-                        alert('Nutrition entry deleted successfully!')
-                        window.location.reload()
+                        toast.success('Nutrition entry deleted')
+                        closeEditModal()
+                        await onSaved()
                       } else {
                         throw new Error('Failed to delete')
                       }
                     } catch (error) {
-                      alert('Failed to delete nutrition entry')
+                      toast.error('Failed to delete nutrition entry')
                     } finally {
                       setSaving(false)
                     }
@@ -665,13 +692,14 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                     body: JSON.stringify(editForm)
                   })
                   if (response.ok) {
-                    alert('Workout updated successfully!')
-                    window.location.reload()
+                    toast.success('Workout updated')
+                    closeEditModal()
+                    await onSaved()
                   } else {
                     throw new Error('Failed to update')
                   }
                 } catch (error) {
-                  alert('Failed to update workout')
+                  toast.error('Failed to update workout')
                 } finally {
                   setSaving(false)
                 }
@@ -746,20 +774,26 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                     {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button type="button" onClick={async () => {
-                    if (!confirm('Are you sure you want to delete this workout?')) return
+                    const confirmed = await toast.confirm({
+                      title: 'Delete workout?',
+                      body: 'This cannot be undone.',
+                      destructive: true,
+                    })
+                    if (!confirmed) return
                     setSaving(true)
                     try {
                       const response = await fetch(`/api/workout/sessions/${editModal.data.id}`, {
                         method: 'DELETE'
                       })
                       if (response.ok) {
-                        alert('Workout deleted successfully!')
-                        window.location.reload()
+                        toast.success('Workout deleted')
+                        closeEditModal()
+                        await onSaved()
                       } else {
                         throw new Error('Failed to delete')
                       }
                     } catch (error) {
-                      alert('Failed to delete workout')
+                      toast.error('Failed to delete workout')
                     } finally {
                       setSaving(false)
                     }
@@ -785,13 +819,14 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                     body: JSON.stringify(editForm)
                   })
                   if (response.ok) {
-                    alert('Peptide dose updated successfully!')
-                    window.location.reload()
+                    toast.success('Peptide dose updated')
+                    closeEditModal()
+                    await onSaved()
                   } else {
                     throw new Error('Failed to update')
                   }
                 } catch (error) {
-                  alert('Failed to update peptide dose')
+                  toast.error('Failed to update peptide dose')
                 } finally {
                   setSaving(false)
                 }
