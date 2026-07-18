@@ -5,6 +5,8 @@ import {
   utcMidnightToDayKey,
   weekdayOfDayKey,
   dayOfMonthFromKey,
+  getMonthRange,
+  buildMonthCalendarDays,
 } from '../src/lib/localDay'
 import { toUtcFromLocal } from '../src/lib/scheduleNotifications'
 
@@ -91,29 +93,40 @@ check('todayLocalKey returns a YYYY-MM-DD string', /^\d{4}-\d{2}-\d{2}$/.test(to
 
 // --- Month grid: July 2026 must render as July 1-31 with correct labels
 // and correct weekday alignment, in Denver AND New York AND UTC (F1.3
-// NEW-1a/b/c acceptance). ---
-const julyKeys: string[] = []
-for (let day = 1; day <= 31; day++) {
-  julyKeys.push(`2026-07-${String(day).padStart(2, '0')}`)
-}
-check('July 2026 has exactly 31 day keys (no off-by-one at either end)', julyKeys.length === 31)
-check('July 2026 starts on the 1st', dayOfMonthFromKey(julyKeys[0]) === 1)
-check('July 2026 ends on the 31st', dayOfMonthFromKey(julyKeys[julyKeys.length - 1]) === 31)
+// NEW-1a/b/c acceptance). Calls the ROUTE's actual calendar-generation
+// functions (getMonthRange + buildMonthCalendarDays, now shared out of
+// app/api/journal/history/route.ts) instead of a test-constructed key
+// array — a bug in either function fails this test, which a
+// tautological "build the same keys the test expects" check cannot do.
+const { start: julyStart, end: julyEnd } = getMonthRange('2026-07')
+const julyGrid = buildMonthCalendarDays(julyStart, julyEnd)
+const julyKeys = julyGrid.map((d) => d.date)
+
+check('July 2026 has exactly 31 day keys (no off-by-one at either end)', julyKeys.length === 31, `got ${julyKeys.length}`)
+check('July 2026 starts on the 1st', dayOfMonthFromKey(julyKeys[0]) === 1, julyKeys[0])
+check('July 2026 ends on the 31st', dayOfMonthFromKey(julyKeys[julyKeys.length - 1]) === 31, julyKeys[julyKeys.length - 1])
+check('July 2026 grid iso strings are well-formed and in order', julyGrid.every((d, i) => !Number.isNaN(new Date(d.iso).getTime()) && (i === 0 || julyGrid[i - 1].iso < d.iso)))
 // July 1, 2026 is a Wednesday (verified via Intl weekday lookup at
 // test-authoring time — JS getDay(): 0=Sun..6=Sat, so Wednesday = 3).
-check('July 1, 2026 leading-blank weekday is Wednesday (3)', weekdayOfDayKey(julyKeys[0]) === 3)
+check('July 1, 2026 leading-blank weekday is Wednesday (3)', weekdayOfDayKey(julyKeys[0]) === 3, String(weekdayOfDayKey(julyKeys[0])))
 
 for (const zone of ['UTC', 'America/Denver', 'America/New_York']) {
-  // Noon UTC on each day is safely inside the same calendar day for every
-  // continental US zone (max UTC-10 offset would be needed to roll it —
-  // none of our supported zones go that far west) and for UTC itself, so a
-  // real timestamp reformatted per-zone reproduces the same 31 keys.
-  const zoneKeys = julyKeys.map((key) => {
-    const noonUtc = new Date(`${key}T12:00:00.000Z`)
+  // Noon UTC on each grid day is safely inside the same calendar day for
+  // every continental US zone (max UTC-10 offset would be needed to roll
+  // it — none of our supported zones go that far west) and for UTC
+  // itself, so a real timestamp reformatted per-zone must reproduce the
+  // SAME grid the route function actually generated above.
+  const zoneKeys = julyGrid.map(({ date }) => {
+    const noonUtc = new Date(`${date}T12:00:00.000Z`)
     return localDayKey(noonUtc, zone)
   })
   const matches = zoneKeys.every((key, i) => key === julyKeys[i])
   check(`July 2026 grid reproduces July 1-31 in ${zone}`, matches, JSON.stringify(zoneKeys))
+  // Weekday alignment must also hold per-zone — a pure calendar fact, not
+  // shifted by which zone re-derived the key (see weekdayOfDayKey doc).
+  const zoneWeekdays = zoneKeys.map(weekdayOfDayKey)
+  const expectedWeekdays = julyKeys.map(weekdayOfDayKey)
+  check(`July 2026 weekday alignment matches in ${zone}`, zoneWeekdays.every((w, i) => w === expectedWeekdays[i]), JSON.stringify(zoneWeekdays))
 }
 
 if (failed) {
