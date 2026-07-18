@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { hasEntryJsonChanges, mergeJournalEntryJson } from '@/lib/journalEntryMerge'
 
 export async function PATCH(
   request: NextRequest,
@@ -46,30 +47,8 @@ export async function PATCH(
     if (data.weight !== undefined) updateData.weight = data.weight
 
     // Update the entry field (nested JSON)
-    if (data.reasonsValidation !== undefined ||
-        data.affirmationGoal !== undefined ||
-        data.affirmationBecause !== undefined ||
-        data.affirmationMeans !== undefined ||
-        data.peptideNotes !== undefined ||
-        data.workoutNotes !== undefined ||
-        data.nutritionNotes !== undefined ||
-        data.breathNotes !== undefined ||
-        data.moduleNotes !== undefined) {
-
-      const currentEntry = existingEntry.entry as any || {}
-
-      updateData.entry = {
-        ...currentEntry,
-        ...(data.reasonsValidation !== undefined && { reasonsValidation: data.reasonsValidation }),
-        ...(data.affirmationGoal !== undefined && { affirmationGoal: data.affirmationGoal }),
-        ...(data.affirmationBecause !== undefined && { affirmationBecause: data.affirmationBecause }),
-        ...(data.affirmationMeans !== undefined && { affirmationMeans: data.affirmationMeans }),
-        ...(data.peptideNotes !== undefined && { peptideNotes: data.peptideNotes }),
-        ...(data.workoutNotes !== undefined && { workoutNotes: data.workoutNotes }),
-        ...(data.nutritionNotes !== undefined && { nutritionNotes: data.nutritionNotes }),
-        ...(data.breathNotes !== undefined && { breathNotes: data.breathNotes }),
-        ...(data.moduleNotes !== undefined && { moduleNotes: data.moduleNotes })
-      }
+    if (hasEntryJsonChanges(data)) {
+      updateData.entry = mergeJournalEntryJson(existingEntry.entry as string | null, data)
     }
 
     // Update the journal entry
