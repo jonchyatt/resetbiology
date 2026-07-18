@@ -23,6 +23,16 @@ export function noteToFreq(name: string): number {
 }
 
 /**
+ * Absolute signed cents distance between two frequencies. Unlike
+ * octaveFoldedCents, this preserves octave displacement: C3 against a C4
+ * target is -1200 cents and C5 is +1200 cents.
+ */
+export function exactCents(detectedFreq: number, targetFreq: number): number {
+  if (detectedFreq <= 0 || targetFreq <= 0) return 0
+  return 1200 * Math.log2(detectedFreq / targetFreq)
+}
+
+/**
  * Cents distance between two frequencies, folded into [-600, 600] so
  * octave-equivalent pitches read as 0. Returns negative if detected is
  * below target (singer is flat), positive if detected is above (sharp).

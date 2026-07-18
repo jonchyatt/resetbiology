@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
-import { noteToFreq, octaveFoldedCents } from './pitchMath'
+import { exactCents, noteToFreq } from './pitchMath'
 import {
   initAudio,
   loadPianoSamples,
@@ -762,7 +762,7 @@ function hueForNote(note: string | undefined): number {
 }
 
 function pitchDeviationSemis(source: PitchInfo, targetNote: string): number {
-  return octaveFoldedCents(source.frequency, noteToFreq(targetNote)) / 100
+  return exactCents(source.frequency, noteToFreq(targetNote)) / 100
 }
 
 type BuildViewStateArgs = Readonly<{
@@ -1625,7 +1625,7 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
   // ported from Pitchforks.tsx:602-658, with a 1s convergence trail.
   const centerX = PITCH_BAR_X + PITCH_BAR_W / 2
   const centerY = PITCH_BAR_Y + PITCH_BAR_H / 2
-  const targetZoneW = PITCH_BAR_W * (3 / 12)
+  const targetZoneW = PITCH_BAR_W * ((MATCH_TOLERANCE_CENTS / 100) / 6)
 
   ctx.fillStyle = 'rgba(20,20,30,0.78)'
   ctx.fillRect(PITCH_BAR_X, PITCH_BAR_Y, PITCH_BAR_W, PITCH_BAR_H)
@@ -3822,7 +3822,7 @@ export default function PitchforksIII() {
       return
     }
 
-    const cents = octaveFoldedCents(source.frequency, noteToFreq(target.note))
+    const cents = exactCents(source.frequency, noteToFreq(target.note))
     const absCents = Math.abs(cents)
     tintRef.current = colorForCents(absCents)
 
@@ -3978,7 +3978,7 @@ export default function PitchforksIII() {
     if (canUseSource && active && source) {
       const deviation = pitchDeviationSemis(source, active.note)
       const clampedDeviation = clamp(deviation, -6, 6)
-      const onTarget = Math.abs(deviation) <= 1.5
+      const onTarget = Math.abs(deviation) <= MATCH_TOLERANCE_CENTS / 100
       barDotDeviationRef.current = clampedDeviation
       barOnTargetRef.current = onTarget
       // Ease the readout toward the detected pitch so it glides instead of jittering frame-to-frame.
