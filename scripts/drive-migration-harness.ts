@@ -331,7 +331,7 @@ const journalAdapter: DomainAdapter<any> = {
   formatGroupContent: (fileName, rows) => {
     const dateStr = fileName.replace(/^journal-/, '').replace(/\.md$/, '')
     const dayRows: JournalDayRow[] = rows.map((row) => {
-      let parsed: { content?: string; goals?: string } = {}
+      let parsed: { content?: string; goals?: string; [key: string]: unknown } = {}
       try {
         parsed = row.entry ? JSON.parse(row.entry) : {}
       } catch {
@@ -345,6 +345,10 @@ const journalAdapter: DomainAdapter<any> = {
         // Shared fold-in rule (fix-wave F1) — single source with
         // google-drive.ts's formatJournalEntry wrapper, can't drift.
         content: foldGoalsIntoContent(parsed.content || '', parsed.goals),
+        // Full structured entry (fix-wave 2, F1) — same source google-drive.ts's
+        // live-sync/cron path now carries, so migrated and live-synced files
+        // stay byte-identical for the same source rows.
+        payload: parsed,
       }
     })
     // Shared emitter with the live-sync path (google-drive.ts formatJournalEntry
@@ -583,21 +587,29 @@ function runSelfTest(): boolean {
 
     const content = journalAdapter.formatGroupContent(fileName, groupRows)
     // Direct call to the shared emitter with the same inputs (goals folded
-    // via the SAME shared foldGoalsIntoContent — fix-wave F1) must produce
+    // via the SAME shared foldGoalsIntoContent — fix-wave F1; payload carries
+    // the full parsed source JSON — fix-wave 2, F1) must produce
     // byte-identical output — proves the adapter delegates, doesn't duplicate.
     const directContent = formatJournalDayFile('2026-02-02', [
-      { rowId: 'm1', createdAt: groupRows[0].createdAt, mood: 'good', weight: 150, content: foldGoalsIntoContent('Morning row', 'Drink more water') },
-      { rowId: 'm2', createdAt: groupRows[1].createdAt, mood: 'tired', weight: null, content: 'Evening row' },
+      { rowId: 'm1', createdAt: groupRows[0].createdAt, mood: 'good', weight: 150, content: foldGoalsIntoContent('Morning row', 'Drink more water'), payload: { content: 'Morning row', goals: 'Drink more water' } },
+      { rowId: 'm2', createdAt: groupRows[1].createdAt, mood: 'tired', weight: null, content: 'Evening row', payload: { content: 'Evening row' } },
     ])
     assert.equal(content, directContent)
 
-    // No entry dropped: both rows' content recoverable via the tolerant parser.
+    // No entry dropped: both rows recoverable via the tolerant parser.
+    // Fix-wave 2 (F1): the payload block is now the full-fidelity round-trip
+    // (exact deepEqual); `content` is the folded human-readable render, no
+    // longer expected to equal the bare foldGoalsIntoContent string once a
+    // payload block is present (it also carries the payload's human render).
     const parsed = parseJournalDayFile(content)
     assert.equal(parsed.length, 2)
     assert.deepEqual(parsed.map((p) => p.rowId).sort(), ['m1', 'm2'])
     const byRowId = new Map(parsed.map((p) => [p.rowId, p]))
-    assert.equal(byRowId.get('m1')?.content, foldGoalsIntoContent('Morning row', 'Drink more water'))
-    assert.equal(byRowId.get('m2')?.content, 'Evening row')
+    assert.deepEqual(byRowId.get('m1')?.payload, { content: 'Morning row', goals: 'Drink more water' })
+    assert.deepEqual(byRowId.get('m2')?.payload, { content: 'Evening row' })
+    assert.ok(byRowId.get('m1')?.content?.includes('Morning row'))
+    assert.ok(byRowId.get('m1')?.content?.includes('Drink more water'))
+    assert.ok(byRowId.get('m2')?.content?.includes('Evening row'))
   })
 
   check('reversal-map recovery case (HIGH-2): every migrated row is provably recoverable from its file content', () => {

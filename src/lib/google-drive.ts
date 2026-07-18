@@ -392,6 +392,9 @@ export function formatJournalEntry(
     mood?: string | null
     weight?: number | null
     goals?: string | null
+    // Full structured entry (fix-wave 2, F1) — the real dashboard EntryPayload.
+    // Optional so pre-fix-wave-2 callers/tests still compile unchanged.
+    payload?: Record<string, unknown> | null
   }>
 ): string {
   const rows: JournalDayRow[] = entries.map((e) => ({
@@ -402,6 +405,7 @@ export function formatJournalEntry(
     // Shared fold-in rule (journal-day-file.ts) — single source so this and
     // the migration harness can't drift (fix-wave F1).
     content: foldGoalsIntoContent(e.content, e.goals),
+    payload: e.payload ?? null,
   }))
   return formatJournalDayFile(dateStr, rows)
 }
@@ -906,7 +910,7 @@ async function syncDomainForDateWithResult(
       // upload as its own section — no per-entry overwrite, no entry ever
       // dropped by a same-day sibling.
       const dayEntries = journalEntries.map((journalEntry) => {
-        let parsedEntry: { content?: string; goals?: string } = {}
+        let parsedEntry: { content?: string; goals?: string; [key: string]: unknown } = {}
         try {
           if (journalEntry.entry) {
             parsedEntry = JSON.parse(journalEntry.entry)
@@ -922,6 +926,12 @@ async function syncDomainForDateWithResult(
           mood: journalEntry.mood || undefined,
           weight: journalEntry.weight || undefined,
           goals: parsedEntry.goals || undefined,
+          // Full structured entry (fix-wave 2, F1) — the SAME source this
+          // cron/backfill path re-syncs from must carry the whole dashboard
+          // payload, or a background drain silently clobbers a Drive-first
+          // write's full-fidelity file back down to content-only (the
+          // steady-state vanish blind-verify caught).
+          payload: parsedEntry,
         }
       })
 
