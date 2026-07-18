@@ -37,6 +37,18 @@ function ProfilePageContent() {
   const [needsFolderReconciliation, setNeedsFolderReconciliation] = useState(false)
   const [showDisconnectModal, setShowDisconnectModal] = useState(false)
 
+  // Real per-user progress numbers (app/api/profile/progress/route.ts) —
+  // replaces the hardcoded "0/30" fiction that used to render regardless of data.
+  const [progress, setProgress] = useState<{
+    modulesCompleted: number
+    modulesTotal: number
+    breathSessions: number
+    protocolDays: number
+    dayStreak: number
+    grantExpiry: string | null
+  } | null>(null)
+  const [progressError, setProgressError] = useState<string | null>(null)
+
   // Load user data when available
   useEffect(() => {
     if (user) {
@@ -47,8 +59,24 @@ function ProfilePageContent() {
       })
       // Check if Google Drive is connected
       checkDriveConnection()
+      loadProgress()
     }
   }, [user])
+
+  const loadProgress = async () => {
+    try {
+      setProgressError(null)
+      const res = await fetch('/api/profile/progress')
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || 'Failed to load progress')
+      }
+      setProgress(data)
+    } catch (error: any) {
+      console.error('Error loading progress:', error)
+      setProgressError(error?.message || 'Failed to load progress')
+    }
+  }
 
   // Returning from the OAuth callback (?drive=connected|denied|needs_reconciliation|error) —
   // jump straight to the Privacy tab so the confirmation/guidance is visible without an
@@ -325,10 +353,11 @@ function ProfilePageContent() {
                       <input
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="input-primary"
+                        disabled
+                        className="input-primary opacity-60 cursor-not-allowed"
                         placeholder="Enter your email"
                       />
+                      <p className="text-xs text-gray-400 mt-1">Read-only — this is the email from your login (Auth0). Contact support to change it.</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
@@ -385,6 +414,14 @@ function ProfilePageContent() {
                           <span>Progress Tracking & Analytics</span>
                         </div>
                       </div>
+                      {progress?.grantExpiry && (
+                        <p className="mt-4 text-sm text-gray-300">
+                          Access valid through{' '}
+                          <span className="text-white font-medium">
+                            {new Date(progress.grantExpiry).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          </span>
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -394,21 +431,26 @@ function ProfilePageContent() {
                 <div className="space-y-6">
                   <div className="card-hover-primary">
                     <h3 className="text-xl font-bold text-white mb-6">Wellness Progress</h3>
+                    {progressError && (
+                      <p className="text-sm text-red-300 mb-4">Couldn&apos;t load your progress — {progressError}</p>
+                    )}
                     <div className="grid grid-cols-2 gap-6">
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-primary-400">0/30</div>
+                        <div className="text-3xl font-bold text-primary-400">
+                          {progress ? `${progress.modulesCompleted}/${progress.modulesTotal}` : '—'}
+                        </div>
                         <p className="text-gray-300">Modules Completed</p>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-secondary-400">0</div>
+                        <div className="text-3xl font-bold text-secondary-400">{progress ? progress.breathSessions : '—'}</div>
                         <p className="text-gray-300">Breath Sessions</p>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-amber-400">0</div>
+                        <div className="text-3xl font-bold text-amber-400">{progress ? progress.protocolDays : '—'}</div>
                         <p className="text-gray-300">Protocol Days</p>
                       </div>
                       <div className="text-center">
-                        <div className="text-3xl font-bold text-green-400">0</div>
+                        <div className="text-3xl font-bold text-green-400">{progress ? progress.dayStreak : '—'}</div>
                         <p className="text-gray-300">Day Streak</p>
                       </div>
                     </div>
@@ -416,9 +458,9 @@ function ProfilePageContent() {
                   <div className="card-hover-primary">
                     <h4 className="text-lg font-bold text-white mb-4">Data Export</h4>
                     <p className="text-gray-300 mb-4">Download your complete wellness data and progress reports</p>
-                    <button className="action-btn-primary px-6 py-3">
+                    <button disabled className="action-btn-primary px-6 py-3 opacity-50 cursor-not-allowed" title="Not available yet">
                       <Download className="w-4 h-4 mr-2" />
-                      Export Data
+                      Export Data — not available yet
                     </button>
                   </div>
                 </div>
@@ -427,9 +469,10 @@ function ProfilePageContent() {
               {activeTab === "settings" && (
                 <div className="card-hover-primary">
                   <h3 className="text-xl font-bold text-white mb-6">Notification Preferences</h3>
+                  <p className="text-sm text-amber-300 mb-4">Not available yet — these toggles aren&apos;t wired to anything.</p>
                   <div className="space-y-4">
                     {Object.entries(notifications).map(([key, value]) => (
-                      <div key={key} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30">
+                      <div key={key} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 opacity-60">
                         <div>
                           <h4 className="font-medium text-white capitalize">{key} Notifications</h4>
                           <p className="text-sm text-gray-300">
@@ -439,8 +482,9 @@ function ProfilePageContent() {
                           </p>
                         </div>
                         <button
-                          onClick={() => setNotifications(prev => ({...prev, [key]: !value}))}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          disabled
+                          title="Not available yet"
+                          className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-not-allowed ${
                             value ? 'bg-primary-500' : 'bg-gray-600'
                           }`}
                         >
@@ -577,19 +621,19 @@ function ProfilePageContent() {
                     </div>
 
                     <div className="space-y-4">
-                      <button className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 hover:bg-gray-700/50 transition-colors">
+                      <button disabled title="Not available in this portal" className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 opacity-60 cursor-not-allowed">
                         <div className="flex items-center gap-3">
                           <Lock className="w-5 h-5 text-primary-400" />
                           <span className="text-white">Two-Factor Authentication</span>
                         </div>
-                        <span className="text-gray-400">Managed by Auth0</span>
+                        <span className="text-gray-400">Not available yet — managed by Auth0</span>
                       </button>
-                      <button className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 hover:bg-gray-700/50 transition-colors">
+                      <button disabled title="Not available yet" className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 opacity-60 cursor-not-allowed">
                         <div className="flex items-center gap-3">
                           <Download className="w-5 h-5 text-primary-400" />
                           <span className="text-white">Download Your Data</span>
                         </div>
-                        <span className="text-gray-400">Request</span>
+                        <span className="text-gray-400">Not available yet</span>
                       </button>
                     </div>
                   </div>
