@@ -8,6 +8,7 @@ import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
 import { VaultBanner } from "@/components/Vault/VaultBanner"
+import { useToast } from "@/components/ui/Toast"
 
 const iconMap: Record<string, LucideIcon> = {
   Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music, Sparkles, HeartPulse,
@@ -86,7 +87,7 @@ interface DailyJournalData {
 export function EnhancedDashboard() {
   const { user } = useUser()
   const router = useRouter()
-  const [totalPoints] = useState(1250)
+  const toast = useToast()
   const [currentStreak, setCurrentStreak] = useState(0)
   const [hasActiveSubscription, setHasActiveSubscription] = useState<boolean | null>(null)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -148,16 +149,23 @@ export function EnhancedDashboard() {
 
   // Handle task checkbox change
   const handleTaskChange = async (taskName: keyof typeof dailyTasks) => {
+    const previousState = dailyTasks
     const newState = { ...dailyTasks, [taskName]: !dailyTasks[taskName] }
     setDailyTasks(newState)
 
     // Save to database via API
     try {
-      await fetch('/api/daily-tasks', {
+      const response = await fetch('/api/daily-tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ taskName, completed: newState[taskName] })
       })
+
+      if (!response.ok) {
+        setDailyTasks(previousState)
+        toast.error('Could not save — try again')
+        return
+      }
 
       // Auto-update journal when task is completed
       if (newState[taskName]) {
@@ -197,6 +205,8 @@ export function EnhancedDashboard() {
       }
     } catch (error) {
       console.error('Failed to update task:', error)
+      setDailyTasks(previousState)
+      toast.error('Could not save — try again')
     }
   }
 
