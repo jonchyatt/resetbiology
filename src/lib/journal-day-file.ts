@@ -452,7 +452,7 @@ function runSelfTest(): boolean {
   })
 
   check('garbage/empty/random string input never throws', () => {
-    const inputs = ['', 'not a journal file at all', '---\nbroken: [unterminated', '{}', ' binary-ish']
+    const inputs = ['', 'not a journal file at all', '---\nbroken: [unterminated', '{}', '\x00\x01binary-ish']
     for (const input of inputs) {
       assert.doesNotThrow(() => parseJournalDayFile(input))
       const parsed = parseJournalDayFile(input)
