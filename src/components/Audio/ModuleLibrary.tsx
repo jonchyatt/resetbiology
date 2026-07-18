@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Play, Lock, CheckCircle, Star, Clock } from "lucide-react"
 import { AudioPlayer } from "./AudioPlayer"
+import { useToast } from "@/components/ui/Toast"
 import type { MentalMasteryModule } from "@/types"
 
 interface ModuleLibraryProps {
@@ -10,6 +11,7 @@ interface ModuleLibraryProps {
 }
 
 export function ModuleLibrary({ userId }: ModuleLibraryProps) {
+  const toast = useToast()
   const [selectedModule, setSelectedModule] = useState<MentalMasteryModule | null>(null)
   const [completedModules, setCompletedModules] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)
@@ -184,10 +186,10 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
       setSelectedModule(null)
 
       const bonus = data?.pointsAwarded ? ` +${data.pointsAwarded} pts` : ''
-      alert(`Module completion saved!${bonus}`)
+      toast.success(`Module completion saved!${bonus}`)
     } catch (error: any) {
       console.error('Module completion failed:', error)
-      alert(`Failed to record module completion: ${error?.message || 'Please try again.'}`)
+      toast.error(`Failed to record module completion: ${error?.message || 'Please try again.'}`)
     } finally {
       setIsSaving(false)
     }
