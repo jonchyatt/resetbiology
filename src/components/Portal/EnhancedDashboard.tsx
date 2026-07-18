@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
 import { VaultBanner } from "@/components/Vault/VaultBanner"
 import { useToast } from "@/components/ui/Toast"
+import { localDayKey } from "@/lib/localDay"
 
 const iconMap: Record<string, LucideIcon> = {
   Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music, Sparkles, HeartPulse,
@@ -158,7 +159,7 @@ export function EnhancedDashboard() {
       const response = await fetch('/api/daily-tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ taskName, completed: newState[taskName] })
+        body: JSON.stringify({ taskName, completed: newState[taskName], localDate: localDayKey(new Date()) })
       })
 
       if (!response.ok) {
@@ -216,6 +217,7 @@ export function EnhancedDashboard() {
       const payload = {
         ...journalData,
         date: new Date().toISOString(),
+        localDate: localDayKey(new Date()),
         tasksCompleted: dailyTasks
       }
       console.log('Saving journal entry:', payload)
@@ -288,7 +290,7 @@ export function EnhancedDashboard() {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const response = await fetch('/api/daily-tasks')
+        const response = await fetch(`/api/daily-tasks?localDate=${localDayKey(new Date())}`)
         if (response.ok) {
           const data = await response.json()
           const taskStates = { ...dailyTasks }
@@ -312,7 +314,7 @@ export function EnhancedDashboard() {
   useEffect(() => {
     const loadJournalPrefill = async () => {
       try {
-        const response = await fetch('/api/journal/entry', { cache: 'no-store' })
+        const response = await fetch(`/api/journal/entry?localDate=${localDayKey(new Date())}`, { cache: 'no-store' })
         if (!response.ok) return
         const data = await response.json()
         if (!data) return

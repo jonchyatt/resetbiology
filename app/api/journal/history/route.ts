@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { localDayKey } from '@/lib/localDay'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -135,16 +136,12 @@ export async function GET(request: NextRequest) {
     const days = new Map<string, DaySummary>()
 
     const ensureDay = (date: Date, localDate?: string) => {
-      // Prefer localDate string if available (timezone-safe)
-      // For old entries without localDate, convert UTC to EDT (UTC-4)
-      const key = localDate || (() => {
-        // Subtract 4 hours to convert from UTC to EDT
-        const edtTime = new Date(date.getTime() - (4 * 60 * 60 * 1000))
-        const year = edtTime.getUTCFullYear()
-        const month = String(edtTime.getUTCMonth() + 1).padStart(2, '0')
-        const day = String(edtTime.getUTCDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      })()
+      // Prefer the writer-captured localDate string (timezone-safe — it was
+      // computed in the visitor's real browser timezone). Legacy rows with
+      // no localDate fall back to the shared helper's own-local-component
+      // reading (F1.3 — replaces the hardcoded UTC-4 offset that broke the
+      // calendar for every non-Eastern visitor).
+      const key = localDate || localDayKey(date)
 
       if (!days.has(key)) {
         const entryDate = new Date(date)
@@ -169,13 +166,15 @@ export async function GET(request: NextRequest) {
 
     journalEntries.forEach((entry) => {
       const date = entry.date instanceof Date ? entry.date : new Date(entry.date)
-      const bucket = ensureDay(date)
       let parsed: any = {}
       try {
         parsed = entry.entry ? JSON.parse(entry.entry as string) : {}
       } catch {
         parsed = {}
       }
+      // JournalEntry has no localDate column (schema.prisma:426-438) — the
+      // writer stores it inside the entry JSON blob instead (NEW-8).
+      const bucket = ensureDay(date, typeof parsed?.localDate === 'string' ? parsed.localDate : undefined)
       bucket.journalEntry = {
         ...entry,
         entry: parsed,
@@ -227,15 +226,15 @@ export async function GET(request: NextRequest) {
       bucket.eventCount += 1
     })
 
+    // `start`/`end` were built purely from calendar integers (getMonthRange
+    // above), so the cursor's own local components already ARE the correct
+    // calendar day — no timezone shift belongs here at all. The hardcoded
+    // "convert to EDT" offset this replaces is what rendered June 30 -> July
+    // 30 for a July calendar and omitted July 31 entirely (F1.3 NEW-1a/b).
     const calendar: Array<{ date: string; iso: string; count: number }> = []
     const cursor = new Date(start)
     while (cursor < end) {
-      // Convert to EDT (UTC-4) to match entry bucketing
-      const edtTime = new Date(cursor.getTime() - (4 * 60 * 60 * 1000))
-      const year = edtTime.getUTCFullYear()
-      const month = String(edtTime.getUTCMonth() + 1).padStart(2, '0')
-      const day = String(edtTime.getUTCDate()).padStart(2, '0')
-      const key = `${year}-${month}-${day}`
+      const key = localDayKey(cursor)
 
       calendar.push({
         date: key,

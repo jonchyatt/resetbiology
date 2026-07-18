@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { localDayKey, dayKeyToUtcMidnight } from '@/lib/localDay'
 
 type TasksPayload = Record<string, boolean>
 
@@ -17,12 +18,10 @@ type EntryPayload = {
   breathNotes: string
   moduleNotes: string
   tasksCompleted: TasksPayload
-}
-
-function startOfDay(date: Date) {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d
+  // JournalEntry has no localDate column (schema.prisma:426-438) — carried
+  // inside the JSON blob instead so the reader can bucket this entry on the
+  // same day the writer's browser thought it was (F1.3 NEW-8).
+  localDate: string
 }
 
 function normalizeString(value: unknown): string {
@@ -53,9 +52,15 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const entryDate = body?.date ? new Date(body.date) : new Date()
-    const dayStart = startOfDay(entryDate)
+    // Prefer the client-supplied localDate (the visitor's real browser
+    // timezone); legacy/other-writer callers that omit it fall back to the
+    // shared helper's own-local-component reading of entryDate.
+    const dayKey = typeof body?.localDate === 'string' && body.localDate
+      ? body.localDate
+      : localDayKey(entryDate)
+    const dayStart = dayKeyToUtcMidnight(dayKey)
     const nextDay = new Date(dayStart)
-    nextDay.setDate(nextDay.getDate() + 1)
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1)
 
     const entryPayload: EntryPayload = {
       reasonsValidation: normalizeString(body?.reasonsValidation),
@@ -67,7 +72,8 @@ export async function POST(request: NextRequest) {
       nutritionNotes: normalizeString(body?.nutritionNotes),
       breathNotes: normalizeString(body?.breathNotes),
       moduleNotes: normalizeString(body?.moduleNotes),
-      tasksCompleted: normalizeTasks(body?.tasksCompleted)
+      tasksCompleted: normalizeTasks(body?.tasksCompleted),
+      localDate: dayKey
     }
 
     const existingEntry = await prisma.journalEntry.findFirst({
@@ -77,7 +83,11 @@ export async function POST(request: NextRequest) {
           gte: dayStart,
           lt: nextDay
         }
-      }
+      },
+      // Deterministic merge target (NEW-2 belt-and-suspenders) — other
+      // writers (e.g. nback) can create additional same-day rows; without
+      // an orderBy, which one this merges into is arbitrary.
+      orderBy: { createdAt: 'desc' }
     })
 
     let tasksMerged = { ...entryPayload.tasksCompleted }
@@ -205,9 +215,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const today = startOfDay(new Date())
+    const { searchParams } = new URL(request.url)
+    const localDateParam = searchParams.get('localDate')
+    const dayKey = localDateParam || localDayKey(new Date())
+    const today = dayKeyToUtcMidnight(dayKey)
     const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
 
     const journalEntry = await prisma.journalEntry.findFirst({
       where: {
@@ -216,7 +229,8 @@ export async function GET(request: NextRequest) {
           gte: today,
           lt: tomorrow
         }
-      }
+      },
+      orderBy: { createdAt: 'desc' }
     })
 
     if (journalEntry) {

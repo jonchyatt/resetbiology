@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell, X, Edit2, Eye } from "lucide-react"
+import { localDayKey, weekdayOfDayKey, dayOfMonthFromKey } from "@/lib/localDay"
 
 interface JournalHistoryDay {
   date: string
@@ -44,7 +45,7 @@ export function JournalHistory() {
   const [history, setHistory] = useState<JournalHistoryResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedDayKey, setSelectedDayKey] = useState<string>(() => new Date().toISOString().split('T')[0])
+  const [selectedDayKey, setSelectedDayKey] = useState<string>(() => localDayKey(new Date()))
 
   useEffect(() => {
     const controller = new AbortController()
@@ -107,11 +108,13 @@ export function JournalHistory() {
 
   const calendarCells = useMemo(() => {
     if (!history) return []
-    const start = new Date(history.range.start)
-    const end = new Date(history.range.end)
     const daysInMonth = history.calendar
     const cells: Array<{ date?: string; iso?: string; count?: number; inMonth: boolean }> = []
-    const leadingBlanks = start.getDay()
+    // Weekday of the 1st is a pure calendar fact — deriving it from the
+    // range's UTC ISO instant (browser-local weekday of that instant) shifts
+    // the whole grid a column for US-timezone visitors (F1.3 NEW-1c).
+    // Reading it straight off the first day-key sidesteps timezones entirely.
+    const leadingBlanks = daysInMonth.length > 0 ? weekdayOfDayKey(daysInMonth[0].date) : 0
     for (let i = 0; i < leadingBlanks; i++) {
       cells.push({ inMonth: false })
     }
@@ -301,7 +304,7 @@ export function JournalHistory() {
 
                           >
 
-                            <span className="text-sm font-semibold">{new Date(cell.iso ?? '').getDate()}</span>
+                            <span className="text-sm font-semibold">{cell.date ? dayOfMonthFromKey(cell.date) : ''}</span>
 
                             <span className="text-[11px] opacity-80">{density} entries</span>
 

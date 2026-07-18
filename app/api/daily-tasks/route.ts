@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { todayLocalKey, dayKeyToUtcMidnight, utcMidnightToDayKey } from '@/lib/localDay'
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,13 +13,15 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    
-    // Get today's tasks
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
+
+    // DailyTask has no localDate column (schema.prisma:384-394) — `date` is
+    // the day-key stamped at UTC midnight instead (F1.3 NEW-8 pattern).
+    const { searchParams } = new URL(request.url)
+    const dayKey = searchParams.get('localDate') || todayLocalKey()
+    const today = dayKeyToUtcMidnight(dayKey)
     const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1)
+
     const tasks = await prisma.dailyTask.findMany({
       where: {
         userId: user.id,
@@ -28,20 +31,20 @@ export async function GET(request: NextRequest) {
         }
       }
     })
-    
+
     // Calculate streak
-    const streak = await calculateStreak(user.id)
-    
-    return NextResponse.json({ 
+    const streak = await calculateStreak(user.id, dayKey)
+
+    return NextResponse.json({
       tasks,
       streak,
       date: today.toISOString()
     })
-    
+
   } catch (error) {
     console.error('Error fetching daily tasks:', error)
-    return NextResponse.json({ 
-      error: 'Failed to fetch daily tasks' 
+    return NextResponse.json({
+      error: 'Failed to fetch daily tasks'
     }, { status: 500 })
   }
 }
@@ -56,12 +59,11 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json()
-    const { taskName, completed } = body
-    
-    // Get today's date at midnight
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
+    const { taskName, completed, localDate } = body
+
+    const dayKey = typeof localDate === 'string' && localDate ? localDate : todayLocalKey()
+    const today = dayKeyToUtcMidnight(dayKey)
+
     // Upsert the task
     const task = await prisma.dailyTask.upsert({
       where: {
@@ -121,7 +123,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function calculateStreak(userId: string): Promise<number> {
+async function calculateStreak(userId: string, todayKey: string): Promise<number> {
   // Get all completed tasks for the user, ordered by date
   const tasks = await prisma.dailyTask.findMany({
     where: {
@@ -133,37 +135,30 @@ async function calculateStreak(userId: string): Promise<number> {
     },
     distinct: ['date']
   })
-  
+
   if (tasks.length === 0) return 0
-  
+
+  const completedDayKeys = new Set(tasks.map((t) => utcMidnightToDayKey(new Date(t.date))))
+
+  let cursorKey = todayKey
+  if (!completedDayKeys.has(cursorKey)) {
+    // No tasks completed yet today — start counting from yesterday so an
+    // in-progress day doesn't zero out an otherwise-live streak.
+    cursorKey = utcMidnightToDayKey(shiftDayKey(todayKey, -1))
+  }
+
   let streak = 0
-  let currentDate = new Date()
-  currentDate.setHours(0, 0, 0, 0)
-  
-  // Check if user has completed at least one task today
-  const todayTasks = tasks.filter(t => {
-    const taskDate = new Date(t.date)
-    taskDate.setHours(0, 0, 0, 0)
-    return taskDate.getTime() === currentDate.getTime()
-  })
-  
-  if (todayTasks.length === 0) {
-    // No tasks today, check if yesterday had tasks
-    currentDate.setDate(currentDate.getDate() - 1)
+  let cursor = dayKeyToUtcMidnight(cursorKey)
+  while (completedDayKeys.has(utcMidnightToDayKey(cursor))) {
+    streak++
+    cursor = shiftDayKey(utcMidnightToDayKey(cursor), -1)
   }
-  
-  // Count consecutive days
-  for (const task of tasks) {
-    const taskDate = new Date(task.date)
-    taskDate.setHours(0, 0, 0, 0)
-    
-    if (taskDate.getTime() === currentDate.getTime()) {
-      streak++
-      currentDate.setDate(currentDate.getDate() - 1)
-    } else if (taskDate.getTime() < currentDate.getTime()) {
-      break
-    }
-  }
-  
+
   return streak
+}
+
+function shiftDayKey(key: string, deltaDays: number): Date {
+  const d = dayKeyToUtcMidnight(key)
+  d.setUTCDate(d.getUTCDate() + deltaDays)
+  return d
 }
