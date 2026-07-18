@@ -295,26 +295,33 @@ function ackFor(request: PendingCurriculumUnlock, committed: boolean): Curriculu
 }
 
 async function main(): Promise<void> {
-await add('P-01', 'protected-baseline', 'exact shared product base is checked out', 'PASS', 'source-backed', () => ({
-  pass: git('rev-parse', 'HEAD') === BASE && git('rev-parse', 'origin/master') === BASE,
-  evidence: { head: git('rev-parse', 'HEAD'), originMaster: git('rev-parse', 'origin/master') },
+await add('P-01', 'protected-baseline', MODE === '--green'
+  ? 'exact shared product base is an ancestor of the candidate and remains the remote base'
+  : 'exact shared product base is checked out', 'PASS', 'source-backed', () => ({
+  pass: MODE === '--green'
+    ? git('merge-base', BASE, 'HEAD') === BASE && git('rev-parse', 'origin/master') === BASE
+    : git('rev-parse', 'HEAD') === BASE && git('rev-parse', 'origin/master') === BASE,
+  evidence: {
+    head: git('rev-parse', 'HEAD'),
+    mergeBase: git('merge-base', BASE, 'HEAD'),
+    originMaster: git('rev-parse', 'origin/master'),
+  },
 }))
 
 await add('P-02', 'protected-baseline', MODE === '--green'
-  ? 'product source changes stay inside the exact R9a ceiling'
+  ? 'the complete base-to-candidate product source delta stays inside the exact R9a ceiling'
   : 'tracked and untracked product source are clean', 'PASS', 'source-backed', () => {
-  const tracked = git('diff', '--name-only', 'HEAD', '--', 'src').split(/\r?\n/).filter(Boolean)
+  const tracked = git('diff', '--name-only', MODE === '--green' ? BASE : 'HEAD', '--', 'src').split(/\r?\n/).filter(Boolean)
   const untracked = git('ls-files', '--others', '--exclude-standard', '--', 'src').split(/\r?\n/).filter(Boolean)
-  const expectedTracked = MODE === '--green'
-    ? ['src/components/PitchDefender/RetroBlasterII.tsx', 'src/components/PitchDefender/retroBlasterEngine.ts']
-    : []
-  const expectedUntracked = MODE === '--green'
-    ? ['src/components/PitchDefender/retroBlasterCurriculum.ts']
-    : []
+  const completeDelta = [...new Set([...tracked, ...untracked])].sort()
+  const expectedDelta = MODE === '--green' ? [
+    'src/components/PitchDefender/RetroBlasterII.tsx',
+    'src/components/PitchDefender/retroBlasterCurriculum.ts',
+    'src/components/PitchDefender/retroBlasterEngine.ts',
+  ] : []
   return {
-    pass: JSON.stringify(tracked.sort()) === JSON.stringify(expectedTracked) &&
-      JSON.stringify(untracked.sort()) === JSON.stringify(expectedUntracked),
-    evidence: { tracked, untracked, expectedTracked, expectedUntracked },
+    pass: JSON.stringify(completeDelta) === JSON.stringify(expectedDelta),
+    evidence: { tracked, untracked, completeDelta, expectedDelta },
   }
 })
 
