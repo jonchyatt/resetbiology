@@ -8,6 +8,7 @@ import {
   mapRouteToAdministrationType,
   type AdministrationType,
 } from "./RegimenSourcePicker";
+import { SyringeModel } from "./SyringeModel";
 
 /*********************************
  * Types
@@ -165,130 +166,6 @@ const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, 
 
 const formatNumber = (n: number, digits = 2) =>
   Number.isFinite(n) ? Number(n.toFixed(digits)) : 0;
-
-/*********************************
- * Visual Syringe Component
- *********************************/
-const TOTAL_INSULIN_UNITS = 50; // standard 0.5 ml insulin syringe scale
-const UNITS_PER_LABEL = 5;
-
-const SyringeVisual: React.FC<{
-  volumeInMl: number;
-  insulinUnits?: number;
-}> = ({ volumeInMl, insulinUnits }) => {
-  const barrelTop = 32;
-  const barrelHeight = 210;
-  const barrelBottom = barrelTop + barrelHeight;
-  const units = clamp(volumeInMl * 100, 0, TOTAL_INSULIN_UNITS);
-  const fillHeight = barrelHeight * (units / TOTAL_INSULIN_UNITS);
-  const stopperY = barrelBottom - fillHeight;
-  const needleWidth = 2;
-  const needleHeight = 44;
-  const needleX = 58;
-  const needleY = barrelBottom - 4;
-  const needleRadius = needleWidth / 2;
-  const capWidth = 16;
-  const capHeight = 40;
-  const capX = needleX + needleWidth / 2 - capWidth / 2;
-  const capY = barrelBottom;
-  const capRadius = 6;
-
-  return (
-    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-[260px] lg:max-w-[240px] mx-auto">
-      <div className="flex flex-col items-center">
-        <svg viewBox="0 0 140 310" className="w-40 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
-          {/* Barrel */}
-          <path
-            d={`M48 ${barrelTop - 8}h26c3.3 0 6 2.7 6 6v6h-38v-6c0-3.3 2.7-6 6-6z`}
-            fill="rgba(255,255,255,0.18)"
-          />
-          <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.24)" strokeWidth="1.8" />
-
-          {/* Tick marks */}
-          {Array.from({ length: TOTAL_INSULIN_UNITS / UNITS_PER_LABEL + 1 }).map((_, index) => {
-            const y = barrelTop + (barrelHeight / (TOTAL_INSULIN_UNITS / UNITS_PER_LABEL)) * index;
-            const labelValue = TOTAL_INSULIN_UNITS - index * UNITS_PER_LABEL;
-            return (
-              <g key={index}>
-                <line x1="40" x2="78" y1={y} y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth={index % 2 === 0 ? 1.6 : 1} />
-                <text
-                  x="36"
-                  y={y + 4}
-                  textAnchor="end"
-                  fontSize="7"
-                  fontWeight={index % 2 === 0 ? 'bold' : 'normal'}
-                  fill="rgba(255,255,255,0.6)"
-                >
-                  {labelValue}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Fill */}
-          <clipPath id="insulin-barrel">
-            <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" />
-          </clipPath>
-          <g clipPath="url(#insulin-barrel)">
-            <rect
-              x="40"
-              y={stopperY}
-              width="40"
-              height={barrelBottom - stopperY}
-              fill="url(#insulin-fill)"
-              className="transition-all duration-500 ease-out"
-            />
-          </g>
-
-          {/* Stopper */}
-          <rect x="38" y={Math.min(Math.max(stopperY - 6, barrelTop), barrelBottom - 10)} width="44" height="10" rx="3" fill="rgba(0,0,0,0.55)" />
-
-          <defs>
-            <linearGradient id="insulin-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#6FE7DC" />
-              <stop offset="100%" stopColor="#3FBFB5" />
-            </linearGradient>
-          </defs>
-
-          {/* Needle and cap */}
-          <rect x="58" y="14" width="8" height="18" rx="3" ry="3" fill="rgba(255,255,255,0.2)" />
-          <rect x={needleX} y={needleY} width={needleWidth} height={needleHeight} rx={needleRadius} ry={needleRadius} fill="rgba(255,255,255,0.7)" />
-          <rect
-            x={capX}
-            y={capY}
-            width={capWidth}
-            height={capHeight}
-            rx={capRadius}
-            ry={capRadius}
-            fill="rgba(255,120,60,0.55)"
-          />
-
-          <text x="86" y={barrelTop - 12} fontSize="8" fill="rgba(255,255,255,0.7)" letterSpacing="1.4">
-            UNITS
-          </text>
-        </svg>
-
-        <div className="text-center mt-4">
-          <p className="text-4xl font-extrabold text-primary-300 tracking-tight" aria-live="polite">
-            {formatNumber(units, 1)} u
-          </p>
-          <p className="mt-1 text-sm text-gray-300" aria-live="polite">
-            {formatNumber(volumeInMl, volumeInMl < 1 ? 3 : 2)} ml drawn
-          </p>
-        </div>
-
-        <div className="w-full mt-4" aria-hidden>
-          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-            <div
-              className="h-2 bg-primary-600 transition-all duration-500"
-              style={{ width: `${(units / TOTAL_INSULIN_UNITS) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 /*********************************
  * Reconstitution Guide Component
@@ -1026,9 +903,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
         {/* Visual Display */}
         <div className="flex flex-col items-center justify-start h-full gap-6">
-          <SyringeVisual
+          <SyringeModel
+            trueUnits={results.insulinUnits}
             volumeInMl={results.volumeToDraw}
-            insulinUnits={results.insulinUnits}
+            vialCapacityUnits={inputs.totalVolume > 0 ? inputs.totalVolume * 100 : undefined}
           />
 
           {mode === 'addProtocol' && (

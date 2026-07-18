@@ -16,6 +16,7 @@ import {
   Pill,
 } from "lucide-react";
 import { DosageCalculator, calculateDosage } from "./DosageCalculator";
+import { SyringeModel } from "./SyringeModel";
 import { QuickAddOralMed } from "./QuickAddOralMed";
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
@@ -1637,60 +1638,6 @@ export function PeptideTracker() {
     }
   };
 
-  const SyringeScale = ({ units }: { units: number }) => {
-    const numericUnits = Number(units);
-    const normalizedUnits = Number.isFinite(numericUnits)
-      ? Math.max(0, Math.min(numericUnits, 100))
-      : 0;
-    const fillPercent = Math.min(
-      100,
-      Math.max(0, (normalizedUnits / 100) * 100),
-    );
-    const volumeMl = normalizedUnits / 100;
-    const displayUnits = Number(normalizedUnits.toFixed(1));
-    const displayVolume = Number(volumeMl.toFixed(volumeMl < 1 ? 3 : 2));
-
-    const pointerPosition = Math.min(Math.max(fillPercent, 0), 100);
-    const pointerStyle =
-      pointerPosition <= 0
-        ? { left: "0%", transform: "translateY(-50%)" }
-        : pointerPosition >= 100
-          ? { left: "100%", transform: "translate(-100%, -50%)" }
-          : { left: `${pointerPosition}%`, transform: "translate(-50%, -50%)" };
-
-    const ticks = [0, 25, 50, 75, 100];
-
-    return (
-      <div className="mt-3">
-        <div className="relative mt-1 h-2 rounded-full bg-gray-700/40 overflow-hidden">
-          <div
-            className="absolute inset-y-0 left-0 bg-primary-500/70"
-            style={{ width: `${fillPercent}%` }}
-          />
-          <div
-            className="absolute top-1/2 h-4 w-[2px] bg-primary-200"
-            style={pointerStyle}
-          />
-          {ticks.map((tick) => (
-            <div
-              key={tick}
-              className="absolute inset-y-0 w-px bg-white/20"
-              style={{ left: `${tick}%` }}
-            />
-          ))}
-        </div>
-        <div className="mt-1 flex justify-between text-[9px] uppercase tracking-wide text-gray-500">
-          {ticks.map((tick) => (
-            <span key={tick}>{tick}u</span>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-gray-400">
-          Draw {displayUnits} units ({displayVolume} ml)
-        </p>
-      </div>
-    );
-  };
-
   const PeptideCard = ({ protocol }: { protocol: PeptideProtocol }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -1892,7 +1839,13 @@ export function PeptideTracker() {
                       {protocol.vialAmount} vial + {protocol.reconstitution} BAC
                       water = {protocol.syringeUnits} units per dose
                     </p>
-                    <SyringeScale units={protocol.syringeUnits} />
+                    <SyringeModel
+                      trueUnits={protocol.syringeUnits}
+                      vialCapacityUnits={(() => {
+                        const volMatch = protocol.reconstitution.match(/(\d+\.?\d*)/);
+                        return volMatch ? parseFloat(volMatch[1]) * 100 : undefined;
+                      })()}
+                    />
                   </>
                 ) : (
                   <div className="mt-1">
