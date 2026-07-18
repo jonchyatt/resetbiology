@@ -52,11 +52,59 @@ function yamlScalar(value: unknown): string {
   return JSON.stringify(value ?? null)
 }
 
+/**
+ * Shared goals+content fold-in rule (fix-wave F1). `goals` has no dedicated
+ * slot in the structured parse contract ({date, mood, weight, content,
+ * createdAt, rowId}) — folded into the content section rather than dropped.
+ * Single source of truth: google-drive.ts (live sync) and the migration
+ * harness both call this instead of each rendering their own template.
+ */
+export function foldGoalsIntoContent(content: string, goals?: string | null): string {
+  return goals ? `## Goals for Today\n${goals}\n\n${content}` : content
+}
+
+// Line-escaping (fix-wave F3+F4): any content line that would otherwise
+// collide with our own emitted syntax — a bare `<!-- entry:...` marker line
+// or a bare `---` divider/front-matter-delimiter line — gets exactly one
+// leading backslash added. Lines already starting with a backslash get a
+// second one added, so "strip one leading backslash if present" is always
+// the correct, unambiguous inverse (dot-stuffing/mbox-style escaping — same
+// idiom, one line each way). This makes ANY content string, including one
+// containing a sibling's literal marker text or an embedded/trailing `---`,
+// round-trip byte-exact.
+function isReservedLine(line: string): boolean {
+  return /^<!--\s*entry:/.test(line) || /^-{3,}\s*$/.test(line)
+}
+
+function escapeContentLines(content: string): string {
+  return content
+    .split('\n')
+    .map((line) => (line.startsWith('\\') || isReservedLine(line) ? `\\${line}` : line))
+    .join('\n')
+}
+
+function unescapeContentLines(content: string): string {
+  return content
+    .split('\n')
+    .map((line) => (line.startsWith('\\') ? line.slice(1) : line))
+    .join('\n')
+}
+
+// F5: heading time is derived from the ISO createdAt with explicit UTC, so
+// emitted bytes are deterministic regardless of the emitting process's local
+// timezone (was: `toLocaleTimeString` with no `timeZone`, which used
+// process-local time). Cosmetic only — the parser strips this heading line
+// entirely and never reads the time out of it; the parse contract's
+// authoritative createdAt lives in front matter, untouched by this change.
+function formatHeadingTimeUTC(date: Date): string {
+  return `${date.toISOString().slice(11, 16)} UTC`
+}
+
 function formatEntryBody(row: JournalDayRow): string {
-  const time = row.createdAt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  const time = formatHeadingTimeUTC(row.createdAt)
   let section = `${journalEntryMarker(row.rowId)}\n## Entry (${time})\n`
   if (row.content) {
-    section += `${row.content}\n`
+    section += `${escapeContentLines(row.content)}\n`
   }
   return section
 }
@@ -198,18 +246,44 @@ function applyField(entry: ParsedFrontMatterEntry, key: string, value: unknown) 
   else if (key === 'weight') entry.weight = typeof value === 'number' ? value : null
 }
 
+/**
+ * Finds `needle` only where it starts an actual LINE (preceded by "\n" or at
+ * the very start of the string). escapeContentLines only ever escapes a
+ * content line that is itself the whole reserved pattern — the escaped form
+ * starts with "\\" instead, so it can never satisfy this line-start check.
+ * That's what makes a marker/divider found this way provably real, not a
+ * substring embedded inside a sibling's (escaped) content (fix-wave F3).
+ */
+function indexOfAtLineStart(text: string, needle: string, from = 0): number {
+  let searchFrom = from
+  while (true) {
+    const idx = text.indexOf(needle, searchFrom)
+    if (idx === -1) return -1
+    if (idx === 0 || text[idx - 1] === '\n') return idx
+    searchFrom = idx + 1
+  }
+}
+
 /** Locates the body section for a given rowId's marker; null if not found (hand-deleted section). */
 function findSectionContent(body: string, rowId: string): string | null {
   const marker = journalEntryMarker(rowId)
-  const idx = body.indexOf(marker)
+  const idx = indexOfAtLineStart(body, marker)
   if (idx === -1) return null
   const afterMarker = body.slice(idx + marker.length)
-  const nextMarkerIdx = afterMarker.indexOf(ENTRY_MARKER_PREFIX)
+  // Any occurrence of a raw (unescaped) marker prefix AT A LINE START here
+  // is guaranteed to be a REAL section boundary, never embedded content —
+  // escapeContentLines (fix-wave F3) escapes any content line matching this
+  // pattern on emit, so an unescaped marker-prefix line can only be one we
+  // wrote ourselves.
+  const nextMarkerIdx = indexOfAtLineStart(afterMarker, ENTRY_MARKER_PREFIX)
   const section = nextMarkerIdx === -1 ? afterMarker : afterMarker.slice(0, nextMarkerIdx)
-  // Strip the leading "## Entry (...)" heading line, keep the rest as content.
+  // Strip the leading "## Entry (...)" heading line.
   const withoutHeading = section.replace(/^\s*##\s*Entry[^\n]*\n/, '')
-  // Strip a trailing "---" section divider if present.
-  return withoutHeading.replace(/\n-{3,}\s*$/, '').trim()
+  // Strip a trailing "---" section divider — safe post-escaping: any content
+  // line that was originally a bare "---" is now "\---" (escaped) and won't
+  // match this regex, so only our own inserted divider is ever stripped here.
+  const withoutDivider = withoutHeading.replace(/\n-{3,}\s*$/, '')
+  return unescapeContentLines(withoutDivider).trim()
 }
 
 /**
@@ -422,6 +496,32 @@ function runSelfTest(): boolean {
       if (originalTz === undefined) delete process.env.TZ
       else process.env.TZ = originalTz
     }
+  })
+
+  check('fix-wave F3: content containing an exact sibling marker string does not misattribute sections', () => {
+    const rows: JournalDayRow[] = [
+      { rowId: 'r1', createdAt: new Date('2026-08-01T06:00:00.000Z'), content: `Wrote about r2 today.\n${journalEntryMarker('r2')}\nend of note.`, mood: null, weight: null },
+      { rowId: 'r2', createdAt: new Date('2026-08-01T20:00:00.000Z'), content: 'Actual r2 content.', mood: null, weight: null },
+    ]
+    const file = formatJournalDayFile('2026-08-01', rows)
+    const parsed = parseJournalDayFile(file)
+    assert.equal(parsed.length, 2)
+    const byRowId = new Map(parsed.map((p) => [p.rowId, p]))
+    assert.equal(byRowId.get('r1')?.content, rows[0].content)
+    assert.equal(byRowId.get('r2')?.content, 'Actual r2 content.')
+  })
+
+  check('fix-wave F4: content ending in "---", and content that is only "---", round-trip exactly', () => {
+    const rows: JournalDayRow[] = [
+      { rowId: 'r-trailing', createdAt: new Date('2026-08-02T06:00:00.000Z'), content: 'line1\n---', mood: null, weight: null },
+      { rowId: 'r-onlydash', createdAt: new Date('2026-08-02T18:00:00.000Z'), content: '---', mood: null, weight: null },
+    ]
+    const file = formatJournalDayFile('2026-08-02', rows)
+    const parsed = parseJournalDayFile(file)
+    assert.equal(parsed.length, 2)
+    const byRowId = new Map(parsed.map((p) => [p.rowId, p]))
+    assert.equal(byRowId.get('r-trailing')?.content, 'line1\n---')
+    assert.equal(byRowId.get('r-onlydash')?.content, '---')
   })
 
   check('front matter present but entries list empty degrades gracefully, does not throw', () => {
