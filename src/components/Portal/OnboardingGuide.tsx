@@ -112,8 +112,7 @@ export function OnboardingGuide({ reason, firstName, taskCount, status, onComple
             <p className="text-gray-400 text-sm">
               Vault status temporarily unavailable —{' '}
               <button type="button" onClick={() => vault.refresh()} className="text-teal-300 underline">retry</button>
-              {' '}or{' '}
-              <Link href="/connect-drive" className="text-teal-300 underline">skip for now</Link>.
+              {' '}or skip for now and keep going.
             </p>
           ) : (
             <p className="text-gray-400 text-sm">
