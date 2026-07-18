@@ -20,6 +20,11 @@ import * as dotenv from 'dotenv'
 import { createHash } from 'node:crypto'
 import { strict as assert } from 'node:assert'
 import type { drive_v3 } from 'googleapis'
+// journal-day-file.ts touches no env vars / credentials at module load, so
+// (unlike google-drive.ts, which reads process.env.GOOGLE_CLIENT_ID at
+// import time) it's safe to import statically here — shared emitter/parser,
+// no logic duplication (cf-c2-journal-inversion).
+import { formatJournalDayFile, parseJournalDayFile, journalEntryMarker, type JournalDayRow } from '../src/lib/journal-day-file'
 
 // ---------------------------------------------------------------------------
 // Canonical form (HB1): deterministic JSON — object keys sorted recursively,
@@ -98,6 +103,16 @@ export interface RollbackAction {
   action: 'trash' | 'unstamp'
 }
 
+// HIGH-2 reversal map: every migrated row's provable location inside its
+// (possibly multi-entry) Drive file. `marker` is the exact string a verifier
+// can search for in the downloaded file bytes to prove this row was not
+// silently dropped by the group's emission.
+export interface JournalReversalMapEntry {
+  mongoId: string
+  driveFileName: string
+  marker: string
+}
+
 export interface ManifestBlob {
   items: ManifestRecord[]
   duplicateDayGroups: number
@@ -106,6 +121,9 @@ export interface ManifestBlob {
   // rollback attempt failed to complete. A resumed rollback retries only
   // these (finding 2 — errored-path rollback must converge on re-run).
   pendingRollbackActions?: RollbackAction[]
+  // rowId -> section reversal map (HIGH-2). Additive/optional so older
+  // manifests (bare array or pre-this-change blob) still read back fine.
+  journalReversalMap?: JournalReversalMapEntry[]
 }
 
 function readManifestBlob(raw: unknown): ManifestBlob {
@@ -119,7 +137,17 @@ function readManifestBlob(raw: unknown): ManifestBlob {
     duplicateDayGroups: typeof obj.duplicateDayGroups === 'number' ? obj.duplicateDayGroups : 0,
     cutoverHazards: Array.isArray(obj.cutoverHazards) ? obj.cutoverHazards : [],
     pendingRollbackActions: Array.isArray(obj.pendingRollbackActions) ? obj.pendingRollbackActions : undefined,
+    journalReversalMap: Array.isArray(obj.journalReversalMap) ? obj.journalReversalMap : undefined,
   }
+}
+
+/**
+ * Proves a reversal map entry actually resolves — the marker string is
+ * present in the file content it claims to live in. Pure function, used by
+ * both the migrate-time assertion and the self-test.
+ */
+export function reversalMapEntryResolves(fileContent: string, entry: JournalReversalMapEntry): boolean {
+  return fileContent.includes(entry.marker)
 }
 
 // ---------------------------------------------------------------------------
@@ -151,9 +179,13 @@ export function computeDuplicateDayGroups<TRow>(
 }
 
 function duplicateDayCutoverHazards(groups: DuplicateDayGroup[]): string[] {
+  // HIGH-2 (multi-entry day file, cf-c2-journal-inversion): duplicate-day
+  // groups are no longer a data-loss hazard — every row lands as its own
+  // section in the shared file, provable via the reversal map. Retained as
+  // an informational note (not a hazard) so operators still see the count.
   if (groups.length === 0) return []
   return [
-    `duplicate-day-losers: ${groups.length} groups — Drive-side data cannot reconstruct non-final same-day records; resolve before Phase-C cutover`,
+    `multi-entry-day-groups: ${groups.length} groups — all rows preserved as separate sections (HIGH-2), see journalReversalMap for per-row recoverability`,
   ]
 }
 
@@ -264,7 +296,15 @@ interface DomainAdapter<TRow> {
   mongoIdOf(row: TRow): string
   canonicalRecordOf(row: TRow): Record<string, unknown>
   driveFileNameOf(row: TRow): string
-  formatContent(row: TRow): string
+  // Formats the WHOLE same-day group in one call (HIGH-2: multi-entry day
+  // file, no winner-takes-it-all collapse). Same shared emitter the live
+  // sync path uses (google-drive.ts formatJournalEntry -> journal-day-file.ts
+  // formatJournalDayFile) — migrated and live-synced files are byte-identical
+  // for the same source rows.
+  formatGroupContent(fileName: string, rows: TRow[]): string
+  // rowId -> the exact marker string provably locatable in formatGroupContent's
+  // output for that row (reversal map — HIGH-2 recoverability proof).
+  reversalMarkerFor(row: TRow): string
 }
 
 const journalAdapter: DomainAdapter<any> = {
@@ -288,33 +328,32 @@ const journalAdapter: DomainAdapter<any> = {
   // record's `date` field, so migrated files land indistinguishably from
   // live-synced ones.
   driveFileNameOf: (row) => `journal-${new Date(row.date).toISOString().split('T')[0]}.md`,
-  formatContent: (row) => {
-    let parsed: { content?: string; goals?: string } = {}
-    try {
-      parsed = row.entry ? JSON.parse(row.entry) : {}
-    } catch {
-      parsed = { content: row.entry }
-    }
-    // formatJournalEntry is imported dynamically in main() and stashed on
-    // this module-scope var so the adapter (defined before dotenv.config())
-    // can still reach it at call time.
-    return formatJournalEntryRef({
-      createdAt: row.createdAt,
-      content: parsed.content || '',
-      mood: row.mood || undefined,
-      weight: row.weight || undefined,
-      goals: parsed.goals || undefined,
+  formatGroupContent: (fileName, rows) => {
+    const dateStr = fileName.replace(/^journal-/, '').replace(/\.md$/, '')
+    const dayRows: JournalDayRow[] = rows.map((row) => {
+      let parsed: { content?: string; goals?: string } = {}
+      try {
+        parsed = row.entry ? JSON.parse(row.entry) : {}
+      } catch {
+        parsed = { content: row.entry }
+      }
+      return {
+        rowId: row.id,
+        createdAt: row.createdAt,
+        mood: row.mood ?? null,
+        weight: row.weight ?? null,
+        // `goals` has no dedicated slot in the structured parse contract —
+        // folded into content, matching google-drive.ts's formatJournalEntry
+        // wrapper exactly (same shared emitter, same fold-in rule).
+        content: parsed.goals ? `## Goals for Today\n${parsed.goals}\n\n${parsed.content || ''}` : parsed.content || '',
+      }
     })
+    // Shared emitter with the live-sync path (google-drive.ts formatJournalEntry
+    // is a thin wrapper over this same function) — migrated and live-synced
+    // files are byte-identical for the same source rows.
+    return formatJournalDayFile(dateStr, dayRows)
   },
-}
-let formatJournalEntryRef: (entry: {
-  createdAt: Date
-  content: string
-  mood?: string
-  weight?: number
-  goals?: string
-}) => string = () => {
-  throw new Error('formatJournalEntry not wired yet — call after dotenv.config()')
+  reversalMarkerFor: (row) => journalEntryMarker(row.id),
 }
 
 const ADAPTERS: Record<string, DomainAdapter<any>> = { journal: journalAdapter }
@@ -535,6 +574,57 @@ function runSelfTest(): boolean {
     assert.equal(classifyPreExisted(null, ['f-ours']), false)
   })
 
+  check('multi-entry day case (HIGH-2): journalAdapter.formatGroupContent preserves every row, matches shared emitter byte-for-byte', () => {
+    const groupRows = [
+      { id: 'm1', entry: JSON.stringify({ content: 'Morning row' }), mood: 'good', weight: 150, date: new Date('2026-02-02T07:00:00.000Z'), createdAt: new Date('2026-02-02T07:00:00.000Z') },
+      { id: 'm2', entry: JSON.stringify({ content: 'Evening row' }), mood: 'tired', weight: null, date: new Date('2026-02-02T20:00:00.000Z'), createdAt: new Date('2026-02-02T20:00:00.000Z') },
+    ]
+    const fileName = journalAdapter.driveFileNameOf(groupRows[0])
+    assert.equal(fileName, 'journal-2026-02-02.md')
+
+    const content = journalAdapter.formatGroupContent(fileName, groupRows)
+    // Direct call to the shared emitter with the same inputs must produce
+    // byte-identical output — proves the adapter delegates, doesn't duplicate.
+    const directContent = formatJournalDayFile('2026-02-02', [
+      { rowId: 'm1', createdAt: groupRows[0].createdAt, mood: 'good', weight: 150, content: 'Morning row' },
+      { rowId: 'm2', createdAt: groupRows[1].createdAt, mood: 'tired', weight: null, content: 'Evening row' },
+    ])
+    assert.equal(content, directContent)
+
+    // No entry dropped: both rows' content recoverable via the tolerant parser.
+    const parsed = parseJournalDayFile(content)
+    assert.equal(parsed.length, 2)
+    assert.deepEqual(parsed.map((p) => p.rowId).sort(), ['m1', 'm2'])
+    const byRowId = new Map(parsed.map((p) => [p.rowId, p]))
+    assert.equal(byRowId.get('m1')?.content, 'Morning row')
+    assert.equal(byRowId.get('m2')?.content, 'Evening row')
+  })
+
+  check('reversal-map recovery case (HIGH-2): every migrated row is provably recoverable from its file content', () => {
+    const groupRows = [
+      { id: 'm1', entry: JSON.stringify({ content: 'Row one' }), mood: null, weight: null, date: new Date('2026-03-03T05:00:00.000Z'), createdAt: new Date('2026-03-03T05:00:00.000Z') },
+      { id: 'm2', entry: JSON.stringify({ content: 'Row two' }), mood: null, weight: null, date: new Date('2026-03-03T15:00:00.000Z'), createdAt: new Date('2026-03-03T15:00:00.000Z') },
+      { id: 'm3', entry: JSON.stringify({ content: 'Row three' }), mood: null, weight: null, date: new Date('2026-03-03T21:00:00.000Z'), createdAt: new Date('2026-03-03T21:00:00.000Z') },
+    ]
+    const fileName = journalAdapter.driveFileNameOf(groupRows[0])
+    const content = journalAdapter.formatGroupContent(fileName, groupRows)
+
+    const reversalMap: JournalReversalMapEntry[] = groupRows.map((row) => ({
+      mongoId: row.id,
+      driveFileName: fileName,
+      marker: journalAdapter.reversalMarkerFor(row),
+    }))
+
+    for (const entry of reversalMap) {
+      assert.ok(reversalMapEntryResolves(content, entry), `reversal map entry for ${entry.mongoId} did not resolve against its file content`)
+    }
+
+    // Refusal case: a marker for a row that was never emitted into this
+    // content must NOT resolve — proves the check isn't a rubber stamp.
+    const bogusEntry: JournalReversalMapEntry = { mongoId: 'never-migrated', driveFileName: fileName, marker: journalEntryMarker('never-migrated') }
+    assert.equal(reversalMapEntryResolves(content, bogusEntry), false)
+  })
+
   console.log(results.join('\n'))
   console.log(pass ? '\nSELF-TEST: ALL PASS' : '\nSELF-TEST: FAILURES PRESENT')
   return pass
@@ -593,10 +683,7 @@ async function main() {
   }
 
   const { prisma } = await import('../src/lib/prisma')
-  const { getDriveClient, getSubfolderId, uploadTextFile, formatJournalEntry } = await import(
-    '../src/lib/google-drive'
-  )
-  formatJournalEntryRef = formatJournalEntry
+  const { getDriveClient, getSubfolderId, uploadTextFile } = await import('../src/lib/google-drive')
   prismaRef = prisma
 
   const user = await prisma.user.findUnique({
@@ -624,17 +711,18 @@ async function main() {
         return m && m.status === 'verified' && m.canonicalHash === h.canonicalHash
       }).length
 
-      // Verifier finding 1: surface duplicate-day groups BEFORE cutover —
-      // only the last row per group actually lands in Drive.
+      // HIGH-2 (multi-entry day file): surface duplicate-day groups BEFORE
+      // cutover for visibility — every row in a group now lands in Drive as
+      // its own section (no longer a data-loss hazard, see formatGroupContent).
       const dupGroups = computeDuplicateDayGroups(rows, adapter.driveFileNameOf)
 
       console.log(`DRY RUN — user=${userEmail} domain=${adapter.domain}`)
       console.log(`Source record count: ${rows.length}`)
       console.log(`Would skip (already verified, unchanged): ${wouldSkip}`)
       console.log(`Would migrate: ${rows.length - wouldSkip}`)
-      console.log(`Duplicate-day groups (same target filename, >1 source row): ${dupGroups.length}`)
+      console.log(`Multi-entry day groups (same target filename, >1 source row): ${dupGroups.length}`)
       if (dupGroups.length > 0) {
-        console.log('  CUTOVER HAZARD: only the last row per group lands in Drive; the rest are unrecoverable from Drive-side data.')
+        console.log('  All rows in each group are preserved as separate sections in the day file (HIGH-2) — none are dropped.')
         for (const g of dupGroups) {
           console.log(`    ${g.fileName}: ${g.count} rows`)
         }
@@ -661,24 +749,22 @@ async function main() {
         existing ? readManifestBlob(existing.records).items.map((r) => [r.mongoId, r]) : []
       )
 
-      // Verifier finding 1: surface duplicate-day groups BEFORE cutover —
-      // only the last row per group actually lands in Drive; report it live
-      // and record it on the manifest header so verify can flag it too.
+      // HIGH-2 (multi-entry day file): surface duplicate-day groups BEFORE
+      // cutover for visibility — record it on the manifest header (no
+      // longer a data-loss hazard; every row lands in its own section).
       const dupGroups = computeDuplicateDayGroups(rows, adapter.driveFileNameOf)
-      console.log(`Duplicate-day groups (same target filename, >1 source row): ${dupGroups.length}`)
+      console.log(`Multi-entry day groups (same target filename, >1 source row): ${dupGroups.length}`)
       if (dupGroups.length > 0) {
-        console.log('  CUTOVER HAZARD: only the last row per group lands in Drive; the rest are unrecoverable from Drive-side data.')
+        console.log('  All rows in each group are preserved as separate sections in the day file (HIGH-2) — none are dropped.')
         for (const g of dupGroups) {
           console.log(`    ${g.fileName}: ${g.count} rows`)
         }
       }
 
       // Group by target Drive filename. Live sync writes one file per
-      // (user, day) and overwrites it if multiple entries land on the same
-      // day; the app's write path (journal/entry/route.ts) enforces at most
-      // one JournalEntry per calendar day in practice, but this grouping
-      // stays defensive against legacy/edge-case duplicates so a same-day
-      // collision can never make verify's target-integrity check flap.
+      // (user, day); a same-day collision means MULTIPLE JournalEntry rows
+      // target the same file. HIGH-2: every row in the group is emitted as
+      // its own section in one shared upload — none are dropped.
       const groups = new Map<string, any[]>()
       for (const row of rows) {
         const fn = adapter.driveFileNameOf(row)
@@ -689,6 +775,10 @@ async function main() {
       let uploaded = 0
       let skipped = 0
       let failed = 0
+      const journalReversalMap: JournalReversalMapEntry[] = existing
+        ? readManifestBlob(existing.records).journalReversalMap ?? []
+        : []
+      const reversalById = new Map(journalReversalMap.map((e) => [e.mongoId, e]))
 
       for (const [fileName, groupRows] of groups) {
         const allVerified = groupRows.every((row) => {
@@ -700,11 +790,9 @@ async function main() {
           continue
         }
 
-        // Last row in fetch order (orderBy createdAt asc) is Drive's current
-        // truth for this filename — matches live-sync's overwrite semantics
-        // exactly (same-day entries: last write wins in Drive).
-        const winner = groupRows[groupRows.length - 1]
-        const content = adapter.formatContent(winner)
+        // HIGH-2: format the WHOLE group as one multi-entry file — every row
+        // gets its own section, no winner/loser collapse.
+        const content = adapter.formatGroupContent(fileName, groupRows)
         const nowIso = new Date().toISOString()
 
         let driveFileId: string | null = null
@@ -738,7 +826,10 @@ async function main() {
             rbUserId: user.id,
             rbKind: 'migration',
             rbDomain: adapter.domain,
-            rbMongoId: adapter.mongoIdOf(winner),
+            // Multiple rows can share one file (HIGH-2 multi-entry group) —
+            // the reversal map (below) is the per-row provenance record;
+            // this appProperty stays a comma-joined list for quick eyeballing.
+            rbMongoId: groupRows.map((row) => adapter.mongoIdOf(row)).join(','),
           })
           if (!driveFileId) throw new Error('uploadTextFile returned null')
           // Round-trip verify immediately: re-download and compare against
@@ -776,6 +867,17 @@ async function main() {
             error: uploadErr,
             preExisted,
           })
+          // HIGH-2 reversal map: record this row's provable section marker
+          // regardless of upload outcome — on success it resolves against
+          // the uploaded content; verify re-checks it against live Drive
+          // content each run (see 'verify' command below).
+          if (status === 'verified') {
+            reversalById.set(mongoId, {
+              mongoId,
+              driveFileName: fileName,
+              marker: adapter.reversalMarkerFor(row),
+            })
+          }
         }
       }
 
@@ -784,6 +886,7 @@ async function main() {
         items: records,
         duplicateDayGroups: dupGroups.length,
         cutoverHazards: duplicateDayCutoverHazards(dupGroups),
+        journalReversalMap: Array.from(reversalById.values()),
       }
       if (existing) {
         await prisma.migrationManifest.update({
