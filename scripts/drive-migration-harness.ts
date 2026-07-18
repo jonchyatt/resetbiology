@@ -194,13 +194,31 @@ function duplicateDayCutoverHazards(groups: DuplicateDayGroup[]): string[] {
 // pre-check-by-filename alone can't distinguish a live-synced file from a
 // file migrate itself created in an EARLIER run (e.g. run 1 uploads but the
 // round-trip fails, so the record stays 'failed' with driveFileId still set;
-// run 2 re-processes the same group and finds that same file). Only a
-// fileId with no matching prior manifest driveFileId in this group is
-// genuinely pre-existing — one we didn't create.
+// run 2 re-processes the same group and finds that same file). A fileId with
+// no matching prior manifest record in this group is genuinely pre-existing.
+//
+// C5 fix (rollback inconsistency): a fileId CAN match a prior record even
+// when that prior record itself was an ADOPTED pre-existing file, not one
+// migrate created — the adopt path records the real fileId on the manifest
+// record just like a created file would. So "fileId already seen" alone
+// isn't "we created it" — it's ambiguous. The prior record's OWN preExisted
+// stamp resolves the ambiguity and must be carried forward (sticky) on every
+// reprocessing, otherwise a later re-migrate of the same group (source
+// row changed, repair-migrate, etc.) flips a genuinely pre-existing file to
+// preExisted=false and rollback trashes it. No prior record for this fileId
+// at all (first encounter, incl. after a rollback deleted the manifest) ->
+// genuinely pre-existing (we never created it).
 // ---------------------------------------------------------------------------
-export function classifyPreExisted(foundFileId: string | null, priorDriveFileIdsInGroup: Array<string | null>): boolean {
+export interface PriorGroupRecord {
+  driveFileId: string | null
+  preExisted?: boolean
+}
+
+export function classifyPreExisted(foundFileId: string | null, priorRecordsInGroup: PriorGroupRecord[]): boolean {
   if (!foundFileId) return false
-  return !priorDriveFileIdsInGroup.includes(foundFileId)
+  const priorMatch = priorRecordsInGroup.find((r) => r.driveFileId === foundFileId)
+  if (priorMatch) return priorMatch.preExisted === true
+  return true
 }
 
 // ---------------------------------------------------------------------------
@@ -560,21 +578,102 @@ function runSelfTest(): boolean {
   check('preExisted classification: a file migrate created in a prior run is NOT preExisted (finding 3 residual)', () => {
     // Run 1 uploaded fileId 'f-ours' for mongoId 'm1' (round-trip failed, or
     // the source row later changed) — that driveFileId is still on the
-    // prior manifest record. Run 2 re-processes the group, the pre-check
+    // prior manifest record, and that prior record's OWN preExisted was
+    // false (we created it). Run 2 re-processes the group, the pre-check
     // list call finds that same 'f-ours' file. It must NOT be flagged
     // preExisted — rollback would otherwise unstamp-and-leave a file we
     // created ourselves.
-    assert.equal(classifyPreExisted('f-ours', ['f-ours', null]), false)
+    assert.equal(
+      classifyPreExisted('f-ours', [{ driveFileId: 'f-ours', preExisted: false }, { driveFileId: null }]),
+      false
+    )
   })
 
   check('preExisted classification: a file with no matching prior driveFileId IS preExisted (finding 3 residual)', () => {
     // Genuinely a live-synced file we never touched before — no prior
     // record in this group carries this fileId.
-    assert.equal(classifyPreExisted('f-live-sync', ['f-other-mongoid-file', null]), true)
+    assert.equal(
+      classifyPreExisted('f-live-sync', [{ driveFileId: 'f-other-mongoid-file' }, { driveFileId: null }]),
+      true
+    )
   })
 
   check('preExisted classification: no file found at all -> not preExisted', () => {
-    assert.equal(classifyPreExisted(null, ['f-ours']), false)
+    assert.equal(classifyPreExisted(null, [{ driveFileId: 'f-ours' }]), false)
+  })
+
+  check('C5 fix: within-cycle re-migrate of an adopted pre-existing file stays preExisted (sticky stamp)', () => {
+    // Reproduces the live two-cycle walkthrough (data/rb-drive-vault/runtime-logs/
+    // scratch-2026-07-18-9fe3/C4-WALKTHROUGH-RECEIPT.md, "RESUMED" section): a
+    // pre-existing file gets ADOPTED (preExisted=true recorded on the manifest
+    // record). A later migrate call reprocesses the SAME group (e.g. a source
+    // row changed, repair-migrate) while the manifest from the adopt is still
+    // live (rollback hasn't run yet). The pre-check finds the SAME real
+    // fileId again. Before the fix, classifyPreExisted only asked "does this
+    // fileId already appear as a prior driveFileId in the group?" and
+    // returned false (not preExisted) purely from fileId membership — it
+    // couldn't distinguish "we created this file" from "we adopted it and
+    // recorded its id." Rollback then read preExisted=false off the
+    // overwritten record and TRASHED a file that pre-existed before the
+    // harness ever ran. Fix: the prior record's OWN preExisted stamp is
+    // consulted and carried forward (sticky) instead of re-derived from
+    // fileId presence alone.
+    const fileId = 'pre-existing-shared-file'
+    // Step 1: fresh adopt, no prior manifest record for this group at all.
+    const adoptPreExisted = classifyPreExisted(fileId, [])
+    assert.equal(adoptPreExisted, true, 'initial adopt must be classified preExisted')
+
+    // Step 2: manifest now carries a record for this group with the adopted
+    // fileId AND preExisted:true (this is what migrate persists to
+    // `byId`/the manifest blob after step 1).
+    // Step 3: a later migrate call in the SAME cycle (no rollback in
+    // between) reprocesses the group.
+    const reMigratePreExisted = classifyPreExisted(fileId, [{ driveFileId: fileId, preExisted: adoptPreExisted }])
+    assert.equal(
+      reMigratePreExisted,
+      true,
+      'a file already classified preExisted must stay preExisted on reprocessing — losing this flips rollback to trash a genuinely pre-existing file'
+    )
+  })
+
+  check('C5 fix: two full migrate->rollback cycles never trash a genuinely pre-existing file', () => {
+    // Full simulation of the ticket's two-cycle scenario, pure functions +
+    // simulated Drive/manifest state only (no credentials, no DB, no Drive).
+    const PRE_EXISTING_FILE_ID = 'shared-real-file'
+    let driveTrashed = false
+    let manifest: PriorGroupRecord[] | null = null // null = manifest deleted (post-rollback)
+
+    function migrateOnce(): PriorGroupRecord[] {
+      const priorRecordsInGroup = manifest ?? []
+      const preExisted = classifyPreExisted(PRE_EXISTING_FILE_ID, priorRecordsInGroup)
+      const record: PriorGroupRecord = { driveFileId: PRE_EXISTING_FILE_ID, preExisted }
+      manifest = [record]
+      return manifest
+    }
+
+    function rollbackOnce() {
+      assert.ok(manifest, 'rollback with no manifest is a no-op, not exercised here')
+      const record = manifest![0]
+      const action: RollbackAction['action'] = record.preExisted ? 'unstamp' : 'trash'
+      if (action === 'trash') driveTrashed = true
+      manifest = null // rollback deletes the manifest on convergence
+      return action
+    }
+
+    // Cycle 1: migrate (adopt) -> rollback (unstamp, keep).
+    migrateOnce()
+    const cycle1Action = rollbackOnce()
+    assert.equal(cycle1Action, 'unstamp')
+    assert.equal(driveTrashed, false, 'cycle 1 must never trash the pre-existing file')
+
+    // Cycle 2: migrate again (no prior manifest, file still present in Drive)
+    // -> reprocess within the same cycle (source changed / repair-migrate,
+    // matches r-step8b-repair-migrate.log) -> THEN rollback.
+    migrateOnce()
+    migrateOnce() // reprocess before rollback, same as the live repair-migrate call
+    const cycle2Action = rollbackOnce()
+    assert.equal(cycle2Action, 'unstamp')
+    assert.equal(driveTrashed, false, 'cycle 2 must never trash the pre-existing file (live bug: it did)')
   })
 
   check('multi-entry day case (HIGH-2): journalAdapter.formatGroupContent preserves every row (incl. a goals-bearing one), matches shared emitter byte-for-byte', () => {
@@ -826,8 +925,11 @@ async function main() {
             fields: 'files(id)',
           })
           const foundFileId = preCheck.data.files?.[0]?.id ?? null
-          const priorDriveFileIdsInGroup = groupRows.map((row) => byId.get(adapter.mongoIdOf(row))?.driveFileId ?? null)
-          preExisted = classifyPreExisted(foundFileId, priorDriveFileIdsInGroup)
+          const priorRecordsInGroup: PriorGroupRecord[] = groupRows.map((row) => {
+            const m = byId.get(adapter.mongoIdOf(row))
+            return { driveFileId: m?.driveFileId ?? null, preExisted: m?.preExisted }
+          })
+          preExisted = classifyPreExisted(foundFileId, priorRecordsInGroup)
         } catch {
           // best-effort — a failed pre-check just loses the preExisted flag
           // for this record, it isn't fatal to the upload itself.

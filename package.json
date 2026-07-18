@@ -28,7 +28,8 @@
     "test:journal-day-file": "tsx src/lib/journal-day-file.ts self-test",
     "test:drive-read-authority": "tsx src/lib/drive-read-authority.ts self-test",
     "test:drive-drift-classify": "tsx src/lib/drive-drift-classify.ts self-test",
-    "test:drive-sync-queue": "tsx src/lib/driveSyncQueue.ts self-test"
+    "test:drive-sync-queue": "tsx src/lib/driveSyncQueue.ts self-test",
+    "test:drive-migration-harness": "tsx scripts/drive-migration-harness.ts self-test"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
