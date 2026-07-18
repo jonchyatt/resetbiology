@@ -246,6 +246,22 @@ const fixtures = [
   }],
   ['5', 'sibling regression sweep', () => {
     const protectedBase = process.env.RETRO_PROTECTED_BASE || 'origin/master'
+    const hubPath = 'src/components/PitchDefender/PitchDefender.tsx'
+    const authorizedHubCard = `              <a
+                href="/pitch-defender/retro-2"
+                title="Rebuilt arcade ear-trainer — sing or key the note carried by each descending alien."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(217, 70, 239, 0.16))',
+                  color: '#a5f3fc',
+                  border: '2px solid rgba(34, 211, 238, 0.48)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Retro Blaster II
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Rebuilt arcade ear-trainer. Sing or key each alien&apos;s note.</div>
+              </a>
+`
     const siblingPaths = [
       'src/components/PitchDefender/RetroBlaster.tsx',
       'src/components/PitchDefender/DrillMode.tsx',
@@ -255,16 +271,21 @@ const fixtures = [
     ]
     const diff = execFileSync('git', ['diff', '--name-only', protectedBase], { cwd: root, encoding: 'utf8' })
       .split(/\r?\n/).filter(Boolean).map(path => path.replaceAll('\\', '/'))
-    const changedSibling = siblingPaths.filter(path => diff.includes(path))
+    const changedSibling = siblingPaths.filter(path => path !== hubPath && diff.includes(path))
     assert(changedSibling.length === 0, `sibling diff detected: ${changedSibling.join(', ')}`)
-    for (const path of siblingPaths.slice(1)) {
+    for (const path of siblingPaths.slice(1).filter(path => path !== hubPath)) {
       const current = readFileSync(resolve(root, path), 'utf8').replaceAll('\r\n', '\n')
       const baseline = execFileSync('git', ['show', `${protectedBase}:${path}`], { cwd: root, encoding: 'utf8' })
         .replaceAll('\r\n', '\n')
       assert(current === baseline, `${path} differs from origin/master`)
       assert(current.includes("'pitch_fsrs_memory'"), `${path} lost its VOICE key literal`)
     }
-    return `git diff clean for siblings against ${protectedBase}; 4 legacy literals intact`
+    const currentHub = readFileSync(resolve(root, hubPath), 'utf8').replaceAll('\r\n', '\n')
+    const baselineHub = execFileSync('git', ['show', `${protectedBase}:${hubPath}`], { cwd: root, encoding: 'utf8' })
+      .replaceAll('\r\n', '\n')
+    assert(currentHub.includes(authorizedHubCard), 'authorized Retro Blaster II hub card missing or changed')
+    assert(currentHub.replace(authorizedHubCard, '') === baselineHub, 'hub drift exceeds authorized Retro Blaster II card')
+    return `git diff clean for siblings against ${protectedBase}; exact Retro Blaster II hub exception; 4 legacy literals intact`
   }],
   ['6', 'active-lane store selector with explicit session rosters', () => {
     const earNotes = gameTypes.INTRO_ORDER.slice(0, 7)

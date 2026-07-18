@@ -24,7 +24,7 @@ import {
 } from '../../src/components/PitchDefender/retroBlasterCurriculum'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from '../../src/components/PitchDefender/types'
 
-const BASE = '2a773d5903d4558cee4c3b3c09a11659908cf575'
+const BASE = '17ec77141671c68aebc1c397ac12c0dac5c3286c'
 const SELF = fileURLToPath(import.meta.url)
 const MODE = process.argv[2] === '--green' ? '--green' : '--red'
 const OUTPUT = resolve(process.argv[MODE === '--green' ? 3 : 2] ??
@@ -315,6 +315,7 @@ await add('P-02', 'protected-baseline', MODE === '--green'
   const untracked = git('ls-files', '--others', '--exclude-standard', '--', 'src').split(/\r?\n/).filter(Boolean)
   const completeDelta = [...new Set([...tracked, ...untracked])].sort()
   const expectedDelta = MODE === '--green' ? [
+    'src/components/PitchDefender/PitchDefender.tsx',
     'src/components/PitchDefender/RetroBlasterII.tsx',
     'src/components/PitchDefender/retroBlasterCurriculum.ts',
     'src/components/PitchDefender/retroBlasterEngine.ts',

@@ -476,6 +476,22 @@ try {
     const normalize = (value: Buffer | string) => value.toString().replace(/\r\n/g, '\n')
     const current = (relative: string) => normalize(readFileSync(relative))
     const base = (relative: string) => normalize(execFileSync('git', ['show', `${PROTECTED_BASE}:${relative}`]))
+    const hubPath = 'src/components/PitchDefender/PitchDefender.tsx'
+    const authorizedHubCard = `              <a
+                href="/pitch-defender/retro-2"
+                title="Rebuilt arcade ear-trainer — sing or key the note carried by each descending alien."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(217, 70, 239, 0.16))',
+                  color: '#a5f3fc',
+                  border: '2px solid rgba(34, 211, 238, 0.48)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Retro Blaster II
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Rebuilt arcade ear-trainer. Sing or key each alien&apos;s note.</div>
+              </a>
+`
     for (const relative of [
       'src/components/PitchDefender/usePitchDetection.ts',
       'src/components/PitchDefender/RetroBlaster.tsx',
@@ -498,9 +514,13 @@ try {
       .sort()
     assert.deepEqual(currentConsumers, baseConsumers)
     assert.equal(currentConsumers.filter(path => !path.endsWith('usePitchDetection.ts')).length, 10)
-    for (const relative of currentConsumers.filter(path => !path.endsWith('RetroBlasterII.tsx'))) {
+    for (const relative of currentConsumers.filter(path =>
+      !path.endsWith('RetroBlasterII.tsx') && path !== hubPath
+    )) {
       assert.equal(current(relative), base(relative), `${relative} changed around the shared hook`)
     }
+    assert(current(hubPath).includes(authorizedHubCard), 'authorized Retro Blaster II hub card missing or changed')
+    assert.equal(current(hubPath).replace(authorizedHubCard, ''), base(hubPath), 'hub drift exceeds authorized Retro Blaster II card')
 
     const hookConsumerBlock = (source: string) => {
       const start = source.indexOf('  const {\n    isListening,')
