@@ -301,7 +301,10 @@ export default function PeripheralEngine({ exercise, prescription, muted, onProg
       const side: 'L' | 'R' = Math.random() < 0.5 ? 'L' : 'R'
       if ((prescriptionRef.current.week ?? 0) >= 5 && totalTrialsRef.current > 0 && Math.random() < 0.15) {
         ruleInvertedRef.current = !ruleInvertedRef.current
-        speechRef.current?.speak('Rule flip! Same side now.', { interrupt: true })
+        speechRef.current?.speak(
+          ruleInvertedRef.current ? 'Rule flip! Same side now.' : 'Rule flip! Opposite side again.',
+          { interrupt: true }
+        )
         setFlipBanner(true)
         const id = setTimeout(() => setFlipBanner(false), 1600)
         timeoutsRef.current.add(id)
@@ -730,7 +733,7 @@ export default function PeripheralEngine({ exercise, prescription, muted, onProg
             {flipBanner && (
               <div className="absolute inset-x-0 top-4 flex justify-center">
                 <span className="animate-pulse rounded-lg bg-yellow-500/90 px-4 py-2 text-sm font-bold text-gray-900 shadow-lg">
-                  Rule flip! Same side now.
+                  {ruleInvertedRef.current ? 'Rule flip! Same side now.' : 'Rule flip! Opposite side again.'}
                 </span>
               </div>
             )}

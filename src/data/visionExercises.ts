@@ -134,7 +134,7 @@ export const visionExercises: VisionExercise[] = [
     equipment: ['Two wall targets'],
     checkpoints: [
       'Watch the target jump — read the letter each time it flashes.',
-      'Jump gaze between them on metronome beats.',
+      'Jump your gaze to each target as it flashes, on the beat.',
       'Diagonal targets join in as you level up — track them the same way.',
     ],
     guidance: [
@@ -155,7 +155,7 @@ export const visionExercises: VisionExercise[] = [
     checkpoints: [
       'Letter flashes left or right — tap the opposite button, crossed response.',
       'Answer on the 3-count beat using the LEFT / RIGHT buttons.',
-      'After week 5, listen for "Rule flip" — same side instead of crossed.',
+      'From week 5, listen for "Rule flip" — same side instead of crossed.',
     ],
     guidance: [
       { heading: 'Rhythm', detail: 'Use 3-count cadence: look, call, tap.' },
@@ -173,9 +173,9 @@ export const visionExercises: VisionExercise[] = [
     focus: ['stability', 'awareness'],
     equipment: ['Full-length mirror'],
     checkpoints: [
-      'Stand one meter away; soften knees.',
-      'Trace rectangle path with eyes while ensuring head stays centered.',
-      'Reverse directions; finish with diagonal zig-zag scans.',
+      'Hold your gaze on the center letter while targets flash in each quadrant.',
+      'Tap the target the instant it appears — the sweep cycles through all four quadrants, then reverses.',
+      'Answer the letter check-ins without looking away — that proves your eyes did the sweeping, not your head.',
     ],
     guidance: [
       { heading: 'Quality check', detail: 'If head drifts >1 cm, slow down and reset posture.' },
