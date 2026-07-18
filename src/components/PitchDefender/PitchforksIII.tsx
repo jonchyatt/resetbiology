@@ -25,6 +25,17 @@ import {
 } from '@/lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { WORLD_REGISTRY, isWorldUnlocked } from './pitchforks3WorldRegistry'
+import {
+  PITCHFORKS_RANGE_NOTES,
+  PITCHFORKS_RANGE_PROFILE_KEY,
+  adjacentRangeNote,
+  createPitchforksRangeProfile,
+  nearestPitchforksRangeNote,
+  parsePitchforksRangeProfile,
+  presentationOrderForRange,
+  starterPairForRange,
+  type PitchforksRangeProfile,
+} from './pitchforksRange'
 
 const W = 720
 const H = 405
@@ -151,7 +162,9 @@ const frankSparkPoints: { x: number; y: number }[][] = [0, 1].map(() =>
 )
 let frankSparkJitterBucket = -1
 
-type Phase = 'menu' | 'tutorial' | 'calibrating' | 'playing' | 'game_over'
+type Phase = 'menu' | 'tutorial' | 'calibrating' | 'range_manual' | 'range_assessment' | 'playing' | 'game_over'
+type RangeAssessmentStep = 'anchor' | 'lower' | 'higher' | 'summary'
+type RangeIntent = 'guided' | 'saved'
 type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
 type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
@@ -2652,6 +2665,10 @@ export default function PitchforksIII() {
   const waveStartedAtRef = useRef<number>(0)
   const masterySessionIdRef = useRef('')
   const unlockedNotesRef = useRef<string[]>([...STARTING_NOTES])
+  const presentationOrderRef = useRef<string[]>([...INTRO_ORDER])
+  const rangeProfileRef = useRef<PitchforksRangeProfile | null>(null)
+  const rangeHeldMsRef = useRef(0)
+  const rangeLastSampleAtRef = useRef(0)
   const consecutiveCorrectRef = useRef(0)
   const fsrsDebugRef = useRef(false)
   const promptStartedAtRef = useRef(0)
@@ -2722,6 +2739,7 @@ export default function PitchforksIII() {
   const micHudStateRef = useRef<MicHudState>('waiting')
   const viewStateRef = useRef<ViewState | null>(null)
   const lightningPhaseTraceRef = useRef<LightningPhaseTransition[]>([])
+  const rangeHeadingRef = useRef<HTMLHeadingElement>(null)
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [assetsReady, setAssetsReady] = useState(false)
@@ -2738,6 +2756,20 @@ export default function PitchforksIII() {
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
   const [geometryDebug, setGeometryDebug] = useState(false)
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
+  const [rangeProfile, setRangeProfile] = useState<PitchforksRangeProfile | null>(null)
+  const [rangeIntent, setRangeIntent] = useState<RangeIntent>('guided')
+  const [rangeStep, setRangeStep] = useState<RangeAssessmentStep>('anchor')
+  const [rangeCandidate, setRangeCandidate] = useState<string | null>(null)
+  const [rangeAnchor, setRangeAnchor] = useState<string | null>(null)
+  const [rangeLow, setRangeLow] = useState<string | null>(null)
+  const [rangeHigh, setRangeHigh] = useState<string | null>(null)
+  const [rangeMatched, setRangeMatched] = useState(false)
+  const [rangeMatchProgress, setRangeMatchProgress] = useState(0)
+  const [rangeCuePlayed, setRangeCuePlayed] = useState(false)
+  const [rangeAssessmentError, setRangeAssessmentError] = useState<string | null>(null)
+  const [pendingRangeProfile, setPendingRangeProfile] = useState<PitchforksRangeProfile | null>(null)
+  const [manualLowNote, setManualLowNote] = useState('C4')
+  const [manualHighNote, setManualHighNote] = useState('G4')
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
   const [noteMastered, setNoteMastered] = useState<string | null>(null)
   const [, setWaveReceipt] = useState<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
@@ -2906,6 +2938,20 @@ export default function PitchforksIII() {
     return fsrsRef.current[note]
   }, [])
 
+  const applyRangeProfile = useCallback((profile: PitchforksRangeProfile) => {
+    const order = presentationOrderForRange(profile)
+    const starterNotes = starterPairForRange(profile)
+    rangeProfileRef.current = profile
+    presentationOrderRef.current = order
+    unlockedNotesRef.current = [...starterNotes]
+    setRangeProfile(profile)
+    setUnlockedNotes([...starterNotes])
+    for (const note of starterNotes) ensureNoteMemory(note)
+    try {
+      localStorage.setItem(PITCHFORKS_RANGE_PROFILE_KEY, JSON.stringify(profile))
+    } catch {}
+  }, [ensureNoteMemory])
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const isDemo = params.get('demo') === '1'
@@ -2930,15 +2976,28 @@ export default function PitchforksIII() {
       }
     } catch { /* fresh mastery progress */ }
 
-    // Restore unlocked notes: only notes that have been REVIEWED (lastReview > 0)
-    // AND that appear in INTRO_ORDER in sequence (no gaps from other modes pre-seeding)
+    let storedRangeProfile: PitchforksRangeProfile | null = null
+    if (!isDemo && !isFsrsDebug) {
+      try {
+        storedRangeProfile = parsePitchforksRangeProfile(localStorage.getItem(PITCHFORKS_RANGE_PROFILE_KEY))
+      } catch { /* storage unavailable: require a fresh semantic setup */ }
+    }
+    if (storedRangeProfile) {
+      rangeProfileRef.current = storedRangeProfile
+      presentationOrderRef.current = presentationOrderForRange(storedRangeProfile)
+      setRangeProfile(storedRangeProfile)
+    }
+
+    // Preserve shared FSRS history while restoring only the assessed presentation
+    // journey. A saved range always begins with two eligible adjacent notes.
     const reviewed = new Set(
       Object.entries(fsrsRef.current)
         .filter(([, m]) => m.lastReview > 0)
         .map(([k]) => k)
     )
-    const restored: string[] = []
-    for (const note of INTRO_ORDER) {
+    const order = storedRangeProfile ? presentationOrderRef.current : [...INTRO_ORDER]
+    const restored: string[] = storedRangeProfile ? order.slice(0, 2) : []
+    for (const note of storedRangeProfile ? order.slice(2) : order) {
       if (reviewed.has(note)) restored.push(note)
       else break // stop at first unreviewed — no gaps
     }
@@ -3044,6 +3103,65 @@ export default function PitchforksIII() {
   const matchingSuppressedNow = useCallback(() => {
     return performance.now() < matchingSuppressedUntilRef.current || isWithinToneSuppressionWindow()
   }, [])
+
+  const resetRangeMatch = useCallback((candidate: string | null = null) => {
+    rangeHeldMsRef.current = 0
+    rangeLastSampleAtRef.current = 0
+    setRangeCandidate(candidate)
+    setRangeMatched(false)
+    setRangeMatchProgress(0)
+    setRangeCuePlayed(false)
+  }, [])
+
+  useEffect(() => {
+    if (phase !== 'range_assessment' || rangeStep === 'summary') return
+    const source = pitch
+    const now = performance.now()
+    let candidate = rangeCandidate
+
+    if (
+      rangeStep === 'anchor' &&
+      source?.isActive &&
+      source.confidence >= CONFIDENCE_FLOOR &&
+      source.frequency > 0
+    ) {
+      const heardNote = nearestPitchforksRangeNote(source.frequency)
+      if (heardNote && heardNote !== candidate) {
+        resetRangeMatch(heardNote)
+        return
+      }
+      candidate = heardNote
+    }
+
+    const validMatch = !!candidate &&
+      (rangeStep === 'anchor' || rangeCuePlayed) &&
+      !matchingSuppressedNow() &&
+      !!source?.isActive &&
+      source.confidence >= CONFIDENCE_FLOOR &&
+      source.frequency > 0 &&
+      Math.abs(exactCents(source.frequency, noteToFreq(candidate))) <= MATCH_TOLERANCE_CENTS
+
+    if (!validMatch) {
+      rangeHeldMsRef.current = 0
+      rangeLastSampleAtRef.current = now
+      setRangeMatched(false)
+      setRangeMatchProgress(0)
+      return
+    }
+
+    const delta = rangeLastSampleAtRef.current > 0
+      ? Math.min(100, now - rangeLastSampleAtRef.current)
+      : 0
+    rangeLastSampleAtRef.current = now
+    rangeHeldMsRef.current = Math.min(HOLD_MS, rangeHeldMsRef.current + delta)
+    setRangeMatchProgress(rangeHeldMsRef.current / HOLD_MS)
+    if (rangeHeldMsRef.current >= HOLD_MS) setRangeMatched(true)
+  }, [matchingSuppressedNow, phase, pitch, rangeCandidate, rangeCuePlayed, rangeStep, resetRangeMatch])
+
+  useEffect(() => {
+    if (phase !== 'range_assessment' && phase !== 'range_manual') return
+    rangeHeadingRef.current?.focus()
+  }, [phase, rangeStep])
 
   const syncMicHudState = useCallback(() => {
     const next: MicHudState = demoRef.current
@@ -3261,9 +3379,10 @@ export default function PitchforksIII() {
   const maybeUnlockNextNote = useCallback((consecutive: number) => {
     const currentPool = unlockedNotesRef.current
     const currentPoolSize = currentPool.length
+    const presentationOrder = presentationOrderRef.current
     const threshold = UNLOCK_THRESHOLDS[currentPoolSize]
-    if (threshold && consecutive >= threshold && currentPoolSize < INTRO_ORDER.length) {
-      const nextNote = INTRO_ORDER[currentPoolSize]
+    if (threshold && consecutive >= threshold && currentPoolSize < presentationOrder.length) {
+      const nextNote = presentationOrder[currentPoolSize]
       const newPool = [...currentPool, nextNote]
       unlockedNotesRef.current = newPool
       setUnlockedNotes(newPool)
@@ -4107,11 +4226,19 @@ export default function PitchforksIII() {
   }, [getActiveTarget, syncMicHudState, updateGame, updatePitchBarState])
 
   const beginPlaying = useCallback(() => {
+    if (!demoRef.current && !rangeProfileRef.current) {
+      phaseRef.current = 'tutorial'
+      setPhase('tutorial')
+      return
+    }
     resumeCueAudioFromGesture()
     clearCueTimers()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
     clearWaveReceipt()
+    resetRangeMatch(null)
+    setPendingRangeProfile(null)
+    setRangeAssessmentError(null)
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     viewStateRef.current = null
     lightningPhaseTraceRef.current = []
@@ -4163,7 +4290,7 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureNoteMemory, loop, resumeCueAudioFromGesture])
+  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture])
 
   const startGame = useCallback(() => {
     beginPlaying()
@@ -4181,19 +4308,169 @@ export default function PitchforksIII() {
     await startListening()
   }, [beginPlaying, startListening])
 
+  const startGuidedRangeSetup = useCallback(() => {
+    setRangeIntent('guided')
+    void beginCalibration()
+  }, [beginCalibration])
+
+  const startSavedRangeSetup = useCallback(() => {
+    if (!rangeProfileRef.current) return
+    setRangeIntent('saved')
+    void beginCalibration()
+  }, [beginCalibration])
+
+  const openManualRangeSetup = useCallback(() => {
+    const current = rangeProfileRef.current
+    setManualLowNote(current?.lowNote ?? 'C4')
+    setManualHighNote(current?.highNote ?? 'G4')
+    setRangeAssessmentError(null)
+    phaseRef.current = 'range_manual'
+    setPhase('range_manual')
+  }, [])
+
+  const saveManualRangeAndCheckMic = useCallback(() => {
+    const profile = createPitchforksRangeProfile({
+      lowNote: manualLowNote,
+      highNote: manualHighNote,
+      source: 'manual',
+    })
+    if (!profile) {
+      setRangeAssessmentError('Choose at least two neighboring notes, with the low note below the high note.')
+      return
+    }
+    applyRangeProfile(profile)
+    setRangeIntent('saved')
+    setRangeAssessmentError(null)
+    void beginCalibration()
+  }, [applyRangeProfile, beginCalibration, manualHighNote, manualLowNote])
+
+  const startRangeAssessment = useCallback(() => {
+    setRangeStep('anchor')
+    setRangeAnchor(null)
+    setRangeLow(null)
+    setRangeHigh(null)
+    setPendingRangeProfile(null)
+    setRangeAssessmentError(null)
+    resetRangeMatch(null)
+    phaseRef.current = 'range_assessment'
+    setPhase('range_assessment')
+  }, [resetRangeMatch])
+
+  const playRangeCandidateTone = useCallback(() => {
+    const candidate = rangeCandidate
+    if (!candidate || matchingSuppressedNow()) return
+    resetRangeMatch(candidate)
+    setRangeCuePlayed(true)
+    try {
+      initAudio()
+      setPianoVolume(cueVolumeRef.current)
+      playPianoNote(candidate, { exact: true })
+    } finally {
+      matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
+      markToneEmitted(TONE_SUPPRESS_MS)
+    }
+  }, [matchingSuppressedNow, rangeCandidate, resetRangeMatch])
+
+  const finishGuidedRange = useCallback((lowNote: string, highNote: string, anchorNote: string) => {
+    const profile = createPitchforksRangeProfile({
+      lowNote,
+      highNote,
+      anchorNote,
+      source: 'guided',
+    })
+    if (!profile) {
+      setRangeAssessmentError('We need two comfortable neighboring notes. Try a new easy note, or choose your range manually.')
+      setRangeStep('anchor')
+      setRangeAnchor(null)
+      setRangeLow(null)
+      setRangeHigh(null)
+      resetRangeMatch(null)
+      return
+    }
+    setPendingRangeProfile(profile)
+    setRangeAssessmentError(null)
+    setRangeStep('summary')
+    resetRangeMatch(null)
+  }, [resetRangeMatch])
+
+  const beginHigherRange = useCallback((anchorNote: string) => {
+    setRangeStep('higher')
+    const next = adjacentRangeNote(anchorNote, 'higher')
+    if (next) {
+      resetRangeMatch(next)
+    } else {
+      finishGuidedRange(rangeLow ?? anchorNote, rangeHigh ?? anchorNote, anchorNote)
+    }
+  }, [finishGuidedRange, rangeHigh, rangeLow, resetRangeMatch])
+
+  const confirmRangeComfortable = useCallback(() => {
+    if (!rangeMatched || !rangeCandidate) return
+    if (rangeStep === 'anchor') {
+      const anchorNote = rangeCandidate
+      setRangeAnchor(anchorNote)
+      setRangeLow(anchorNote)
+      setRangeHigh(anchorNote)
+      const next = adjacentRangeNote(anchorNote, 'lower')
+      if (next) {
+        setRangeStep('lower')
+        resetRangeMatch(next)
+      } else {
+        beginHigherRange(anchorNote)
+      }
+      return
+    }
+
+    if (!rangeAnchor) return
+    if (rangeStep === 'lower') {
+      const confirmedLow = rangeCandidate
+      setRangeLow(confirmedLow)
+      const next = adjacentRangeNote(confirmedLow, 'lower')
+      if (next) resetRangeMatch(next)
+      else beginHigherRange(rangeAnchor)
+      return
+    }
+
+    if (rangeStep === 'higher') {
+      const confirmedHigh = rangeCandidate
+      setRangeHigh(confirmedHigh)
+      const next = adjacentRangeNote(confirmedHigh, 'higher')
+      if (next) resetRangeMatch(next)
+      else finishGuidedRange(rangeLow ?? rangeAnchor, confirmedHigh, rangeAnchor)
+    }
+  }, [beginHigherRange, finishGuidedRange, rangeAnchor, rangeCandidate, rangeLow, rangeMatched, rangeStep, resetRangeMatch])
+
+  const stopAtRangeLimit = useCallback(() => {
+    if (!rangeAnchor) return
+    if (rangeStep === 'lower') {
+      beginHigherRange(rangeAnchor)
+    } else if (rangeStep === 'higher') {
+      finishGuidedRange(rangeLow ?? rangeAnchor, rangeHigh ?? rangeAnchor, rangeAnchor)
+    }
+  }, [beginHigherRange, finishGuidedRange, rangeAnchor, rangeHigh, rangeLow, rangeStep])
+
+  const acceptPendingRange = useCallback(() => {
+    if (!pendingRangeProfile) return
+    applyRangeProfile(pendingRangeProfile)
+    setPendingRangeProfile(null)
+    beginPlaying()
+  }, [applyRangeProfile, beginPlaying, pendingRangeProfile])
+
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
     clearWaveReceipt()
+    resetRangeMatch(null)
+    setPendingRangeProfile(null)
+    setRangeAssessmentError(null)
     phaseRef.current = 'menu'
     viewStateRef.current = null
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
     setPhase('menu')
-  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, stopListening])
+  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, resetRangeMatch, stopListening])
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -4326,18 +4603,41 @@ export default function PitchforksIII() {
             })}
           </div>
           <div className="mb-5">
-            <div className="text-xs text-green-200/80 mb-2">{unlockedNotes.length} notes unlocked</div>
-            <div className="flex flex-wrap gap-1.5" aria-label="Unlocked notes">
-              {unlockedNotes.map(note => (
-                <span
-                  key={note}
-                  className="inline-flex min-h-6 min-w-10 items-center justify-center border px-2 py-1 text-[11px] font-black tracking-widest"
-                  style={noteChipStyle(note, fsrsRef.current)}
+            {rangeProfile || demoMode ? (
+              <>
+                <div className="text-xs text-green-200/80 mb-2">{unlockedNotes.length} notes unlocked</div>
+                <div className="flex flex-wrap gap-1.5" aria-label="Unlocked notes">
+                  {unlockedNotes.map(note => (
+                    <span
+                      key={note}
+                      className="inline-flex min-h-6 min-w-10 items-center justify-center border px-2 py-1 text-[11px] font-black tracking-widest"
+                      style={noteChipStyle(note, fsrsRef.current)}
+                    >
+                      {note}
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="text-xs leading-relaxed text-green-100/80">
+                Range setup comes first. No note enters your arsenal until it fits your comfortable range.
+              </div>
+            )}
+            {rangeProfile && !demoMode && (
+              <div className="mt-3 flex items-center justify-between gap-3 border border-green-900/60 bg-green-950/20 px-3 py-2">
+                <span className="text-xs text-green-100">Comfortable today: {rangeProfile.lowNote}–{rangeProfile.highNote}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    phaseRef.current = 'tutorial'
+                    setPhase('tutorial')
+                  }}
+                  className="min-h-11 shrink-0 border border-green-700 px-3 text-xs font-bold text-green-100"
                 >
-                  {note}
-                </span>
-              ))}
-            </div>
+                  Recheck range
+                </button>
+              </div>
+            )}
           </div>
           {assetError && <div className="text-sm text-red-300 mb-4">{assetError}</div>}
           {micError && !demoMode && <div className="text-xs text-red-300 mb-4">{micError}</div>}
@@ -4384,7 +4684,7 @@ export default function PitchforksIII() {
 
   if (phase === 'tutorial') {
     return (
-      <div className="fixed inset-0 bg-[#070914] text-gray-100 flex flex-col items-center justify-center px-6" style={{ fontFamily: 'monospace' }}>
+      <div className="fixed inset-0 overflow-y-auto bg-[#070914] text-gray-100 flex flex-col items-center justify-start px-6 py-8 sm:justify-center" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 2rem)' }}>
         <h2 className="text-2xl font-black text-[#4ade80] mb-4 tracking-widest" style={{ textShadow: '0 0 15px rgba(74,222,128,0.3)' }}>
           HOW TO PLAY
         </h2>
@@ -4431,28 +4731,106 @@ export default function PitchforksIII() {
           </div>
         </div>
 
-        <button
-          onClick={beginCalibration}
-          className="px-10 py-4 text-lg font-bold tracking-widest transition-all active:scale-95"
-          style={{
-            background: '#4ade80',
-            color: '#0a0812',
-            border: '2px solid #6ee7a0',
-            boxShadow: '0 0 20px rgba(74,222,128,0.3)',
-          }}
-        >
-          START GAME
-        </button>
+        <section className="mb-4 w-full max-w-md border border-cyan-900/70 bg-cyan-950/20 p-4" aria-labelledby="pf3-private-setup-heading">
+          <h3 id="pf3-private-setup-heading" className="mb-2 text-sm font-black tracking-widest text-cyan-100">PRIVATE VOICE SETUP</h3>
+          <p className="text-xs leading-relaxed text-gray-300">
+            Pitch is analyzed on this device. We don't record or upload your voice; only your comfortable note range is saved.
+          </p>
+        </section>
 
-        <button
-          onClick={() => {
-            phaseRef.current = 'menu'
-            setPhase('menu')
-          }}
-          className="mt-4 text-xs text-gray-600 hover:text-gray-400 transition-colors"
-        >
-          Back to menu
-        </button>
+        <div className="w-full max-w-md space-y-3">
+          {rangeProfile && (
+            <button
+              type="button"
+              onClick={startSavedRangeSetup}
+              className="min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
+            >
+              USE SAVED RANGE {rangeProfile.lowNote}–{rangeProfile.highNote}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={startGuidedRangeSetup}
+            data-testid="pf3-range-check"
+            className="min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 active:scale-[0.99]"
+          >
+            CHECK MY RANGE
+          </button>
+          <button
+            type="button"
+            onClick={openManualRangeSetup}
+            data-testid="pf3-range-manual"
+            className="min-h-11 w-full border border-gray-600 px-4 py-3 text-sm font-bold text-gray-200 active:scale-[0.99]"
+          >
+            CHOOSE MANUALLY
+          </button>
+          <button
+            type="button"
+            onClick={quitToMenu}
+            data-testid="pf3-range-not-now"
+            className="min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400 hover:text-gray-200"
+          >
+            NOT NOW
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (phase === 'range_manual') {
+    return (
+      <div className="fixed inset-0 overflow-y-auto bg-[#070914] px-5 py-8 text-gray-100" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 2rem)' }}>
+        <div className="mx-auto w-full max-w-md border border-cyan-900/70 bg-black/35 p-5">
+          <h2 ref={rangeHeadingRef} tabIndex={-1} className="mb-2 text-xl font-black tracking-widest text-cyan-100 outline-none">
+            CHOOSE YOUR COMFORTABLE RANGE
+          </h2>
+          <p className="mb-5 text-xs leading-relaxed text-gray-300">
+            Choose only notes that feel relaxed today. You can recheck this later, and your learning history will stay safe.
+          </p>
+
+          <div className="grid grid-cols-2 gap-4">
+            <label className="text-xs font-bold text-gray-200">
+              Comfortable low
+              <select
+                value={manualLowNote}
+                onChange={event => setManualLowNote(event.target.value)}
+                className="mt-2 min-h-11 w-full border border-gray-600 bg-[#111827] px-3 text-base text-white"
+              >
+                {PITCHFORKS_RANGE_NOTES.map(note => <option key={note} value={note}>{note}</option>)}
+              </select>
+            </label>
+            <label className="text-xs font-bold text-gray-200">
+              Comfortable high
+              <select
+                value={manualHighNote}
+                onChange={event => setManualHighNote(event.target.value)}
+                className="mt-2 min-h-11 w-full border border-gray-600 bg-[#111827] px-3 text-base text-white"
+              >
+                {PITCHFORKS_RANGE_NOTES.map(note => <option key={note} value={note}>{note}</option>)}
+              </select>
+            </label>
+          </div>
+
+          {rangeAssessmentError && <div role="alert" className="mt-4 text-xs leading-relaxed text-red-200">{rangeAssessmentError}</div>}
+
+          <button
+            type="button"
+            onClick={saveManualRangeAndCheckMic}
+            className="mt-6 min-h-11 w-full border-2 border-cyan-200 bg-cyan-200 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
+          >
+            SAVE RANGE &amp; CHECK MIC
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              phaseRef.current = 'tutorial'
+              setPhase('tutorial')
+            }}
+            className="mt-3 min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400"
+          >
+            BACK TO SETUP
+          </button>
+        </div>
       </div>
     )
   }
@@ -4461,7 +4839,7 @@ export default function PitchforksIII() {
     return (
       <div className="fixed inset-0 bg-[#070914] text-gray-100 flex flex-col items-center justify-center px-6" style={{ fontFamily: 'monospace' }}>
         <div className="w-full max-w-md border border-green-900/60 bg-black/35 p-6 text-center">
-          <div className={`mx-auto mb-5 inline-flex items-center gap-3 border px-5 py-3 text-sm font-black tracking-widest ${activeMicHud.className}`}>
+          <div aria-live="polite" className={`mx-auto mb-5 inline-flex items-center gap-3 border px-5 py-3 text-sm font-black tracking-widest ${activeMicHud.className}`}>
             <Mic size={28} strokeWidth={2.5} aria-hidden="true" />
             <span className={`h-4 w-4 rounded-full ${activeMicHud.dotClassName}`} aria-hidden="true" />
             <span>{calibrationHudLabel}</span>
@@ -4470,25 +4848,166 @@ export default function PitchforksIII() {
           <h2 className="mb-3 text-xl font-black tracking-widest text-green-200">MIC CHECK</h2>
           <p className="mb-5 text-sm text-gray-300">Hum or sing anything. We just need to hear your voice.</p>
 
-          {micError && <div className="mb-5 text-xs text-red-300">{micError}</div>}
+          {micError && <div role="alert" className="mb-5 text-xs text-red-300">{micError}</div>}
 
           <button
             type="button"
-            onClick={beginPlaying}
+            onClick={rangeIntent === 'guided' ? startRangeAssessment : beginPlaying}
             disabled={!calibrationReady}
-            className="w-full py-3 text-sm font-black tracking-widest border border-green-200 bg-green-300 text-[#071018] transition active:scale-[0.99] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
+            className="min-h-11 w-full py-3 text-sm font-black tracking-widest border border-green-200 bg-green-300 text-[#071018] transition active:scale-[0.99] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
           >
-            Enter the Village
+            {rangeIntent === 'guided' ? 'Begin comfortable range check' : 'Enter the Village'}
           </button>
 
           <button
             type="button"
             onClick={quitToMenu}
-            className="mt-4 text-xs text-gray-500 transition-colors hover:text-gray-300"
+            className="mt-3 min-h-11 w-full px-4 py-3 text-xs text-gray-500 transition-colors hover:text-gray-300"
           >
             Back to menu
           </button>
         </div>
+      </div>
+    )
+  }
+
+  if (phase === 'range_assessment') {
+    const direction = rangeStep === 'lower' ? 'low' : 'high'
+    const confirmedLimit = rangeStep === 'lower' ? rangeLow : rangeHigh
+    const starterNotes = pendingRangeProfile ? starterPairForRange(pendingRangeProfile) : null
+    const stepTitle = rangeStep === 'anchor'
+      ? 'FIND ONE EASY NOTE'
+      : rangeStep === 'summary'
+        ? 'YOUR COMFORTABLE RANGE'
+        : rangeStep === 'lower'
+          ? 'FIND YOUR COMFORTABLE LOW'
+          : 'FIND YOUR COMFORTABLE HIGH'
+
+    return (
+      <div className="fixed inset-0 overflow-y-auto bg-[#070914] px-5 py-8 text-gray-100" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 2rem)' }}>
+        <main className="mx-auto w-full max-w-md border border-green-900/60 bg-black/35 p-5">
+          <div className="mb-4 flex items-center justify-between gap-3 text-xs text-gray-400">
+            <span>PRIVATE · ON DEVICE</span>
+            <span>{rangeStep === 'anchor' ? '1' : rangeStep === 'lower' ? '2' : rangeStep === 'higher' ? '3' : 'READY'} / 3</span>
+          </div>
+          <h2 ref={rangeHeadingRef} tabIndex={-1} className="mb-3 text-xl font-black tracking-widest text-green-100 outline-none">
+            {stepTitle}
+          </h2>
+
+          {rangeStep === 'summary' && pendingRangeProfile && starterNotes ? (
+            <>
+              <p className="mb-5 text-sm leading-relaxed text-gray-300">
+                Comfortable today: <strong className="text-white">{pendingRangeProfile.lowNote}–{pendingRangeProfile.highNote}</strong>. The village starts with two neighboring notes and keeps every new target inside this range.
+              </p>
+              <div className="mb-5 border border-green-700/70 bg-green-950/25 p-4 text-center">
+                <div className="mb-2 text-xs font-bold tracking-widest text-green-200">STARTER PAIR</div>
+                <div className="flex justify-center gap-3">
+                  {starterNotes.map(note => (
+                    <span key={note} className="inline-flex min-h-11 min-w-16 items-center justify-center border border-green-300 bg-green-950/50 px-3 text-xl font-black text-green-100">
+                      {note}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <p className="mb-5 text-xs leading-relaxed text-gray-400">
+                Only note names and these boundaries are saved. No recording or microphone samples are kept.
+              </p>
+              <button
+                type="button"
+                onClick={acceptPendingRange}
+                className="min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
+              >
+                USE THIS RANGE
+              </button>
+              <button
+                type="button"
+                onClick={startRangeAssessment}
+                className="mt-3 min-h-11 w-full border border-gray-600 px-4 py-3 text-sm font-bold text-gray-200"
+              >
+                CHECK AGAIN
+              </button>
+              <button
+                type="button"
+                onClick={openManualRangeSetup}
+                className="mt-3 min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400"
+              >
+                CHOOSE MANUALLY
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="mb-5 text-sm leading-relaxed text-gray-300">
+                {rangeStep === 'anchor'
+                  ? 'Hum one relaxed note and hold it steady. Do not reach, stretch, or push.'
+                  : `Hear the exact ${direction} note, then sing it only if it feels relaxed. Stop before any strain.`}
+              </p>
+
+              <div aria-live="polite" className="mb-5 border border-gray-700 bg-[#0b1020] p-4 text-center">
+                <div className="mb-2 text-xs font-bold tracking-widest text-gray-400">
+                  {rangeStep === 'anchor' ? 'WE HEAR' : 'TRY THIS NOTE'}
+                </div>
+                <div className="text-4xl font-black text-cyan-100">{rangeCandidate ?? '—'}</div>
+                <div className="mx-auto mt-4 h-2 w-full max-w-64 overflow-hidden rounded bg-gray-800" aria-hidden="true">
+                  <div
+                    className="h-full bg-green-300"
+                    style={{ width: `${Math.round(rangeMatchProgress * 100)}%`, transition: reducedMotion ? 'none' : 'width 80ms linear' }}
+                  />
+                </div>
+                <div className="mt-3 min-h-5 text-xs font-bold text-gray-300">
+                  {rangeMatched
+                    ? 'Exact note held. Now tell us whether it feels comfortable.'
+                    : rangeStep !== 'anchor' && !rangeCuePlayed
+                      ? 'Tap HEAR NOTE first.'
+                      : matchingSuppressedNow()
+                        ? 'Listen… then sing after the cue.'
+                        : 'Hold the note gently.'}
+                </div>
+              </div>
+
+              {rangeStep !== 'anchor' && (
+                <button
+                  type="button"
+                  onClick={playRangeCandidateTone}
+                  disabled={!rangeCandidate || matchingSuppressedNow()}
+                  className="mb-3 min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 disabled:opacity-50"
+                  aria-label={`Hear exact note ${rangeCandidate ?? ''}`}
+                >
+                  🔊 HEAR {rangeCandidate ?? 'NOTE'}
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={confirmRangeComfortable}
+                disabled={!rangeMatched}
+                data-testid="pf3-range-comfortable"
+                className="min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
+              >
+                YES, THIS FEELS COMFORTABLE
+              </button>
+
+              {rangeStep !== 'anchor' && (
+                <button
+                  type="button"
+                  onClick={stopAtRangeLimit}
+                  data-testid="pf3-range-stop-limit"
+                  className="mt-3 min-h-11 w-full border border-amber-500/70 bg-amber-950/25 px-4 py-3 text-sm font-bold text-amber-100"
+                >
+                  STOP — {confirmedLimit ?? rangeAnchor} IS MY {direction.toUpperCase()} LIMIT
+                </button>
+              )}
+
+              {rangeAssessmentError && <div role="alert" className="mt-4 text-xs leading-relaxed text-red-200">{rangeAssessmentError}</div>}
+              <button
+                type="button"
+                onClick={quitToMenu}
+                className="mt-4 min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400"
+              >
+                EXIT SETUP
+              </button>
+            </>
+          )}
+        </main>
       </div>
     )
   }
@@ -4505,10 +5024,16 @@ export default function PitchforksIII() {
             <div><div className="text-gray-500">Streak</div><div className="text-xl text-green-200">{hud.streak}</div></div>
           </div>
           <div className="flex gap-3">
-            <button onClick={beginCalibration} className="flex-1 py-2 bg-orange-200 text-[#071018] font-bold border border-orange-100">
+            <button
+              onClick={() => {
+                setRangeIntent('saved')
+                void beginCalibration()
+              }}
+              className="min-h-11 flex-1 py-2 bg-orange-200 text-[#071018] font-bold border border-orange-100"
+            >
               AGAIN
             </button>
-            <button onClick={quitToMenu} className="flex-1 py-2 border border-gray-700 text-gray-300">
+            <button onClick={quitToMenu} className="min-h-11 flex-1 py-2 border border-gray-700 text-gray-300">
               MENU
             </button>
           </div>
