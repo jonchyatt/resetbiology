@@ -8,6 +8,7 @@ import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
 import { VaultBanner } from "@/components/Vault/VaultBanner"
+import { OnboardingGuide, type OnboardingStatus } from "@/components/Portal/OnboardingGuide"
 import { useToast } from "@/components/ui/Toast"
 import { localDayKey } from "@/lib/localDay"
 
@@ -96,6 +97,7 @@ export function EnhancedDashboard() {
   const [showTrialBanner, setShowTrialBanner] = useState(true)
   const [previousAssessment, setPreviousAssessment] = useState<any>(null)
   const [reason, setReason] = useState<string | null>(null)
+  const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus | null>(null)
 
   // Daily tasks state
   const [dailyTasks, setDailyTasks] = useState({
@@ -310,6 +312,24 @@ export function EnhancedDashboard() {
       }
     }
     loadTasks()
+  }, [])
+
+  // First-run onboarding status (FLOW-SPEC T6). Read-only GET; if the
+  // account qualifies for the grandfather rule, fire the idempotent
+  // complete POST silently — on failure it's harmless, the guide (which we
+  // already suppress below via grandfatherEligible) just re-derives the
+  // same result next load (v2 GRANDFATHER MED-2).
+  useEffect(() => {
+    fetch('/api/onboarding/status')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: OnboardingStatus | null) => {
+        if (!data) return
+        setOnboardingStatus(data)
+        if (data.grandfatherEligible && !data.onboardingComplete) {
+          fetch('/api/onboarding/complete', { method: 'POST' }).catch(() => {})
+        }
+      })
+      .catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -676,6 +696,25 @@ export function EnhancedDashboard() {
                 </div>
               </div>
             </div>
+          )}
+
+          {/* First-run guided setup — never a modal wall, portal grid below
+              renders regardless. Shown iff onboarding isn't complete and the
+              account isn't grandfathered (existing members are never nagged). */}
+          {onboardingStatus && !onboardingStatus.onboardingComplete && !onboardingStatus.grandfatherEligible && (
+            <OnboardingGuide
+              reason={reason}
+              firstName={
+                (user as any)?.given_name
+                  || user?.nickname
+                  || (user?.email ? user.email.split('@')[0] : null)
+                  || (user?.name && !user.name.includes('@') ? user.name : null)
+                  || "Wellness Warrior"
+              }
+              taskCount={Object.keys(dailyTasks).length}
+              status={onboardingStatus}
+              onComplete={() => setOnboardingStatus((prev) => (prev ? { ...prev, onboardingComplete: true } : prev))}
+            />
           )}
 
           {/* Main Portal Section - Matching Portalview.png */}
