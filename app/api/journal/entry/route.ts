@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { randomBytes, createHash } from 'crypto'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { getDriveClient, getSubfolderId, uploadTextFile, formatJournalEntry } from '@/lib/google-drive'
+import { parseJournalDayFile } from '@/lib/journal-day-file'
+import { gatherAuthorityContext, computeAuthorityActive, decideJournalRead } from '@/lib/drive-read-authority'
 
 type TasksPayload = Record<string, boolean>
 
@@ -19,10 +23,18 @@ type EntryPayload = {
   tasksCompleted: TasksPayload
 }
 
+const JOURNAL_DOMAIN = 'journal'
+
 function startOfDay(date: Date) {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)
   return d
+}
+
+function toUtcDateStr(date: Date): string {
+  // Canonical key (D-C5): UTC ISO calendar date of the instant — matches
+  // live sync (google-drive.ts getDateWindow) and the migration harness.
+  return date.toISOString().split('T')[0]
 }
 
 function normalizeString(value: unknown): string {
@@ -40,6 +52,114 @@ function normalizeTasks(value: unknown): TasksPayload {
     }
   }
   return out
+}
+
+// ---------------------------------------------------------------------------
+// Drive I/O glue for the journal day file (Phase C, cf-c2-journal-inversion).
+// Authority gating lives in drive-read-authority.ts; this route owns the
+// actual Drive read/write calls, same separation as protocols-store.ts.
+// ---------------------------------------------------------------------------
+
+async function journalFolderFor(userId: string): Promise<
+  | { ok: true; drive: Awaited<ReturnType<typeof getDriveClient>>; journalFolderId: string }
+  | { ok: false; error: string }
+> {
+  const drive = await getDriveClient(userId)
+  if (!drive) return { ok: false, error: 'Google Drive not connected' }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { driveFolder: true },
+  })
+  if (!user?.driveFolder) return { ok: false, error: 'No Drive vault folder configured' }
+
+  const journalFolderId = await getSubfolderId(drive, user.driveFolder, 'Journal')
+  if (!journalFolderId) return { ok: false, error: 'Could not access Journal Drive folder' }
+
+  return { ok: true, drive, journalFolderId }
+}
+
+async function fetchJournalDayFile(
+  userId: string,
+  dateStr: string
+): Promise<{ found: true; content: string; modifiedTime: Date } | { found: false }> {
+  const location = await journalFolderFor(userId)
+  if (!location.ok) throw new Error(location.error)
+  const { drive, journalFolderId } = location
+
+  const fileName = `journal-${dateStr}.md`
+  const list = await drive!.files.list({
+    q: `name='${fileName}' and '${journalFolderId}' in parents and trashed=false`,
+    fields: 'files(id, modifiedTime)',
+  })
+  const file = list.data.files?.[0]
+  if (!file?.id) return { found: false }
+
+  const contentRes = await drive!.files.get({ fileId: file.id, alt: 'media' })
+  const content = typeof contentRes.data === 'string' ? contentRes.data : JSON.stringify(contentRes.data)
+  return { found: true, content, modifiedTime: new Date(file.modifiedTime || Date.now()) }
+}
+
+function stableIdForDegradedEntry(content: string | null): string {
+  // ponytail: a hand-edited file that lost its front matter has no rowId to
+  // key on. A content hash keeps that section stable across re-reads/writes
+  // of the same unedited text without building front-matter recovery
+  // heuristics here. Upgrade path: reconstruction heuristics if this shows
+  // up in production telemetry.
+  return `legacy-${createHash('sha1').update(content ?? '').digest('hex').slice(0, 20)}`
+}
+
+async function writeJournalDayFileEntry(
+  userId: string,
+  dateStr: string,
+  row: { rowId: string; createdAt: Date; content: string; mood: string | null; weight: number | null }
+): Promise<{ success: true } | { success: false; error: string }> {
+  try {
+    const location = await journalFolderFor(userId)
+    if (!location.ok) return { success: false, error: location.error }
+    const { drive, journalFolderId } = location
+
+    const fileName = `journal-${dateStr}.md`
+    const existing = await drive!.files.list({
+      q: `name='${fileName}' and '${journalFolderId}' in parents and trashed=false`,
+      fields: 'files(id)',
+    })
+    const existingFileId = existing.data.files?.[0]?.id
+
+    let otherEntries: Array<{ rowId: string; createdAt: Date; content: string; mood?: string | null; weight?: number | null }> = []
+    if (existingFileId) {
+      const contentRes = await drive!.files.get({ fileId: existingFileId, alt: 'media' })
+      const raw = typeof contentRes.data === 'string' ? contentRes.data : JSON.stringify(contentRes.data)
+      const parsed = parseJournalDayFile(raw)
+      otherEntries = parsed
+        .map((e) => ({
+          rowId: e.rowId ?? stableIdForDegradedEntry(e.content),
+          createdAt: e.createdAt ? new Date(e.createdAt) : new Date(0),
+          content: e.content ?? '',
+          mood: e.mood,
+          weight: e.weight,
+        }))
+        .filter((e) => e.rowId !== row.rowId) // merge/replace: drop the section we're about to re-emit
+    }
+
+    // Shared emitter (HIGH-2: every same-day row preserved as its own
+    // section — merge/replace only touches THIS entry, siblings untouched).
+    const content = formatJournalEntry(dateStr, [...otherEntries, row])
+    const uploadedId = await uploadTextFile(drive!, journalFolderId, fileName, content, 'text/markdown')
+    if (!uploadedId) return { success: false, error: `Drive upload failed for ${fileName}` }
+
+    return { success: true }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown Drive error' }
+  }
+}
+
+async function hasPendingOutboxRow(userId: string, dateStr: string): Promise<boolean> {
+  const row = await prisma.driveSyncOutbox.findUnique({
+    where: { userId_domain_dateStr: { userId, domain: JOURNAL_DOMAIN, dateStr } },
+    select: { status: true },
+  })
+  return row?.status === 'pending' || row?.status === 'inflight'
 }
 
 export async function POST(request: NextRequest) {
@@ -80,47 +200,91 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    let tasksMerged = { ...entryPayload.tasksCompleted }
-    let journalEntry
-
+    let previous: EntryPayload | Record<string, unknown> = {}
     if (existingEntry) {
-      let previous: EntryPayload | Record<string, unknown> = {}
       try {
         previous = existingEntry.entry ? JSON.parse(existingEntry.entry as string) : {}
       } catch (error) {
         previous = {}
       }
+    }
 
-      tasksMerged = {
-        ...(typeof (previous as any)?.tasksCompleted === 'object' ? (previous as any).tasksCompleted : {}),
-        ...entryPayload.tasksCompleted,
-      }
-
-      const mergedEntry = {
-        ...previous,
-        ...entryPayload,
-        tasksCompleted: tasksMerged,
-      }
-
-      journalEntry = await prisma.journalEntry.update({
-        where: { id: existingEntry.id },
-        data: {
-          entry: JSON.stringify(mergedEntry),
-          mood: normalizeString(body?.mood) || null,
-          weight: typeof body?.weight === 'number' ? body.weight : body?.weight ? Number(body.weight) : null,
+    const tasksMerged = existingEntry
+      ? {
+          ...(typeof (previous as any)?.tasksCompleted === 'object' ? (previous as any).tasksCompleted : {}),
+          ...entryPayload.tasksCompleted,
         }
+      : entryPayload.tasksCompleted
+
+    const mergedEntry = existingEntry
+      ? { ...previous, ...entryPayload, tasksCompleted: tasksMerged }
+      : entryPayload
+
+    const moodValue = normalizeString(body?.mood) || null
+    const weightValue = typeof body?.weight === 'number' ? body.weight : body?.weight ? Number(body.weight) : null
+
+    // Read-path authority gate (dark by default — see drive-read-authority.ts).
+    const authorityContext = await gatherAuthorityContext(user.id)
+    const authorityActive = computeAuthorityActive(authorityContext)
+
+    let journalEntry
+
+    if (authorityActive) {
+      // Drive-first synchronous write (HIGH-1): Drive must succeed BEFORE
+      // Mongo is touched — no silent custody, no Mongo-only success.
+      const rowId = existingEntry?.id ?? randomBytes(12).toString('hex')
+      const dateStr = toUtcDateStr(entryDate)
+
+      const driveWrite = await writeJournalDayFileEntry(user.id, dateStr, {
+        rowId,
+        createdAt: existingEntry?.createdAt ?? new Date(),
+        content: typeof (mergedEntry as any).content === 'string' ? (mergedEntry as any).content : '',
+        mood: moodValue,
+        weight: weightValue,
       })
+
+      if (!driveWrite.success) {
+        console.error('[journal/entry POST] Drive-first write failed, Mongo NOT touched:', driveWrite.error)
+        return NextResponse.json(
+          {
+            error:
+              "Could not save to your Google Drive right now. Your entry was NOT saved — please try again once you're reconnected.",
+          },
+          { status: 502 }
+        )
+      }
+
+      journalEntry = existingEntry
+        ? await prisma.journalEntry.update({
+            where: { id: existingEntry.id },
+            data: { entry: JSON.stringify(mergedEntry), mood: moodValue, weight: weightValue },
+          })
+        : await prisma.journalEntry.create({
+            data: {
+              id: rowId,
+              userId: user.id,
+              entry: JSON.stringify(mergedEntry),
+              mood: moodValue,
+              weight: weightValue,
+              date: entryDate,
+            },
+          })
     } else {
-      journalEntry = await prisma.journalEntry.create({
-        data: {
-          userId: user.id,
-          entry: JSON.stringify(entryPayload),
-          mood: normalizeString(body?.mood) || null,
-          weight: typeof body?.weight === 'number' ? body.weight : body?.weight ? Number(body.weight) : null,
-          date: entryDate,
-        }
-      })
-      tasksMerged = entryPayload.tasksCompleted
+      // Authority inactive: today's path, byte-identical to pre-Phase-C behavior.
+      journalEntry = existingEntry
+        ? await prisma.journalEntry.update({
+            where: { id: existingEntry.id },
+            data: { entry: JSON.stringify(mergedEntry), mood: moodValue, weight: weightValue },
+          })
+        : await prisma.journalEntry.create({
+            data: {
+              userId: user.id,
+              entry: JSON.stringify(mergedEntry),
+              mood: moodValue,
+              weight: weightValue,
+              date: entryDate,
+            },
+          })
     }
 
     // Mark journal daily task as completed and award points once per day
@@ -219,14 +383,86 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    if (journalEntry) {
+    // Read-path authority gate (dark by default — see drive-read-authority.ts).
+    const authorityContext = await gatherAuthorityContext(user.id)
+    if (!computeAuthorityActive(authorityContext)) {
+      // Byte-identical to pre-Phase-C behavior: the branch below never runs.
+      if (journalEntry) {
+        return NextResponse.json({
+          ...journalEntry,
+          entry: journalEntry.entry ? JSON.parse(journalEntry.entry as string) : null,
+        })
+      }
+      return NextResponse.json({ entry: null })
+    }
+
+    const dateStr = toUtcDateStr(today)
+
+    let driveModifiedTime: Date | null = null
+    let driveContent: string | null = null
+    let driveReadFailed = false
+    try {
+      const dayFile = await fetchJournalDayFile(user.id, dateStr)
+      if (dayFile.found) {
+        driveModifiedTime = dayFile.modifiedTime
+        driveContent = dayFile.content
+      }
+    } catch (err) {
+      console.error('[journal/entry GET] Drive read failed:', err)
+      driveReadFailed = true
+    }
+
+    const pendingOutbox = await hasPendingOutboxRow(user.id, dateStr)
+    const mongoUpdatedAt = journalEntry?.updatedAt ?? journalEntry?.createdAt ?? null
+
+    const decision = decideJournalRead({
+      ...authorityContext,
+      mongoUpdatedAt,
+      driveModifiedTime,
+      pendingOutbox,
+      driveReadFailed,
+    })
+
+    if (decision.provenance === 'drive') {
+      if (!driveContent) {
+        return NextResponse.json({ entry: null, provenance: 'drive' })
+      }
+      const parsedEntries = parseJournalDayFile(driveContent)
+      const matched =
+        (journalEntry && parsedEntries.find((e) => e.rowId === journalEntry.id)) ||
+        parsedEntries[parsedEntries.length - 1] ||
+        null
+
+      if (!matched) {
+        return NextResponse.json({ entry: null, provenance: 'drive' })
+      }
+
       return NextResponse.json({
-        ...journalEntry,
-        entry: journalEntry.entry ? JSON.parse(journalEntry.entry as string) : null,
+        id: journalEntry?.id ?? matched.rowId ?? null,
+        userId: user.id,
+        date: matched.date,
+        mood: matched.mood,
+        weight: matched.weight,
+        createdAt: matched.createdAt,
+        entry: { content: matched.content },
+        provenance: 'drive',
       })
     }
 
-    return NextResponse.json({ entry: null })
+    // 'syncing' or 'app-cache' (HIGH-1 / MED-3): serve the Mongo copy — a
+    // just-saved entry never vanishes or reads back stale, and a Drive outage
+    // is never silent.
+    const basePayload = journalEntry
+      ? { ...journalEntry, entry: journalEntry.entry ? JSON.parse(journalEntry.entry as string) : null }
+      : { entry: null }
+
+    return NextResponse.json({
+      ...basePayload,
+      provenance: decision.provenance,
+      ...(decision.provenance === 'app-cache'
+        ? { mongoUpdatedAt, driveLastConfirmedAt: driveModifiedTime }
+        : {}),
+    })
   } catch (error) {
     console.error('Failed to load journal entry:', error)
     return NextResponse.json(
@@ -235,5 +471,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
-
