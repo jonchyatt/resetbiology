@@ -95,6 +95,7 @@ export function EnhancedDashboard() {
   const [showTrialModal, setShowTrialModal] = useState(false)
   const [showTrialBanner, setShowTrialBanner] = useState(true)
   const [previousAssessment, setPreviousAssessment] = useState<any>(null)
+  const [reason, setReason] = useState<string | null>(null)
 
   // Daily tasks state
   const [dailyTasks, setDailyTasks] = useState({
@@ -314,16 +315,32 @@ export function EnhancedDashboard() {
   useEffect(() => {
     const loadJournalPrefill = async () => {
       try {
-        const response = await fetch(`/api/journal/entry?localDate=${localDayKey(new Date())}`, { cache: 'no-store' })
-        if (!response.ok) return
-        const data = await response.json()
+        const [journalResponse, reasonResponse] = await Promise.all([
+          fetch(`/api/journal/entry?localDate=${localDayKey(new Date())}`, { cache: 'no-store' }),
+          fetch('/api/user/reason'),
+        ])
+
+        // Reasons Engine v1: session-scoped "why" (REASON CONTRACT v1.1).
+        // Header echo uses this directly; the check-in prefill below only
+        // borrows it when today's own entry has nothing yet.
+        let fetchedReason: string | null = null
+        if (reasonResponse.ok) {
+          const reasonData = await reasonResponse.json()
+          fetchedReason = typeof reasonData.reason === 'string' && reasonData.reason ? reasonData.reason : null
+          setReason(fetchedReason)
+        }
+
+        if (!journalResponse.ok) return
+        const data = await journalResponse.json()
         if (!data) return
         const entry = data.entry || {}
         setJournalData((prev) => ({
           ...prev,
           weight: typeof data.weight === 'number' ? data.weight : prev.weight,
           mood: typeof data.mood === 'string' ? data.mood : prev.mood,
-          reasonsValidation: entry.reasonsValidation ?? prev.reasonsValidation,
+          // Prefill only — today's own saved value always wins; the member
+          // edits/accepts and saves normally through the existing path.
+          reasonsValidation: entry.reasonsValidation || fetchedReason || prev.reasonsValidation,
           affirmationGoal: entry.affirmationGoal ?? prev.affirmationGoal,
           affirmationBecause: entry.affirmationBecause ?? prev.affirmationBecause,
           affirmationMeans: entry.affirmationMeans ?? prev.affirmationMeans,
@@ -531,11 +548,13 @@ export function EnhancedDashboard() {
           {/* Welcome Header */}
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 text-shadow-lg animate-fade-in">
-              {/* "Welcome back" is wrong on a brand-new account's very first
-                  landing (no way here to tell first-time from returning), so
-                  this drops the claim rather than guess — "Welcome" reads
-                  correctly either way. */}
-              Welcome, <span
+              {/* currentStreak is already fetched (DailyTask history, all-time —
+                  see /api/daily-tasks calculateStreak) and already gates the
+                  streak pill below; reusing it here as the "has this member
+                  checked in before" signal avoids a second history query.
+                  ponytail: an old, streak-broken returning member reads as
+                  "new" too — acceptable, this is greeting copy not a claim. */}
+              {currentStreak > 0 ? 'Welcome back' : 'Welcome'}, <span
                 className="text-primary-400 inline-block max-w-[60vw] sm:max-w-md align-bottom truncate"
                 title={
                   (user as any)?.given_name
@@ -565,6 +584,11 @@ export function EnhancedDashboard() {
               <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600/20 rounded-full border border-secondary-400/30">
                 <span className="text-secondary-300 font-medium">🔥 Current streak: {currentStreak} days</span>
               </div>
+            )}
+            {reason ? (
+              <p className="mt-3 text-gray-400 text-sm italic">Your why: &ldquo;{reason}&rdquo;</p>
+            ) : (
+              <p className="mt-3 text-gray-500 text-sm italic">Your first check-in asks for your reason — it powers everything here.</p>
             )}
           </div>
 
