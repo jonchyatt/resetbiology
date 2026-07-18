@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Syringe,
   Calendar,
@@ -18,6 +19,7 @@ import { DosageCalculator } from "./DosageCalculator";
 import { QuickAddOralMed } from "./QuickAddOralMed";
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
+import type { PeptideIndexEntry } from "@/data/peptide-education/generated";
 
 // Convert base64 VAPID key to Uint8Array format required by Push API
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -64,6 +66,8 @@ interface DoseEntry {
 }
 
 export function PeptideTracker() {
+  const searchParams = useSearchParams();
+
   // Helper function to convert Date to local YYYY-MM-DD (not UTC)
   const dateToLocalKey = (date: Date): string => {
     const year = date.getFullYear();
@@ -118,6 +122,10 @@ export function PeptideTracker() {
     Omit<PeptideProtocol, "startDate" | "currentCycle" | "isActive">[]
   >([]);
   const [loadingLibrary, setLoadingLibrary] = useState(true);
+  // Cross-expert peptide education library (92 cards) — feeds the
+  // Add-Protocol picker's citation-grounded dosing alongside storefront products.
+  const [eduLibrary, setEduLibrary] = useState<PeptideIndexEntry[]>([]);
+  const [deepLinkSlug, setDeepLinkSlug] = useState<string | null>(null);
   const [doseHistory, setDoseHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date());
@@ -615,6 +623,46 @@ export function PeptideTracker() {
     });
   }, [currentProtocols, getNextDoseDate]);
 
+  // Add-Protocol picker source: storefront products + the full peptide
+  // education library (92 cards) + the "Other (Custom)" option. Library
+  // items carry `slug` so DosageCalculator can fetch structured_regimens
+  // for citation-grounded dosing.
+  const addProtocolPeptideLibrary = useMemo(() => {
+    const storefront = peptideLibrary
+      .filter((p) => p.id !== "custom")
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        dosage: p.dosage,
+        category: p.purpose,
+        reconstitution: p.reconstitution,
+        vialAmount: p.vialAmount,
+        source: "storefront" as const,
+      }));
+    const library = eduLibrary.map((entry) => ({
+      id: `edu-${entry.slug}`,
+      name: entry.peptide,
+      category: entry.category,
+      slug: entry.slug,
+      source: "library" as const,
+    }));
+    const customEntry = peptideLibrary.find((p) => p.id === "custom");
+    const custom = customEntry
+      ? [
+          {
+            id: customEntry.id,
+            name: customEntry.name,
+            dosage: customEntry.dosage,
+            category: customEntry.purpose,
+            reconstitution: customEntry.reconstitution,
+            vialAmount: customEntry.vialAmount,
+            source: "custom" as const,
+          },
+        ]
+      : [];
+    return [...storefront, ...library, ...custom];
+  }, [peptideLibrary, eduLibrary]);
+
   const goToPreviousMonth = () => {
     setHistoryMonth(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
@@ -639,6 +687,7 @@ export function PeptideTracker() {
 
     const loadData = async () => {
       fetchPeptideLibrary();
+      fetchEducationLibrary();
       // Load doses first, then protocols (so doses are in state when protocols generate pending)
       await fetchTodaysDoses();
       await fetchUserProtocols();
@@ -647,6 +696,16 @@ export function PeptideTracker() {
     };
     loadData();
   }, [fetchTodaysDoses]);
+
+  // Deep-link: ?peptide=<slug> from the education library's "Start Protocol"
+  // link preselects that card and opens the Add-Protocol modal.
+  useEffect(() => {
+    const slug = searchParams.get("peptide");
+    if (slug && eduLibrary.length > 0) {
+      setDeepLinkSlug(slug);
+      setShowAddProtocolModal(true);
+    }
+  }, [searchParams, eduLibrary]);
 
   // Auto-generate today's doses when protocols change (preserve existing logged doses)
   useEffect(() => {
@@ -701,7 +760,7 @@ export function PeptideTracker() {
           frequency: protocol.frequency,
           duration: "8 weeks",
           vialAmount: "10mg",
-          reconstitution: protocol.peptides?.reconstitution || "2ml",
+          reconstitution: protocol.peptides?.reconstitution || "",
           syringeUnits: 10,
           startDate: protocol.startDate
             ? dateToLocalKey(new Date(protocol.startDate))
@@ -756,17 +815,22 @@ export function PeptideTracker() {
 
       if (products && Array.isArray(products)) {
         // Transform storefront products to match our interface
+        // NOTE: dosage/reconstitution/syringeUnits below are NOT prefill
+        // defaults — the Add-Protocol dose field is now sourced from cited
+        // regimens (RegimenSourcePicker) or typed by the user, never from
+        // these placeholders. Kept empty/zero to satisfy the PeptideProtocol
+        // shape; DosageCalculator never reads peptideLibrary[].dosage.
         const formattedLibrary = products.map((product: any) => ({
           id: product.id,
           name: product.name,
           purpose: product.description?.substring(0, 50) || "General",
-          dosage: "250mcg", // Default dosage
+          dosage: "",
           timing: "AM",
           frequency: "Daily",
           duration: "8 weeks",
           vialAmount: "10mg",
-          reconstitution: "2ml",
-          syringeUnits: 10,
+          reconstitution: "",
+          syringeUnits: 0,
         }));
 
         // Add "Other (Custom)" option at the end
@@ -774,7 +838,7 @@ export function PeptideTracker() {
           id: "custom",
           name: "Other (Custom)",
           purpose: "Custom",
-          dosage: "100mcg",
+          dosage: "",
           timing: "AM",
           frequency: "Daily",
           duration: "4 weeks",
@@ -798,6 +862,23 @@ export function PeptideTracker() {
       setPeptideLibrary(fallbackLibrary);
     } finally {
       setLoadingLibrary(false);
+    }
+  };
+
+  const fetchEducationLibrary = async () => {
+    try {
+      const response = await fetch("/api/peptides/education-library", {
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (data.success && Array.isArray(data.peptides)) {
+        setEduLibrary(data.peptides);
+        console.log(
+          `✅ Loaded ${data.peptides.length} peptide library cards for Add-Protocol picker`,
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching peptide education library:", error);
     }
   };
 
@@ -829,19 +910,19 @@ export function PeptideTracker() {
       id: "fallback-1",
       name: "Semaglutide",
       purpose: "Fat Loss",
-      dosage: "250mcg",
+      dosage: "",
       timing: "AM",
       frequency: "Once per week",
       duration: "8 weeks on, 8 weeks off",
       vialAmount: "3mg",
-      reconstitution: "2ml",
-      syringeUnits: 17,
+      reconstitution: "",
+      syringeUnits: 0,
     },
     {
       id: "fallback-2",
       name: "BPC-157",
       purpose: "Healing",
-      dosage: "500mcg",
+      dosage: "",
       timing: "AM & PM (twice daily)",
       frequency: "Daily",
       duration: "4-6 weeks",
@@ -2322,7 +2403,10 @@ export function PeptideTracker() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setShowAddProtocolModal(false)}
+                    onClick={() => {
+                      setShowAddProtocolModal(false);
+                      setDeepLinkSlug(null);
+                    }}
                     className="bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-full p-3 transition-all duration-300 hover:scale-110"
                   >
                     <X className="w-6 h-6" />
@@ -2332,16 +2416,13 @@ export function PeptideTracker() {
               <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
                 <DosageCalculator
                   mode="addProtocol"
-                  peptideLibrary={peptideLibrary.map((p) => ({
-                    id: p.id,
-                    name: p.name,
-                    dosage: p.dosage,
-                    category: p.purpose,
-                    reconstitution: p.reconstitution,
-                    vialAmount: p.vialAmount,
-                  }))}
+                  peptideLibrary={addProtocolPeptideLibrary}
+                  initialPeptideSlug={deepLinkSlug}
                   onSaveProtocol={handleSaveProtocol}
-                  onClose={() => setShowAddProtocolModal(false)}
+                  onClose={() => {
+                    setShowAddProtocolModal(false);
+                    setDeepLinkSlug(null);
+                  }}
                 />
               </div>
             </div>
