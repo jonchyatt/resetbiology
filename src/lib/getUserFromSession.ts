@@ -3,6 +3,11 @@ import { prisma } from '@/lib/prisma';
 import type { SessionData } from '@auth0/nextjs-auth0/types';
 import type { User } from '@prisma/client';
 
+// ponytail: dev-only debug logging -- this function logs session email/sub/name
+// on every call, which is PII in production logs. Gate behind NODE_ENV instead
+// of stripping outright so local debugging still works.
+const debug = process.env.NODE_ENV !== 'production' ? console.log : () => {};
+
 /**
  * Discriminated result of resolving a Prisma User from an Auth0 session.
  * - 'ok': resolved (existing sub match, verified-email reattach, or fresh create)
@@ -26,16 +31,16 @@ export type UserResolution =
 export async function resolveUserFromSession(
   session: SessionData | null | undefined
 ): Promise<UserResolution | null> {
-  console.log('[getUserFromSession] Called with session:', session ? 'EXISTS' : 'NULL');
+  debug('[getUserFromSession] Called with session:', session ? 'EXISTS' : 'NULL');
 
   if (!session?.user) {
-    console.log('[getUserFromSession] No session or user, returning null');
+    debug('[getUserFromSession] No session or user, returning null');
     return null;
   }
 
   const auth0User = session.user;
   const emailVerified = auth0User.email_verified === true;
-  console.log('[getUserFromSession] Auth0 user:', {
+  debug('[getUserFromSession] Auth0 user:', {
     sub: auth0User.sub,
     email: auth0User.email,
     name: auth0User.name,
@@ -44,48 +49,48 @@ export async function resolveUserFromSession(
 
   try {
     // Check if user exists by Auth0 ID
-    console.log('[getUserFromSession] Looking up user by auth0Sub:', auth0User.sub);
+    debug('[getUserFromSession] Looking up user by auth0Sub:', auth0User.sub);
     let user = await prisma.user.findUnique({
       where: { auth0Sub: auth0User.sub }
     });
-    console.log('[getUserFromSession] User found by auth0Sub:', user ? 'YES' : 'NO');
+    debug('[getUserFromSession] User found by auth0Sub:', user ? 'YES' : 'NO');
 
     // If not found by Auth0 ID, check by email (handles Auth0 ID changes)
     if (!user && auth0User.email) {
-      console.log('[getUserFromSession] Looking up user by email:', auth0User.email);
+      debug('[getUserFromSession] Looking up user by email:', auth0User.email);
       const existingByEmail = await prisma.user.findUnique({
         where: { email: auth0User.email }
       });
-      console.log('[getUserFromSession] User found by email:', existingByEmail ? 'YES' : 'NO');
+      debug('[getUserFromSession] User found by email:', existingByEmail ? 'YES' : 'NO');
 
       if (existingByEmail && !emailVerified) {
         // Unverified email + an existing row with that email: do NOT merge,
         // do NOT create a fresh user (would split-brain the same email).
-        console.log('[getUserFromSession] Blocking merge: unverified email matches existing user', auth0User.email);
+        debug('[getUserFromSession] Blocking merge: unverified email matches existing user', auth0User.email);
         return { status: 'unverified_email', email: auth0User.email };
       }
 
       if (existingByEmail) {
         // Verified reattach of a new sub to an existing user.
-        console.log(`[getUserFromSession] Updating Auth0 ID for existing user: ${auth0User.email}`);
+        debug(`[getUserFromSession] Updating Auth0 ID for existing user: ${auth0User.email}`);
         user = await prisma.user.update({
           where: { id: existingByEmail.id },
           data: { auth0Sub: auth0User.sub }
         });
-        console.log('[identity-merge]', {
+        debug('[identity-merge]', {
           existingUserId: existingByEmail.id,
           newSub: auth0User.sub,
           email: auth0User.email,
           emailVerified: true
         });
-        console.log('[getUserFromSession] Auth0 ID updated successfully');
+        debug('[getUserFromSession] Auth0 ID updated successfully');
       }
     }
 
     // If still no user, create a new one (auto-create on first login)
     if (!user) {
-      console.log(`[getUserFromSession] 🚀 CREATING NEW USER: ${auth0User.email}`);
-      console.log('[getUserFromSession] User data:', {
+      debug(`[getUserFromSession] 🚀 CREATING NEW USER: ${auth0User.email}`);
+      debug('[getUserFromSession] User data:', {
         auth0Sub: auth0User.sub,
         email: auth0User.email,
         name: auth0User.name || auth0User.email?.split('@')[0] || 'User'
@@ -100,9 +105,9 @@ export async function resolveUserFromSession(
           rbClientId: `rb_${Date.now()}_${Math.random().toString(36).substring(7)}`, // Generate unique ID
         }
       });
-      console.log(`[getUserFromSession] ✅ User created successfully! ID: ${user.id}, Email: ${user.email}`);
+      debug(`[getUserFromSession] ✅ User created successfully! ID: ${user.id}, Email: ${user.email}`);
     } else {
-      console.log('[getUserFromSession] Returning existing user:', user.email);
+      debug('[getUserFromSession] Returning existing user:', user.email);
     }
 
     return { status: 'ok', user };

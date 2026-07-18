@@ -492,7 +492,6 @@ export default function VisualStudioPage() {
       setAudioFile(file);
       setAudioUrl(url);
       setMode("audio");
-      console.log("[Page] Audio file selected:", file.name);
     } else {
       setAudioFile(null);
       setAudioUrl(null);
@@ -549,19 +548,15 @@ export default function VisualStudioPage() {
     }
 
     if (isPlaying) {
-      console.log("[Page] Pausing audio");
       audioRef.current.pause();
       setIsPlaying(false);
       isPlayingRef.current = false;
     } else {
       try {
-        console.log("[Page] Connecting audio analyzer...");
         await audioAnalyzer.connect(audioRef.current);
-        console.log("[Page] Playing audio...");
         await audioRef.current.play();
         setIsPlaying(true);
         isPlayingRef.current = true;
-        console.log("[Page] Audio playing successfully");
       } catch (err) {
         console.error("[Page] Failed to play audio:", err);
       }
@@ -570,11 +565,9 @@ export default function VisualStudioPage() {
 
   // Start animation loop on mount
   useEffect(() => {
-    console.log("[Page] Starting animation loop");
     animationFrameRef.current = requestAnimationFrame(updateAudioVisualization);
 
     return () => {
-      console.log("[Page] Stopping animation loop");
       cancelAnimationFrame(animationFrameRef.current);
     };
   }, [updateAudioVisualization]);

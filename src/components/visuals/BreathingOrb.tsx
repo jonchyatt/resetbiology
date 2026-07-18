@@ -163,8 +163,6 @@ class AudioAnalyzerSingleton {
 
       this.dataArray = new Uint8Array(this.analyser.frequencyBinCount) as Uint8Array<ArrayBuffer>;
       this.connectedElement = audioElement;
-
-      console.log("[AudioAnalyzer] Connected successfully");
     } catch (err) {
       console.error("[AudioAnalyzer] Connection failed:", err);
       throw err;
@@ -232,7 +230,6 @@ class AudioAnalyzerSingleton {
       this.lastBeatTime = now;
       this.currentScale = this.beatScale;
       this.globalHue = (this.globalHue + this.hueJumpOnBeat) % 1.0;
-      console.log(`[BEAT!] signal=${beatSignal.toFixed(3)} hue=${this.globalHue.toFixed(2)} scale=${this.currentScale}`);
     }
 
     this.previousBass = beatSignal;
