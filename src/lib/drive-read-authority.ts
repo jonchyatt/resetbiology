@@ -115,6 +115,17 @@ export function decideJournalRead(input: JournalReadDecisionInput): JournalReadD
     return { authorityActive: true, provenance: 'syncing' }
   }
 
+  // Fix-wave 2 (F2, blind-verify HIGH finding #2): no Drive file exists
+  // (missing/deleted/outbox 'failed'/'user_removed') but a Mongo row does —
+  // NEVER resolve to 'drive' with {entry:null} while Mongo holds data.
+  // Degrade to 'app-cache' (a real, defensible copy) rather than pretending
+  // there's nothing. Only when NEITHER Mongo nor Drive has anything for this
+  // day (brand new day, first save never happened) does 'drive' (empty) fall
+  // through below.
+  if (!input.driveModifiedTime && input.mongoUpdatedAt) {
+    return { authorityActive: true, provenance: 'app-cache' }
+  }
+
   return { authorityActive: true, provenance: 'drive' }
 }
 
@@ -208,6 +219,46 @@ async function runSelfTest(): Promise<boolean> {
       ...baseOverlay,
     })
     assert.equal(decision.authorityActive, true)
+    assert.equal(decision.provenance, 'drive')
+  })
+
+  check('F2 (blind-verify HIGH #2): Drive file missing (driveModifiedTime null) but Mongo row exists -> app-cache, NEVER drive/{entry:null}', () => {
+    const decision = decideJournalRead({
+      flagOn: true,
+      vaultConnected: true,
+      manifestStatus: 'verified',
+      mongoUpdatedAt: new Date('2026-07-18T12:00:00.000Z'),
+      driveModifiedTime: null,
+      pendingOutbox: false,
+      driveReadFailed: false,
+    })
+    assert.equal(decision.authorityActive, true)
+    assert.equal(decision.provenance, 'app-cache')
+  })
+
+  check('F2: Drive file missing AND a pending outbox row exists -> syncing takes priority over app-cache', () => {
+    const decision = decideJournalRead({
+      flagOn: true,
+      vaultConnected: true,
+      manifestStatus: 'verified',
+      mongoUpdatedAt: new Date('2026-07-18T12:00:00.000Z'),
+      driveModifiedTime: null,
+      pendingOutbox: true,
+      driveReadFailed: false,
+    })
+    assert.equal(decision.provenance, 'syncing')
+  })
+
+  check('F2: Drive file missing AND Mongo row ALSO missing (brand new day) -> drive (empty), not app-cache', () => {
+    const decision = decideJournalRead({
+      flagOn: true,
+      vaultConnected: true,
+      manifestStatus: 'verified',
+      mongoUpdatedAt: null,
+      driveModifiedTime: null,
+      pendingOutbox: false,
+      driveReadFailed: false,
+    })
     assert.equal(decision.provenance, 'drive')
   })
 
