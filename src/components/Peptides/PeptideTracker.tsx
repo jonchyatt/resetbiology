@@ -1517,19 +1517,46 @@ export function PeptideTracker() {
   const openEditModal = (protocol: PeptideProtocol) => {
     setEditingProtocol(protocol);
     setCustomDosage(protocol.dosage);
-    setCustomFrequency(protocol.frequency);
     setCustomTiming(protocol.timing);
     setCustomDuration(protocol.duration);
 
-    // Parse existing frequency for days (if it contains specific days like "Mon/Wed/Fri")
+    // Root-cause fix: the Frequency <select> below only has literal
+    // <option> values for 6 UI-driven choices (Daily / Every other day /
+    // 3x per week / 2x per week / 5 days on 2 days off / Once per week).
+    // Two stored formats never match any of those and used to leave the
+    // dropdown blank on reopen: Create's "Mon-Fri" schedule-type label, and
+    // any raw day-list string like "Tue/Thu" (produced both by Create's
+    // custom-day schedule AND by this very modal's own save path for
+    // 3x/2x/Custom, which persists the day list, not the option label —
+    // so a previously-edited 3x-per-week protocol hit the same blank-on-
+    // reopen bug). Route anything that isn't one of the 6 literal options
+    // into the existing 'Custom' flow + day-picker instead of leaving it
+    // unselected.
     const allDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const frequencyDays = protocol.frequency.split('/').filter(day => allDays.includes(day));
+    const EDIT_FREQUENCY_OPTIONS = [
+      'Daily',
+      'Every other day',
+      '3x per week',
+      '2x per week',
+      '5 days on, 2 days off',
+      'Once per week',
+    ];
+    const isLiteralOption = EDIT_FREQUENCY_OPTIONS.includes(protocol.frequency);
+    const frequencyDays = protocol.frequency === 'Mon-Fri'
+      ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+      : protocol.frequency.split('/').filter(day => allDays.includes(day));
 
-    if (frequencyDays.length > 0) {
+    if (!isLiteralOption && frequencyDays.length > 0) {
+      setCustomFrequency('Custom');
       setSelectedDays(frequencyDays);
     } else {
-      // Default to all days if no specific days are set
-      setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+      setCustomFrequency(protocol.frequency);
+      if (frequencyDays.length > 0) {
+        setSelectedDays(frequencyDays);
+      } else {
+        // Default to all days if no specific days are set
+        setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+      }
     }
 
     // Parse existing timing into times array
@@ -3068,6 +3095,9 @@ export function PeptideTracker() {
                       value="Once per week"
                     >
                       Once per week
+                    </option>
+                    <option className="bg-gray-900 text-white" value="Custom">
+                      Custom (specific days)
                     </option>
                   </select>
                 </div>
