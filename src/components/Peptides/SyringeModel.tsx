@@ -74,9 +74,11 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
   const [manualSize, setManualSize] = useState<SyringeSize | null>(null);
   const size = syringeSize ?? manualSize ?? pickDefaultSyringeSize(hasUnits ? trueUnits! : 0);
 
-  const barrelTop = 32;
-  const barrelHeight = 210;
+  const barrelTop = 78;
+  const barrelHeight = 190;
   const barrelBottom = barrelTop + barrelHeight;
+  const barrelX = 40;
+  const barrelWidth = 40;
   const unitsPerLabel = size / 10;
 
   const { readoutUnits, overSyringe, overVial, fillRatio } = hasUnits
@@ -84,100 +86,195 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
     : { readoutUnits: 0, overSyringe: false, overVial: false, fillRatio: 0 };
   const displayVolume = volumeInMl ?? readoutUnits / 100;
 
+  // Two visually-distinct, non-flashing warning states (render-only — the
+  // trigger logic above is untouched): amber = correctable (bigger syringe
+  // fixes it), red = the more serious impossible-per-vial case.
+  const warnLevel: "none" | "syringe" | "vial" = overVial ? "vial" : overSyringe ? "syringe" : "none";
+  const warnStroke = warnLevel === "vial" ? "#EF4444" : warnLevel === "syringe" ? "#F59E0B" : "rgba(255,255,255,0.24)";
+  const fillGradientId =
+    warnLevel === "vial" ? "syringe-fill-warn-red" : warnLevel === "syringe" ? "syringe-fill-warn-amber" : "syringe-fill";
+  const fillTransition = { transition: "y 200ms ease-out, height 200ms ease-out" };
+
+  // Fluid + stopper: the stopper's BOTTOM (needle-facing) edge is the real reading
+  // edge on an insulin syringe, so it's pinned exactly to the fill boundary.
   const fillHeight = barrelHeight * fillRatio;
   const stopperY = barrelBottom - fillHeight;
-  const needleWidth = 2;
-  const needleHeight = 44;
-  const needleX = 58;
-  const needleY = barrelBottom - 4;
-  const needleRadius = needleWidth / 2;
-  const capWidth = 16;
-  const capHeight = 40;
-  const capX = needleX + needleWidth / 2 - capWidth / 2;
-  const capY = barrelBottom;
-  const capRadius = 6;
+  const stopperHeight = 12;
+  const stopperTopY = stopperY - stopperHeight;
+
+  // Plunger rod: fixed anchor near the top; the rod visually shortens as the
+  // stopper rises toward it (more dose drawn = more of the rod is "inside"),
+  // animating on the same easing/timing as the fill so they never detach.
+  const rodTopY = 54;
+  const rodWidth = 7;
+  const rodHeight = Math.max(stopperTopY - rodTopY, 0);
+  const flangeWidth = 36;
+  const flangeHeight = 14;
+  const flangeY = rodTopY - flangeHeight;
+
+  // Needle hub (distinct cone) + fine needle line, below the barrel.
+  const hubTopY = barrelBottom;
+  const hubHeight = 16;
+  const hubBottomWidth = 6;
+  const needleLength = 30;
+  const needleWidth = 2.5;
+  const needleTipY = hubTopY + hubHeight + needleLength;
+
+  // Tick hierarchy: the 11 major label VALUES/POSITIONS are unchanged; minor
+  // ticks between them scale with syringe size, and neither crosses the fluid
+  // column (both stop well short of the barrel's right wall).
+  const minorPerMajor = size === 100 ? 4 : size === 50 ? 4 : 2;
+  const segmentHeight = barrelHeight / 10;
 
   return (
     <div
       className={`relative bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 w-full max-w-[260px] lg:max-w-[240px] mx-auto ${className}`}
     >
       <div className="flex flex-col items-center">
-        <svg viewBox="0 0 140 310" className="w-40 drop-shadow-xl" aria-label="Syringe fill visualization">
-          {/* Barrel */}
-          <path
-            d={`M48 ${barrelTop - 8}h26c3.3 0 6 2.7 6 6v6h-38v-6c0-3.3 2.7-6 6-6z`}
-            fill="rgba(255,255,255,0.18)"
-          />
-          <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.24)" strokeWidth="1.8" />
-
-          {/* Tick marks */}
-          {Array.from({ length: 10 + 1 }).map((_, index) => {
-            const y = barrelTop + (barrelHeight / 10) * index;
-            const labelValue = size - index * unitsPerLabel;
-            return (
-              <g key={index}>
-                <line x1="40" x2="78" y1={y} y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth={index % 2 === 0 ? 1.6 : 1} />
-                <text
-                  x="36"
-                  y={y + 4}
-                  textAnchor="end"
-                  fontSize="7"
-                  fontWeight={index % 2 === 0 ? 'bold' : 'normal'}
-                  fill="rgba(255,255,255,0.6)"
-                >
-                  {formatNumber(labelValue, labelValue < 10 ? 1 : 0)}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Fill — visually capped at 100%, readout below never is */}
-          <clipPath id="syringe-barrel-clip">
-            <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" />
-          </clipPath>
-          {hasUnits && (
-            <g clipPath="url(#syringe-barrel-clip)">
-              <rect
-                x="40"
-                y={stopperY}
-                width="40"
-                height={barrelBottom - stopperY}
-                fill={overSyringe || overVial ? "url(#syringe-fill-warn)" : "url(#syringe-fill)"}
-                className="transition-all duration-500 ease-out"
-              />
-            </g>
-          )}
-
-          {/* Stopper */}
-          {hasUnits && (
-            <rect x="38" y={Math.min(Math.max(stopperY - 6, barrelTop), barrelBottom - 10)} width="44" height="10" rx="3" fill="rgba(0,0,0,0.55)" />
-          )}
-
+        <svg viewBox="0 0 140 336" className="w-40 drop-shadow-xl" aria-label="Syringe fill visualization">
           <defs>
             <linearGradient id="syringe-fill" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0%" stopColor="#6FE7DC" />
               <stop offset="100%" stopColor="#3FBFB5" />
             </linearGradient>
-            <linearGradient id="syringe-fill-warn" x1="0" x2="0" y1="0" y2="1">
+            <linearGradient id="syringe-fill-warn-amber" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#FDE68A" />
+              <stop offset="100%" stopColor="#F59E0B" />
+            </linearGradient>
+            <linearGradient id="syringe-fill-warn-red" x1="0" x2="0" y1="0" y2="1">
               <stop offset="0%" stopColor="#FCA5A5" />
               <stop offset="100%" stopColor="#EF4444" />
             </linearGradient>
+            <linearGradient id="syringe-glass-highlight" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.22)" />
+              <stop offset="45%" stopColor="rgba(255,255,255,0)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+            </linearGradient>
+            <linearGradient id="syringe-needle-hub" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#FDBA74" />
+              <stop offset="100%" stopColor="#EA580C" />
+            </linearGradient>
+            <clipPath id="syringe-barrel-clip">
+              <rect x={barrelX} y={barrelTop} width={barrelWidth} height={barrelHeight} rx="6" ry="6" />
+            </clipPath>
           </defs>
 
-          {/* Needle and cap */}
-          <rect x="58" y="14" width="8" height="18" rx="3" ry="3" fill="rgba(255,255,255,0.2)" />
-          <rect x={needleX} y={needleY} width={needleWidth} height={needleHeight} rx={needleRadius} ry={needleRadius} fill="rgba(255,255,255,0.7)" />
-          <rect
-            x={capX}
-            y={capY}
-            width={capWidth}
-            height={capHeight}
-            rx={capRadius}
-            ry={capRadius}
-            fill="rgba(255,120,60,0.55)"
+          {/* Shoulder — tapered neck between the barrel opening and the exposed rod */}
+          <path
+            d={`M46 ${barrelTop} L${60 - rodWidth / 2 - 3} ${rodTopY + 6} L${60 + rodWidth / 2 + 3} ${rodTopY + 6} L74 ${barrelTop} Z`}
+            fill="rgba(255,255,255,0.1)"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="1"
           />
 
-          <text x="86" y={barrelTop - 12} fontSize="8" fill="rgba(255,255,255,0.7)" letterSpacing="1.4">
+          {/* Barrel (glass) */}
+          <rect
+            x={barrelX}
+            y={barrelTop}
+            width={barrelWidth}
+            height={barrelHeight}
+            rx="6"
+            ry="6"
+            fill="rgba(255,255,255,0.04)"
+            stroke={warnStroke}
+            strokeWidth={warnLevel === "none" ? 1.8 : 2.2}
+          />
+
+          {/* Fill — visually capped at 100%, readout below never is. Animated on
+              y/height explicitly (not transition-all) so it stays in lockstep
+              with the stopper below. */}
+          {hasUnits && (
+            <g clipPath="url(#syringe-barrel-clip)">
+              <rect
+                x={barrelX}
+                y={stopperY}
+                width={barrelWidth}
+                height={barrelBottom - stopperY}
+                fill={`url(#${fillGradientId})`}
+                style={fillTransition}
+              />
+              <rect x={barrelX + 3} y={barrelTop + 4} width="7" height={barrelHeight - 8} fill="url(#syringe-glass-highlight)" />
+            </g>
+          )}
+
+          {/* Plunger rod — visible through the glass above the stopper; not
+              clipped to the barrel since part of it sits above the opening. */}
+          {hasUnits && (
+            <rect x={60 - rodWidth / 2} y={rodTopY} width={rodWidth} height={rodHeight} rx="2" fill="rgba(241,245,249,0.6)" style={fillTransition} />
+          )}
+
+          {/* Tick marks — majors keep their exact calibrated values/positions;
+              minor gradation density scales with syringe size. Neither crosses
+              into the right side of the barrel, so the fluid column reads clean. */}
+          {Array.from({ length: 11 }).map((_, index) => {
+            const y = barrelTop + segmentHeight * index;
+            const labelValue = size - index * unitsPerLabel;
+            return (
+              <g key={`major-${index}`}>
+                <line x1={barrelX} x2={barrelX + barrelWidth * 0.55} y1={y} y2={y} stroke="rgba(255,255,255,0.55)" strokeWidth="1.6" />
+                <text x={barrelX - 4} y={y + 3} textAnchor="end" fontSize="7.5" fontWeight="bold" fill="rgba(255,255,255,0.75)">
+                  {formatNumber(labelValue, labelValue < 10 ? 1 : 0)}
+                </text>
+              </g>
+            );
+          })}
+          {Array.from({ length: 10 }).map((_, seg) =>
+            Array.from({ length: minorPerMajor }).map((_, m) => {
+              const y = barrelTop + segmentHeight * seg + (segmentHeight * (m + 1)) / (minorPerMajor + 1);
+              return (
+                <line
+                  key={`minor-${seg}-${m}`}
+                  x1={barrelX}
+                  x2={barrelX + barrelWidth * 0.25}
+                  y1={y}
+                  y2={y}
+                  stroke="rgba(255,255,255,0.22)"
+                  strokeWidth="1"
+                />
+              );
+            }),
+          )}
+
+          {/* Stopper — rubber, dark charcoal (not near-black). Its bottom edge is
+              the reading edge, aligned exactly to the dose line; animated on the
+              same timing as the fill above so they never visually detach. */}
+          {hasUnits && (
+            <>
+              <rect x={barrelX} y={stopperTopY} width={barrelWidth} height={stopperHeight} rx="2.5" fill="#3F4A5A" style={fillTransition} />
+              <rect x={barrelX} y={stopperY - 1.5} width={barrelWidth} height="1.5" fill="rgba(255,255,255,0.4)" style={fillTransition} />
+            </>
+          )}
+
+          {/* Barrel outline redrawn crisp on top of fill/ticks/stopper */}
+          <rect
+            x={barrelX}
+            y={barrelTop}
+            width={barrelWidth}
+            height={barrelHeight}
+            rx="6"
+            ry="6"
+            fill="none"
+            stroke={warnStroke}
+            strokeWidth={warnLevel === "none" ? 1.8 : 2.2}
+          />
+
+          {/* Plunger rod + thumb-press flange */}
+          <rect x={60 - flangeWidth / 2} y={flangeY} width={flangeWidth} height={flangeHeight} rx="4" fill="rgba(248,250,252,0.92)" stroke="rgba(255,255,255,0.35)" strokeWidth="1" />
+
+          {/* Needle hub (distinct cone, real insulin-syringe orange) + fine beveled needle */}
+          <path
+            d={`M46 ${hubTopY} L${60 - hubBottomWidth / 2} ${hubTopY + hubHeight} L${60 + hubBottomWidth / 2} ${hubTopY + hubHeight} L74 ${hubTopY} Z`}
+            fill="url(#syringe-needle-hub)"
+            stroke="#C2410C"
+            strokeWidth="0.75"
+          />
+          <rect x={60 - needleWidth / 2} y={hubTopY + hubHeight} width={needleWidth} height={needleLength - 4} fill="rgba(255,255,255,0.85)" />
+          <path
+            d={`M${60 - needleWidth / 2} ${hubTopY + hubHeight + needleLength - 4} L${60 + needleWidth / 2} ${hubTopY + hubHeight + needleLength - 4} L60 ${needleTipY} Z`}
+            fill="rgba(255,255,255,0.85)"
+          />
+
+          <text x="86" y={barrelTop - 6} fontSize="8" fill="rgba(255,255,255,0.6)" letterSpacing="1.4">
             UNITS
           </text>
         </svg>
@@ -186,23 +283,16 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
           <>
             <div className="text-center mt-4">
               <p
-                className={`text-4xl font-extrabold tracking-tight ${overSyringe || overVial ? "text-red-400" : "text-primary-300"}`}
+                className={`text-4xl font-extrabold tracking-tight tabular-nums ${
+                  warnLevel === "vial" ? "text-red-400" : warnLevel === "syringe" ? "text-amber-400" : "text-primary-300"
+                }`}
                 aria-live="polite"
               >
                 {formatNumber(readoutUnits, 1)} u
               </p>
-              <p className="mt-1 text-sm text-gray-300" aria-live="polite">
+              <p className="mt-1 text-sm text-gray-300 tabular-nums" aria-live="polite">
                 {formatNumber(displayVolume, displayVolume < 1 ? 3 : 2)} ml drawn
               </p>
-            </div>
-
-            <div className="w-full mt-4" aria-hidden>
-              <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                <div
-                  className={`h-2 transition-all duration-500 ${overSyringe || overVial ? "bg-red-500" : "bg-primary-600"}`}
-                  style={{ width: `${fillRatio * 100}%` }}
-                />
-              </div>
             </div>
 
             {overVial ? (
@@ -211,22 +301,22 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
                 <span>Exceeds vial contents — this dose is more than the reconstituted vial holds. Check your prep inputs.</span>
               </div>
             ) : overSyringe ? (
-              <div className="mt-3 w-full flex items-start gap-2 rounded-lg border border-red-400/40 bg-red-500/15 p-2.5 text-xs text-red-200" role="alert">
+              <div className="mt-3 w-full flex items-start gap-2 rounded-lg border border-amber-400/40 bg-amber-500/20 p-2.5 text-xs text-amber-200" role="alert">
                 <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
                 <span>Exceeds {size}u syringe — use a larger syringe or split the dose.</span>
               </div>
             ) : null}
 
-            <div className="mt-3 flex gap-1.5" role="group" aria-label="Syringe size">
+            <div className="mt-3 flex gap-1 rounded-full border border-white/10 bg-white/5 p-1" role="group" aria-label="Syringe size">
               {SYRINGE_SIZES.map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setManualSize(s)}
-                  className={`flex-1 rounded-md border px-2 py-1 text-[11px] font-medium transition-colors ${
+                  className={`flex-1 rounded-full px-2 py-1.5 text-[11px] font-semibold transition-colors ${
                     s === size
-                      ? "border-primary-400/60 bg-primary-600/30 text-primary-200"
-                      : "border-white/10 bg-white/5 text-gray-400 hover:bg-white/10"
+                      ? "bg-primary-600 text-white shadow-sm"
+                      : "text-gray-400 hover:text-gray-200"
                   }`}
                 >
                   {s}u
