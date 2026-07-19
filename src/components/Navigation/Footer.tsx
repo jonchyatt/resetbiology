@@ -2,8 +2,22 @@
 
 import Link from "next/link"
 import { Mail } from "lucide-react"
+import { usePathname } from "next/navigation"
+
+// Full-screen Pitch Defender games own the entire viewport. Rendering the
+// site footer beside a fixed game stage makes its logo cover live gameplay.
+const FOOTER_HIDDEN_PREFIXES = ['/pitch-defender']
+
+export function shouldHideFooter(pathname: string | null): boolean {
+  if (!pathname) return false
+  return FOOTER_HIDDEN_PREFIXES.some(p => pathname === p || pathname.startsWith(`${p}/`))
+}
 
 export function Footer() {
+  const pathname = usePathname()
+
+  if (shouldHideFooter(pathname)) return null
+
   return (
     <footer className="border-t border-white/10 bg-slate-950 px-4 py-12 text-slate-300">
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1fr_auto] md:items-start">

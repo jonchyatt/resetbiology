@@ -1285,6 +1285,168 @@ const WORKOUT_PROTOCOLS = [
       }
     ],
     isPublic: true
+  },
+
+  // ============================================
+  // 9. REHIT SPRINT PROTOCOL (REDUCED-EXERTION HIIT)
+  // ============================================
+  {
+    slug: 'rehit-sprint-protocol',
+    name: 'REHIT Sprint Protocol (Reduced-Exertion High-Intensity Interval Training)',
+    summary: 'Two brief all-out sprints inside one 10-minute low-intensity cycling session, 3x/week for 6 weeks -- the minimal-dose interval protocol studied by Metcalfe et al. (2012) and replicated in type 2 diabetes patients by Ruffino et al. (2017).',
+    goal: 'Improve VO2 max and insulin sensitivity with the smallest studied time commitment',
+    level: 'intermediate',
+    durationWeeks: 6,
+    sessionsPerWeek: 3,
+    tags: ['rehit', 'sprint-interval', 'vo2-max', 'insulin-sensitivity', 'time-efficient', 'cycling'],
+    focusAreas: ['cardiovascular', 'metabolic-health', 'vo2-max'],
+    equipment: {
+      required: ['stationary-bike'],
+      optional: []
+    },
+    readinessNotes: [
+      'Not for anyone with uncontrolled hypertension, a cardiac event within the last 3-6 months, unstable angina, or an uncontrolled arrhythmia.',
+      'New to vigorous exercise, or have any cardiovascular condition, diabetes complications, or other chronic condition? Check with your physician before attempting an all-out maximal sprint effort.',
+      'Requires equipment capable of a genuine maximal sprint effort safely -- a stationary bike is the studied modality. A bodyweight or other-modality version would be an untested extrapolation beyond the cited evidence, not an equally evidence-backed substitute.',
+      'Stop immediately for chest pain, dizziness, unusual shortness of breath beyond expected maximal-effort breathlessness, or any other warning sign of cardiac distress.',
+      'This safety layer is added by Reset Biology for an unscreened general-public context -- neither source study specifies formal exclusion criteria in its abstract. The Ruffino et al. diabetes cohort was medically screened and supervised, which is exactly why these precautions apply here.'
+    ],
+    aiInsights: {
+      keyFinding: 'Two all-out sprints inside a 10-minute mostly-low-intensity cycling session produced metabolic adaptations comparable to much longer traditional HIIT protocols.',
+      studyOneResults: 'Metcalfe et al. (2012): insulin sensitivity improved 28% (male), VO2 max improved 12-15%, in 29 healthy but sedentary young adults over 6 weeks.',
+      studyTwoResults: 'Ruffino et al. (2017): 7% VO2 max improvement vs 1% for moderate-intensity walking, in 16 men with type 2 diabetes (mean age 55) over 8 weeks -- evidence the protocol is tolerable outside young healthy populations when medically supervised.',
+      intensityTranslation: 'The original study used a fixed 60W low-intensity cycling baseline. This app has no cycling-power context, so that baseline is presented below as "very light effort pedaling" rather than a specific watt target.',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Adults cleared for vigorous, all-out sprint effort who want the minimal-time-commitment interval protocol -- not a starting point for anyone new to vigorous exercise or with an unscreened cardiovascular history (see readinessNotes).',
+        evidenceSummary: 'Metcalfe et al. (2012) had 29 sedentary but healthy adults do 10-minute sessions (mostly light pedaling, plus 1-2 all-out sprints), 3x/week for 6 weeks, and found a 28% insulin-sensitivity improvement (male) and 12-15% VO2 max improvement. Ruffino et al. (2017) ran the same core structure for 8 weeks in 16 men with type 2 diabetes and found 7% VO2 max improvement vs 1% for walking.',
+        progressionRule: 'Sprint duration follows the study schedule exactly, not personal choice: 10 seconds in week 1, 15 seconds in weeks 2-3, 20 seconds in weeks 4-6. Sprint count follows the study exactly too: 1 all-out sprint in the very first session of the program, 2 all-out sprints in every session after that.',
+        deloadRule: 'Any warning sign of cardiac distress (chest pain, dizziness, unusual shortness of breath beyond expected maximal-effort breathlessness) stops the session immediately -- this is a hard stop, not a modified-effort continuation.',
+        citations: [
+          {
+            label: 'Metcalfe RS, Babraj JA, Fawkner SG, Vollaard NBJ — Towards the minimal amount of exercise for improving metabolic health: beneficial effects of reduced-exertion high-intensity interval training',
+            journal: 'European Journal of Applied Physiology',
+            year: 2012,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/22124524/',
+            pmid: '22124524',
+          },
+          {
+            label: 'Ruffino JS, Songsorn P, Haggett M, et al. — A comparison of the health benefits of reduced-exertion high-intensity interval training (REHIT) and moderate-intensity walking in type 2 diabetes patients',
+            journal: 'Applied Physiology, Nutrition, and Metabolism',
+            year: 2017,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/28121184/',
+            pmid: '28121184',
+          },
+        ],
+      },
+    },
+    researchLinks: [
+      { label: 'Metcalfe et al. (2012) — Towards the minimal amount of exercise for improving metabolic health (PubMed)', url: 'https://pubmed.ncbi.nlm.nih.gov/22124524/' },
+      { label: 'Ruffino et al. (2017) — REHIT vs moderate-intensity walking in type 2 diabetes patients (PubMed)', url: 'https://pubmed.ncbi.nlm.nih.gov/28121184/' }
+    ],
+    phases: [
+      {
+        name: 'Phase 1: Week 1 (10-second sprints)',
+        weekStart: 1,
+        weekEnd: 1,
+        description: 'The introductory week. Sprint duration is 10 seconds per the study schedule. The very first session of the program uses 1 all-out sprint; every session after that uses 2.',
+        sessions: [
+          {
+            name: 'Session 1 (Introductory -- 1 sprint)',
+            exercises: [
+              {
+                name: 'Low-Intensity Baseline Cycling',
+                durationMinutes: 10,
+                intensity: 'Very light effort pedaling',
+                notes: 'Continuous easy pedaling for the full 10-minute session, with the all-out sprint below inserted partway through. Recovery pedaling after the sprint stays at this same light intensity.'
+              },
+              {
+                name: 'All-Out Sprint',
+                sets: 1,
+                durationSeconds: 10,
+                intensity: 'All-out maximal effort',
+                notes: 'One maximal sprint only -- this is the very first session of the program. Every session after this one uses 2 sprints.'
+              }
+            ],
+            totalDuration: '10 minutes'
+          },
+          {
+            name: 'Sessions 2-3 (2 sprints)',
+            exercises: [
+              {
+                name: 'Low-Intensity Baseline Cycling',
+                durationMinutes: 10,
+                intensity: 'Very light effort pedaling',
+                notes: 'Continuous easy pedaling for the full 10-minute session, with both all-out sprints below inserted through it, separated by light recovery pedaling.'
+              },
+              {
+                name: 'All-Out Sprints',
+                sets: 2,
+                durationSeconds: 10,
+                intensity: 'All-out maximal effort',
+                notes: 'Two maximal sprints per session, as specified from this session forward for the rest of the program.'
+              }
+            ],
+            totalDuration: '10 minutes'
+          }
+        ]
+      },
+      {
+        name: 'Phase 2: Weeks 2-3 (15-second sprints)',
+        weekStart: 2,
+        weekEnd: 3,
+        description: 'Sprint duration increases to 15 seconds per the study schedule. 2 all-out sprints every session.',
+        sessions: [
+          {
+            name: 'REHIT Session (15s sprints)',
+            exercises: [
+              {
+                name: 'Low-Intensity Baseline Cycling',
+                durationMinutes: 10,
+                intensity: 'Very light effort pedaling',
+                notes: 'Continuous easy pedaling for the full 10-minute session, with both sprints inserted through it, separated by light recovery pedaling.'
+              },
+              {
+                name: 'All-Out Sprints',
+                sets: 2,
+                durationSeconds: 15,
+                intensity: 'All-out maximal effort',
+                notes: 'Two maximal sprints per session.'
+              }
+            ],
+            totalDuration: '10 minutes'
+          }
+        ]
+      },
+      {
+        name: 'Phase 3: Weeks 4-6 (20-second sprints)',
+        weekStart: 4,
+        weekEnd: 6,
+        description: 'Sprint duration increases to 20 seconds -- the final progression step per the study schedule. 2 all-out sprints every session.',
+        sessions: [
+          {
+            name: 'REHIT Session (20s sprints)',
+            exercises: [
+              {
+                name: 'Low-Intensity Baseline Cycling',
+                durationMinutes: 10,
+                intensity: 'Very light effort pedaling',
+                notes: 'Continuous easy pedaling for the full 10-minute session, with both sprints inserted through it, separated by light recovery pedaling.'
+              },
+              {
+                name: 'All-Out Sprints',
+                sets: 2,
+                durationSeconds: 20,
+                intensity: 'All-out maximal effort',
+                notes: 'Two maximal sprints per session -- this is the final progression step, used through the end of the 6-week program.'
+              }
+            ],
+            totalDuration: '10 minutes'
+          }
+        ]
+      }
+    ],
+    isPublic: true
   }
 ]
 
