@@ -63,7 +63,7 @@ export default async function Home() {
               <span className="text-sm font-semibold tracking-[0.08em] text-primary-300/60">01</span>
               <h3 className="mt-2 text-lg font-semibold text-primary-300">Tell us where you are</h3>
               <p className="mt-3 text-pretty leading-7 text-slate-300">
-                Begin with a short intake — about two minutes. {/* src: LMP §00 */}
+                Begin with a short intake. {/* src: LMP §00 */}
               </p>
             </li>
             <li className="rounded-xl border border-white/10 p-6">

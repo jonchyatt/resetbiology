@@ -11,6 +11,8 @@ export default function QuizResultsPage() {
   const [quiz, setQuiz] = useState<QuizResponses | null>(null);
   const [outcome, setOutcome] = useState<QuizOutcome | null>(null);
   const [syncComplete, setSyncComplete] = useState(false);
+  const [syncFailed, setSyncFailed] = useState(false);
+  const [retryTick, setRetryTick] = useState(0);
 
   useEffect(() => {
     const syncQuizData = async () => {
@@ -34,9 +36,13 @@ export default function QuizResultsPage() {
 
           if (response.ok) {
             setSyncComplete(true);
+            setSyncFailed(false);
+          } else {
+            setSyncFailed(true);
           }
         } catch (error) {
           console.error("Failed to sync quiz data:", error);
+          setSyncFailed(true);
         }
       }
     };
@@ -44,11 +50,19 @@ export default function QuizResultsPage() {
     if (!isLoading) {
       syncQuizData();
     }
-  }, [user, isLoading, syncComplete, router]);
+  }, [user, isLoading, syncComplete, retryTick, router]);
 
   if (!quiz) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
+      {syncFailed && (
+        <div className="mx-auto mt-4 max-w-2xl rounded-lg border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          Your results are saved on this device, but syncing them to your account failed.{' '}
+          <button type="button" onClick={() => { setSyncFailed(false); setRetryTick((t) => t + 1); }} className="underline font-medium">
+            Retry sync
+          </button>
+        </div>
+      )}
         <div className="text-white">Loading your results...</div>
       </div>
     );
