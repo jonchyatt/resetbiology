@@ -648,16 +648,6 @@ function ceremonyNoteStyle(note: string, memory: Readonly<Record<string, NoteMem
   }
 }
 
-function ceremonyReplayButtonStyle(note: string): CSSProperties {
-  const hue = hueForNote(note)
-  return {
-    color: `hsl(${hue}, 88%, 82%)`,
-    borderColor: `hsla(${hue}, 78%, 64%, 0.72)`,
-    background: `hsla(${hue}, 56%, 18%, 0.72)`,
-    boxShadow: `0 0 12px hsla(${hue}, 78%, 56%, 0.24)`,
-  }
-}
-
 // Hand-tuned onboarding — "levels within levels, slow advances." Level 1 is
 // four single notes then one 2-note; tine count climbs one wave at a time.
 const EARLY_WAVES: Record<number, TineCount[]> = {
@@ -2683,6 +2673,9 @@ export default function PitchforksIII() {
   const waveReceiptStartedAtRef = useRef(0)
   const ceremonyToneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ceremonyRef = useRef<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
+  const deferredAdmissionNotesRef = useRef<Set<string>>(new Set())
+  const admissionHeldMsRef = useRef(0)
+  const admissionLastSampleAtRef = useRef(0)
   const pianoSamplesReadyRef = useRef(false)
   const lockHeldMsRef = useRef(0)
   const lockProgressRef = useRef(0)
@@ -2774,6 +2767,9 @@ export default function PitchforksIII() {
   const [noteMastered, setNoteMastered] = useState<string | null>(null)
   const [, setWaveReceipt] = useState<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
   const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
+  const [admissionCuePlayed, setAdmissionCuePlayed] = useState(false)
+  const [admissionMatched, setAdmissionMatched] = useState(false)
+  const [admissionMatchProgress, setAdmissionMatchProgress] = useState(0)
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
   const [heardYou, setHeardYou] = useState(false)
   const [canvasDisplaySize, setCanvasDisplaySize] = useState(() => ({ width: W, height: H }))
@@ -3196,7 +3192,7 @@ export default function PitchforksIII() {
     const firstLockGrace = firstLockGraceRef.current &&
       !!active &&
       active.villager.id === runtimeRef.current.firstVillagerId
-    const paused = matchingSuppressedNow() || micUnavailable || firstLockGrace
+    const paused = ceremonyRef.current.active || matchingSuppressedNow() || micUnavailable || firstLockGrace
     timersPausedRef.current = paused
     return paused
   }, [getActiveTarget, matchingSuppressedNow])
@@ -3217,11 +3213,20 @@ export default function PitchforksIII() {
     }
   }, [])
 
+  const resetAdmissionMatch = useCallback(() => {
+    admissionHeldMsRef.current = 0
+    admissionLastSampleAtRef.current = 0
+    setAdmissionCuePlayed(false)
+    setAdmissionMatched(false)
+    setAdmissionMatchProgress(0)
+  }, [])
+
   const clearNewNoteCeremony = useCallback(() => {
     clearCeremonyTimers()
+    resetAdmissionMatch()
     setNewNoteUnlocked(null)
     setCeremonySnapshot({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
-  }, [clearCeremonyTimers, setCeremonySnapshot])
+  }, [clearCeremonyTimers, resetAdmissionMatch, setCeremonySnapshot])
 
   const clearNoteMasteredTimer = useCallback(() => {
     if (noteMasteredTimerRef.current) {
@@ -3310,8 +3315,8 @@ export default function PitchforksIII() {
     if (crossedNow) showNoteMastered(note)
   }, [getMasterySessionId, saveMasteryProgress, showNoteMastered])
 
-  const tryPlayCeremonyTone = useCallback((note: string): CeremonyToneAttempt => {
-    if (!audioCueRef.current || cueVolumeRef.current <= 0) return 'disabled'
+  const tryPlayCeremonyTone = useCallback((note: string, userRequested = false): CeremonyToneAttempt => {
+    if ((!userRequested && !audioCueRef.current) || cueVolumeRef.current <= 0) return 'disabled'
     if (!pianoSamplesReadyRef.current) return 'pending'
     if (matchingSuppressedNow()) return 'suppressed'
     try {
@@ -3328,6 +3333,7 @@ export default function PitchforksIII() {
   const markCeremonyToneFired = useCallback((note: string) => {
     const current = ceremonyRef.current
     if (!current.active || current.note !== note) return
+    setAdmissionCuePlayed(true)
     setCeremonySnapshot({ ...current, toneFired: true, tonePulseKey: current.tonePulseKey + 1 })
   }, [setCeremonySnapshot])
 
@@ -3339,7 +3345,7 @@ export default function PitchforksIII() {
       ceremonyToneTimerRef.current = null
     }
 
-    const attempt = tryPlayCeremonyTone(note)
+    const attempt = tryPlayCeremonyTone(note, replay)
     if (attempt === 'played') {
       markCeremonyToneFired(note)
       return
@@ -3355,26 +3361,47 @@ export default function PitchforksIII() {
       ceremonyToneTimerRef.current = null
       const current = ceremonyRef.current
       if (!current.active || current.note !== note || (!replay && current.toneFired)) return
-      if (tryPlayCeremonyTone(note) === 'played') markCeremonyToneFired(note)
+      if (tryPlayCeremonyTone(note, replay) === 'played') markCeremonyToneFired(note)
     }, waitMs)
   }, [markCeremonyToneFired, tryPlayCeremonyTone])
 
-  const showNewNoteUnlocked = useCallback((note: string) => {
+  const requestNewNoteAdmission = useCallback((note: string) => {
     clearCeremonyTimers()
-    setNewNoteUnlocked(note)
+    resetAdmissionMatch()
+    setNewNoteUnlocked(null)
     setCeremonySnapshot({ active: true, note, toneFired: false, tonePulseKey: 0 })
-    scheduleCeremonyTone(note)
-    newNoteTimerRef.current = setTimeout(() => {
-      clearNewNoteCeremony()
-    }, NEW_NOTE_CEREMONY_MS)
-  }, [clearCeremonyTimers, clearNewNoteCeremony, scheduleCeremonyTone, setCeremonySnapshot])
+  }, [clearCeremonyTimers, resetAdmissionMatch, setCeremonySnapshot])
 
   const replayNewNoteCeremonyTone = useCallback((note: string) => {
     const current = ceremonyRef.current
     if (!current.active || current.note !== note) return
-    if (phaseRef.current === 'playing' && lockProgressRef.current > 0 && lockProgressRef.current < 1) return
     scheduleCeremonyTone(note, true)
   }, [scheduleCeremonyTone])
+
+  const acceptNewNoteAdmission = useCallback(() => {
+    const note = ceremonyRef.current.note
+    if (!admissionMatched || !note) return
+    const currentPool = unlockedNotesRef.current
+    const expectedNote = presentationOrderRef.current[currentPool.length]
+    if (note !== expectedNote || currentPool.includes(note)) return
+
+    const newPool = [...currentPool, note]
+    unlockedNotesRef.current = newPool
+    setUnlockedNotes(newPool)
+    ensureNoteMemory(note)
+    saveFsrs()
+    deferredAdmissionNotesRef.current.delete(note)
+    clearNewNoteCeremony()
+    setNewNoteUnlocked(note)
+    newNoteTimerRef.current = setTimeout(() => setNewNoteUnlocked(null), NEW_NOTE_CEREMONY_MS)
+  }, [admissionMatched, clearNewNoteCeremony, ensureNoteMemory, saveFsrs])
+
+  const deferNewNoteAdmission = useCallback(() => {
+    const note = ceremonyRef.current.note
+    if (!note) return
+    deferredAdmissionNotesRef.current.add(note)
+    clearNewNoteCeremony()
+  }, [clearNewNoteCeremony])
 
   const maybeUnlockNextNote = useCallback((consecutive: number) => {
     const currentPool = unlockedNotesRef.current
@@ -3383,14 +3410,40 @@ export default function PitchforksIII() {
     const threshold = UNLOCK_THRESHOLDS[currentPoolSize]
     if (threshold && consecutive >= threshold && currentPoolSize < presentationOrder.length) {
       const nextNote = presentationOrder[currentPoolSize]
-      const newPool = [...currentPool, nextNote]
-      unlockedNotesRef.current = newPool
-      setUnlockedNotes(newPool)
-      ensureNoteMemory(nextNote)
-      saveFsrs()
-      showNewNoteUnlocked(nextNote)
+      if (ceremonyRef.current.active || deferredAdmissionNotesRef.current.has(nextNote)) return
+      requestNewNoteAdmission(nextNote)
     }
-  }, [ensureNoteMemory, saveFsrs, showNewNoteUnlocked])
+  }, [requestNewNoteAdmission])
+
+  useEffect(() => {
+    const note = ceremony.note
+    const sourcePitch = pitch
+    const now = performance.now()
+    const validMatch = ceremony.active &&
+      !!note &&
+      admissionCuePlayed &&
+      !matchingSuppressedNow() &&
+      !!sourcePitch?.isActive &&
+      sourcePitch.confidence >= CONFIDENCE_FLOOR &&
+      sourcePitch.frequency > 0 &&
+      Math.abs(exactCents(sourcePitch.frequency, noteToFreq(note))) <= MATCH_TOLERANCE_CENTS
+
+    if (!validMatch) {
+      admissionHeldMsRef.current = 0
+      admissionLastSampleAtRef.current = now
+      setAdmissionMatched(false)
+      setAdmissionMatchProgress(0)
+      return
+    }
+
+    const delta = admissionLastSampleAtRef.current > 0
+      ? Math.min(100, now - admissionLastSampleAtRef.current)
+      : 0
+    admissionLastSampleAtRef.current = now
+    admissionHeldMsRef.current = Math.min(HOLD_MS, admissionHeldMsRef.current + delta)
+    setAdmissionMatchProgress(admissionHeldMsRef.current / HOLD_MS)
+    if (admissionHeldMsRef.current >= HOLD_MS) setAdmissionMatched(true)
+  }, [admissionCuePlayed, ceremony.active, ceremony.note, matchingSuppressedNow, pitch])
 
   const latencyForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
     if (activePromptKeyRef.current === target.key && promptStartedAtRef.current > 0) {
@@ -3887,6 +3940,13 @@ export default function PitchforksIII() {
   }, [])
 
   const processLock = useCallback((dt: number) => {
+    if (ceremonyRef.current.active) {
+      activeKeyRef.current = ''
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      return
+    }
     const target = getActiveTarget()
     if (!target) {
       activeKeyRef.current = ''
@@ -3979,6 +4039,11 @@ export default function PitchforksIII() {
   const updateGame = useCallback((dt: number) => {
     const rt = runtimeRef.current
     rt.animClock += dt
+    if (ceremonyRef.current.active) {
+      timersPausedRef.current = true
+      processLock(0)
+      return
+    }
 
     if (rt.bannerTimer > 0) {
       rt.bannerTimer = Math.max(0, rt.bannerTimer - dt)
@@ -4242,6 +4307,7 @@ export default function PitchforksIII() {
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     viewStateRef.current = null
     lightningPhaseTraceRef.current = []
+    deferredAdmissionNotesRef.current = new Set()
     nextIdRef.current = 0
     waveNotesHeardRef.current = new Set()
     waveNotesSungRef.current = new Set()
@@ -4517,31 +4583,93 @@ export default function PitchforksIII() {
       : micHudState === 'waiting'
         ? 'Connecting mic...'
         : activeMicHud.label
-  const newNoteCeremonyBanner = ceremony.active && ceremony.note ? (
-    <div
-      className="absolute top-16 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3 border px-4 py-2 text-sm font-black tracking-widest text-gray-100"
-      style={ceremonyBannerStyle(ceremony.note)}
-      data-testid="pf3-new-note-ceremony"
-    >
-      <span>New note</span>
-      <span
-        key={ceremony.tonePulseKey}
-        className={`inline-flex min-h-7 min-w-12 items-center justify-center border px-2 py-1 text-[12px] font-black tracking-widest${ceremony.toneFired ? ' animate-pulse' : ''}`}
-        style={ceremonyNoteStyle(ceremony.note, fsrsRef.current, ceremony.toneFired)}
-      >
-        {ceremony.note}
-      </span>
-      <button
-        type="button"
-        onClick={() => replayNewNoteCeremonyTone(ceremony.note!)}
-        className="inline-flex min-h-7 min-w-7 items-center justify-center border p-1 transition hover:brightness-125 hover:scale-105 active:scale-95"
-        style={ceremonyReplayButtonStyle(ceremony.note)}
-        aria-label="Replay note tone"
-      >
-        <RotateCcw size={14} strokeWidth={3} aria-hidden="true" />
-      </button>
-    </div>
-  ) : null
+  const newNoteCeremonyBanner = (
+    <>
+      {ceremony.active && ceremony.note && (
+        <div
+          className="absolute inset-0 z-30 flex items-center justify-center overflow-y-auto bg-black/85 px-4 py-6"
+          data-testid="pf3-new-note-ceremony"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="pf3-new-note-title"
+        >
+          <section className="w-full max-w-sm border border-cyan-300/70 bg-[#080d18] p-5 text-center shadow-[0_0_35px_rgba(34,211,238,0.18)]">
+            <div className="mb-2 text-xs font-black tracking-[0.25em] text-cyan-200">NEW NOTE DISCOVERED</div>
+            <h2 id="pf3-new-note-title" className="mb-3 text-xl font-black tracking-widest text-white">
+              Is {ceremony.note} comfortable today?
+            </h2>
+            <p className="mb-4 text-xs leading-relaxed text-gray-300">
+              Hear the exact octave, then sing and hold it gently. It joins your arsenal only after a true match and your comfort check.
+            </p>
+            <span
+              key={ceremony.tonePulseKey}
+              className={`mx-auto mb-4 inline-flex min-h-16 min-w-24 items-center justify-center border px-4 text-4xl font-black tracking-widest${ceremony.toneFired && !reducedMotion ? ' animate-pulse' : ''}`}
+              style={ceremonyNoteStyle(ceremony.note, fsrsRef.current, ceremony.toneFired)}
+            >
+              {ceremony.note}
+            </span>
+            <div className="mx-auto mb-3 h-2 w-full overflow-hidden rounded bg-gray-800" aria-hidden="true">
+              <div
+                className="h-full bg-green-300"
+                style={{ width: `${Math.round(admissionMatchProgress * 100)}%`, transition: reducedMotion ? 'none' : 'width 80ms linear' }}
+              />
+            </div>
+            <div role="status" aria-live="polite" className="mb-4 min-h-10 text-xs font-bold leading-relaxed text-gray-200">
+              {admissionMatched
+                ? `Exact ${ceremony.note} held. Confirm only if it feels comfortable.`
+                : admissionCuePlayed
+                  ? matchingSuppressedNow()
+                    ? 'Listen… then sing after the cue.'
+                    : `Sing ${ceremony.note} and hold it gently.`
+                  : 'Tap HEAR NOTE when you are ready.'}
+            </div>
+            <button
+              type="button"
+              onClick={() => replayNewNoteCeremonyTone(ceremony.note!)}
+              data-testid="pf3-admission-hear"
+              className="min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 disabled:opacity-50"
+              disabled={matchingSuppressedNow()}
+              autoFocus
+            >
+              <span className="inline-flex items-center justify-center gap-2">
+                <RotateCcw size={16} strokeWidth={3} aria-hidden="true" /> HEAR {ceremony.note}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={acceptNewNoteAdmission}
+              data-testid="pf3-admission-comfortable"
+              disabled={!admissionMatched}
+              className="mt-3 min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
+            >
+              YES, THIS FEELS COMFORTABLE
+            </button>
+            <button
+              type="button"
+              onClick={deferNewNoteAdmission}
+              data-testid="pf3-admission-not-yet"
+              className="mt-3 min-h-11 w-full border border-amber-500/70 bg-amber-950/25 px-4 py-3 text-sm font-black tracking-widest text-amber-100"
+            >
+              NOT YET
+            </button>
+            <p className="mt-3 text-xs leading-relaxed text-gray-400">
+              No penalty. We will keep practicing the notes already in your comfortable arsenal.
+            </p>
+          </section>
+        </div>
+      )}
+      {newNoteUnlocked && !ceremony.active && (
+        <div
+          className="absolute top-16 left-1/2 z-20 flex min-h-11 -translate-x-1/2 items-center gap-3 border px-4 py-2 text-sm font-black tracking-widest text-gray-100"
+          style={ceremonyBannerStyle(newNoteUnlocked)}
+          role="status"
+          aria-live="polite"
+        >
+          <span>{newNoteUnlocked} joined your arsenal</span>
+        </div>
+      )}
+    </>
+  )
 
   if (phase === 'menu') {
     return (
