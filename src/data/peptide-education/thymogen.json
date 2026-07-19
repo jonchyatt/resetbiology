@@ -392,5 +392,72 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:07.042Z",
-  "mentions_fingerprint": "3c2fcefb78ef"
+  "mentions_fingerprint": "3c2fcefb78ef",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "dose",
+      "citation": "- thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/)",
+      "quote": "I recommend one to two milligrams of thymogen per day for a cycle of 30 to 60 days, again, four to eight weeks, typically once or twice per year as a tune-up course.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "route",
+      "citation": "- thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/)",
+      "quote": "Usually this is going to be by subq injection. You could do IM injection, but sub q is just easier. Again, intranasal spray available for mucosal immune support, But injections preferred for longevity goals.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "frequency",
+      "citation": "- thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:03; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/)",
+      "quote": "I recommend one to two milligrams of thymogen per day for a cycle of 30 to 60 days, again, four to eight weeks, typically once or twice per year as a tune-up course.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "duration",
+      "citation": "- thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a (2026-03-30; 13:33; https://library.hunterwilliamshealth.com/p/thymogen-a-targeted-immune-peptide-for-post-viral-recovery--003ef26a/)",
+      "quote": "However, if you did get an illness of iris sickness, something like that. I would use it in that case specifically, but if not, I think it's still just good to use one or two times per year.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "- saturday-morning-coffee-talk-11726--2c65a329 (2026-04-08; 49:51; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-11726--2c65a329/)",
+      "quote": "Even if wanted to stay on it for year, The worst thing that would happen is that it just is not going to work anymore for that.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

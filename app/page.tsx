@@ -1,74 +1,95 @@
-import { HeroSection } from "@/components/Hero/HeroSection"
-import { ProblemSolution } from "@/components/Hero/ProblemSolution"
-import { MissionSection } from "@/components/Hero/MissionSection"
-
-import { PortalTeaser } from "@/components/Hero/PortalTeaser"
-import { ReferralSection } from "@/components/Hero/ReferralSection"
+import Link from "next/link"
+import { redirect } from "next/navigation"
 import { FAQSection } from "@/components/Hero/FAQSection"
 import { auth0 } from "@/lib/auth0"
 import { prisma } from "@/lib/prisma"
-import { redirect } from "next/navigation"
-import Link from "next/link"
 
 export default async function Home() {
-  // Check if user is logged in
   const session = await auth0.getSession()
 
   if (session?.user) {
-    // User is authenticated - check if they exist in our database
-    const userEmail = (session.user.email || '').toLowerCase()
+    const userEmail = (session.user.email || "").toLowerCase()
     const auth0Sub = session.user.sub
 
     if (userEmail || auth0Sub) {
       const existingUser = await prisma.user.findFirst({
-        where: {
-          OR: [
-            { email: userEmail },
-            { auth0Sub: auth0Sub }
-          ]
-        }
+        where: { OR: [{ email: userEmail }, { auth0Sub }] },
       })
 
-      // If user exists in database, redirect to portal (they're not a new user)
-      if (existingUser) {
-        redirect('/portal')
-      }
+      if (existingUser) redirect("/portal")
     }
   }
 
-  // Show hero page for non-logged-in users or new users
   return (
-    <main>
-      {/* Satori Living Foundation Grant Announcement */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-gray-900/95 via-primary-900/90 to-gray-900/95 backdrop-blur-md border-b border-primary-400/30 py-4 px-4 shadow-[0_4px_30px_rgba(63,191,181,0.15)]">
-        {/* Animated glow accent */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary-400/10 to-transparent animate-[shimmer_3s_ease-in-out_infinite]" />
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <p className="text-base md:text-lg font-medium text-gray-100 leading-relaxed">
-            <span className="inline-block mr-2 text-xl align-middle">🎁</span>
-            <strong className="text-transparent bg-clip-text bg-gradient-to-r from-primary-300 to-secondary-300 text-lg md:text-xl tracking-wide">
-              FREE for 6 Months
-            </strong>
-            <span className="mx-2 text-primary-400/60">|</span>
-            Thanks to a generous grant from the{' '}
-            <span className="text-primary-200 font-semibold">Satori Living Foundation</span>,
-            register today for full access — completely free.{' '}
-            <Link
-              href="/auth/login"
-              className="inline-flex items-center ml-2 px-4 py-1.5 bg-gradient-to-r from-primary-500/30 to-secondary-500/30 hover:from-primary-500/50 hover:to-secondary-500/50 border border-primary-400/40 hover:border-primary-300/60 rounded-lg text-white font-bold text-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(63,191,181,0.3)] hover:scale-105 backdrop-blur-sm"
-            >
-              Register now →
-            </Link>
+    <main className="bg-slate-950 text-slate-100">
+      <aside className="border-b border-primary-400/25 bg-slate-900 px-4 py-3 text-center text-sm text-slate-200">
+        Free. Funded by the Satori Living Foundation. {/* src: LMP §00 */}
+      </aside>
+
+      <section className="border-b border-white/10 px-4 py-20 sm:py-28 lg:py-36">
+        <div className="mx-auto max-w-5xl">
+          <div className="max-w-4xl">
+            <p className="mb-6 text-sm font-semibold tracking-[0.12em] text-primary-300">RESET BIOLOGY</p>
+            <h1 className="text-balance text-4xl font-semibold leading-tight tracking-[-0.03em] text-white sm:text-5xl lg:text-6xl">
+              Reset Biology gives people the tools, the education, and an honest map to run their own biology — free, private, and with nobody standing between them and a fair price.
+              {/* src: LMP §00 */}
+            </h1>
+            <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+              <Link
+                href="/get-started"
+                className="inline-flex items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 transition-colors hover:bg-primary-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
+              >
+                Start Free
+              </Link>
+              <p className="max-w-xl text-pretty text-base leading-7 text-slate-300">
+                Free. Funded by the Satori Living Foundation. We sell nothing. {/* src: LMP §00 */}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-20 sm:py-28">
+        <div className="mx-auto max-w-5xl">
+          <div className="max-w-2xl">
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">How it works</h2>
+          </div>
+          <ol className="mt-12 divide-y divide-white/10 border-y border-white/10">
+            <li className="grid gap-4 py-8 sm:grid-cols-[9rem_1fr] sm:gap-8">
+              <h3 className="text-lg font-semibold text-primary-300">Tell us where you are</h3>
+              <p className="max-w-2xl text-pretty leading-7 text-slate-300">
+                Begin with the intake at /get-started. {/* src: LMP §00 */}
+              </p>
+            </li>
+            <li className="grid gap-4 py-8 sm:grid-cols-[9rem_1fr] sm:gap-8">
+              <h3 className="text-lg font-semibold text-primary-300">Work your day</h3>
+              <div className="max-w-2xl space-y-3 text-pretty leading-7 text-slate-300">
+                <p>Use the daily check-in, nutrition, breath, mind training, and journal. {/* src: LMP §2.2 */}</p>
+                <p>Your data lives in your own Google Drive. {/* src: LMP §00 */}</p>
+              </div>
+            </li>
+            <li className="grid gap-4 py-8 sm:grid-cols-[9rem_1fr] sm:gap-8">
+              <h3 className="text-lg font-semibold text-primary-300">Fair access</h3>
+              <div className="max-w-2xl space-y-3 text-pretty leading-7 text-slate-300">
+                <p>For members whose path includes peptides, we connect you to a member-owned co-op run by an independent licensed provider. {/* src: LMP §2.2 */}</p>
+                <p>Reset Biology sells nothing and takes no payment. {/* src: LMP §2.2 */}</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section className="border-y border-primary-400/20 bg-primary-950/35 px-4 py-16 sm:py-20">
+        <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2 md:gap-16">
+          <p className="text-balance text-2xl font-semibold leading-snug tracking-[-0.02em] text-white sm:text-3xl">
+            Built by a clinician, not a marketer. {/* src: LMP §00 */}
+          </p>
+          <p className="max-w-xl text-pretty text-lg leading-8 text-primary-100">
+            Your data is yours — literally. It lives in your own Google Drive. {/* src: LMP §00 */}
           </p>
         </div>
-      </div>
+      </section>
 
-      <HeroSection />
-      <ProblemSolution />
-      <MissionSection />
-
-      <PortalTeaser />
-      <ReferralSection />
       <FAQSection />
     </main>
   )

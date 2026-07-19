@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPeptide } from '@/data/peptide-education/generated';
+import { checkRateLimit, deriveClientKey } from '@/lib/peptide-chat-rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -109,6 +110,15 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ slug: stri
   }
   if (userMessage.length > MAX_USER_MESSAGE) {
     return NextResponse.json({ error: 'message-too-long', max: MAX_USER_MESSAGE }, { status: 413 });
+  }
+
+  const clientKey = deriveClientKey(req.headers);
+  const rateLimit = checkRateLimit(clientKey);
+  if (!rateLimit.ok) {
+    return NextResponse.json(
+      { error: 'rate-limited', scope: rateLimit.scope, retryAfterSec: rateLimit.retryAfterSec },
+      { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfterSec) } }
+    );
   }
 
   const messages: ChatMessage[] = [

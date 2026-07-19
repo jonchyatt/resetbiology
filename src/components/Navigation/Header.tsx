@@ -62,8 +62,8 @@ export function Header() {
                 appear to "get erased by another tab" on first paint. */}
             {!isLoading && !user && (
               <>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
+                <Link href="/get-started" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Get started
                 </Link>
                 <a
                   href="/auth/login?returnTo=/portal"
@@ -79,9 +79,6 @@ export function Header() {
               <>
                 <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
                   Portal
-                </Link>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
                 </Link>
                 <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
                   Education
@@ -158,8 +155,8 @@ export function Header() {
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
+                  <Link href="/get-started" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Get started
                   </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
@@ -173,9 +170,6 @@ export function Header() {
                 <>
                   <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Portal
-                  </Link>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
                   </Link>
                   <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Education

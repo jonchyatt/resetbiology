@@ -1,0 +1,1694 @@
+{
+  "nice-b4791ba0": {
+    "file": "data/tts-render/vision-cues/audio/nice-b4791ba0.mp3",
+    "text": "Nice.",
+    "sha256": "b4791ba04377a68f74584b96595ca1a904790bd2eb67e0337fadbec0d35a4f76",
+    "durationMs": 789
+  },
+  "watch-the-target-jump-read-the-letter-each-time--c08bd2fa": {
+    "file": "data/tts-render/vision-cues/audio/watch-the-target-jump-read-the-letter-each-time--c08bd2fa.mp3",
+    "text": "Watch the target jump. Read the letter each time it flashes.",
+    "sha256": "c08bd2fabb6c5feb5ab6cb29f49ff41a0ef20c80663d0aeea647dee22e36b0d5",
+    "durationMs": 4040
+  },
+  "nice-now-let-s-check-your-far-vision-stand-back--d6c4a6b7": {
+    "file": "data/tts-render/vision-cues/audio/nice-now-let-s-check-your-far-vision-stand-back--d6c4a6b7.mp3",
+    "text": "Nice. Now let's check your far vision. Stand back — arm's length from your screen, or across the room if you're on a monitor.",
+    "sha256": "d6c4a6b7e11fbc213812133bbcb590d834b9da33e8c36d981921c7dd19f76141",
+    "durationMs": 8266
+  },
+  "10-seconds-per-distance-387a7f21": {
+    "file": "data/tts-render/vision-cues/audio/10-seconds-per-distance-387a7f21.mp3",
+    "text": "10+ seconds per distance",
+    "sha256": "387a7f216fc98cf59efbc24b692832b0351ff44f1c6a5aefdcd1aa2be82ce867",
+    "durationMs": 1997
+  },
+  "a-single-striped-patch-flashes-at-the-center-cal-03b5f792": {
+    "file": "data/tts-render/vision-cues/audio/a-single-striped-patch-flashes-at-the-center-cal-03b5f792.mp3",
+    "text": "A single striped patch flashes at the center — call its direction before it fades from view.",
+    "sha256": "03b5f792aea684409bb7a20be5ff265a58ae8d3b7adb81c66336bce3fa9f6434",
+    "durationMs": 5248
+  },
+  "accuracy-before-speed-5a2af3ab": {
+    "file": "data/tts-render/vision-cues/audio/accuracy-before-speed-5a2af3ab.mp3",
+    "text": "Accuracy before speed",
+    "sha256": "5a2af3ab0a3e1da55e299c4a58f71a84bbdc42cfd65d4a16570964c0000b2879",
+    "durationMs": 1579
+  },
+  "add-5-bpm-if-90-accuracy-2eb27c78": {
+    "file": "data/tts-render/vision-cues/audio/add-5-bpm-if-90-accuracy-2eb27c78.mp3",
+    "text": "Add 5 bpm if 90%+ accuracy",
+    "sha256": "2eb27c7817128bdd9b8c57f8a4aee54f464a97992f21f4f1124e2381be8b6d64",
+    "durationMs": 3622
+  },
+  "add-complexity-e37bc0af": {
+    "file": "data/tts-render/vision-cues/audio/add-complexity-e37bc0af.mp3",
+    "text": "Add complexity",
+    "sha256": "e37bc0af344bcb521eaf8d743233481f770930c41214ee62db50b1e758be0ebb",
+    "durationMs": 1300
+  },
+  "add-gentle-step-back-once-accuracy-hits-95-2b1cfe11": {
+    "file": "data/tts-render/vision-cues/audio/add-gentle-step-back-once-accuracy-hits-95-2b1cfe11.mp3",
+    "text": "Add gentle step-back once accuracy hits 95%.",
+    "sha256": "2b1cfe11be522171ee918482565273a57743612b9669ea6fdbfa273a9753d538",
+    "durationMs": 4365
+  },
+  "alternate-near-40-cm-vs-far-2-m-projections-ever-d2fd165d": {
+    "file": "data/tts-render/vision-cues/audio/alternate-near-40-cm-vs-far-2-m-projections-ever-d2fd165d.mp3",
+    "text": "Alternate near (40 cm) vs. far (2 m) projections every loop.",
+    "sha256": "d2fd165daddb50b0756963df8b507208c8c6dabc10e62b846bac0fe9aa1fdfab",
+    "durationMs": 5341
+  },
+  "alternate-near-and-far-4d56b1a9": {
+    "file": "data/tts-render/vision-cues/audio/alternate-near-and-far-4d56b1a9.mp3",
+    "text": "Alternate near and far",
+    "sha256": "4d56b1a9e02a01e4eaafcd97d63673bcebe15c2001ebb429d7b55c1d119d6228",
+    "durationMs": 1811
+  },
+  "alternate-reading-near-card-vs-far-card-every-in-07ab9c66": {
+    "file": "data/tts-render/vision-cues/audio/alternate-reading-near-card-vs-far-card-every-in-07ab9c66.mp3",
+    "text": "Alternate reading near card vs. far card every inhale/exhale.",
+    "sha256": "07ab9c66686fd03baca78b0fb0156943fdfde0141f76a5cec815df0a26071f47",
+    "durationMs": 5108
+  },
+  "anchor-chin-with-a-light-nod-imagine-ears-growin-2156aa83": {
+    "file": "data/tts-render/vision-cues/audio/anchor-chin-with-a-light-nod-imagine-ears-growin-2156aa83.mp3",
+    "text": "Anchor chin with a light nod; imagine ears growing tall.",
+    "sha256": "2156aa839f39ffa34c22408e57460d4928e8a6b271d45e06f5acc7c0cc590a77",
+    "durationMs": 4180
+  },
+  "answer-on-the-3-count-beat-using-the-left-right--2670d299": {
+    "file": "data/tts-render/vision-cues/audio/answer-on-the-3-count-beat-using-the-left-right--2670d299.mp3",
+    "text": "Answer on the 3-count beat using the LEFT / RIGHT buttons.",
+    "sha256": "2670d2992be8fef436c4cece1f1dbaac01963b4a8040e20822d0731f9a22cc2d",
+    "durationMs": 3855
+  },
+  "answer-the-letter-check-ins-without-looking-away-852f1c9d": {
+    "file": "data/tts-render/vision-cues/audio/answer-the-letter-check-ins-without-looking-away-852f1c9d.mp3",
+    "text": "Answer the letter check-ins without looking away — that proves your eyes did the sweeping, not your head.",
+    "sha256": "852f1c9d9babfbf7a7a3a411e7dca4d8f1ed0c0f880d4762712e76234c163946",
+    "durationMs": 5991
+  },
+  "answer-the-letter-check-ins-without-looking-away-c97127b4": {
+    "file": "data/tts-render/vision-cues/audio/answer-the-letter-check-ins-without-looking-away-c97127b4.mp3",
+    "text": "Answer the letter check-ins without looking away — that proves you stayed centered.",
+    "sha256": "c97127b41e390ca979497f5fefc5b04bfc761f3aab79e3134c4702097a4b4f5a",
+    "durationMs": 4551
+  },
+  "apply-to-daily-tasks-b6b0508b": {
+    "file": "data/tts-render/vision-cues/audio/apply-to-daily-tasks-b6b0508b.mp3",
+    "text": "Apply to daily tasks",
+    "sha256": "b6b0508b8cb22cc0e3870501e47f31bd72f136f2db09191fb5ef86ff681d546e",
+    "durationMs": 1950
+  },
+  "begin-the-exercise-92a872b1": {
+    "file": "data/tts-render/vision-cues/audio/begin-the-exercise-92a872b1.mp3",
+    "text": "Begin the exercise",
+    "sha256": "92a872b1f950ca359b0f2801189e066efa7abff0629769ae4e75d01208ab59d9",
+    "durationMs": 1765
+  },
+  "box-breathing-plus-soft-focus-on-a-single-point--41a2c69b": {
+    "file": "data/tts-render/vision-cues/audio/box-breathing-plus-soft-focus-on-a-single-point--41a2c69b.mp3",
+    "text": "Box breathing plus soft focus on a single point to prime for accuracy work.",
+    "sha256": "41a2c69bb227f20f86e5300c08dc55c975fb0524d6d1ea8bce7116ef4226c3db",
+    "durationMs": 5526
+  },
+  "breathe-between-switches-46bbf131": {
+    "file": "data/tts-render/vision-cues/audio/breathe-between-switches-46bbf131.mp3",
+    "text": "Breathe between switches",
+    "sha256": "46bbf131e7ddf046c59d660c43b9547a7c83deb1873c0ed17f06289ee6ca16cc",
+    "durationMs": 1904
+  },
+  "breathe-between-toggles-1babbda6": {
+    "file": "data/tts-render/vision-cues/audio/breathe-between-toggles-1babbda6.mp3",
+    "text": "Breathe between toggles",
+    "sha256": "1babbda6fe4c15651aa0fbed2b36fe6c033d260a79ca19fae3aece571ff59e25",
+    "durationMs": 1950
+  },
+  "breathe-in-75b77795": {
+    "file": "data/tts-render/vision-cues/audio/breathe-in-75b77795.mp3",
+    "text": "Breathe in",
+    "sha256": "75b77795763129ec9ade2cdc1b89c37ae4a327c7cc8c01e0667772374e274016",
+    "durationMs": 975
+  },
+  "breathe-out-2be37986": {
+    "file": "data/tts-render/vision-cues/audio/breathe-out-2be37986.mp3",
+    "text": "Breathe out",
+    "sha256": "2be379864e7df30322dd9900282cb819dcff7043f515f47df364618f22724438",
+    "durationMs": 1068
+  },
+  "breathe-steadily-e11be5b0": {
+    "file": "data/tts-render/vision-cues/audio/breathe-steadily-e11be5b0.mp3",
+    "text": "Breathe steadily",
+    "sha256": "e11be5b0f0776115b22a76f8cda0b188b1c0e63769f520fde9a9cf308848184e",
+    "durationMs": 1625
+  },
+  "breathe-through-fatigue-be29435f": {
+    "file": "data/tts-render/vision-cues/audio/breathe-through-fatigue-be29435f.mp3",
+    "text": "Breathe through fatigue",
+    "sha256": "be29435f3174039e49124a4dff02dde9ab09b2c5dec085a37e4b38d4a0380c56",
+    "durationMs": 1672
+  },
+  "call-left-right-aloud-a598a1b2": {
+    "file": "data/tts-render/vision-cues/audio/call-left-right-aloud-a598a1b2.mp3",
+    "text": "Call left/right aloud",
+    "sha256": "a598a1b2b34ffafcfa60c85df22d0e9796d10061456d3c48daf47c4eb69df37a",
+    "durationMs": 2601
+  },
+  "celebrate-your-progress-533c905c": {
+    "file": "data/tts-render/vision-cues/audio/celebrate-your-progress-533c905c.mp3",
+    "text": "Celebrate your progress!",
+    "sha256": "533c905c1f0b5167fcb5eb2bb38b8e579ab5e5ca4b5cfdb2b30f872f9fa974a6",
+    "durationMs": 1950
+  },
+  "chin-level-only-your-eyes-sweep-a7c0c95f": {
+    "file": "data/tts-render/vision-cues/audio/chin-level-only-your-eyes-sweep-a7c0c95f.mp3",
+    "text": "Chin level — only your eyes sweep.",
+    "sha256": "a7c0c95f7cd262db7c4e11937dca080c3cad52720fa30480315d9971b32160e5",
+    "durationMs": 2276
+  },
+  "classic-near-to-far-bead-drill-to-teach-converge-790cca18": {
+    "file": "data/tts-render/vision-cues/audio/classic-near-to-far-bead-drill-to-teach-converge-790cca18.mp3",
+    "text": "Classic near-to-far bead drill to teach convergence/divergence control at conscious speeds.",
+    "sha256": "790cca1815f6c1e86e6c2fbaeb46e6bd591bc63f28982514076f4e4adc8343cd",
+    "durationMs": 6780
+  },
+  "compare-to-day-1-baselines-68924163": {
+    "file": "data/tts-render/vision-cues/audio/compare-to-day-1-baselines-68924163.mp3",
+    "text": "Compare to Day 1 baselines",
+    "sha256": "689241636286f7fbea038a22c7d7dc0c6df3a271f0b0cf0c2b5c8b6af708d325",
+    "durationMs": 2136
+  },
+  "compare-to-week-1-baselines-be9dbc8a": {
+    "file": "data/tts-render/vision-cues/audio/compare-to-week-1-baselines-be9dbc8a.mp3",
+    "text": "Compare to Week 1 baselines",
+    "sha256": "be9dbc8a6b7703c9d9b50ddc650638d99b2a5f6c39f4018e6cfc50c7833b397f",
+    "durationMs": 2322
+  },
+  "compare-to-week-1-dea889f4": {
+    "file": "data/tts-render/vision-cues/audio/compare-to-week-1-dea889f4.mp3",
+    "text": "Compare to Week 1",
+    "sha256": "dea889f45fec077d726bed1e73ed9987d2df4010dbff033d209b3ac1f42b25ac",
+    "durationMs": 1486
+  },
+  "complex-walking-patterns-5d330044": {
+    "file": "data/tts-render/vision-cues/audio/complex-walking-patterns-5d330044.mp3",
+    "text": "Complex walking patterns",
+    "sha256": "5d3300446a0e74b922fc4ff7baad3c518670c65bb0f40d4df84a5227bc977486",
+    "durationMs": 1811
+  },
+  "comprehension-counts-403dbeca": {
+    "file": "data/tts-render/vision-cues/audio/comprehension-counts-403dbeca.mp3",
+    "text": "Comprehension counts",
+    "sha256": "403dbeca2b6203177259dd5848a49f8a3718ced4197a0ed735bc4ede9b22e175",
+    "durationMs": 1625
+  },
+  "cross-body-ocular-limb-coordination-to-reduce-mi-6196f9f6": {
+    "file": "data/tts-render/vision-cues/audio/cross-body-ocular-limb-coordination-to-reduce-mi-6196f9f6.mp3",
+    "text": "Cross-body ocular + limb coordination to reduce midline confusion and boost depth perception.",
+    "sha256": "6196f9f6ebc7abba0306b0341a6f960f64c3c3bd377e25b01ea607e256cf838e",
+    "durationMs": 6316
+  },
+  "cross-your-midline-b0d9bd0c": {
+    "file": "data/tts-render/vision-cues/audio/cross-your-midline-b0d9bd0c.mp3",
+    "text": "Cross your midline",
+    "sha256": "b0d9bd0c22005e301ea367fbaef6106e07789701da870b2628c6d706bb7377b0",
+    "durationMs": 1393
+  },
+  "darkness-warmth-diaphragmatic-breathing-to-downs-5624eb36": {
+    "file": "data/tts-render/vision-cues/audio/darkness-warmth-diaphragmatic-breathing-to-downs-5624eb36.mp3",
+    "text": "Darkness + warmth + diaphragmatic breathing to downshift the nervous system before neural drills.",
+    "sha256": "5624eb361872acc84d2e39f117e0f04ddd23c1c0d8958c99ac4af6e1633847a7",
+    "durationMs": 6455
+  },
+  "demonstrate-all-skills-2a3a120a": {
+    "file": "data/tts-render/vision-cues/audio/demonstrate-all-skills-2a3a120a.mp3",
+    "text": "Demonstrate all skills",
+    "sha256": "2a3a120ae95370f3dfa00e87a554aff151b9c794cbeeb94db6b10a44ae033e45",
+    "durationMs": 2229
+  },
+  "design-maintenance-routine-3075328e": {
+    "file": "data/tts-render/vision-cues/audio/design-maintenance-routine-3075328e.mp3",
+    "text": "Design maintenance routine",
+    "sha256": "3075328e0a7eb65329cf3d79b8ac37c97eafcf31228f1305c9b6b149f5a57514",
+    "durationMs": 1858
+  },
+  "design-your-maintenance-routine-cd8fe048": {
+    "file": "data/tts-render/vision-cues/audio/design-your-maintenance-routine-cd8fe048.mp3",
+    "text": "Design your maintenance routine",
+    "sha256": "cd8fe0485177b428a2df4b7d6abc42c67db98803bdf9be14c5e24d9f121ee317",
+    "durationMs": 1950
+  },
+  "diagonal-1856be3a": {
+    "file": "data/tts-render/vision-cues/audio/diagonal-1856be3a.mp3",
+    "text": "Diagonal",
+    "sha256": "1856be3ac7e697d6d24e4e93f7f4dfac7610e9b462695ad014116b63fb3f6244",
+    "durationMs": 1161
+  },
+  "diagonal-sweep-54d20efb": {
+    "file": "data/tts-render/vision-cues/audio/diagonal-sweep-54d20efb.mp3",
+    "text": "Diagonal sweep",
+    "sha256": "54d20efbabca06e12d14980afd88cbbe5979a009445c7f48a690246ccc2ac515",
+    "durationMs": 1393
+  },
+  "diagonal-targets-join-in-as-you-level-up-track-t-4cadbb33": {
+    "file": "data/tts-render/vision-cues/audio/diagonal-targets-join-in-as-you-level-up-track-t-4cadbb33.mp3",
+    "text": "Diagonal targets join in as you level up — track them the same way.",
+    "sha256": "4cadbb33e0168b996685419871602a5096d177e59c9a665c5a45743c7a986063",
+    "durationMs": 4830
+  },
+  "down-b86d11af": {
+    "file": "data/tts-render/vision-cues/audio/down-b86d11af.mp3",
+    "text": "Down",
+    "sha256": "b86d11af79188e58af384b421f2799b08bfb151939b4404679d948aae2720b0b",
+    "durationMs": 789
+  },
+  "dynamic-near-far-toggles-inspired-by-optometry-a-86d53e96": {
+    "file": "data/tts-render/vision-cues/audio/dynamic-near-far-toggles-inspired-by-optometry-a-86d53e96.mp3",
+    "text": "Dynamic near/far toggles inspired by optometry accommodative therapy.",
+    "sha256": "86d53e967f33f5e0200b2960036d50baea1034faa59353f294d3a5f20829eb28",
+    "durationMs": 5712
+  },
+  "easing-off-40-beats-per-minute-551895d9": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-40-beats-per-minute-551895d9.mp3",
+    "text": "Easing off. 40 beats per minute.",
+    "sha256": "551895d96c56459ae28c03ae1dfbbffa42c99cf1046afb38aa94870e3cbdd123",
+    "durationMs": 2136
+  },
+  "easing-off-45-beats-per-minute-08864c05": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-45-beats-per-minute-08864c05.mp3",
+    "text": "Easing off. 45 beats per minute.",
+    "sha256": "08864c05e23251a66596e4497e8a23f91f19584600bc2afa5f577303241c7ccf",
+    "durationMs": 2926
+  },
+  "easing-off-50-beats-per-minute-e1439214": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-50-beats-per-minute-e1439214.mp3",
+    "text": "Easing off. 50 beats per minute.",
+    "sha256": "e1439214eacc0c67fbbf9a78e57fd531f874d13436ebdfb72be7b722a5b8143e",
+    "durationMs": 2786
+  },
+  "easing-off-55-beats-per-minute-238d1456": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-55-beats-per-minute-238d1456.mp3",
+    "text": "Easing off. 55 beats per minute.",
+    "sha256": "238d1456d5b4efc5fa7f38c2fa3262076375d2e2dd054530fe54e44d50eda75c",
+    "durationMs": 3251
+  },
+  "easing-off-60-beats-per-minute-047b608b": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-60-beats-per-minute-047b608b.mp3",
+    "text": "Easing off. 60 beats per minute.",
+    "sha256": "047b608b22f3b8cb2fcf8601d5aa416fdb868fb545a4f722effb86c903b45b9f",
+    "durationMs": 2415
+  },
+  "easing-off-65-beats-per-minute-c3db95db": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-65-beats-per-minute-c3db95db.mp3",
+    "text": "Easing off. 65 beats per minute.",
+    "sha256": "c3db95dbc6b7ce8484ee990f9d92938ec4ed6543941058d72d6cf08528423327",
+    "durationMs": 3251
+  },
+  "easing-off-70-beats-per-minute-097c5a89": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-70-beats-per-minute-097c5a89.mp3",
+    "text": "Easing off. 70 beats per minute.",
+    "sha256": "097c5a898f8da9725ed0fedbb6f72959dd40848141cb3825d6931ba55d7864d4",
+    "durationMs": 2461
+  },
+  "easing-off-75-beats-per-minute-157b4e69": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-75-beats-per-minute-157b4e69.mp3",
+    "text": "Easing off. 75 beats per minute.",
+    "sha256": "157b4e69173c190ed93b890499cac301a5675cb06385f5a5d2cbf8cbd5be2a1e",
+    "durationMs": 2879
+  },
+  "easing-off-80-beats-per-minute-5d7ad0e9": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-80-beats-per-minute-5d7ad0e9.mp3",
+    "text": "Easing off. 80 beats per minute.",
+    "sha256": "5d7ad0e966e5b3a7defbab82a43005c4e6a528a1b2eac23dc8b365d5bbf2cfcf",
+    "durationMs": 2368
+  },
+  "easing-off-85-beats-per-minute-a924ce85": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-85-beats-per-minute-a924ce85.mp3",
+    "text": "Easing off. 85 beats per minute.",
+    "sha256": "a924ce85d8f64d85307139e9b5fab195d0dd3a5f8b7a5bc3fa282b34da60974a",
+    "durationMs": 3251
+  },
+  "easing-off-90-beats-per-minute-717184ad": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-90-beats-per-minute-717184ad.mp3",
+    "text": "Easing off. 90 beats per minute.",
+    "sha256": "717184ad391248f7e5999f1dc61d24bb8fc93a62d1854a6a70c2f18097a1e542",
+    "durationMs": 2926
+  },
+  "easing-off-95-beats-per-minute-1c58d4a9": {
+    "file": "data/tts-render/vision-cues/audio/easing-off-95-beats-per-minute-1c58d4a9.mp3",
+    "text": "Easing off. 95 beats per minute.",
+    "sha256": "1c58d4a9785db6740bb5c3f2d06ee4c80e89874eb4c7b992113c55f7506211ea",
+    "durationMs": 2879
+  },
+  "elite-work-88553ddb": {
+    "file": "data/tts-render/vision-cues/audio/elite-work-88553ddb.mp3",
+    "text": "Elite work.",
+    "sha256": "88553ddbb997f62703677cfd2ab3ed0aa9a357fd5050c0c47b47d53ecb849e4c",
+    "durationMs": 1115
+  },
+  "every-session-rewires-done-is-what-counts-5b112605": {
+    "file": "data/tts-render/vision-cues/audio/every-session-rewires-done-is-what-counts-5b112605.mp3",
+    "text": "Every session rewires. Done is what counts.",
+    "sha256": "5b112605658a718bd34726458ff595dcd6e7025f8a3b7eebc7e7a7e76e22a9e8",
+    "durationMs": 3715
+  },
+  "exercise-complete-great-work-5e4a9b4c": {
+    "file": "data/tts-render/vision-cues/audio/exercise-complete-great-work-5e4a9b4c.mp3",
+    "text": "Exercise complete. Great work!",
+    "sha256": "5e4a9b4cdbbadb601b7cba5d801201b26b48f4bb641733ffa93ec8ef6ac7fe39",
+    "durationMs": 2601
+  },
+  "exercise-complete-nice-work-7219a260": {
+    "file": "data/tts-render/vision-cues/audio/exercise-complete-nice-work-7219a260.mp3",
+    "text": "Exercise complete. Nice work.",
+    "sha256": "7219a2601e87ae31ddf2e2e86f42a96fce021d3bc96b4fe12b55ba42f8b69195",
+    "durationMs": 2554
+  },
+  "exhale-as-target-approaches-0fcb8e6d": {
+    "file": "data/tts-render/vision-cues/audio/exhale-as-target-approaches-0fcb8e6d.mp3",
+    "text": "Exhale as target approaches",
+    "sha256": "0fcb8e6d68ef136e41e2c7b6731d70916b1581368b2ad47310b66681f8a18158",
+    "durationMs": 2508
+  },
+  "exhale-as-the-card-approaches-to-keep-parasympat-96fac972": {
+    "file": "data/tts-render/vision-cues/audio/exhale-as-the-card-approaches-to-keep-parasympat-96fac972.mp3",
+    "text": "Exhale as the card approaches to keep parasympathetic tone high.",
+    "sha256": "96fac97216efafd522bce6185366c3eb2e58d57d954bf6555c785efc978618fd",
+    "durationMs": 4551
+  },
+  "exhale-on-approach-6d663f99": {
+    "file": "data/tts-render/vision-cues/audio/exhale-on-approach-6d663f99.mp3",
+    "text": "Exhale on approach",
+    "sha256": "6d663f9925053639e43459a8a45d926dbb03748dc5a76c1b9a5f61f4d2837e1f",
+    "durationMs": 1625
+  },
+  "exhale-until-you-feel-abdominal-wall-soften-noti-8c15571a": {
+    "file": "data/tts-render/vision-cues/audio/exhale-until-you-feel-abdominal-wall-soften-noti-8c15571a.mp3",
+    "text": "Exhale until you feel abdominal wall soften; notice when the darkness deepens.",
+    "sha256": "8c15571a6cc4db54fa43bf83fad489e82f0378d0963f2758e9e0953b99937273",
+    "durationMs": 6130
+  },
+  "extend-hold-times-79cfbc78": {
+    "file": "data/tts-render/vision-cues/audio/extend-hold-times-79cfbc78.mp3",
+    "text": "Extend hold times",
+    "sha256": "79cfbc7816c2f45f8f6b47a1af82621a7a316865f4083e73816a5e2b002eb5c1",
+    "durationMs": 2090
+  },
+  "eye-hand-sync-757ec1f0": {
+    "file": "data/tts-render/vision-cues/audio/eye-hand-sync-757ec1f0.mp3",
+    "text": "Eye-hand sync",
+    "sha256": "757ec1f07c835b6585ab88cb8f0b096837a9b2613e02e411a2cdd37141e9272c",
+    "durationMs": 1300
+  },
+  "eyes-glide-never-jerk-c4b7c933": {
+    "file": "data/tts-render/vision-cues/audio/eyes-glide-never-jerk-c4b7c933.mp3",
+    "text": "Eyes glide, never jerk",
+    "sha256": "c4b7c933c12f3cd3f2e065efefd76ab9898bf8f4d1e9be4efda5ba7700104cae",
+    "durationMs": 2229
+  },
+  "eyes-only-f5a65721": {
+    "file": "data/tts-render/vision-cues/audio/eyes-only-f5a65721.mp3",
+    "text": "Eyes only",
+    "sha256": "f5a65721a89c9c18db7f05b7940b710c086d1c39235f2c497af8192398f275ed",
+    "durationMs": 3297
+  },
+  "eyes-stay-center-7ced12af": {
+    "file": "data/tts-render/vision-cues/audio/eyes-stay-center-7ced12af.mp3",
+    "text": "Eyes stay center",
+    "sha256": "7ced12af6ed9ed1880e61f362607a8566655186ae2ed440b7d7ec18e0c8b066b",
+    "durationMs": 1300
+  },
+  "final-recording-47b98c22": {
+    "file": "data/tts-render/vision-cues/audio/final-recording-47b98c22.mp3",
+    "text": "Final recording",
+    "sha256": "47b98c22a215b36d81fba9fc7f1fd6a67d0e53637d0d1c48e8eab8582c1e7130",
+    "durationMs": 1254
+  },
+  "final-snellen-comparison-14115c7a": {
+    "file": "data/tts-render/vision-cues/audio/final-snellen-comparison-14115c7a.mp3",
+    "text": "Final Snellen comparison",
+    "sha256": "14115c7aca36ce64a2ad30009bc67a1bdb19f70732aeffc2a090adc4dd71bf13",
+    "durationMs": 1811
+  },
+  "focus-on-exhale-length-bfb2c470": {
+    "file": "data/tts-render/vision-cues/audio/focus-on-exhale-length-bfb2c470.mp3",
+    "text": "Focus on exhale length",
+    "sha256": "bfb2c470e71eef9c921a627a07d29317a95aae0e61817825b33a6c964e36335f",
+    "durationMs": 1904
+  },
+  "follow-the-dot-smoothly-a928f48c": {
+    "file": "data/tts-render/vision-cues/audio/follow-the-dot-smoothly-a928f48c.mp3",
+    "text": "Follow the dot smoothly",
+    "sha256": "a928f48c50829902de8dc5330c1fcf31aae17629acb996134167f19a2bc26e06",
+    "durationMs": 1858
+  },
+  "follow-the-loop-with-smooth-continuous-motion-ey-df47e265": {
+    "file": "data/tts-render/vision-cues/audio/follow-the-loop-with-smooth-continuous-motion-ey-df47e265.mp3",
+    "text": "Follow the loop with smooth, continuous motion — eyes only, no head movement.",
+    "sha256": "df47e26548d495fa1e1968495b95205a9a59ff0a856ebf63b5ad88f795c36b90",
+    "durationMs": 5480
+  },
+  "follow-the-target-left-and-right-eyes-only-head--91cffeb6": {
+    "file": "data/tts-render/vision-cues/audio/follow-the-target-left-and-right-eyes-only-head--91cffeb6.mp3",
+    "text": "Follow the target left and right. Eyes only, head still.",
+    "sha256": "91cffeb6c22b5bf896fc5cec2a65b2969bce39637e4327bbbea46f3606683b9e",
+    "durationMs": 3297
+  },
+  "forced-choice-orientation-calls-on-a-faint-strip-fed1b863": {
+    "file": "data/tts-render/vision-cues/audio/forced-choice-orientation-calls-on-a-faint-strip-fed1b863.mp3",
+    "text": "Forced-choice orientation calls on a faint striped patch, adapting to find your contrast-sensitivity edge.",
+    "sha256": "fed1b863355b3cf7c2ba7b5a8cdf1295fbd5695d62f4e5e3221e2f7116805aca",
+    "durationMs": 7338
+  },
+  "from-week-5-listen-for-rule-flip-same-side-inste-09946f27": {
+    "file": "data/tts-render/vision-cues/audio/from-week-5-listen-for-rule-flip-same-side-inste-09946f27.mp3",
+    "text": "From week 5, listen for \"Rule flip\" — same side instead of crossed.",
+    "sha256": "09946f2735a64fd6c36c03b0f8998133f7c9597eeded415617565ccba5a7e3f6",
+    "durationMs": 5387
+  },
+  "full-assessment-81873035": {
+    "file": "data/tts-render/vision-cues/audio/full-assessment-81873035.mp3",
+    "text": "Full assessment",
+    "sha256": "81873035a9882a84aad816d495e4a96622089d759cda87bc5f61f911c4041d9c",
+    "durationMs": 1022
+  },
+  "full-baseline-test-059ba03d": {
+    "file": "data/tts-render/vision-cues/audio/full-baseline-test-059ba03d.mp3",
+    "text": "Full baseline test",
+    "sha256": "059ba03df96633036ca57dccd91aabec89aecf7869630ef2b2a3205b1e26a694",
+    "durationMs": 1625
+  },
+  "full-far-snellen-test-181703ce": {
+    "file": "data/tts-render/vision-cues/audio/full-far-snellen-test-181703ce.mp3",
+    "text": "Full far Snellen test",
+    "sha256": "181703cefecbe96eaf495a2a212fe56674b2e36cc5b02d7e1e24d282bcc4a4a2",
+    "durationMs": 1811
+  },
+  "full-range-eye-movement-63317f18": {
+    "file": "data/tts-render/vision-cues/audio/full-range-eye-movement-63317f18.mp3",
+    "text": "Full range eye movement",
+    "sha256": "63317f18e8179cca2d9e2a762ce13f034afec4e9c83acfbe50b3bd1fc0771bcb",
+    "durationMs": 1625
+  },
+  "full-range-test-ce0037b1": {
+    "file": "data/tts-render/vision-cues/audio/full-range-test-ce0037b1.mp3",
+    "text": "Full range test",
+    "sha256": "ce0037b10d6546a21f8fb8da8c58d2c35ede79eb475da7b61c7aee263f2a3fe6",
+    "durationMs": 1533
+  },
+  "full-skill-assessment-b90e8c53": {
+    "file": "data/tts-render/vision-cues/audio/full-skill-assessment-b90e8c53.mp3",
+    "text": "Full skill assessment",
+    "sha256": "b90e8c5377ead4fc1018df9ad567b236cba15c04b7ab5a850c773d13c407307d",
+    "durationMs": 1718
+  },
+  "full-snellen-assessment-f83c202b": {
+    "file": "data/tts-render/vision-cues/audio/full-snellen-assessment-f83c202b.mp3",
+    "text": "Full Snellen assessment",
+    "sha256": "f83c202b4c4fd56fc175ee99d5cad2baf2c4703eb978fd48419d8541230ed704",
+    "durationMs": 1625
+  },
+  "full-snellen-test-8634d49d": {
+    "file": "data/tts-render/vision-cues/audio/full-snellen-test-8634d49d.mp3",
+    "text": "Full Snellen test",
+    "sha256": "8634d49d866b8b3b6892c3a5d6d5a96a6edfb110ce39a5de532ce55d2e2c7dea",
+    "durationMs": 1579
+  },
+  "further-a20d00f8": {
+    "file": "data/tts-render/vision-cues/audio/further-a20d00f8.mp3",
+    "text": "further",
+    "sha256": "a20d00f82196c319bac9a39efe2bb21ad3954f6e0d929ed97d23365ab9a78992",
+    "durationMs": 511
+  },
+  "glutes-lightly-engaged-avoid-head-bobbing-83f46558": {
+    "file": "data/tts-render/vision-cues/audio/glutes-lightly-engaged-avoid-head-bobbing-83f46558.mp3",
+    "text": "Glutes lightly engaged, avoid head bobbing.",
+    "sha256": "83f46558e6dbc8c88cce2713465e97d994178886757e3741ef7d3b4776f0c0f6",
+    "durationMs": 3019
+  },
+  "good-continue-c406e4be": {
+    "file": "data/tts-render/vision-cues/audio/good-continue-c406e4be.mp3",
+    "text": "Good, continue",
+    "sha256": "c406e4beccb49aed699fdc6889db017c94417ed4ec48964b9506875919873cc8",
+    "durationMs": 1486
+  },
+  "good-work-consistency-wins-e29a2312": {
+    "file": "data/tts-render/vision-cues/audio/good-work-consistency-wins-e29a2312.mp3",
+    "text": "Good work — consistency wins.",
+    "sha256": "e29a231288238099503666244f560224bd9866a6165e0a57569fd2ba325e3d17",
+    "durationMs": 2601
+  },
+  "head-stays-locked-7098881d": {
+    "file": "data/tts-render/vision-cues/audio/head-stays-locked-7098881d.mp3",
+    "text": "Head stays locked",
+    "sha256": "7098881d0cea05911460e586447e7a8a5c87c3407a27359db36b17922b51ca31",
+    "durationMs": 1300
+  },
+  "head-stays-still-95c025d6": {
+    "file": "data/tts-render/vision-cues/audio/head-stays-still-95c025d6.mp3",
+    "text": "Head stays still",
+    "sha256": "95c025d652dc5391573b8b17e70adbf7537cafd65c8091f8c8c16c4a1a5a0fb3",
+    "durationMs": 1393
+  },
+  "high-velocity-saccades-between-targets-to-sharpe-8ba71ce2": {
+    "file": "data/tts-render/vision-cues/audio/high-velocity-saccades-between-targets-to-sharpe-8ba71ce2.mp3",
+    "text": "High-velocity saccades between targets to sharpen reaction time and reading endurance.",
+    "sha256": "8ba71ce2ca206f357dcc7c45e413f308cb49039b2de5f25f01cbc1b1e92cbc04",
+    "durationMs": 5805
+  },
+  "hold-8e685d54": {
+    "file": "data/tts-render/vision-cues/audio/hold-8e685d54.mp3",
+    "text": "Hold",
+    "sha256": "8e685d5409b3a543b1cadcc35b095d64847867539c12b21a36d55991ca0cdce1",
+    "durationMs": 789
+  },
+  "hold-your-card-at-arm-s-length-and-follow-the-rh-c52a48c3": {
+    "file": "data/tts-render/vision-cues/audio/hold-your-card-at-arm-s-length-and-follow-the-rh-c52a48c3.mp3",
+    "text": "Hold your card at arm’s length and follow the rhythm.",
+    "sha256": "c52a48c3f5be5514691fbd36407f0c8274db86b6f252a819babdbd495f3ff751",
+    "durationMs": 2972
+  },
+  "hold-your-gaze-on-the-center-letter-don-t-chase--c0e3d2bc": {
+    "file": "data/tts-render/vision-cues/audio/hold-your-gaze-on-the-center-letter-don-t-chase--c0e3d2bc.mp3",
+    "text": "Hold your gaze on the center letter — don’t chase the target.",
+    "sha256": "c0e3d2bc240707a4b044e33ee88529cdcba446fddb35300b565f7de03772493c",
+    "durationMs": 3715
+  },
+  "hold-your-gaze-on-the-center-letter-while-target-87a1ffaa": {
+    "file": "data/tts-render/vision-cues/audio/hold-your-gaze-on-the-center-letter-while-target-87a1ffaa.mp3",
+    "text": "Hold your gaze on the center letter while targets flash in each quadrant.",
+    "sha256": "87a1ffaadec857d9211a49b2ced48c689a2993ab496af10c10a86e3b417204a7",
+    "durationMs": 4551
+  },
+  "hold-your-phone-securely-keep-your-path-clear-an-f2681405": {
+    "file": "data/tts-render/vision-cues/audio/hold-your-phone-securely-keep-your-path-clear-an-f2681405.mp3",
+    "text": "Hold your phone securely. Keep your path clear and walk slowly.",
+    "sha256": "f2681405c474ebdf94452dde2db25c2390f6e7d2c1184701f6b2cd16ada1549c",
+    "durationMs": 4272
+  },
+  "hum-quietly-to-add-auditory-task-for-dual-load-p-70306169": {
+    "file": "data/tts-render/vision-cues/audio/hum-quietly-to-add-auditory-task-for-dual-load-p-70306169.mp3",
+    "text": "Hum quietly to add auditory task for dual-load practice.",
+    "sha256": "70306169625e1dbc36ff0cff31e7985e54f1a36cfdb020f6c5f439dd4f79f4d6",
+    "durationMs": 3994
+  },
+  "identifies-objects-without-direct-gaze-to-expand-256a5c41": {
+    "file": "data/tts-render/vision-cues/audio/identifies-objects-without-direct-gaze-to-expand-256a5c41.mp3",
+    "text": "Identifies objects without direct gaze to expand spatial mapping and reduce tunnel vision.",
+    "sha256": "256a5c41f41add528fcbbc1ed68c083e2c4c6a03f916cacaa3671159f1981d2b",
+    "durationMs": 6873
+  },
+  "identify-weak-areas-99192e39": {
+    "file": "data/tts-render/vision-cues/audio/identify-weak-areas-99192e39.mp3",
+    "text": "Identify weak areas",
+    "sha256": "99192e399404038775cde7359aa916494992e1083b55ab276ce770fa44caad60",
+    "durationMs": 1625
+  },
+  "if-blur-persists-longer-than-2-sec-move-closer-a-17d28994": {
+    "file": "data/tts-render/vision-cues/audio/if-blur-persists-longer-than-2-sec-move-closer-a-17d28994.mp3",
+    "text": "If blur persists longer than 2 sec, move closer and reset.",
+    "sha256": "17d28994c4ee5bcc6b259ade80875dca8912506b3188edfd09bb5c46cc425c29",
+    "durationMs": 3901
+  },
+  "if-clarity-holds-at-60-cm-step-back-2-cm-and-rep-6e7fd2b4": {
+    "file": "data/tts-render/vision-cues/audio/if-clarity-holds-at-60-cm-step-back-2-cm-and-rep-6e7fd2b4.mp3",
+    "text": "If clarity holds at 60 cm, step back 2 cm and repeat.",
+    "sha256": "6e7fd2b4291588551eda5c5ccaa9f581abeb5bfbb14911f5d7293805fc6a9020",
+    "durationMs": 5387
+  },
+  "if-head-drifts-1-cm-slow-down-and-reset-posture-801b8792": {
+    "file": "data/tts-render/vision-cues/audio/if-head-drifts-1-cm-slow-down-and-reset-posture-801b8792.mp3",
+    "text": "If head drifts >1 cm, slow down and reset posture.",
+    "sha256": "801b87929cf828e013f45ac56e7b6b08eb979c3022a3a6a17ea26f2afc582ba4",
+    "durationMs": 5108
+  },
+  "ignore-the-faint-decoy-patches-tap-only-the-brig-580545e9": {
+    "file": "data/tts-render/vision-cues/audio/ignore-the-faint-decoy-patches-tap-only-the-brig-580545e9.mp3",
+    "text": "Ignore the faint decoy patches — tap only the bright one",
+    "sha256": "580545e9186c55f978d432e10ac238b3b86925ee4b7af3c98ed383829444ec7a",
+    "durationMs": 3901
+  },
+  "imagine-distant-horizon-lines-to-widen-field-eve-0909805c": {
+    "file": "data/tts-render/vision-cues/audio/imagine-distant-horizon-lines-to-widen-field-eve-0909805c.mp3",
+    "text": "Imagine distant horizon lines to widen field even with eyes closed.",
+    "sha256": "0909805cdb1902d70135a1f78958d7f3e445d8f90076479c3363cd04ec6f20b7",
+    "durationMs": 4551
+  },
+  "inhale-4-hold-4-exhale-4-hold-4-while-eyes-remai-3daad505": {
+    "file": "data/tts-render/vision-cues/audio/inhale-4-hold-4-exhale-4-hold-4-while-eyes-remai-3daad505.mp3",
+    "text": "Inhale 4, hold 4, exhale 4, hold 4 while eyes remain gently fixed.",
+    "sha256": "3daad50554ea91b991f7d23b5a0e3f0ff36db3836cd7137fdcf8c35eff2f30fd",
+    "durationMs": 6316
+  },
+  "inhale-4-sec-nose-hold-2-exhale-6-through-lips-fabec3c4": {
+    "file": "data/tts-render/vision-cues/audio/inhale-4-sec-nose-hold-2-exhale-6-through-lips-fabec3c4.mp3",
+    "text": "Inhale 4 sec nose • hold 2 • exhale 6 through lips.",
+    "sha256": "fabec3c4eeddc30a96c71720e7106b82aad085c3dd759b7dc893aa80bd9a3ad6",
+    "durationMs": 5526
+  },
+  "inhale-along-the-left-arc-exhale-along-the-right-019b0915": {
+    "file": "data/tts-render/vision-cues/audio/inhale-along-the-left-arc-exhale-along-the-right-019b0915.mp3",
+    "text": "Inhale along the left arc, exhale along the right.",
+    "sha256": "019b09157634bf5bcfdaaa124bb5ffae98e67080a119cdf9447f367f37f886f9",
+    "durationMs": 3251
+  },
+  "jump-your-gaze-to-each-target-as-it-flashes-on-t-3bff9231": {
+    "file": "data/tts-render/vision-cues/audio/jump-your-gaze-to-each-target-as-it-flashes-on-t-3bff9231.mp3",
+    "text": "Jump your gaze to each target as it flashes, on the beat.",
+    "sha256": "3bff9231deb33b1c3995741dccbf14c58c7dbe555ada7dc1c11ada79bda0a1cd",
+    "durationMs": 4040
+  },
+  "keep-crown-lifted-imagine-strings-pulling-upward-c2037918": {
+    "file": "data/tts-render/vision-cues/audio/keep-crown-lifted-imagine-strings-pulling-upward-c2037918.mp3",
+    "text": "Keep crown lifted, imagine strings pulling upward.",
+    "sha256": "c20379189da9ac957319a933db9222cae3579d45f0533e2e3a00395aa4682c81",
+    "durationMs": 3808
+  },
+  "keep-eyes-center-a2cec823": {
+    "file": "data/tts-render/vision-cues/audio/keep-eyes-center-a2cec823.mp3",
+    "text": "Keep eyes center",
+    "sha256": "a2cec8233d9f80eeb79051479cbad632b44eaf0177f5b659769c9597bdf053ba",
+    "durationMs": 1718
+  },
+  "keep-rib-flare-down-only-arms-move-ea729de2": {
+    "file": "data/tts-render/vision-cues/audio/keep-rib-flare-down-only-arms-move-ea729de2.mp3",
+    "text": "Keep rib flare down; only arms move.",
+    "sha256": "ea729de271f31d66a8178ee0883a85227fb680c1445a845536e2ca871bd5bc84",
+    "durationMs": 3111
+  },
+  "keep-your-head-still-1f31d653": {
+    "file": "data/tts-render/vision-cues/audio/keep-your-head-still-1f31d653.mp3",
+    "text": "Keep your head still.",
+    "sha256": "1f31d653c05043f5e75d4ae686fe079c3431a23d56a90bc2de97e8f4c2ab058f",
+    "durationMs": 1393
+  },
+  "keep-your-head-still-55a930be": {
+    "file": "data/tts-render/vision-cues/audio/keep-your-head-still-55a930be.mp3",
+    "text": "Keep your head still",
+    "sha256": "55a930bed38c5ff4ace0612a7d7a03ffdfcf0bc2dc80e061e120f590d3355d0b",
+    "durationMs": 1533
+  },
+  "landing-phase-finish-strong-937052ba": {
+    "file": "data/tts-render/vision-cues/audio/landing-phase-finish-strong-937052ba.mp3",
+    "text": "Landing phase. Finish strong.",
+    "sha256": "937052ba8c926616554ed66305de31c3c9802c9c1581dfbd303b1c5e12b12ed4",
+    "durationMs": 2415
+  },
+  "large-infinity-tracing-with-varied-distances-to--7037da44": {
+    "file": "data/tts-render/vision-cues/audio/large-infinity-tracing-with-varied-distances-to--7037da44.mp3",
+    "text": "Large infinity tracing with varied distances to challenge fixation and prevent fatigue.",
+    "sha256": "7037da4408d5a34530a4746e16741634dbf25731040a6d025a9d1859435bf9a6",
+    "durationMs": 5666
+  },
+  "last-one-down-one-quick-vision-check-then-your-r-5e33b9d6": {
+    "file": "data/tts-render/vision-cues/audio/last-one-down-one-quick-vision-check-then-your-r-5e33b9d6.mp3",
+    "text": "Last one down. One quick vision check, then your report.",
+    "sha256": "5e33b9d6c5920a06659b1671f07f3a6206892fb23e14c0e63888bf7ccca6243d",
+    "durationMs": 3901
+  },
+  "left-58eb9032": {
+    "file": "data/tts-render/vision-cues/audio/left-58eb9032.mp3",
+    "text": "Left",
+    "sha256": "58eb9032e3bb83f0e39d644ebc87ca254117b95bf458483bec7379bea0b419d0",
+    "durationMs": 650
+  },
+  "let-your-eyes-stay-soft-don-t-squint-to-force-cl-e933af85": {
+    "file": "data/tts-render/vision-cues/audio/let-your-eyes-stay-soft-don-t-squint-to-force-cl-e933af85.mp3",
+    "text": "Let your eyes stay soft — don’t squint to force clarity, guess your best read.",
+    "sha256": "e933af85ca5859150429d2aacbec354876b7e6abc72b028a5a6f3898cd34dd79",
+    "durationMs": 5062
+  },
+  "letter-flashes-left-or-right-tap-the-opposite-bu-30852565": {
+    "file": "data/tts-render/vision-cues/audio/letter-flashes-left-or-right-tap-the-opposite-bu-30852565.mp3",
+    "text": "Letter flashes left or right — tap the opposite button, crossed response.",
+    "sha256": "3085256593a980569fd47719cdda49d2f8e9d607a8a6b8e150410ccaa059e24a",
+    "durationMs": 4737
+  },
+  "log-accuracy-at-speed-8899c18f": {
+    "file": "data/tts-render/vision-cues/audio/log-accuracy-at-speed-8899c18f.mp3",
+    "text": "Log accuracy at speed",
+    "sha256": "8899c18fa3b94938180a6d8658c852fcd139a3eb2219fae7a54adeda16828e04",
+    "durationMs": 1904
+  },
+  "log-any-improvements-94f5b432": {
+    "file": "data/tts-render/vision-cues/audio/log-any-improvements-94f5b432.mp3",
+    "text": "Log any improvements",
+    "sha256": "94f5b432ff4e0526c3e70a62328d992bd00876c1b5de58911a7dd0f626382a88",
+    "durationMs": 1579
+  },
+  "log-reader-glasses-stage-f1c7b1db": {
+    "file": "data/tts-render/vision-cues/audio/log-reader-glasses-stage-f1c7b1db.mp3",
+    "text": "Log reader glasses stage",
+    "sha256": "f1c7b1db42a60e8b1425875c6c5f3a6a233cb21eca3839bbfa2b8ae5825c6e21",
+    "durationMs": 2276
+  },
+  "log-snellen-progress-3e814e0e": {
+    "file": "data/tts-render/vision-cues/audio/log-snellen-progress-3e814e0e.mp3",
+    "text": "Log Snellen progress",
+    "sha256": "3e814e0ec709757f0b7644dce221978c2639ce5b3c5a5817dd64bb5dae532cc3",
+    "durationMs": 1718
+  },
+  "log-your-near-point-584d2870": {
+    "file": "data/tts-render/vision-cues/audio/log-your-near-point-584d2870.mp3",
+    "text": "Log your near point",
+    "sha256": "584d28701ebc00e305348c665314f6ff94ccdd9246a13abe6177f73627ce5428",
+    "durationMs": 1440
+  },
+  "look-left-tap-right-edcc2dfd": {
+    "file": "data/tts-render/vision-cues/audio/look-left-tap-right-edcc2dfd.mp3",
+    "text": "Look left, tap right",
+    "sha256": "edcc2dfd5d06bfaebfe5ff0e2468414236af3b262c77f0f3a57756ccfd6a0cf8",
+    "durationMs": 1811
+  },
+  "look-right-tap-left-3b028c56": {
+    "file": "data/tts-render/vision-cues/audio/look-right-tap-left-3b028c56.mp3",
+    "text": "Look right, tap left",
+    "sha256": "3b028c5644a3c0a20f6e4dab7788ffab645b9aca55f00544b577010878c24930",
+    "durationMs": 1811
+  },
+  "maintain-85-accuracy-bb2c3cd2": {
+    "file": "data/tts-render/vision-cues/audio/maintain-85-accuracy-bb2c3cd2.mp3",
+    "text": "Maintain 85% accuracy",
+    "sha256": "bb2c3cd26d3c29ee461c926cc2c530c974e13b7412c716cee6cb2dfeba81a123",
+    "durationMs": 2740
+  },
+  "maintain-all-quality-cd7074df": {
+    "file": "data/tts-render/vision-cues/audio/maintain-all-quality-cd7074df.mp3",
+    "text": "Maintain all quality",
+    "sha256": "cd7074df0c16e58e5cd99dd722c9fadbeedd4b5f1ea9813a270d6f4f5727d1a2",
+    "durationMs": 1718
+  },
+  "maintain-clarity-both-ends-c08dbfb3": {
+    "file": "data/tts-render/vision-cues/audio/maintain-clarity-both-ends-c08dbfb3.mp3",
+    "text": "Maintain clarity both ends",
+    "sha256": "c08dbfb344cbe1b587eb262f54ead993cd76141015e802f90f35b332b358f827",
+    "durationMs": 2322
+  },
+  "maintain-clarity-f936e91e": {
+    "file": "data/tts-render/vision-cues/audio/maintain-clarity-f936e91e.mp3",
+    "text": "Maintain clarity",
+    "sha256": "f936e91e8131be57ebbbd1176911101bbb15b70765a078eb9f0be9f6556d49c8",
+    "durationMs": 1486
+  },
+  "maintain-clarity-while-walking-07bf503e": {
+    "file": "data/tts-render/vision-cues/audio/maintain-clarity-while-walking-07bf503e.mp3",
+    "text": "Maintain clarity while walking",
+    "sha256": "07bf503efecdb4626cee4e98779e2af1e6d7699c5260648afb0556993b651c74",
+    "durationMs": 2276
+  },
+  "maintain-peripheral-awareness-25da2e4b": {
+    "file": "data/tts-render/vision-cues/audio/maintain-peripheral-awareness-25da2e4b.mp3",
+    "text": "Maintain peripheral awareness",
+    "sha256": "25da2e4b93137015c36cd62de3d4533be2682f027a4ba822ea9125c15dddaaea",
+    "durationMs": 1997
+  },
+  "maintain-quality-9c0a5ecf": {
+    "file": "data/tts-render/vision-cues/audio/maintain-quality-9c0a5ecf.mp3",
+    "text": "Maintain quality",
+    "sha256": "9c0a5ecfb73e130773a97a473176f52ec86e1bf2859e2c401b020d1ebd80acb0",
+    "durationMs": 1579
+  },
+  "mirror-provides-instant-feedback-on-head-stillne-516b964f": {
+    "file": "data/tts-render/vision-cues/audio/mirror-provides-instant-feedback-on-head-stillne-516b964f.mp3",
+    "text": "Mirror provides instant feedback on head stillness while eyes sweep in quadrants.",
+    "sha256": "516b964fdded453a1c2723c565b91852bc0b1cee5e31041862397cc1498face8",
+    "durationMs": 5294
+  },
+  "move-closer-reset-94f05911": {
+    "file": "data/tts-render/vision-cues/audio/move-closer-reset-94f05911.mp3",
+    "text": "Move closer, reset.",
+    "sha256": "94f059116079ef780ce3380d1f57e87430f1f4fcc705699f56e3c7bd0ff90b7d",
+    "durationMs": 2415
+  },
+  "move-your-screen-just-a-finger-width-further-tin-32615dcf": {
+    "file": "data/tts-render/vision-cues/audio/move-your-screen-just-a-finger-width-further-tin-32615dcf.mp3",
+    "text": "Move your screen just a finger-width further. Tiny steps build strength!",
+    "sha256": "32615dcf62f4f1a18812893f63b200e782cc040faa58266f7c02bd1f1f2c1358",
+    "durationMs": 5108
+  },
+  "move-your-screen-slightly-closer-e3c51c4b": {
+    "file": "data/tts-render/vision-cues/audio/move-your-screen-slightly-closer-e3c51c4b.mp3",
+    "text": "Move your screen slightly closer.",
+    "sha256": "e3c51c4b8ccdcbeafc68c558ee4b3ec675bd7a68e24c5b0c0a391fff8de16780",
+    "durationMs": 1950
+  },
+  "nasal-breath-throughout-sigh-out-if-tension-spik-9171c1e9": {
+    "file": "data/tts-render/vision-cues/audio/nasal-breath-throughout-sigh-out-if-tension-spik-9171c1e9.mp3",
+    "text": "Nasal breath throughout; sigh out if tension spikes.",
+    "sha256": "9171c1e955e9b63b0e905736c2c3768da9f3b681cc6493f79c02a47ffbb2bccb",
+    "durationMs": 3437
+  },
+  "near-far-snellen-dbcfd295": {
+    "file": "data/tts-render/vision-cues/audio/near-far-snellen-dbcfd295.mp3",
+    "text": "Near + far Snellen",
+    "sha256": "dbcfd2951c7bc5e1bdfcd89562f7949ad81c15e79ed5988daea0e647f2ffa8b1",
+    "durationMs": 1950
+  },
+  "nice-progress-is-progress-c109c6a2": {
+    "file": "data/tts-render/vision-cues/audio/nice-progress-is-progress-c109c6a2.mp3",
+    "text": "Nice. Progress is progress.",
+    "sha256": "c109c6a2e59ef4ade9b15e96f06a52c9809253448c246902c414ac88f90dbc5a",
+    "durationMs": 2554
+  },
+  "nice-work-exercise-complete-5c55c1a9": {
+    "file": "data/tts-render/vision-cues/audio/nice-work-exercise-complete-5c55c1a9.mp3",
+    "text": "Nice work. Exercise complete.",
+    "sha256": "5c55c1a9ecf8fa0e5f0522d763eb717cac4195271925abdbff1c723bade0f78c",
+    "durationMs": 2508
+  },
+  "no-breaks-between-4a1d6b4f": {
+    "file": "data/tts-render/vision-cues/audio/no-breaks-between-4a1d6b4f.mp3",
+    "text": "No breaks between",
+    "sha256": "4a1d6b4fdf51b92dbb511e5888e8d77ce20e6b522f1b648cca8ccd67f3246356",
+    "durationMs": 1533
+  },
+  "no-head-bobbing-1b65c48f": {
+    "file": "data/tts-render/vision-cues/audio/no-head-bobbing-1b65c48f.mp3",
+    "text": "No head bobbing",
+    "sha256": "1b65c48f0188e4074ca7a17cdd6e236e5c347d36f6cf58d7d0f54b243a8a80c2",
+    "durationMs": 1300
+  },
+  "no-head-movement-08c73377": {
+    "file": "data/tts-render/vision-cues/audio/no-head-movement-08c73377.mp3",
+    "text": "No head movement",
+    "sha256": "08c7337732e71015fa2593d205708118bb26d6ab59f0746a61873ad1857e4982",
+    "durationMs": 1300
+  },
+  "no-rest-between-drills-6ab58b6c": {
+    "file": "data/tts-render/vision-cues/audio/no-rest-between-drills-6ab58b6c.mp3",
+    "text": "No rest between drills",
+    "sha256": "6ab58b6c1a2395503de0eaaf021374fd7f66286b978678571431f7cc71d591f5",
+    "durationMs": 2740
+  },
+  "no-rest-between-e78d8da5": {
+    "file": "data/tts-render/vision-cues/audio/no-rest-between-e78d8da5.mp3",
+    "text": "No rest between",
+    "sha256": "e78d8da53b1bcf0d344d302e5d80d0bb6e760be73ed429cfaf61c29ee1c3861d",
+    "durationMs": 1486
+  },
+  "no-rush-but-answer-before-the-10-second-window-c-d139ed73": {
+    "file": "data/tts-render/vision-cues/audio/no-rush-but-answer-before-the-10-second-window-c-d139ed73.mp3",
+    "text": "No rush, but answer before the 10-second window closes.",
+    "sha256": "d139ed73a7b3164449550cdb9a908d467bc70ff128610c6ba969f2ece3025aff",
+    "durationMs": 3715
+  },
+  "note-any-blur-patterns-906faa07": {
+    "file": "data/tts-render/vision-cues/audio/note-any-blur-patterns-906faa07.mp3",
+    "text": "Note any blur patterns",
+    "sha256": "906faa07b7bcc2c3ceeaf186d51a700a584893aef63d51f298518c6815259df1",
+    "durationMs": 1625
+  },
+  "notice-edges-of-vision-8458e658": {
+    "file": "data/tts-render/vision-cues/audio/notice-edges-of-vision-8458e658.mp3",
+    "text": "Notice edges of vision",
+    "sha256": "8458e658a9fa51fbb2c64dbe0d2fde28a83b4bf05da679375b26ce8b25fe5e49",
+    "durationMs": 1811
+  },
+  "notice-micro-movements-try-to-minimize-them-each-f23dd62f": {
+    "file": "data/tts-render/vision-cues/audio/notice-micro-movements-try-to-minimize-them-each-f23dd62f.mp3",
+    "text": "Notice micro-movements; try to minimize them each hold.",
+    "sha256": "f23dd62f9ff032660efbd0eb2baa3ad88cf814f7c8c31f1e934b1d684723a8d1",
+    "durationMs": 3622
+  },
+  "notice-the-edges-332aa4a0": {
+    "file": "data/tts-render/vision-cues/audio/notice-the-edges-332aa4a0.mp3",
+    "text": "Notice the edges",
+    "sha256": "332aa4a0cc9fa4f6380c69f0856e5f962d0e38baed843b8ea54badb86b6bb9eb",
+    "durationMs": 1486
+  },
+  "notice-the-loop-grow-wide-then-shrink-tight-over-8a4a45fd": {
+    "file": "data/tts-render/vision-cues/audio/notice-the-loop-grow-wide-then-shrink-tight-over-8a4a45fd.mp3",
+    "text": "Notice the loop grow wide, then shrink tight, over the course of the set.",
+    "sha256": "8a4a45fd13d45993ba04d6be05cefb7feaa04e1986e6278d5633660f8906cee9",
+    "durationMs": 4458
+  },
+  "notice-warmth-from-palms-7ded9db0": {
+    "file": "data/tts-render/vision-cues/audio/notice-warmth-from-palms-7ded9db0.mp3",
+    "text": "Notice warmth from palms",
+    "sha256": "7ded9db06ed17aa5f45c9f64a472a1e3fdc28b9113dfefe46d2d7b8154310fb5",
+    "durationMs": 2183
+  },
+  "now-cup-your-palms-gently-over-your-eyes-keep-br-4ae29996": {
+    "file": "data/tts-render/vision-cues/audio/now-cup-your-palms-gently-over-your-eyes-keep-br-4ae29996.mp3",
+    "text": "Now cup your palms gently over your eyes. Keep breathing with the count.",
+    "sha256": "4ae29996ce9ef69b6a597300302a7034f7f41d730cee0ba7e8a0896b8ac9a91a",
+    "durationMs": 4644
+  },
+  "now-read-the-direction-of-each-e-f6378599": {
+    "file": "data/tts-render/vision-cues/audio/now-read-the-direction-of-each-e-f6378599.mp3",
+    "text": "Now read the direction of each E.",
+    "sha256": "f6378599b0b9d1f1a24865e744edfe6a95cd093020065ddc1a37af2e1b3401a4",
+    "durationMs": 2786
+  },
+  "now-the-infinity-path-smooth-and-steady-7c33ff9c": {
+    "file": "data/tts-render/vision-cues/audio/now-the-infinity-path-smooth-and-steady-7c33ff9c.mp3",
+    "text": "Now the infinity path. Smooth and steady.",
+    "sha256": "7c33ff9c20bf473715582f2172954d205a6d406d07d5e6a2d9f7aea40f4ca16d",
+    "durationMs": 3529
+  },
+  "now-vertical-loops-eyes-only-head-still-7792759f": {
+    "file": "data/tts-render/vision-cues/audio/now-vertical-loops-eyes-only-head-still-7792759f.mp3",
+    "text": "Now vertical loops. Eyes only, head still.",
+    "sha256": "7792759f43ac5f0a6ad7a2b69fd22a906febac6b93cedd4350718f1603b8c61e",
+    "durationMs": 4551
+  },
+  "one-breath-per-toggle-e46a8936": {
+    "file": "data/tts-render/vision-cues/audio/one-breath-per-toggle-e46a8936.mp3",
+    "text": "One breath per toggle",
+    "sha256": "e46a8936cd0612e8d83eac12d34cd5c61923f7a1491785ba27270672e749e4d8",
+    "durationMs": 1579
+  },
+  "one-respiratory-cycle-per-switch-keeps-motion-st-4286e902": {
+    "file": "data/tts-render/vision-cues/audio/one-respiratory-cycle-per-switch-keeps-motion-st-4286e902.mp3",
+    "text": "One respiratory cycle per switch keeps motion steady.",
+    "sha256": "4286e902033752c3d29f6da57c50502d721a8bac165163b5a5ebddf59bcf5b7b",
+    "durationMs": 3390
+  },
+  "one-syllable-per-step-slow-down-if-blur-creeps-i-3e5c7e8b": {
+    "file": "data/tts-render/vision-cues/audio/one-syllable-per-step-slow-down-if-blur-creeps-i-3e5c7e8b.mp3",
+    "text": "One syllable per step; slow down if blur creeps in.",
+    "sha256": "3e5c7e8b4ddd01a79290730a00763ff63cb4a9d88fc261e2f83c9d18d3ad22b4",
+    "durationMs": 4040
+  },
+  "outdoor-practice-if-possible-0e822497": {
+    "file": "data/tts-render/vision-cues/audio/outdoor-practice-if-possible-0e822497.mp3",
+    "text": "Outdoor practice if possible",
+    "sha256": "0e822497d04f1e66b25a5de5358e54726733792b246a26387e09113ccfd76096",
+    "durationMs": 1811
+  },
+  "outstanding-afd0d9e2": {
+    "file": "data/tts-render/vision-cues/audio/outstanding-afd0d9e2.mp3",
+    "text": "Outstanding.",
+    "sha256": "afd0d9e2b9f01614fd49e71c96706e6c6ef96da0c868b603ca1786815e0d4d3c",
+    "durationMs": 1347
+  },
+  "pause-where-blur-appears-breathe-out-reclaim-cla-42ef641a": {
+    "file": "data/tts-render/vision-cues/audio/pause-where-blur-appears-breathe-out-reclaim-cla-42ef641a.mp3",
+    "text": "Pause where blur appears, breathe out, reclaim clarity, continue.",
+    "sha256": "42ef641ad8b259678fe26614de604ce26557b5003290ec8de7f9636a47103759",
+    "durationMs": 4690
+  },
+  "peak-block-coming-this-is-the-one-that-counts-3d0656e7": {
+    "file": "data/tts-render/vision-cues/audio/peak-block-coming-this-is-the-one-that-counts-3d0656e7.mp3",
+    "text": "Peak block coming — this is the one that counts.",
+    "sha256": "3d0656e77d626792dcf82bdfab4a94bd1ceaeaf668a59e8cce7b84c2ee946a23",
+    "durationMs": 3019
+  },
+  "peripheral-count-54f3c126": {
+    "file": "data/tts-render/vision-cues/audio/peripheral-count-54f3c126.mp3",
+    "text": "Peripheral count",
+    "sha256": "54f3c1261ce8e7911a08dbeacac51f870c6c6b3c478202fe6890799659f9543f",
+    "durationMs": 1207
+  },
+  "personal-best-attempts-170fee09": {
+    "file": "data/tts-render/vision-cues/audio/personal-best-attempts-170fee09.mp3",
+    "text": "Personal best attempts",
+    "sha256": "170fee0958f94247524d24c2abe3073b355a0fc2a879b39cb207e58a2bf7f938",
+    "durationMs": 1672
+  },
+  "personal-best-near-far-6adb7f8c": {
+    "file": "data/tts-render/vision-cues/audio/personal-best-near-far-6adb7f8c.mp3",
+    "text": "Personal best near + far",
+    "sha256": "6adb7f8cba77bc9ac5fa25880f03aed0e29e923676bdbb14500dc8d3c36ed69e",
+    "durationMs": 2415
+  },
+  "pick-a-neutral-object-at-eye-height-84be74c9": {
+    "file": "data/tts-render/vision-cues/audio/pick-a-neutral-object-at-eye-height-84be74c9.mp3",
+    "text": "Pick a neutral object at eye height.",
+    "sha256": "84be74c9caac0028bfdf34d5454e74304c68c921d2eb22b26e3580491f8af12e",
+    "durationMs": 2276
+  },
+  "plan-post-program-c8efafe9": {
+    "file": "data/tts-render/vision-cues/audio/plan-post-program-c8efafe9.mp3",
+    "text": "Plan post-program",
+    "sha256": "c8efafe918fb67204fe34661897ce951c7ff3f34439b2ebac67b5de5d905e641",
+    "durationMs": 1440
+  },
+  "point-without-looking-4bab6076": {
+    "file": "data/tts-render/vision-cues/audio/point-without-looking-4bab6076.mp3",
+    "text": "Point without looking",
+    "sha256": "4bab607660164b2ee58af7a6e2fbc7a76048a3ee8b53d5fa65937a10652bb9ae",
+    "durationMs": 1486
+  },
+  "polish-all-skills-728c5056": {
+    "file": "data/tts-render/vision-cues/audio/polish-all-skills-728c5056.mp3",
+    "text": "Polish all skills",
+    "sha256": "728c5056621f8cd38860ebb3b87ea6d7a2bda09735ab56012290d2bfc81cc722",
+    "durationMs": 1718
+  },
+  "prepare-for-final-test-5bbe7289": {
+    "file": "data/tts-render/vision-cues/audio/prepare-for-final-test-5bbe7289.mp3",
+    "text": "Prepare for final test",
+    "sha256": "5bbe728992a2285b1ac6f15411358a829634e19bc4421a5f0d3bdc50df08f3af",
+    "durationMs": 1765
+  },
+  "project-or-imagine-a-1m-wide-infinity-symbol-dd6cb509": {
+    "file": "data/tts-render/vision-cues/audio/project-or-imagine-a-1m-wide-infinity-symbol-dd6cb509.mp3",
+    "text": "Project or imagine a 1m-wide infinity symbol.",
+    "sha256": "dd6cb5095c8cdab74e8769dbec0ad18226339e84de8484a61c310495f118fdae",
+    "durationMs": 4365
+  },
+  "push-closer-in-0-5cm-increments-be473575": {
+    "file": "data/tts-render/vision-cues/audio/push-closer-in-0-5cm-increments-be473575.mp3",
+    "text": "Push closer in 0.5cm increments",
+    "sha256": "be473575016be5b387a32e043e1d74ea63e5d7df16f4533744a0ead7f35ccee9",
+    "durationMs": 3855
+  },
+  "push-duration-1cc2b664": {
+    "file": "data/tts-render/vision-cues/audio/push-duration-1cc2b664.mp3",
+    "text": "Push duration",
+    "sha256": "1cc2b664ea271f918a5674f74d880b979044b81c15fda77692c6e76403d8b6ed",
+    "durationMs": 1161
+  },
+  "push-far-distance-f140f4ef": {
+    "file": "data/tts-render/vision-cues/audio/push-far-distance-f140f4ef.mp3",
+    "text": "Push far distance",
+    "sha256": "f140f4efdd49660d815aefc97636cbe8185eacc7186752348f6d6d8b1f7e8622",
+    "durationMs": 1440
+  },
+  "push-limits-cc8c192c": {
+    "file": "data/tts-render/vision-cues/audio/push-limits-cc8c192c.mp3",
+    "text": "Push limits",
+    "sha256": "cc8c192c819ec11bb7bc07d970bccc254bf5dac94ceb7a8f9b9d429bf901d3b4",
+    "durationMs": 1161
+  },
+  "push-limits-safely-ab4cf11c": {
+    "file": "data/tts-render/vision-cues/audio/push-limits-safely-ab4cf11c.mp3",
+    "text": "Push limits safely",
+    "sha256": "ab4cf11cacb644783ea72522dc6c26fbf8590f3de46e3880d07a57d315780726",
+    "durationMs": 1486
+  },
+  "push-to-80-bpm-3402c016": {
+    "file": "data/tts-render/vision-cues/audio/push-to-80-bpm-3402c016.mp3",
+    "text": "Push to 80+ bpm",
+    "sha256": "3402c01625043767666686d755ec8433d0618a4f75f6d9cb25a230991a3f6775",
+    "durationMs": 1950
+  },
+  "push-to-edges-467738bc": {
+    "file": "data/tts-render/vision-cues/audio/push-to-edges-467738bc.mp3",
+    "text": "Push to edges",
+    "sha256": "467738bcbf2c0a4e53bf522f1f154f32a00bfc7b4c2c7430bb51115eebd5bb5c",
+    "durationMs": 1300
+  },
+  "quality-at-every-station-0962eac5": {
+    "file": "data/tts-render/vision-cues/audio/quality-at-every-station-0962eac5.mp3",
+    "text": "Quality at every station",
+    "sha256": "0962eac569d21ff244aea1bb8519c8692590b6cd24184a2d074072f71eddb141",
+    "durationMs": 1811
+  },
+  "quality-check-all-d9087f3c": {
+    "file": "data/tts-render/vision-cues/audio/quality-check-all-d9087f3c.mp3",
+    "text": "Quality check all",
+    "sha256": "d9087f3c2cb5a36f84de2d39c087fdd2e7f47c262ace3cd4a4228b8fe1bb1fba",
+    "durationMs": 2090
+  },
+  "quality-over-speed-e18ad9a3": {
+    "file": "data/tts-render/vision-cues/audio/quality-over-speed-e18ad9a3.mp3",
+    "text": "Quality over speed",
+    "sha256": "e18ad9a33f219d4325e37819dcf87b3c8836e301f066256dc38b75f0c6cfe71b",
+    "durationMs": 1533
+  },
+  "read-aloud-at-each-jump-6a083d98": {
+    "file": "data/tts-render/vision-cues/audio/read-aloud-at-each-jump-6a083d98.mp3",
+    "text": "Read aloud at each jump",
+    "sha256": "6a083d9862625ba4a589696fcabc03edfd67a80d4445590966b72c1bf5a1cedb",
+    "durationMs": 1672
+  },
+  "read-as-you-move-6351d1fc": {
+    "file": "data/tts-render/vision-cues/audio/read-as-you-move-6351d1fc.mp3",
+    "text": "Read as you move",
+    "sha256": "6351d1fc8ef398762c5da0a103517b232f9596673bd2d7a085b8addacf5b793e",
+    "durationMs": 1161
+  },
+  "read-the-line-then-call-it-clear-or-blurry-it-up-9667cf04": {
+    "file": "data/tts-render/vision-cues/audio/read-the-line-then-call-it-clear-or-blurry-it-up-9667cf04.mp3",
+    "text": "Read the line, then call it clear or blurry — it updates every few steps.",
+    "sha256": "9667cf0495942f007bfe79a81e7cac52d3284197fe8c389cec7d206158cc2f33",
+    "durationMs": 5387
+  },
+  "recall-the-center-letter-the-instant-a-check-in--0afae0a0": {
+    "file": "data/tts-render/vision-cues/audio/recall-the-center-letter-the-instant-a-check-in--0afae0a0.mp3",
+    "text": "Recall the center letter the instant a check-in appears",
+    "sha256": "0afae0a0e62e81d57972f41e1877457ebb20fa6199d0b8c4c9591f61e3fbe590",
+    "durationMs": 3808
+  },
+  "recall-the-center-letter-without-breaking-fixati-e3cc5454": {
+    "file": "data/tts-render/vision-cues/audio/recall-the-center-letter-without-breaking-fixati-e3cc5454.mp3",
+    "text": "Recall the center letter without breaking fixation",
+    "sha256": "e3cc545482b34cb4ba02ad0fd49c491db51b1c02743b2d35a35fc2cac25fff33",
+    "durationMs": 3390
+  },
+  "record-all-baselines-8972f1b7": {
+    "file": "data/tts-render/vision-cues/audio/record-all-baselines-8972f1b7.mp3",
+    "text": "Record all baselines",
+    "sha256": "8972f1b70429e4092c94e5da10fec312eed6884790118448e3320097a995db16",
+    "durationMs": 1811
+  },
+  "record-all-metrics-d0d1f758": {
+    "file": "data/tts-render/vision-cues/audio/record-all-metrics-d0d1f758.mp3",
+    "text": "Record all metrics",
+    "sha256": "d0d1f758462f8f8b9b4de1bf146f28c7155c84dcb5d15143a887e31160e64cec",
+    "durationMs": 1765
+  },
+  "record-best-bpm-1939b33d": {
+    "file": "data/tts-render/vision-cues/audio/record-best-bpm-1939b33d.mp3",
+    "text": "Record best bpm",
+    "sha256": "1939b33d4f636be320b853d113539d8ea1c446ed403eddcac28782a58978228f",
+    "durationMs": 1625
+  },
+  "record-both-near-and-far-snellen-scores-c893a750": {
+    "file": "data/tts-render/vision-cues/audio/record-both-near-and-far-snellen-scores-c893a750.mp3",
+    "text": "Record both near and far Snellen scores",
+    "sha256": "c893a750fb266cf0c8151f2a8994986a9dfc40771383372316585e5cba44cd94",
+    "durationMs": 3019
+  },
+  "record-improvements-from-week-1-602db0b0": {
+    "file": "data/tts-render/vision-cues/audio/record-improvements-from-week-1-602db0b0.mp3",
+    "text": "Record improvements from Week 1",
+    "sha256": "602db0b03126fcf881a13d34c1de73ab8597a0aa513abe5067aa727e1595332e",
+    "durationMs": 2229
+  },
+  "record-max-bpm-58b7d8f8": {
+    "file": "data/tts-render/vision-cues/audio/record-max-bpm-58b7d8f8.mp3",
+    "text": "Record max bpm",
+    "sha256": "58b7d8f87c937bf9e53ef0702f5196e1a7890ec1941ba4583cb3ba1606b69643",
+    "durationMs": 1625
+  },
+  "record-max-clear-distance-427fe12d": {
+    "file": "data/tts-render/vision-cues/audio/record-max-clear-distance-427fe12d.mp3",
+    "text": "Record max clear distance",
+    "sha256": "427fe12d622f71eb12bc4398db5de3b2faf32944ac1aa8a7774c260e37beb269",
+    "durationMs": 1904
+  },
+  "record-new-far-max-0d7bd6dd": {
+    "file": "data/tts-render/vision-cues/audio/record-new-far-max-0d7bd6dd.mp3",
+    "text": "Record new far max",
+    "sha256": "0d7bd6dd359654db6ccc4e125685459f9b1c88199e5af9627b557f0bfa02296a",
+    "durationMs": 2229
+  },
+  "record-peripheral-max-9a6ce14e": {
+    "file": "data/tts-render/vision-cues/audio/record-peripheral-max-9a6ce14e.mp3",
+    "text": "Record peripheral max",
+    "sha256": "9a6ce14eae52afe3f8b186a69eeda210d4eec9e6c5f820cdd3859b632af656ea",
+    "durationMs": 1486
+  },
+  "record-peripheral-score-cda6d10b": {
+    "file": "data/tts-render/vision-cues/audio/record-peripheral-score-cda6d10b.mp3",
+    "text": "Record peripheral score",
+    "sha256": "cda6d10bec98ee55ee1fac6d209901b7645f657a07558d372a93bba43e6b36f7",
+    "durationMs": 1579
+  },
+  "record-speed-metrics-be1d37b3": {
+    "file": "data/tts-render/vision-cues/audio/record-speed-metrics-be1d37b3.mp3",
+    "text": "Record speed metrics",
+    "sha256": "be1d37b39ccae38cf5e48f95c5276aa2e1b2248ea7f859f1b910cf301d51d0dc",
+    "durationMs": 1765
+  },
+  "relax-jaw-and-tongue-to-reduce-trigeminal-stress-aed6cca2": {
+    "file": "data/tts-render/vision-cues/audio/relax-jaw-and-tongue-to-reduce-trigeminal-stress-aed6cca2.mp3",
+    "text": "Relax jaw and tongue to reduce trigeminal stress on ocular nerves.",
+    "sha256": "aed6cca28d712a6e8083c344b8bf71636b44e4b86dfd2410c0de852739dbacd4",
+    "durationMs": 4365
+  },
+  "repeat-for-four-rounds-before-harder-drills-6ce0c1ee": {
+    "file": "data/tts-render/vision-cues/audio/repeat-for-four-rounds-before-harder-drills-6ce0c1ee.mp3",
+    "text": "Repeat for four rounds before harder drills.",
+    "sha256": "6ce0c1eebb88db0914cde56ec2962ce4c7037506ceb0c6321018143349ee2c6a",
+    "durationMs": 2833
+  },
+  "rest-between-exercises-24b1975e": {
+    "file": "data/tts-render/vision-cues/audio/rest-between-exercises-24b1975e.mp3",
+    "text": "Rest between exercises",
+    "sha256": "24b1975e54327fdf96c1fbeecc0faa410e5a50b66eb850e9a858f87cb3592660",
+    "durationMs": 1950
+  },
+  "rest-if-blur-persists-3875cea5": {
+    "file": "data/tts-render/vision-cues/audio/rest-if-blur-persists-3875cea5.mp3",
+    "text": "Rest if blur persists",
+    "sha256": "3875cea588b6adf80ba67f6e5d782a8417e1311874e4e41a015f1981dadbbc10",
+    "durationMs": 2136
+  },
+  "right-883361d5": {
+    "file": "data/tts-render/vision-cues/audio/right-883361d5.mp3",
+    "text": "Right",
+    "sha256": "883361d5d682a1574410961ce51450b6e036a779c9f098dec71e28aec832bfa6",
+    "durationMs": 836
+  },
+  "rub-palms-to-create-heat-then-cup-over-sockets-w-ad6e10fd": {
+    "file": "data/tts-render/vision-cues/audio/rub-palms-to-create-heat-then-cup-over-sockets-w-ad6e10fd.mp3",
+    "text": "Rub palms to create heat then cup over sockets without pressure.",
+    "sha256": "ad6e10fdb9d979f5f8900b150be5fc0aa97da58d9651157148c81acf74998086",
+    "durationMs": 4133
+  },
+  "rule-flip-opposite-side-again-e8fb993e": {
+    "file": "data/tts-render/vision-cues/audio/rule-flip-opposite-side-again-e8fb993e.mp3",
+    "text": "Rule flip! Opposite side again.",
+    "sha256": "e8fb993e6c573d578588ee31dd76455861a151820441c1df89d7a58f30e15213",
+    "durationMs": 2601
+  },
+  "rule-flip-same-side-now-6c191c21": {
+    "file": "data/tts-render/vision-cues/audio/rule-flip-same-side-now-6c191c21.mp3",
+    "text": "Rule flip! Same side now.",
+    "sha256": "6c191c21f9332d2690fd7aae9a195cb93e79e3d8f404b438ac9681cf1e0f31b6",
+    "durationMs": 2786
+  },
+  "say-the-letter-aloud-to-confirm-clarity-8769c88b": {
+    "file": "data/tts-render/vision-cues/audio/say-the-letter-aloud-to-confirm-clarity-8769c88b.mp3",
+    "text": "Say the letter aloud to confirm clarity.",
+    "sha256": "8769c88b234a640c77ea6c24f9a279a44d5cfc99efca3f6a1ce85693d4b39dc0",
+    "durationMs": 2415
+  },
+  "scan-down-6e861dd6": {
+    "file": "data/tts-render/vision-cues/audio/scan-down-6e861dd6.mp3",
+    "text": "Scan down",
+    "sha256": "6e861dd6a1caf5e2056650466fb0bf033f24c6d4273f23da8b5b4e55e4e674bb",
+    "durationMs": 1300
+  },
+  "scan-left-75d719ac": {
+    "file": "data/tts-render/vision-cues/audio/scan-left-75d719ac.mp3",
+    "text": "Scan left",
+    "sha256": "75d719ac8c7d20560e1c5b57979406e6882cd5eab42fbad2421bf2df3f8e04f0",
+    "durationMs": 1440
+  },
+  "scan-right-064771c0": {
+    "file": "data/tts-render/vision-cues/audio/scan-right-064771c0.mp3",
+    "text": "Scan right",
+    "sha256": "064771c0c15b022bd5c9cb2baea796ba198d5ac226b75b05d8aab85f1d73b6ef",
+    "durationMs": 1068
+  },
+  "scan-up-a591aaf7": {
+    "file": "data/tts-render/vision-cues/audio/scan-up-a591aaf7.mp3",
+    "text": "Scan up",
+    "sha256": "a591aaf7855b0e367114d517f84605c4758735f70ea2db31a03e8b8547f51ab3",
+    "durationMs": 836
+  },
+  "seat-bones-heavy-spine-tall-753fa46f": {
+    "file": "data/tts-render/vision-cues/audio/seat-bones-heavy-spine-tall-753fa46f.mp3",
+    "text": "Seat bones heavy, spine tall.",
+    "sha256": "753fa46f2ca579805ec99295ef9869d6d74acf7981fae74ef78b167e57376720",
+    "durationMs": 2694
+  },
+  "session-complete-look-at-what-you-just-did-d02a3946": {
+    "file": "data/tts-render/vision-cues/audio/session-complete-look-at-what-you-just-did-d02a3946.mp3",
+    "text": "Session complete. Look at what you just did.",
+    "sha256": "d02a3946c6a1e75c10cb9359285d299f6fc3607c0ddd6e846ff8d33f214015ca",
+    "durationMs": 3111
+  },
+  "session-complete-nice-focus-work-e116b828": {
+    "file": "data/tts-render/vision-cues/audio/session-complete-nice-focus-work-e116b828.mp3",
+    "text": "Session complete. Nice focus work.",
+    "sha256": "e116b828c093310985dca92edeb064284a35997a7d0e6895626bb43c1564b178",
+    "durationMs": 2879
+  },
+  "session-complete-well-done-57723c42": {
+    "file": "data/tts-render/vision-cues/audio/session-complete-well-done-57723c42.mp3",
+    "text": "Session complete. Well done.",
+    "sha256": "57723c42235b4f446dc6fa8b65574388618032c0980c24968cf4ccc7471a4f23",
+    "durationMs": 2136
+  },
+  "settle-in-and-follow-the-orb-a456b0c5": {
+    "file": "data/tts-render/vision-cues/audio/settle-in-and-follow-the-orb-a456b0c5.mp3",
+    "text": "Settle in and follow the orb.",
+    "sha256": "a456b0c5191baba24b1d48376920cedd815ee01844380074d07b658a3cf58434",
+    "durationMs": 2368
+  },
+  "shoulders-relaxed-head-anchored-9c388558": {
+    "file": "data/tts-render/vision-cues/audio/shoulders-relaxed-head-anchored-9c388558.mp3",
+    "text": "Shoulders relaxed, head anchored.",
+    "sha256": "9c388558697744b9f73f89636739fdd655d2f25490cd973da48d6ffe621bd293",
+    "durationMs": 2926
+  },
+  "showing-up-is-the-win-today-d4dd7606": {
+    "file": "data/tts-render/vision-cues/audio/showing-up-is-the-win-today-d4dd7606.mp3",
+    "text": "Showing up is the win today.",
+    "sha256": "d4dd76067ca8215b81571ca4fdeb5f54770909ac1acd52bc8c3324279f9ea920",
+    "durationMs": 2136
+  },
+  "simulate-sport-scenarios-d3f76c2d": {
+    "file": "data/tts-render/vision-cues/audio/simulate-sport-scenarios-d3f76c2d.mp3",
+    "text": "Simulate sport scenarios",
+    "sha256": "d3f76c2de92c51f09b1c5d6f57c4ee667a9ce0f2154bf4d7fd60da0c904adc7e",
+    "durationMs": 2322
+  },
+  "simulate-work-scenarios-3c75bf34": {
+    "file": "data/tts-render/vision-cues/audio/simulate-work-scenarios-3c75bf34.mp3",
+    "text": "Simulate work scenarios",
+    "sha256": "3c75bf34ffb37a563f89342963cb8ec3a90e161926f8e6603e6eab572fba1309",
+    "durationMs": 1950
+  },
+  "slide-target-toward-nose-in-0-5-cm-increments-wh-438d7da3": {
+    "file": "data/tts-render/vision-cues/audio/slide-target-toward-nose-in-0-5-cm-increments-wh-438d7da3.mp3",
+    "text": "Slide target toward nose in 0.5 cm increments while keeping shoulders stacked.",
+    "sha256": "438d7da3abd0e0f0638fd352ef6327f9d012bb980efb7bfd87e1025caa2dfbff",
+    "durationMs": 6037
+  },
+  "slow-controlled-steps-b632b49b": {
+    "file": "data/tts-render/vision-cues/audio/slow-controlled-steps-b632b49b.mp3",
+    "text": "Slow controlled steps",
+    "sha256": "b632b49bc3ee433198aca006694d273fbb0c26f0b03111e930bc61eb81bcafc1",
+    "durationMs": 1765
+  },
+  "slow-figure-eight-pursuit-work-to-polish-eye-onl-c4409658": {
+    "file": "data/tts-render/vision-cues/audio/slow-figure-eight-pursuit-work-to-polish-eye-onl-c4409658.mp3",
+    "text": "Slow figure-eight pursuit work to polish eye-only movement and quiet the cervical spine.",
+    "sha256": "c4409658b5d904249314afd7fbf23116a6f227bdb34215f8230837cc27a6373b",
+    "durationMs": 5851
+  },
+  "slow-heel-to-toe-walks-4cec714a": {
+    "file": "data/tts-render/vision-cues/audio/slow-heel-to-toe-walks-4cec714a.mp3",
+    "text": "Slow heel-to-toe walks",
+    "sha256": "4cec714a8f0aafb5ba07e46acadd8f06b943abcca48b8502b786c86a97ab8eb0",
+    "durationMs": 1950
+  },
+  "smooth-and-steady-no-jerky-jumps-feb20b9b": {
+    "file": "data/tts-render/vision-cues/audio/smooth-and-steady-no-jerky-jumps-feb20b9b.mp3",
+    "text": "Smooth and steady, no jerky jumps",
+    "sha256": "feb20b9b2bae05d00e55b332edac47550f5eebb7fb669e4140d848938e77e1c8",
+    "durationMs": 3019
+  },
+  "smooth-and-steady-round-each-loop-no-jerky-jumps-865132e5": {
+    "file": "data/tts-render/vision-cues/audio/smooth-and-steady-round-each-loop-no-jerky-jumps-865132e5.mp3",
+    "text": "Smooth and steady round each loop — no jerky jumps.",
+    "sha256": "865132e557581a564c0ab1adc245f6b256e01406893f5d485c442f6e1dbddaef",
+    "durationMs": 3576
+  },
+  "smooth-movements-f57a9dcd": {
+    "file": "data/tts-render/vision-cues/audio/smooth-movements-f57a9dcd.mp3",
+    "text": "Smooth movements",
+    "sha256": "f57a9dcdb7ab26d95da522a72733b1a63e4ef48886670643f06a65648a3301f1",
+    "durationMs": 1486
+  },
+  "solid-rep-keep-stacking-654e12b5": {
+    "file": "data/tts-render/vision-cues/audio/solid-rep-keep-stacking-654e12b5.mp3",
+    "text": "Solid rep. Keep stacking.",
+    "sha256": "654e12b50449f881dd4777857083cdd6ec3fd94885e5400872822418de9e86d7",
+    "durationMs": 2136
+  },
+  "speed-up-toggles-dae288da": {
+    "file": "data/tts-render/vision-cues/audio/speed-up-toggles-dae288da.mp3",
+    "text": "Speed up toggles",
+    "sha256": "dae288da420af9e9b65b907f1b9ce0f5fd02dc9d2a3033307492cdb1ba717bd0",
+    "durationMs": 1300
+  },
+  "speeding-up-100-beats-per-minute-eb894d52": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-100-beats-per-minute-eb894d52.mp3",
+    "text": "Speeding up. 100 beats per minute.",
+    "sha256": "eb894d527c1747cc3c2a0ad4171f598f29c83c4319c0d97713a505585dd8da97",
+    "durationMs": 2972
+  },
+  "speeding-up-45-beats-per-minute-1cfe2419": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-45-beats-per-minute-1cfe2419.mp3",
+    "text": "Speeding up. 45 beats per minute.",
+    "sha256": "1cfe241914f584bcfb032a8127f1fb8fdb959a53d57542e5c478edc48628fdee",
+    "durationMs": 2740
+  },
+  "speeding-up-50-beats-per-minute-da47f256": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-50-beats-per-minute-da47f256.mp3",
+    "text": "Speeding up. 50 beats per minute.",
+    "sha256": "da47f256e8eccd32ff574112c97b4dd933761a397e3255456ab770a3221d9821",
+    "durationMs": 2461
+  },
+  "speeding-up-55-beats-per-minute-dd64902a": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-55-beats-per-minute-dd64902a.mp3",
+    "text": "Speeding up. 55 beats per minute.",
+    "sha256": "dd64902ab61df8e61af45220e14df58121d7e8eaa90e37a53d12dc343f24e116",
+    "durationMs": 2926
+  },
+  "speeding-up-60-beats-per-minute-45a23b76": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-60-beats-per-minute-45a23b76.mp3",
+    "text": "Speeding up. 60 beats per minute.",
+    "sha256": "45a23b765ef275068b444f3fa80e8b31ba1ddb7c121f24ac2642dc85c404bcb4",
+    "durationMs": 2554
+  },
+  "speeding-up-65-beats-per-minute-7688a7d8": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-65-beats-per-minute-7688a7d8.mp3",
+    "text": "Speeding up. 65 beats per minute.",
+    "sha256": "7688a7d89b0aad2d347ccfcd975a307ece608af6ee47098c8af339ba23b45ce5",
+    "durationMs": 2879
+  },
+  "speeding-up-70-beats-per-minute-75fc6ac4": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-70-beats-per-minute-75fc6ac4.mp3",
+    "text": "Speeding up. 70 beats per minute.",
+    "sha256": "75fc6ac40ad3e334d77435a00d13612f63f40f17a456a976eaede0e058da02c4",
+    "durationMs": 2601
+  },
+  "speeding-up-75-beats-per-minute-73ae84fb": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-75-beats-per-minute-73ae84fb.mp3",
+    "text": "Speeding up. 75 beats per minute.",
+    "sha256": "73ae84fb103537dc1ae8a9c391a8a5b5266ad9769eeffe87baa31cc0f67ca89e",
+    "durationMs": 3529
+  },
+  "speeding-up-80-beats-per-minute-e8e4cdd5": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-80-beats-per-minute-e8e4cdd5.mp3",
+    "text": "Speeding up. 80 beats per minute.",
+    "sha256": "e8e4cdd53e82ac8f58510037eb267569e5b9340f8b8e884a72db04c347431863",
+    "durationMs": 2136
+  },
+  "speeding-up-85-beats-per-minute-922c2883": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-85-beats-per-minute-922c2883.mp3",
+    "text": "Speeding up. 85 beats per minute.",
+    "sha256": "922c288396e084dfc0a59929ee130e0db2192412e9355f7ec2c931a656024000",
+    "durationMs": 2926
+  },
+  "speeding-up-90-beats-per-minute-842b96ee": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-90-beats-per-minute-842b96ee.mp3",
+    "text": "Speeding up. 90 beats per minute.",
+    "sha256": "842b96ee6303c8398ef7edcc9b06ce9c1eacf909dd0930f448004c3563459fbb",
+    "durationMs": 2322
+  },
+  "speeding-up-95-beats-per-minute-33f143aa": {
+    "file": "data/tts-render/vision-cues/audio/speeding-up-95-beats-per-minute-33f143aa.mp3",
+    "text": "Speeding up. 95 beats per minute.",
+    "sha256": "33f143aa5321f4bf60f9dce87bf804722f17b2e378560cfc140dad3ab7e23a9f",
+    "durationMs": 2786
+  },
+  "stack-difficulty-by-adding-category-rules-e-g-on-fe88bc06": {
+    "file": "data/tts-render/vision-cues/audio/stack-difficulty-by-adding-category-rules-e-g-on-fe88bc06.mp3",
+    "text": "Stack difficulty by adding category rules (e.g., only blue objects).",
+    "sha256": "fe88bc064f5194b95c4036148394d766d555fa6ddca1f84e5f779e116915bb5e",
+    "durationMs": 5201
+  },
+  "start-2-m-from-chart-heel-to-toe-walk-toward-awa-0795ee71": {
+    "file": "data/tts-render/vision-cues/audio/start-2-m-from-chart-heel-to-toe-walk-toward-awa-0795ee71.mp3",
+    "text": "Start 2 m from chart, heel-to-toe walk toward/away.",
+    "sha256": "0795ee710886b02656494a0b88316ca37dc38f6c5140a78a16dc1531598696e6",
+    "durationMs": 4272
+  },
+  "start-60-bpm-add-5-bpm-once-accuracy-90-for-two--7d0ecce8": {
+    "file": "data/tts-render/vision-cues/audio/start-60-bpm-add-5-bpm-once-accuracy-90-for-two--7d0ecce8.mp3",
+    "text": "Start 60 bpm; add +5 bpm once accuracy ≥ 90% for two sessions.",
+    "sha256": "7d0ecce8e8fd5fca2bd44a894b15f39799b3dff9ece06d32023890de22f95c7d",
+    "durationMs": 7709
+  },
+  "start-at-60-bpm-cdb62605": {
+    "file": "data/tts-render/vision-cues/audio/start-at-60-bpm-cdb62605.mp3",
+    "text": "Start at 60 bpm",
+    "sha256": "cdb626054f864887f4c3390ae1bde2bb979d2dc656972a02bd8644f8c2ead8be",
+    "durationMs": 2043
+  },
+  "start-at-arm-s-length-with-sharp-focus-15f8fcaf": {
+    "file": "data/tts-render/vision-cues/audio/start-at-arm-s-length-with-sharp-focus-15f8fcaf.mp3",
+    "text": "Start at arm’s length with sharp focus.",
+    "sha256": "15f8fcaf77f4f17eac76b499e56ced829318f3436ef657953b639dee32c0a97f",
+    "durationMs": 2740
+  },
+  "start-at-comfortable-distance-e65b6b91": {
+    "file": "data/tts-render/vision-cues/audio/start-at-comfortable-distance-e65b6b91.mp3",
+    "text": "Start at comfortable distance",
+    "sha256": "e65b6b91b26f18f91574c7140d15fd6df080d9628da1c8105e162ef7a0fd1b0c",
+    "durationMs": 2229
+  },
+  "step-back-2cm-when-clear-a3f82aba": {
+    "file": "data/tts-render/vision-cues/audio/step-back-2cm-when-clear-a3f82aba.mp3",
+    "text": "Step back 2cm when clear",
+    "sha256": "a3f82abacd457c1c5884b98f4bc951f9d20f692a0be0859b024382abdaf8970d",
+    "durationMs": 2601
+  },
+  "step-back-5cm-when-clear-34318c2d": {
+    "file": "data/tts-render/vision-cues/audio/step-back-5cm-when-clear-34318c2d.mp3",
+    "text": "Step back 5cm when clear",
+    "sha256": "34318c2d8510d87286fdc4ed9320d17fb84d9cd88f21a2c54b5ed08894191cba",
+    "durationMs": 4551
+  },
+  "step-back-when-clear-6b6b9230": {
+    "file": "data/tts-render/vision-cues/audio/step-back-when-clear-6b6b9230.mp3",
+    "text": "Step back when clear",
+    "sha256": "6b6b9230096dfc954eb3ba933b56551449816c9ff671f70b5e6647941a96ffb8",
+    "durationMs": 1579
+  },
+  "step-read-the-line-next-step-9354081a": {
+    "file": "data/tts-render/vision-cues/audio/step-read-the-line-next-step-9354081a.mp3",
+    "text": "Step... read the line... next step",
+    "sha256": "9354081a93a40e9a63cfc031262d8d48dd447e54529222754bd07772f5b65fbf",
+    "durationMs": 3344
+  },
+  "still-with-me-tap-resume-when-ready-916480aa": {
+    "file": "data/tts-render/vision-cues/audio/still-with-me-tap-resume-when-ready-916480aa.mp3",
+    "text": "Still with me? Tap resume when ready.",
+    "sha256": "916480aa77a54b26657a0cd929b80dde217262fa4124ec83d79c7472cacb15f1",
+    "durationMs": 2833
+  },
+  "stop-before-strain-ecbabee5": {
+    "file": "data/tts-render/vision-cues/audio/stop-before-strain-ecbabee5.mp3",
+    "text": "Stop before strain",
+    "sha256": "ecbabee5434774872a6b5e27e5b9e0e288c457515f79a045ae13fe0e9427f29d",
+    "durationMs": 1625
+  },
+  "switch-to-e-directional-cues-midway-to-vary-stim-84aba728": {
+    "file": "data/tts-render/vision-cues/audio/switch-to-e-directional-cues-midway-to-vary-stim-84aba728.mp3",
+    "text": "Switch to E-directional cues midway to vary stimulus.",
+    "sha256": "84aba728ff575586a69201533df81cfb3e75c08fd35223b3e82cac22d4970e2e",
+    "durationMs": 3808
+  },
+  "switch-to-vertical-loops-then-the-infinity-path-9dc05125": {
+    "file": "data/tts-render/vision-cues/audio/switch-to-vertical-loops-then-the-infinity-path-9dc05125.mp3",
+    "text": "Switch to vertical loops, then the infinity path.",
+    "sha256": "9dc051256adfadfd4c5ad9d3640e9efdcf8273d006a398fdb2e6644ba2232f5d",
+    "durationMs": 3437
+  },
+  "tap-the-matching-arrow-up-left-right-or-down-on--3dbe2a8b": {
+    "file": "data/tts-render/vision-cues/audio/tap-the-matching-arrow-up-left-right-or-down-on--3dbe2a8b.mp3",
+    "text": "Tap the matching arrow: up, left, right, or down on the fixed pad.",
+    "sha256": "3dbe2a8ba9ba783cad5b017f50306a132a55fddfaa46dc61ac0764bc0fe8ed3b",
+    "durationMs": 5341
+  },
+  "tap-the-target-the-instant-it-appears-the-sweep--54bd1711": {
+    "file": "data/tts-render/vision-cues/audio/tap-the-target-the-instant-it-appears-the-sweep--54bd1711.mp3",
+    "text": "Tap the target the instant it appears — the sweep cycles through all four quadrants, then reverses.",
+    "sha256": "54bd1711d62e3ef6486ed9f7bbf73f6f7cb2b8fd6f8ae1aa689040af2a64fc70",
+    "durationMs": 6177
+  },
+  "tap-the-target-the-instant-it-flashes-at-the-edg-0e0f23ab": {
+    "file": "data/tts-render/vision-cues/audio/tap-the-target-the-instant-it-flashes-at-the-edg-0e0f23ab.mp3",
+    "text": "Tap the target the instant it flashes at the edge.",
+    "sha256": "0e0f23abe7353688a848d2b1f18fde9bd2bb82c5833b207d00e2a88e5b49ee18",
+    "durationMs": 3576
+  },
+  "test-peripheral-count-703f819c": {
+    "file": "data/tts-render/vision-cues/audio/test-peripheral-count-703f819c.mp3",
+    "text": "Test peripheral count",
+    "sha256": "703f819cebd985eb7cde3495aeb9f4eaf35a9293472a5d6b00e57770466dc872",
+    "durationMs": 1811
+  },
+  "the-patch-gets-fainter-as-you-get-calls-right-an-9c86784d": {
+    "file": "data/tts-render/vision-cues/audio/the-patch-gets-fainter-as-you-get-calls-right-an-9c86784d.mp3",
+    "text": "The patch gets fainter as you get calls right, and clearer after a miss.",
+    "sha256": "9c86784d8462532bd3212ee261c38b0d27118ae22120c5126fdc551f60132638",
+    "durationMs": 4319
+  },
+  "touch-each-skill-area-4bc56499": {
+    "file": "data/tts-render/vision-cues/audio/touch-each-skill-area-4bc56499.mp3",
+    "text": "Touch each skill area",
+    "sha256": "4bc5649927bcccf869229be0e659426d68e79b585cee46fd381bcdb525396504",
+    "durationMs": 1811
+  },
+  "trace-the-horizontal-sweep-with-eyes-only-for-60-a702735c": {
+    "file": "data/tts-render/vision-cues/audio/trace-the-horizontal-sweep-with-eyes-only-for-60-a702735c.mp3",
+    "text": "Trace the horizontal sweep with eyes only for 60 sec.",
+    "sha256": "a702735ce52c4b03036535911c262d087f9c1d40d76127b4350dd7f15f9af2ff",
+    "durationMs": 4040
+  },
+  "trace-the-infinity-path-smooth-and-steady-4c5ed06f": {
+    "file": "data/tts-render/vision-cues/audio/trace-the-infinity-path-smooth-and-steady-4c5ed06f.mp3",
+    "text": "Trace the infinity path. Smooth and steady.",
+    "sha256": "4c5ed06f932a77585d2e25183abfa2be7bef50b927ba1cf386abad49a6d90dc1",
+    "durationMs": 2926
+  },
+  "trace-the-infinity-symbol-c4dcaffe": {
+    "file": "data/tts-render/vision-cues/audio/trace-the-infinity-symbol-c4dcaffe.mp3",
+    "text": "Trace the infinity symbol",
+    "sha256": "c4dcaffe6a8e1319947fce9bc4109287b20f522f99f828170c28a21e1a080546",
+    "durationMs": 1811
+  },
+  "track-both-improvements-78369de4": {
+    "file": "data/tts-render/vision-cues/audio/track-both-improvements-78369de4.mp3",
+    "text": "Track both improvements",
+    "sha256": "78369de4a0fed3138760df21881d458929308b55aa6c26a56c6a794eb38fe423",
+    "durationMs": 1858
+  },
+  "track-distance-progression-c2120f8e": {
+    "file": "data/tts-render/vision-cues/audio/track-distance-progression-c2120f8e.mp3",
+    "text": "Track distance progression",
+    "sha256": "c2120f8eeb611b51735f15e31360022270c011f6ad3c8647ba2847cf6678b42b",
+    "durationMs": 1718
+  },
+  "trust-your-reach-as-targets-creep-outward-9c5313ff": {
+    "file": "data/tts-render/vision-cues/audio/trust-your-reach-as-targets-creep-outward-9c5313ff.mp3",
+    "text": "Trust your reach as targets creep outward",
+    "sha256": "9c5313ff41cb95af3592660c6284195eba208ae54fe7d730aba7baf73831a6ff",
+    "durationMs": 2694
+  },
+  "up-55490a4b": {
+    "file": "data/tts-render/vision-cues/audio/up-55490a4b.mp3",
+    "text": "Up",
+    "sha256": "55490a4bf3a8e8cb5eed69720293a700ff01ef7da2bfc749f332f626cb584916",
+    "durationMs": 511
+  },
+  "use-3-count-cadence-look-call-tap-a80a88a5": {
+    "file": "data/tts-render/vision-cues/audio/use-3-count-cadence-look-call-tap-a80a88a5.mp3",
+    "text": "Use 3-count cadence: look, call, tap.",
+    "sha256": "a80a88a5af3b686c990718e64fef321b90dd6151f550f6e3b4a5a7cfd52dfecc",
+    "durationMs": 3901
+  },
+  "use-reader-glasses-if-available-63eeaeeb": {
+    "file": "data/tts-render/vision-cues/audio/use-reader-glasses-if-available-63eeaeeb.mp3",
+    "text": "Use reader glasses if available",
+    "sha256": "63eeaeebb5bae6336bbd32b1d9950133a6d67bc2b06ba862008d610895a90be8",
+    "durationMs": 2276
+  },
+  "varied-speeds-494f06e1": {
+    "file": "data/tts-render/vision-cues/audio/varied-speeds-494f06e1.mp3",
+    "text": "Varied speeds",
+    "sha256": "494f06e1b9318bd5462200ecd0cafd644342f0f45a76317278e0c56a41c31b6c",
+    "durationMs": 1486
+  },
+  "verbal-cues-required-caec6485": {
+    "file": "data/tts-render/vision-cues/audio/verbal-cues-required-caec6485.mp3",
+    "text": "Verbal cues required",
+    "sha256": "caec6485c112955ce4bb378a97a90c7bce933d44f0ee1e932cced1a639af5684",
+    "durationMs": 1765
+  },
+  "walk-heel-to-toe-while-reading-down-a-projected--7c5dcfdb": {
+    "file": "data/tts-render/vision-cues/audio/walk-heel-to-toe-while-reading-down-a-projected--7c5dcfdb.mp3",
+    "text": "Walk heel-to-toe while reading down a projected Snellen line to cement gains in motion.",
+    "sha256": "7c5dcfdbe4f100d79ab07ba5719901d00bb11e6febdfd808529c38eae5d448ea",
+    "durationMs": 5851
+  },
+  "warmed-up-building-now-af014cb1": {
+    "file": "data/tts-render/vision-cues/audio/warmed-up-building-now-af014cb1.mp3",
+    "text": "Warmed up. Building now.",
+    "sha256": "af014cb10aeb221c617f407e9087d63d8c7676fd25afdc89dd58d3b1d2545ae7",
+    "durationMs": 2136
+  },
+  "watch-for-a-rule-flip-on-the-ladder-same-side-th-99486213": {
+    "file": "data/tts-render/vision-cues/audio/watch-for-a-rule-flip-on-the-ladder-same-side-th-99486213.mp3",
+    "text": "Watch for a rule flip on the ladder — same side, then back to crossed",
+    "sha256": "99486213b0b07ae9fbb11eb5245e70f5e76c829b1df9b17c96cea3f07a3db78e",
+    "durationMs": 4551
+  },
+  "watch-the-pattern-then-tap-the-matching-directio-cad3038a": {
+    "file": "data/tts-render/vision-cues/audio/watch-the-pattern-then-tap-the-matching-directio-cad3038a.mp3",
+    "text": "Watch the pattern, then tap the matching direction.",
+    "sha256": "cad3038ab788cd0d7edfdfda10a4d5ece39e9d02de4d4f83abfa742d646303a2",
+    "durationMs": 3251
+  },
+  "watch-the-target-jump-read-the-letter-each-time--7936454c": {
+    "file": "data/tts-render/vision-cues/audio/watch-the-target-jump-read-the-letter-each-time--7936454c.mp3",
+    "text": "Watch the target jump — read the letter each time it flashes.",
+    "sha256": "7936454c60f3ef785a6ca08bec8f62cd6b600a0f9c64c0430da80514d608fb04",
+    "durationMs": 3855
+  },
+  "what-did-you-see-b97be282": {
+    "file": "data/tts-render/vision-cues/audio/what-did-you-see-b97be282.mp3",
+    "text": "What did you see?",
+    "sha256": "b97be282329aa07159fc2b5dc7c748231b3f99ef0d64a3e1ef8af4790ed2579b",
+    "durationMs": 1440
+  },
+  "your-eyes-are-learning-fast-dc62d0be": {
+    "file": "data/tts-render/vision-cues/audio/your-eyes-are-learning-fast-dc62d0be.mp3",
+    "text": "Your eyes are learning fast.",
+    "sha256": "dc62d0be5a675fb48b7b0fdaba0a3e0512094cb118dcf01d016fb3090a8c38ad",
+    "durationMs": 2461
+  }
+}

@@ -385,5 +385,124 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:06.664Z",
-  "mentions_fingerprint": "9bd324f36b96"
+  "mentions_fingerprint": "9bd324f36b96",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(0TyW-wlJMxo 00:38:43.359)",
+      "quote": "I like to start with 250 micrograms",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(00:38:54.520)",
+      "quote": "I would do 1 mg per day. But I would build up to that cuz if Build it up cuz it will make you nauseous.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(E7GPNidicqY 01:53:09.520) reports observed self-experiment dose",
+      "quote": "Used 15 mg of Melanotan II in 2 months time",
+      "dose_value": 15,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "email threadId 1961c9375d1784dd (2025-04-09):",
+      "quote": "when you first start injecting",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "email threadId 1961c9375d1784dd (2025-04-09):",
+      "quote": "250-500 mcg subcutaneously",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(0TyW-wlJMxo 00:38:46.000)",
+      "quote": "Since your first time, just do it once a week. You can go up to two to three times per week and then as you go from there, you can scale up the dose.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(0TyW-wlJMxo 00:39:11.480)",
+      "quote": "three times a week um you can use it. Also it's really beneficial to use it the days that you are going to go out and get sun exposure.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(E7GPNidicqY 01:53:09.520) describes a 2-month course",
+      "quote": "15 mg of Melanotan II in 2 months time",
+      "dose_value": 15,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "trevor-bachmeyer",
+      "speaker": "Trevor",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "refuses to volunteer duration: (oaBecGSb03Y 00:04:14.080)",
+      "quote": "what's my dosage for tanning? Which is makes me insane when people ask that.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

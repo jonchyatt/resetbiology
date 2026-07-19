@@ -357,5 +357,137 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.822Z",
-  "mentions_fingerprint": "9a6ca4f78324"
+  "mentions_fingerprint": "9a6ca4f78324",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "acute",
+      "field": "dose",
+      "citation": ", 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe)",
+      "quote": "Loading: 600 mg twice daily, 4-8 weeks.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "acute",
+      "field": "route",
+      "citation": ", the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa (2026-03-29, 14:29, https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/)",
+      "quote": "300 to 600 milligrams daily taken orally as a supplement.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "acute",
+      "field": "frequency",
+      "citation": ", 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe)",
+      "quote": "Loading: 600 mg twice daily, 4-8 weeks.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "acute",
+      "field": "duration",
+      "citation": ", 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe)",
+      "quote": "Loading: 600 mg twice daily, 4-8 weeks.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe)",
+      "quote": "Maintenance: 300-600 mg twice daily.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, 34:55, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/)",
+      "quote": "300 to 600 milligrams per day of PEAs works really well.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": ", the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa (2026-03-29, 14:29, https://library.hunterwilliamshealth.com/p/the-best-gut-repair-peptide-stack-improve-your-gut-health-now--b4b5b7fa/)",
+      "quote": "300 to 600 milligrams daily taken orally as a supplement.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe)",
+      "quote": "Maintenance: 300-600 mg twice daily.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", the-kpv-masterclass-the-complete-users-guide--e6fde708 (2026-06-17, 34:55, https://library.hunterwilliamshealth.com/p/the-kpv-masterclass-the-complete-users-guide--e6fde708/)",
+      "quote": "300 to 600 milligrams per day of PEAs works really well.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 19ca15c5dc80c2e0 (2026-02-27, email threadId 19ca15c5dc80c2e0, https://open.spotify.com/episode/4kMOv0WToaZ3KP0cMuvGHe)",
+      "quote": "Long-term - LDN + PEA often continued long term.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

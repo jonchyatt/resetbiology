@@ -58,6 +58,7 @@ async function loadParentEngine(): Promise<{ engine: EngineModule; cleanup: () =
     ['../../lib/fsrs', pathToFileURL(resolve(root, 'src/lib/fsrs.ts')).href],
     ['./types', pathToFileURL(resolve(root, 'src/components/PitchDefender/types.ts')).href],
     ['./pitchMath', pathToFileURL(resolve(root, 'src/components/PitchDefender/pitchMath.ts')).href],
+    ['./retroBlasterPlacement', pathToFileURL(resolve(root, 'src/components/PitchDefender/retroBlasterPlacement.ts')).href],
   ])
   let rewritten = source
   for (const [specifier, url] of imports) rewritten = rewritten.replace(`from '${specifier}'`, `from '${url}'`)

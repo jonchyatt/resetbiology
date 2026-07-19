@@ -419,5 +419,124 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:05.625Z",
-  "mentions_fingerprint": "c8d397cdcfa8"
+  "mentions_fingerprint": "c8d397cdcfa8",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 20:02, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/)",
+      "quote": "I always start with five to 10 milligrams a day. You can go up to 25 if you need.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 @ 1:21:19, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/)",
+      "quote": "My preference, if you’re going to do both, would be 25 to 50 milligrams of D HEA in the morning and then 10 to 25 milligrams. Of pregnanolones at night, but you don’t always need that. Some men don’ t need it.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-05-25, saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/)",
+      "quote": "I’ve actually recently been injecting around, I’d say like 50 milligrams of pregnenolone per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 @ 1:21:19, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/)",
+      "quote": "In addition to TRT suggested addition dosing of oral DHEA and pregnenolone for men morning or night.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-05-25, saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/)",
+      "quote": "I’ve actually recently been injecting around, I’d say like 50 milligrams of pregnenolone per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 20:02, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/)",
+      "quote": "I always start with five to 10 milligrams a day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-04-30, saturday-morning-coffee-talk-41826--d0f249d7 @ 1:21:19, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/)",
+      "quote": "10 to 25 milligrams. Of pregnanolones at night.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-05-25, saturday-morning-coffee-talk-51626--2ce3e83c @ 40:42, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-51626--2ce3e83c/)",
+      "quote": "50 milligrams of pregnenolone per week.",
+      "dose_value": 50,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-30, pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867 @ 23:56, https://library.hunterwilliamshealth.com/p/pregnenolone-for-men-on-trt-do-you-actually-need-it--79690867/)",
+      "quote": "If you don’t notice anything in four to eight weeks, I’d say you probably trash it.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

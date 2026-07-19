@@ -613,5 +613,124 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:06.920Z",
-  "mentions_fingerprint": "430e3e4f4820"
+  "mentions_fingerprint": "430e3e4f4820",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "2023 baseline_protocol",
+      "quote": "Dose: 300 mcg.",
+      "dose_value": 300,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/)",
+      "quote": "you could do 150 micrograms of CJ and IPA",
+      "dose_value": 150,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:02, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/)",
+      "quote": "you can do 300 to 100 of IP to CJ.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "2023 baseline_protocol",
+      "quote": "Frequency: 5 days on, 2 days off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "library video 20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f (2026-05-25, 24:34, https://library.hunterwilliamshealth.com/p/20-fat-loss-compounds-ranked-worst-to-best-no-glp-1s--55fd586f/)",
+      "quote": "If you do get the sleep disruptor, I would move it to the morning.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "2023 baseline_protocol",
+      "quote": "Duration: 8 weeks on, 8 weeks off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(gCJLLBdAK0k 00:08:31.080)",
+      "quote": "each of these peptides you want to do an 8 week rotation so that means you're going to be taking these for eight weeks on and you're going to rotate taking 8 weeks off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "baseline",
+      "field": "dose",
+      "citation": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+      "quote": "300 mcg",
+      "dose_value": 300,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": true,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "baseline",
+      "field": "frequency",
+      "citation": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+      "quote": "5 days on, 2 days off",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": true,
+      "flag": false
+    }
+  ]
 }

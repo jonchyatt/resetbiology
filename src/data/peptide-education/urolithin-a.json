@@ -231,5 +231,59 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.045Z",
-  "mentions_fingerprint": "5880e64fcd1c"
+  "mentions_fingerprint": "5880e64fcd1c",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(saturday-morning-coffee-talk-5226--3cf808ca 01:49:12, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/)",
+      "quote": "And so if that's every other day, or if it is If it's, um, on the weekends, that's how I do. And I would do like 500 to a thousand milligrams per day is the dose.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(peptide-qa-march-2026--dd9aa173 00:33:31, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/)",
+      "quote": "Urolathin A, the capsules are typically like 500 milligrams.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(saturday-morning-coffee-talk-5226--3cf808ca 01:49:12, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-5226--3cf808ca/)",
+      "quote": "And so if that's every other day, or if it is If it's, um, on the weekends, that's how I do.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(peptide-qa-march-2026--dd9aa173 00:34:32, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/)",
+      "quote": "I think they're just good things to have in as a background player that we can do all the time, and maybe just go back and forth.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

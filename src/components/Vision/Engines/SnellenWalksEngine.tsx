@@ -84,7 +84,7 @@ export default function SnellenWalksEngine({
   const [mode, setMode] = useState<ChartMode>('letters')
   const [optotypes, setOptotypes] = useState(() => makeLine(initialLineIndex, 'letters'))
 
-  const speechRef = useRef(new SpeechQueue())
+  const [speech] = useState(() => new SpeechQueue()) // T7c: lazy init — useRef(new X()) constructed+registered a new SpeechQueue every render
   const metronomeRef = useRef<Metronome | null>(null)
   const beatGenerationRef = useRef(0)
   const completedRef = useRef(false)
@@ -107,7 +107,7 @@ export default function SnellenWalksEngine({
     completedRef.current = true
     beatGenerationRef.current += 1
     metronomeRef.current?.stop()
-    speechRef.current.stop()
+    speech.stop()
     setStatus('complete')
 
     const finalClearPct = assessedRoundsRef.current > 0
@@ -137,7 +137,7 @@ export default function SnellenWalksEngine({
     setHighlightIndex((current) => (current + 1) % CHART_LINES[lineIndexRef.current].count)
 
     if ((nextSteps - 1) % STEPS_PER_LINE === 0) {
-      speechRef.current.speak('Step... read the line... next step')
+      speech.speak('Step... read the line... next step')
     }
 
     let nextLineIndex = lineIndexRef.current
@@ -172,7 +172,7 @@ export default function SnellenWalksEngine({
   }, [onProgress])
 
   useEffect(() => {
-    speechRef.current.muted = muted
+    speech.muted = muted
     if (metronomeRef.current) metronomeRef.current.muted = muted
   }, [muted])
 
@@ -206,7 +206,7 @@ export default function SnellenWalksEngine({
         setMode('e-directional')
         setHighlightIndex(0)
         setOptotypes(makeLine(lineIndexRef.current, 'e-directional'))
-        speechRef.current.speak('Now read the direction of each E.', { interrupt: true })
+        speech.speak('Now read the direction of each E.', { interrupt: true })
       }
 
       if (nextElapsed >= targetSeconds) finishRef.current()
@@ -218,13 +218,13 @@ export default function SnellenWalksEngine({
   useEffect(() => () => {
     beatGenerationRef.current += 1
     metronomeRef.current?.stop()
-    speechRef.current.stop()
+    speech.stop()
   }, [])
 
   const startOrResume = () => {
     unlockAudio()
     if (status === 'idle') {
-      speechRef.current.speak('Hold your phone securely. Keep your path clear and walk slowly.', { interrupt: true })
+      speech.speak('Hold your phone securely. Keep your path clear and walk slowly.', { interrupt: true })
     }
     setStatus('running')
   }
@@ -232,7 +232,7 @@ export default function SnellenWalksEngine({
   const pause = () => {
     beatGenerationRef.current += 1
     metronomeRef.current?.stop()
-    speechRef.current.stop()
+    speech.stop()
     setStatus('paused')
   }
 
@@ -245,7 +245,7 @@ export default function SnellenWalksEngine({
   const handleExit = () => {
     beatGenerationRef.current += 1
     metronomeRef.current?.stop()
-    speechRef.current.stop()
+    speech.stop()
     setStatus('paused')
     onExit()
   }

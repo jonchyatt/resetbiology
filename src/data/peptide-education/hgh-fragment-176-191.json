@@ -224,5 +224,33 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.177Z",
-  "mentions_fingerprint": "25bf1c940274"
+  "mentions_fingerprint": "25bf1c940274",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "- best-non-glp-peptides-for-fat-loss--168fde2b (2026-03-30, 12:56; https://library.hunterwilliamshealth.com/p/best-non-glp-peptides-for-fat-loss--168fde2b/).",
+      "quote": "500 micrograms per day",
+      "dose_value": 500,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "- best-non-glp-peptides-for-fat-loss--168fde2b (2026-03-30, 12:56; https://library.hunterwilliamshealth.com/p/best-non-glp-peptides-for-fat-loss--168fde2b/).",
+      "quote": "Monday through Friday",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

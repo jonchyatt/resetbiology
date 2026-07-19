@@ -309,5 +309,59 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:07.825Z",
-  "mentions_fingerprint": "905f65d4d99e"
+  "mentions_fingerprint": "905f65d4d99e",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "acute",
+      "field": "route",
+      "citation": "(2026-04-30, these-peptides-are-overrated-heres-what-actually-works--90479158 7:01, https://library.hunterwilliamshealth.com/p/these-peptides-are-overrated-heres-what-actually-works--90479158/)",
+      "quote": "injection",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "acute",
+      "field": "duration",
+      "citation": "(2026-03-30, ghrh-vs-ghrp-how-to-stack-growth-hormone-peptides--2bcd2680 8:15, https://library.hunterwilliamshealth.com/p/ghrh-vs-ghrp-how-to-stack-growth-hormone-peptides--2bcd2680/)",
+      "quote": "GHRP6 and 2 can have very acute GH spikes with a half of less than 30 minutes.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-30, ghrh-vs-ghrp-how-to-stack-growth-hormone-peptides--2bcd2680 8:15, https://library.hunterwilliamshealth.com/p/ghrh-vs-ghrp-how-to-stack-growth-hormone-peptides--2bcd2680/)",
+      "quote": "There are often dose multiple times daily to maintain frequent GH pulses.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-04-30, these-peptides-are-overrated-heres-what-actually-works--90479158 7:01, https://library.hunterwilliamshealth.com/p/these-peptides-are-overrated-heres-what-actually-works--90479158/)",
+      "quote": "both ghrelin receptor desensitization with chronic use requires dose escalation over time",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

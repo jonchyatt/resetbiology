@@ -8,6 +8,8 @@
  * Plan: docs/plans/vision-training-interactive-overhaul.md §Tier 0
  */
 
+import { resolveVoiceCue } from './voiceManifest'
+
 let sharedCtx: AudioContext | null = null
 
 export function getAudioContext(): AudioContext | null {
@@ -20,10 +22,27 @@ export function getAudioContext(): AudioContext | null {
   return sharedCtx
 }
 
-/** Call from a user-gesture handler (Start button) — unlocks iOS Safari audio. */
+// ponytail: standard silent-WAV iOS unlock trick — no new dependency, decoupled
+// from the vision-cues asset set so it works even before the manifest loads.
+const SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='
+let assetAudioUnlocked = false
+
+/** Call from a user-gesture handler (Start button) — unlocks iOS Safari audio
+ * for both WebAudio (tones/metronome) and HTMLAudioElement (voice-cue mp3s). */
 export function unlockAudio(): void {
   const ctx = getAudioContext()
   if (ctx && ctx.state === 'suspended') void ctx.resume()
+  if (typeof window === 'undefined' || assetAudioUnlocked) return
+  assetAudioUnlocked = true
+  try {
+    const el = new Audio(SILENT_WAV)
+    el.muted = true
+    void el.play().catch(() => {
+      /* best-effort — asset cues fall back to speechSynthesis if never unlocked */
+    })
+  } catch {
+    /* audio unavailable — engines must remain fully usable silent */
+  }
 }
 
 export function playTone(frequency = 440, durationMs = 100, volume = 0.3): void {
@@ -61,13 +80,76 @@ export function playVictoryMotif(): void {
 // SpeechQueue
 // ---------------------------------------------------------------------------
 
+// One console.debug per unpronounced text, ever — not per occurrence.
+const loggedManifestMisses = new Set<string>()
+
+// T7: mute is shared across every live SpeechQueue instance (session-level +
+// per-engine queues must not desync). `sharedMuted` is the single source of
+// truth; `instances` is the broadcast list.
+// ponytail: page-lifetime Set, no deregistration. `stop()` is called
+// mid-session by every engine (not just on unmount), so it can't double as a
+// dispose hook without wrongly dropping still-in-use instances from the
+// broadcast. No unmount-only lifecycle exists to hook a real deregister into.
+// SPA session lifetime is short (one training session), so the Set holding a
+// handful of engine instances for the page's life is the smallest correct
+// option — add a real dispose() only if instances start being created in a
+// loop (they aren't: one per SessionRunner mount, one per active engine).
+let sharedMuted = false
+const instances = new Set<SpeechQueue>()
+const muteListeners = new Set<() => void>()
+
+/** useSyncExternalStore glue (T7) — lets any mute button read the shared
+ * state directly instead of caching it in component state that can desync
+ * from a toggle fired by a different button/instance. */
+export function subscribeSharedMuted(listener: () => void): () => void {
+  muteListeners.add(listener)
+  return () => muteListeners.delete(listener)
+}
+
+export function getSharedMuted(): boolean {
+  return sharedMuted
+}
+
 export class SpeechQueue {
   private queue: string[] = []
   private speaking = false
-  muted = false
+  /** Currently-playing pre-rendered cue, if any (T5 manifest-backed asset path). */
+  private currentAudio: HTMLAudioElement | null = null
+  /** Bumped on stop()/interrupt/mute-on so async continuations (manifest
+   * resolve, play() promise, onended/onerror, fallback) that captured a
+   * stale epoch at dispatch no-op instead of racing a since-invalidated cue. */
+  private epoch = 0
   rate = 0.95
   pitch = 1.0
   volume = 0.85
+
+  constructor() {
+    instances.add(this)
+  }
+
+  get muted(): boolean {
+    return sharedMuted
+  }
+
+  /** Same public field contract as before — setting true also cancels an
+   * in-flight asset cue immediately (mobile safety contract C3). Now
+   * broadcasts to every live instance (T7) so muting one silences all. */
+  set muted(value: boolean) {
+    sharedMuted = value
+    for (const l of muteListeners) l()
+    if (!value) return
+    for (const q of instances) {
+      // Unconditional: mute must recover `speaking` even when nothing is
+      // currently in currentAudio — a pending manifest fetch (speakOne's
+      // resolveVoiceCue) or a live speechSynthesis utterance both leave
+      // currentAudio null while speaking is true (verifier finding 1).
+      q.epoch++
+      q.stopCurrentAudio()
+      q.synth?.cancel()
+      q.speaking = false
+      q.drain()
+    }
+  }
 
   private get synth(): SpeechSynthesis | null {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null
@@ -77,13 +159,19 @@ export class SpeechQueue {
   /**
    * Queue a phrase. `interrupt: true` drops anything pending/speaking first —
    * use for state changes ("Exercise complete"), not for rhythm cues.
+   *
+   * Resolution order per phrase: exact-text match against the pre-rendered
+   * voice-cue manifest (T5) plays the mp3; a miss falls back to
+   * speechSynthesis unchanged.
    */
   speak(text: string, opts?: { interrupt?: boolean }): void {
     const synth = this.synth
     if (!synth || this.muted || !text) return
     if (opts?.interrupt) {
+      this.epoch++
       this.queue = []
       synth.cancel()
+      this.stopCurrentAudio()
       this.speaking = false
     }
     this.queue.push(text)
@@ -91,25 +179,105 @@ export class SpeechQueue {
   }
 
   private drain(): void {
-    const synth = this.synth
-    if (!synth || this.speaking) return
+    if (this.speaking) return
     const next = this.queue.shift()
     if (!next) return
     this.speaking = true
-    const u = new SpeechSynthesisUtterance(next)
+    this.speakOne(next)
+  }
+
+  private speakOne(text: string): void {
+    const epoch = this.epoch
+    void resolveVoiceCue(text)
+      .then((url) => {
+        if (epoch !== this.epoch) return
+        if (this.muted) {
+          this.finishOne()
+          return
+        }
+        if (url) {
+          this.playAsset(text, url, epoch)
+          return
+        }
+        if (!loggedManifestMisses.has(text)) {
+          loggedManifestMisses.add(text)
+          console.debug('[SpeechQueue] no pre-rendered cue, falling back to speechSynthesis:', text)
+        }
+        this.speakSynth(text, epoch)
+      })
+      .catch(() => {
+        if (epoch !== this.epoch) return
+        this.speakSynth(text, epoch)
+      })
+  }
+
+  private playAsset(text: string, url: string, epoch: number): void {
+    if (epoch !== this.epoch) return
+    if (this.muted) {
+      this.finishOne()
+      return
+    }
+    const audio = new Audio(url)
+    audio.volume = this.volume
+    this.currentAudio = audio
+    // once-guard: onerror + play().catch can both fire for one bad asset —
+    // make sure only the first one triggers a fallback/finish.
+    let settled = false
+    const fallbackToSynth = () => {
+      if (settled) return
+      settled = true
+      if (this.currentAudio === audio) this.currentAudio = null
+      // Asset failure (missing file / decode error / blocked play) must
+      // never block instructions — fall back to the existing TTS path.
+      this.speakSynth(text, epoch)
+    }
+    audio.onended = () => {
+      if (settled) return
+      settled = true
+      if (this.currentAudio === audio) this.currentAudio = null
+      this.finishOne()
+    }
+    audio.onerror = fallbackToSynth
+    audio.play().catch(fallbackToSynth)
+  }
+
+  private speakSynth(text: string, epoch: number): void {
+    if (epoch !== this.epoch) return
+    const synth = this.synth
+    if (!synth || this.muted) {
+      this.finishOne()
+      return
+    }
+    const u = new SpeechSynthesisUtterance(text)
     u.rate = this.rate
     u.pitch = this.pitch
     u.volume = this.volume
     u.onend = u.onerror = () => {
-      this.speaking = false
-      this.drain()
+      if (epoch !== this.epoch) return
+      this.finishOne()
     }
     synth.speak(u)
   }
 
+  private finishOne(): void {
+    this.speaking = false
+    this.drain()
+  }
+
+  private stopCurrentAudio(): void {
+    if (this.currentAudio) {
+      this.currentAudio.onended = null
+      this.currentAudio.onerror = null
+      this.currentAudio.pause()
+      this.currentAudio = null
+    }
+  }
+
   stop(): void {
+    this.epoch++
     this.queue = []
     this.synth?.cancel()
+    this.stopCurrentAudio()
     this.speaking = false
   }
 }

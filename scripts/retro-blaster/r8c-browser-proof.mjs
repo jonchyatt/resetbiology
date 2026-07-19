@@ -5,15 +5,15 @@ import { resolve } from 'node:path'
 import { chromium } from 'playwright'
 
 const [mode = 'core', rawUrl, rawOutput, rawSha] = process.argv.slice(2)
-const url = rawUrl || 'http://127.0.0.1:3336/pitch-defender/retro-2?v=r8c-local-d34edf40'
-const output = resolve(rawOutput || `data/retro-blaster-rework/runtime-logs/r8c-local-d34edf40/${mode}`)
+const url = rawUrl || 'http://127.0.0.1:3336/pitch-defender/retro-2?v=840efc3b'
+const output = resolve(rawOutput || `data/retro-blaster-rework/runtime-logs/r9a-local-840efc3b/r8c-${mode}`)
 const videoDir = resolve(output, 'video')
-const productBase = rawSha || 'd34edf4090eacd8fd051361d27bec754033aac9c'
+const productBase = rawSha || '840efc3b91111cda7657f33aad92f8019b90d3f4'
 const transport = 'http://127.0.0.1:9224'
 const NOTES = ['C4', 'A4', 'G4', 'E4']
 const EXPECTED_HASHES = {
-  engine: '219DD9F312349281B3555B3DC78D4BC47D34C9F0C1E145EFD41ACF65408E0405',
-  shell: '8F7BF26EAD3FA57ACDA75A2DD557F08CED30F50E871B682D461317C1D7AC5C0F',
+  engine: '201C37698C81277184BC38DC73BAB7E3372EF22A43949E07BFE2B607DD598A0E',
+  shell: '579F1990C42DB09F61F77141B47357EC8310D4047FA4B6D08AA91594F0A4E317',
   renderer: '109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3',
 }
 const SOURCE_PATHS = {

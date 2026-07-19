@@ -135,5 +135,137 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:09.714Z",
-  "mentions_fingerprint": "53aee218f056"
+  "mentions_fingerprint": "53aee218f056",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:07, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+      "quote": "Most pancreas comes in a 20 milligram vial.",
+      "dose_value": 20,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+      "quote": "add two milliliters of water to that. Now every 10 units equals one milligram. I recommend taking two milligrams per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+      "quote": "Take 2mg per day (0.2ml or 20 units on an insulin syringe)",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": ", 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:22:37, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+      "quote": "sub-Q injections, you could do intramuscular if you wanted to or better",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": ", 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+      "quote": "subcutaneously or intramuscularly",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+      "quote": "I recommend taking two milligrams per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+      "quote": "Take 2mg per day",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+      "quote": "for 30, 60 days, depending on the level or severity of the pancreatic inflammation or insufficiency that you may have.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2026-03-29, video slug this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543 @ 00:23:40, https://library.hunterwilliamshealth.com/p/this-peptide-reverses-pancreatic-aging-pancragen-deep-dive--2d5ef543/",
+      "quote": "you can repeat this course two to three times per year for ongoing rejuvenation.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2025-07-28, threadId 198531334f561481, https://huntershealthhacks.beehiiv.com/p/reverse-age-your-pancreas-59fe1f3c041908ed",
+      "quote": "Repeat this course 2–3 times per year for ongoing rejuvenation.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

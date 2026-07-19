@@ -642,5 +642,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:04.806Z",
-  "mentions_fingerprint": "26ad106300af"
+  "mentions_fingerprint": "26ad106300af",
+  "structured_regimens": [
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-04-20, `reader-mailbag-episode-1--31ea7a1b`, 6:32, [source](https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/)",
+      "quote": "I Would do a lower dose, start with a hundred milligrams.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-04-08, `saturday-morning-coffee-talk-with-taylor--18e31bfe`, 2:51, [source](https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/)",
+      "quote": "The standard is two hundred milligrams at night for perimenopause.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-04-08, `saturday-morning-coffee-talk-with-taylor--18e31bfe`, 2:51, [source](https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/)",
+      "quote": "They were actually saying that they will actually start some other post menoposal woman. on 300 and then take them up to 600 milligrams.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-04-08, `saturday-morning-coffee-talk-with-taylor--18e31bfe`, 3:22, [source](https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-with-taylor--18e31bfe/)",
+      "quote": "most women in that premenopause usually take about 200 milligrams and that they'll actually bump it up to even 400 milligrams while they're in that luteurophase of their menstrual cycle.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-04-20, `reader-mailbag-episode-1--31ea7a1b`, 14:18, [source](https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/)",
+      "quote": "Some people need 50, 100, some people 200, 300, something we need 600.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2026-04-20, `reader-mailbag-episode-1--31ea7a1b`, 5:31, [source](https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/)",
+      "quote": "Most women. Are going. To do days 14 through 28 of the menstrual cycle.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2026-06-17, `reader-mailbag-4-peptide-overdoses-glp-1-anhedonia-hormone-truths--abd6cc6f`, 35:54, [source](https://library.hunterwilliamshealth.com/p/reader-mailbag-4-peptide-overdoses-glp-1-anhedonia-hormone-truths--abd6cc6f/)",
+      "quote": "The entire circle. Yeah. Taking it every day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2026-04-20, `reader-mailbag-episode-1--31ea7a1b`, 6:02, [source](https://library.hunterwilliamshealth.com/p/reader-mailbag-episode-1--31ea7a1b/)",
+      "quote": "I Think starting off with day 14 through 28 is a great way to start off though. And I would say start that for at least 90 days, see how you feel with That.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

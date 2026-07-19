@@ -10,7 +10,7 @@
  * Plan: docs/plans/vision-training-interactive-overhaul.md §Tier 1 (W1.3)
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Pause, Play, Volume2, VolumeX, X, MousePointer2, Eye } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
 import { clampScore } from './types'
@@ -23,7 +23,7 @@ import {
   pathTangentAngle,
   type Point,
 } from '@/lib/vision/canvasKit'
-import { SpeechQueue, unlockAudio } from '@/lib/vision/audioKit'
+import { SpeechQueue, unlockAudio, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 
 type Stage = 'horizontal' | 'vertical' | 'infinity'
 
@@ -60,7 +60,7 @@ function formatTime(totalSec: number): string {
   return `${m}:${r.toString().padStart(2, '0')}`
 }
 
-export default function PursuitEngine({ exercise, prescription, muted, onProgress, onComplete, onExit }: EngineProps) {
+export default function PursuitEngine({ exercise, prescription, onProgress, onComplete, onExit }: EngineProps) {
   const isFigure8 = exercise.id === 'figure8-fixation'
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -69,7 +69,8 @@ export default function PursuitEngine({ exercise, prescription, muted, onProgres
   if (!speechRef.current) speechRef.current = new SpeechQueue()
 
   const [phase, setPhase] = useState<'intro' | 'running' | 'paused' | 'complete'>('intro')
-  const [isMuted, setIsMuted] = useState(!!muted)
+  // T7: read shared mute state directly — see DownshiftEngine.tsx.
+  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [traceMode, setTraceMode] = useState(true)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
   const [stageLabel, setStageLabel] = useState<string>(isFigure8 ? 'Wide Loop' : STAGE_LABEL.horizontal)
@@ -80,17 +81,19 @@ export default function PursuitEngine({ exercise, prescription, muted, onProgres
   const traceModeRef = useRef(traceMode)
   useEffect(() => { traceModeRef.current = traceMode }, [traceMode])
 
-  useEffect(() => {
-    speechRef.current!.muted = isMuted
-  }, [isMuted])
-
   const targetSeconds = Math.max(30, prescription.targetSeconds || 180)
   const loopSeconds = Math.max(1, BASE_LOOP_SECONDS / (prescription.speedMultiplier || 1))
 
+  // ponytail: exercise.checkpoints describe stage-specific / time-anchored
+  // structure ("for 60 sec", "each minute") already spoken at the right
+  // moment by STAGE_ANNOUNCE (stage change) / the figure8 label switch in
+  // draw() below — cycling them here on a blind CUE_SECONDS clock would
+  // recite stale or mismatched stage instructions (S: "for 60 sec" while
+  // already on the vertical stage). Only stage-agnostic coaching cues rotate.
   const cueList = useMemo(() => {
-    const list = [...(exercise.checkpoints ?? []), ...(prescription.coachingCues ?? [])]
+    const list = [...(prescription.coachingCues ?? [])]
     return list.length ? list : ['Keep your head still. Eyes only.']
-  }, [exercise.checkpoints, prescription.coachingCues])
+  }, [prescription.coachingCues])
 
   // rAF loop bookkeeping — refs so the recursive frame closure never goes stale.
   const rafRef = useRef<number | undefined>(undefined)
@@ -372,7 +375,9 @@ export default function PursuitEngine({ exercise, prescription, muted, onProgres
             {traceMode ? 'Trace' : 'Watch'}
           </button>
           <button
-            onClick={() => setIsMuted(v => !v)}
+            onClick={() => {
+              if (speechRef.current) speechRef.current.muted = !getSharedMuted()
+            }}
             className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-800/80 text-gray-400 backdrop-blur-sm transition-all duration-300 hover:text-white"
             aria-label="Toggle sound"
           >

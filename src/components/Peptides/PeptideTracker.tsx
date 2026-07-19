@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Syringe,
   Calendar,
@@ -13,11 +14,93 @@ import {
   ChevronDown,
   Bell,
   Pill,
+  Check,
 } from "lucide-react";
-import { DosageCalculator } from "./DosageCalculator";
+import { DosageCalculator, calculateDosage } from "./DosageCalculator";
+import { SyringeModel } from "./SyringeModel";
 import { QuickAddOralMed } from "./QuickAddOralMed";
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
+import type { PeptideIndexEntry } from "@/data/peptide-education/generated";
+import {
+  resolveFrequency,
+  isDoseDayForProtocol,
+  hasKnownSchedule,
+  parseDoseTimes,
+} from "@/lib/peptide-frequency";
+
+// ---------------------------------------------------------------------------
+// H1 containment: the backend protocol shape (ProtocolInput/ApiProtocolShape
+// in src/lib/protocols-store.ts, off-limits to this fix) has no vialAmount /
+// reconstitution / syringeUnits / duration fields at all — those only ever
+// existed as hardcoded constants stamped onto every protocol regardless of
+// what the member actually entered in the Dose Calculator. This localStorage
+// side-channel persists the member's REAL calculator inputs per protocolId
+// (survives reload, does not touch the off-limits store or POST payload) so
+// the UI can render real prep data or an honest empty state — never a
+// fabricated number.
+// ---------------------------------------------------------------------------
+const PREP_STORAGE_KEY = "rb-peptide-prep-v1";
+
+interface PersistedPrep {
+  vialAmount?: string;
+  reconstitution?: string;
+  duration?: string;
+}
+
+function readPrepStore(): Record<string, PersistedPrep> {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(window.localStorage.getItem(PREP_STORAGE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+// Exported (alongside writePrepForProtocol/computeSyringeUnitsFromPrep)
+// purely so scripts/verify-containment.mjs can exercise the exact H1
+// data-transform logic fetchUserProtocols/handleSaveProtocol call, without
+// duplicating it in the fixture.
+export function readPrepForProtocol(protocolId: string): PersistedPrep {
+  return readPrepStore()[protocolId] || {};
+}
+
+export function writePrepForProtocol(protocolId: string, prep: PersistedPrep) {
+  if (typeof window === "undefined") return;
+  try {
+    const store = readPrepStore();
+    store[protocolId] = { ...store[protocolId], ...prep };
+    window.localStorage.setItem(PREP_STORAGE_KEY, JSON.stringify(store));
+  } catch {
+    // best-effort only — never block the UI on storage failures
+  }
+}
+
+// syringeUnits must be COMPUTED from the member's real vial/reconstitution/
+// dose via the existing calculator arithmetic (calculateDosage), never a
+// constant. Returns 0 when any of the three inputs is missing/unparseable —
+// callers treat 0 as "prep not set up" and render an empty state, not a
+// fabricated unit count.
+export function computeSyringeUnitsFromPrep(
+  dosage: string,
+  vialAmount: string,
+  reconstitution: string,
+): number {
+  const doseMatch = (dosage || "").match(/(\d+\.?\d*)\s*(mcg|mg)/i);
+  const vialMatch = (vialAmount || "").match(/(\d+\.?\d*)/);
+  const volMatch = (reconstitution || "").match(/(\d+\.?\d*)/);
+  if (!doseMatch || !vialMatch || !volMatch) return 0;
+
+  const results = calculateDosage({
+    desiredDose: parseFloat(doseMatch[1]),
+    doseUnit: doseMatch[2].toLowerCase() === "mg" ? "mg" : "mcg",
+    peptideConcentration: 0,
+    totalVolume: parseFloat(volMatch[1]),
+    peptideAmount: parseFloat(vialMatch[1]),
+    insulinSyringeUnits: true,
+  });
+  return results.insulinUnits ?? 0;
+}
 
 // Convert base64 VAPID key to Uint8Array format required by Push API
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -64,6 +147,8 @@ interface DoseEntry {
 }
 
 export function PeptideTracker() {
+  const searchParams = useSearchParams();
+
   // Helper function to convert Date to local YYYY-MM-DD (not UTC)
   const dateToLocalKey = (date: Date): string => {
     const year = date.getFullYear();
@@ -84,6 +169,34 @@ export function PeptideTracker() {
     const date = new Date(year, month, day, 0, 0, 0, 0);
     return date;
   };
+
+  // "08:00" -> "8:00 AM" for the Weekly Schedule grid display.
+  const formatTime12h = (time: string): string => {
+    const [h, m] = time.split(":").map(Number);
+    const period = h >= 12 ? "PM" : "AM";
+    const h12 = h % 12 || 12;
+    return `${h12}:${(m || 0).toString().padStart(2, "0")} ${period}`;
+  };
+
+  // Presentation-only header framing — "your daily protocol" greeting + date.
+  // ponytail: computed once at mount, not re-derived on a tick; a header
+  // greeting doesn't need live-clock precision.
+  const dayGreeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  }, []);
+
+  const todayLongLabel = useMemo(
+    () =>
+      new Date().toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }),
+    [],
+  );
 
   const [activeTab, setActiveTab] = useState<"current" | "calendar">("current");
   const [currentProtocols, setCurrentProtocols] = useState<PeptideProtocol[]>(
@@ -118,6 +231,10 @@ export function PeptideTracker() {
     Omit<PeptideProtocol, "startDate" | "currentCycle" | "isActive">[]
   >([]);
   const [loadingLibrary, setLoadingLibrary] = useState(true);
+  // Cross-expert peptide education library (92 cards) — feeds the
+  // Add-Protocol picker's citation-grounded dosing alongside storefront products.
+  const [eduLibrary, setEduLibrary] = useState<PeptideIndexEntry[]>([]);
+  const [deepLinkSlug, setDeepLinkSlug] = useState<string | null>(null);
   const [doseHistory, setDoseHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date());
@@ -131,6 +248,11 @@ export function PeptideTracker() {
   const [protocolNotifications, setProtocolNotifications] = useState<
     Record<string, boolean>
   >({});
+  // Presentation-only: drives the Today's Doses skeleton-vs-content switch.
+  // Set true once fetchUserProtocols resolves (success or failure) and never
+  // reset — a later re-fetch (e.g. after saving an edit) must not re-flash
+  // the skeleton.
+  const [protocolsLoaded, setProtocolsLoaded] = useState(false);
   const bootstrapped = useRef(false);
 
   const fetchTodaysDoses = useCallback(
@@ -252,7 +374,6 @@ export function PeptideTracker() {
             startDate.setHours(0, 0, 0, 0);
           }
 
-          const frequency = protocol.frequency.toLowerCase();
           let currentDate = new Date(
             Math.max(today.getTime(), startDate.getTime()),
           );
@@ -260,33 +381,14 @@ export function PeptideTracker() {
 
           // Generate doses until endDate
           while (currentDate <= endDate) {
-            let shouldSchedule = false;
-
-            // Determine if dose should be scheduled based on frequency
-            if (
-              frequency.includes("daily") ||
-              frequency.includes("every day")
-            ) {
-              shouldSchedule = true;
-            } else if (frequency.includes("every other day")) {
-              const daysSinceStart = Math.floor(
-                (currentDate.getTime() - startDate.getTime()) /
-                  (1000 * 60 * 60 * 24),
-              );
-              shouldSchedule = daysSinceStart % 2 === 0;
-            } else if (frequency.includes("3x per week")) {
-              const dayOfWeek = currentDate.getDay();
-              shouldSchedule = [1, 3, 5].includes(dayOfWeek); // Mon, Wed, Fri
-            } else if (frequency.includes("2x per week")) {
-              const dayOfWeek = currentDate.getDay();
-              shouldSchedule = [1, 4].includes(dayOfWeek); // Mon, Thu
-            } else if (frequency.includes("5 days on")) {
-              const dayOfWeek = currentDate.getDay();
-              shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
-            } else if (frequency.includes("once per week")) {
-              const dayOfWeek = currentDate.getDay();
-              shouldSchedule = dayOfWeek === 1; // Monday
-            }
+            // H2/H3: single shared resolver (isDoseDayForProtocol) is the
+            // only place day-of-week/every-other-day/unknown-frequency logic
+            // lives — this function must never re-inline it (T-A3).
+            const shouldSchedule = isDoseDayForProtocol(
+              protocol.frequency,
+              startDate,
+              currentDate,
+            );
 
             if (shouldSchedule) {
               futureDoses.push({
@@ -504,8 +606,6 @@ export function PeptideTracker() {
         startDate.setHours(0, 0, 0, 0);
       }
 
-      const frequency = protocol.frequency.toLowerCase();
-
       // Check if already completed today - use local date
       const todayKey = getTodayKey();
       const completedToday = doseHistory.some((dose: any) => {
@@ -555,29 +655,13 @@ export function PeptideTracker() {
       let daysChecked = 0;
 
       while (daysChecked < maxDays) {
-        let shouldSchedule = false;
-
-        if (frequency.includes("daily") || frequency.includes("every day")) {
-          shouldSchedule = true;
-        } else if (frequency.includes("every other day")) {
-          const daysSinceStart = Math.floor(
-            (currentDate.getTime() - startDate.getTime()) /
-              (1000 * 60 * 60 * 24),
-          );
-          shouldSchedule = daysSinceStart % 2 === 0;
-        } else if (frequency.includes("3x per week")) {
-          const dayOfWeek = currentDate.getDay();
-          shouldSchedule = [1, 3, 5].includes(dayOfWeek); // Mon, Wed, Fri
-        } else if (frequency.includes("2x per week")) {
-          const dayOfWeek = currentDate.getDay();
-          shouldSchedule = [1, 4].includes(dayOfWeek); // Mon, Thu
-        } else if (frequency.includes("5 days on")) {
-          const dayOfWeek = currentDate.getDay();
-          shouldSchedule = dayOfWeek >= 1 && dayOfWeek <= 5; // Mon-Fri
-        } else if (frequency.includes("once per week")) {
-          const dayOfWeek = currentDate.getDay();
-          shouldSchedule = dayOfWeek === 1; // Monday
-        }
+        // See generateFutureDoses above — both routed through the shared
+        // isDoseDayForProtocol resolver (T-A3) so they can never disagree.
+        const shouldSchedule = isDoseDayForProtocol(
+          protocol.frequency,
+          startDate,
+          currentDate,
+        );
 
         if (shouldSchedule) {
           return currentDate;
@@ -615,6 +699,46 @@ export function PeptideTracker() {
     });
   }, [currentProtocols, getNextDoseDate]);
 
+  // Add-Protocol picker source: storefront products + the full peptide
+  // education library (92 cards) + the "Other (Custom)" option. Library
+  // items carry `slug` so DosageCalculator can fetch structured_regimens
+  // for citation-grounded dosing.
+  const addProtocolPeptideLibrary = useMemo(() => {
+    const storefront = peptideLibrary
+      .filter((p) => p.id !== "custom")
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        dosage: p.dosage,
+        category: p.purpose,
+        reconstitution: p.reconstitution,
+        vialAmount: p.vialAmount,
+        source: "storefront" as const,
+      }));
+    const library = eduLibrary.map((entry) => ({
+      id: `edu-${entry.slug}`,
+      name: entry.peptide,
+      category: entry.category,
+      slug: entry.slug,
+      source: "library" as const,
+    }));
+    const customEntry = peptideLibrary.find((p) => p.id === "custom");
+    const custom = customEntry
+      ? [
+          {
+            id: customEntry.id,
+            name: customEntry.name,
+            dosage: customEntry.dosage,
+            category: customEntry.purpose,
+            reconstitution: customEntry.reconstitution,
+            vialAmount: customEntry.vialAmount,
+            source: "custom" as const,
+          },
+        ]
+      : [];
+    return [...storefront, ...library, ...custom];
+  }, [peptideLibrary, eduLibrary]);
+
   const goToPreviousMonth = () => {
     setHistoryMonth(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
@@ -639,6 +763,7 @@ export function PeptideTracker() {
 
     const loadData = async () => {
       fetchPeptideLibrary();
+      fetchEducationLibrary();
       // Load doses first, then protocols (so doses are in state when protocols generate pending)
       await fetchTodaysDoses();
       await fetchUserProtocols();
@@ -647,6 +772,16 @@ export function PeptideTracker() {
     };
     loadData();
   }, [fetchTodaysDoses]);
+
+  // Deep-link: ?peptide=<slug> from the education library's "Start Protocol"
+  // link preselects that card and opens the Add-Protocol modal.
+  useEffect(() => {
+    const slug = searchParams.get("peptide");
+    if (slug && eduLibrary.length > 0) {
+      setDeepLinkSlug(slug);
+      setShowAddProtocolModal(true);
+    }
+  }, [searchParams, eduLibrary]);
 
   // Auto-generate today's doses when protocols change (preserve existing logged doses)
   useEffect(() => {
@@ -691,25 +826,44 @@ export function PeptideTracker() {
       const data = await response.json();
 
       if (data.success && data.protocols) {
-        // Transform API data to match our interface
-        const formattedProtocols = data.protocols.map((protocol: any) => ({
-          id: protocol.id,
-          name: protocol.peptides?.name || "Unknown",
-          purpose: protocol.peptides?.category || "General",
-          dosage: protocol.dosage,
-          timing: protocol.timing ?? "AM",
-          frequency: protocol.frequency,
-          duration: "8 weeks",
-          vialAmount: "10mg",
-          reconstitution: protocol.peptides?.reconstitution || "2ml",
-          syringeUnits: 10,
-          startDate: protocol.startDate
-            ? dateToLocalKey(new Date(protocol.startDate))
-            : dateToLocalKey(new Date()),
-          currentCycle: 1,
-          isActive: protocol.isActive,
-          administrationType: protocol.administrationType || "injection",
-        }));
+        // Transform API data to match our interface.
+        // H1: prep fields (duration/vialAmount/reconstitution/syringeUnits)
+        // render ONLY from the member's own persisted input (the localStorage
+        // prep side-channel — see readPrepForProtocol above) or a cited card
+        // value (protocol.peptides?.reconstitution, the real catalog field).
+        // No hardcoded prep defaults. syringeUnits is COMPUTED from the real
+        // vial/reconstitution/dose, never a constant; it's 0 when prep hasn't
+        // been set up, and the render layer treats 0 as an empty state.
+        const formattedProtocols = data.protocols.map((protocol: any) => {
+          const persistedPrep = readPrepForProtocol(protocol.id);
+          const vialAmount = persistedPrep.vialAmount || "";
+          const reconstitution =
+            persistedPrep.reconstitution || protocol.peptides?.reconstitution || "";
+          const duration = persistedPrep.duration || "";
+          const syringeUnits = computeSyringeUnitsFromPrep(
+            protocol.dosage || "",
+            vialAmount,
+            reconstitution,
+          );
+          return {
+            id: protocol.id,
+            name: protocol.peptides?.name || "Unknown",
+            purpose: protocol.peptides?.category || "General",
+            dosage: protocol.dosage,
+            timing: protocol.timing ?? "AM",
+            frequency: protocol.frequency,
+            duration,
+            vialAmount,
+            reconstitution,
+            syringeUnits,
+            startDate: protocol.startDate
+              ? dateToLocalKey(new Date(protocol.startDate))
+              : dateToLocalKey(new Date()),
+            currentCycle: 1,
+            isActive: protocol.isActive,
+            administrationType: protocol.administrationType || "injection",
+          };
+        });
         setCurrentProtocols(formattedProtocols);
         console.log(
           `✅ Loaded ${formattedProtocols.length} protocols from database`,
@@ -721,6 +875,8 @@ export function PeptideTracker() {
       }
     } catch (error) {
       console.error("Error fetching user protocols:", error);
+    } finally {
+      setProtocolsLoaded(true);
     }
   };
 
@@ -756,17 +912,27 @@ export function PeptideTracker() {
 
       if (products && Array.isArray(products)) {
         // Transform storefront products to match our interface
+        // H1: dosage/duration/vialAmount/reconstitution/syringeUnits are NOT
+        // prefill defaults — none of them are grounded in a real per-product
+        // value (the catalog has no vialAmount field at all). Previously
+        // "10mg"/"8 weeks" were stamped onto EVERY storefront product; since
+        // DosageCalculator's picker DOES read peptideLibrary[].vialAmount to
+        // seed the "peptide in vial (mg)" field, that fabricated a false vial
+        // size for every product (including non-peptide items like
+        // Bacteriostatic Water). Kept empty/zero — the member must type or
+        // pick a real prep in the calculator (RegimenSourcePicker / manual
+        // entry), never inherit a placeholder as if it were real.
         const formattedLibrary = products.map((product: any) => ({
           id: product.id,
           name: product.name,
           purpose: product.description?.substring(0, 50) || "General",
-          dosage: "250mcg", // Default dosage
+          dosage: "",
           timing: "AM",
           frequency: "Daily",
-          duration: "8 weeks",
-          vialAmount: "10mg",
-          reconstitution: "2ml",
-          syringeUnits: 10,
+          duration: "",
+          vialAmount: "",
+          reconstitution: "",
+          syringeUnits: 0,
         }));
 
         // Add "Other (Custom)" option at the end
@@ -774,13 +940,13 @@ export function PeptideTracker() {
           id: "custom",
           name: "Other (Custom)",
           purpose: "Custom",
-          dosage: "100mcg",
+          dosage: "",
           timing: "AM",
           frequency: "Daily",
-          duration: "4 weeks",
-          vialAmount: "5mg",
-          reconstitution: "1ml",
-          syringeUnits: 10,
+          duration: "",
+          vialAmount: "",
+          reconstitution: "",
+          syringeUnits: 0,
         });
 
         setPeptideLibrary(formattedLibrary);
@@ -798,6 +964,23 @@ export function PeptideTracker() {
       setPeptideLibrary(fallbackLibrary);
     } finally {
       setLoadingLibrary(false);
+    }
+  };
+
+  const fetchEducationLibrary = async () => {
+    try {
+      const response = await fetch("/api/peptides/education-library", {
+        credentials: "include",
+      });
+      const data = await response.json();
+      if (data.success && Array.isArray(data.peptides)) {
+        setEduLibrary(data.peptides);
+        console.log(
+          `✅ Loaded ${data.peptides.length} peptide library cards for Add-Protocol picker`,
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching peptide education library:", error);
     }
   };
 
@@ -820,7 +1003,9 @@ export function PeptideTracker() {
     }
   };
 
-  // Fallback library in case API fails
+  // Fallback library in case API fails.
+  // H1: no fabricated prep (duration/vialAmount/reconstitution/syringeUnits)
+  // — same reasoning as the storefront mapping above.
   const fallbackLibrary: Omit<
     PeptideProtocol,
     "startDate" | "currentCycle" | "isActive"
@@ -829,25 +1014,25 @@ export function PeptideTracker() {
       id: "fallback-1",
       name: "Semaglutide",
       purpose: "Fat Loss",
-      dosage: "250mcg",
+      dosage: "",
       timing: "AM",
       frequency: "Once per week",
-      duration: "8 weeks on, 8 weeks off",
-      vialAmount: "3mg",
-      reconstitution: "2ml",
-      syringeUnits: 17,
+      duration: "",
+      vialAmount: "",
+      reconstitution: "",
+      syringeUnits: 0,
     },
     {
       id: "fallback-2",
       name: "BPC-157",
       purpose: "Healing",
-      dosage: "500mcg",
+      dosage: "",
       timing: "AM & PM (twice daily)",
       frequency: "Daily",
-      duration: "4-6 weeks",
-      vialAmount: "10mg",
-      reconstitution: "3ml",
-      syringeUnits: 10,
+      duration: "",
+      vialAmount: "",
+      reconstitution: "",
+      syringeUnits: 0,
     },
   ];
 
@@ -972,6 +1157,16 @@ export function PeptideTracker() {
           (p) => p.name === protocolData.peptideName,
         );
 
+        // H1: persist the member's real calculator inputs so they survive
+        // reload (the backend protocol shape has no prep fields at all —
+        // protocols-store.ts is off-limits to add them). syringeUnits is
+        // COMPUTED from those real inputs, never a hardcoded constant.
+        writePrepForProtocol(protocolId, {
+          vialAmount: protocolData.vialAmount,
+          reconstitution: protocolData.reconstitution,
+          duration: protocolData.duration,
+        });
+
         // Add to local state
         const newProtocol: PeptideProtocol = {
           id: protocolId,
@@ -983,7 +1178,11 @@ export function PeptideTracker() {
           duration: protocolData.duration,
           vialAmount: protocolData.vialAmount,
           reconstitution: protocolData.reconstitution,
-          syringeUnits: 10,
+          syringeUnits: computeSyringeUnitsFromPrep(
+            protocolData.dosage,
+            protocolData.vialAmount,
+            protocolData.reconstitution,
+          ),
           startDate: dateToLocalKey(new Date()),
           currentCycle: 1,
           isActive: true,
@@ -1162,22 +1361,29 @@ export function PeptideTracker() {
       );
       if (!shouldProceed) return;
     }
-    // Check if this protocol already has completed doses today
-    const todaysCompletedDoses = todaysDoses.filter(
-      (dose) =>
-        dose.peptideId === protocol.id &&
-        dose.completed &&
-        new Date(dose.actualTime!).toDateString() === new Date().toDateString(),
-    );
 
-    if (todaysCompletedDoses.length > 0) {
+    // H6: a twice-daily (AM+PM) protocol has TWO independently-loggable
+    // slots today (see generateTodaysDosesPreservingLogged/slotsForProtocol
+    // above, which already generates them correctly). Block only when every
+    // scheduled slot today is completed — previously this blocked after ANY
+    // one completed dose, which made the second (PM) dose unloggable once
+    // the first (AM) was logged.
+    const todaysPendingDoses = todaysScheduledDoses.filter((dose) => !dose.completed);
+
+    if (todaysScheduledDoses.length > 0 && todaysPendingDoses.length === 0) {
       alert(
-        `${protocol.name} already logged today. Check completed doses in your history.`,
+        `${protocol.name} already logged for all doses today. Check completed doses in your history.`,
       );
       return;
     }
 
-    setSelectedProtocol(protocol);
+    // Target the earliest still-pending slot so logDose (below) only clears
+    // that one slot instead of every pending slot for this protocol.
+    const nextSlot = [...todaysPendingDoses].sort(
+      (a, b) => parseTimeToMinutes(a.scheduledTime) - parseTimeToMinutes(b.scheduledTime),
+    )[0];
+
+    setSelectedProtocol({ ...protocol, scheduledDoseId: nextSlot?.id });
     setShowDoseModal(true);
     setDoseNotes("");
     setDoseSideEffects([]);
@@ -1278,6 +1484,12 @@ export function PeptideTracker() {
       if (response.ok) {
         console.log("✅ Protocol saved successfully, timing:", timingString);
 
+        // H1: duration has no backend field to PATCH (protocols-store.ts is
+        // off-limits) — persist the member's edit to the same localStorage
+        // side-channel fetchUserProtocols reads, so it isn't silently
+        // discarded on save.
+        writePrepForProtocol(editingProtocol.id, { duration: customDuration });
+
         // Re-fetch protocols from database to ensure we have the saved data
         await fetchUserProtocols();
 
@@ -1353,13 +1565,23 @@ export function PeptideTracker() {
           dateKey: doseKey,
         };
 
-        // Remove ALL pending doses for this protocol and add the completed dose
+        // H6: remove only the SPECIFIC pending slot being completed (the
+        // twice-daily AM/PM slot targeted by openDoseModal), not every
+        // pending dose for this protocol — removing all of them wiped the
+        // sibling slot (e.g. PM) from state as soon as AM was logged,
+        // making it unloggable until the next full data refetch.
         setTodaysDoses((prev) => {
-          // Filter out any pending doses for this protocol
-          const withoutPending = prev.filter(
-            (dose) =>
-              !(dose.peptideId === selectedProtocol.id && !dose.completed),
-          );
+          const targetId = selectedProtocol.scheduledDoseId;
+          const withoutPending = prev.filter((dose) => {
+            if (dose.completed) return true;
+            if (dose.peptideId !== selectedProtocol.id) return true;
+            // No specific slot id (single-dose protocol, or the unscheduled-
+            // override path) — fall back to the old "remove all pending for
+            // this protocol" behavior, which is a no-op risk only when
+            // there's just one slot to begin with.
+            if (!targetId) return false;
+            return dose.id !== targetId;
+          });
           // Add the new completed dose
           return [
             ...withoutPending.filter((dose) => dose.dateKey === doseKey),
@@ -1444,56 +1666,76 @@ export function PeptideTracker() {
     }
   };
 
-  const SyringeScale = ({ units }: { units: number }) => {
-    const numericUnits = Number(units);
-    const normalizedUnits = Number.isFinite(numericUnits)
-      ? Math.max(0, Math.min(numericUnits, 100))
-      : 0;
-    const fillPercent = Math.min(
-      100,
-      Math.max(0, (normalizedUnits / 100) * 100),
-    );
-    const volumeMl = normalizedUnits / 100;
-    const displayUnits = Number(normalizedUnits.toFixed(1));
-    const displayVolume = Number(volumeMl.toFixed(volumeMl < 1 ? 3 : 2));
+  // Today's-doses lead-block row — presentational only. Reads the same
+  // todaysDoses/DoseEntry shape and calls the same openDoseModal handler
+  // fetchTodaysDoses/logDose already populate; adds no new data flow.
+  const TodayDoseRow = ({
+    protocol,
+    dose,
+    onLog,
+  }: {
+    protocol: PeptideProtocol | undefined;
+    dose: DoseEntry;
+    onLog: () => void;
+  }) => {
+    const name = (protocol?.name || "Peptide")
+      .replace(/\s*-\s*peptide\s*$/i, "")
+      .replace(/\s+Package\s*$/i, "")
+      .trim();
+    const Icon = protocol?.administrationType === "oral" ? Pill : Syringe;
+    const timeLabel = formatTime12h(dose.scheduledTime);
 
-    const pointerPosition = Math.min(Math.max(fillPercent, 0), 100);
-    const pointerStyle =
-      pointerPosition <= 0
-        ? { left: "0%", transform: "translateY(-50%)" }
-        : pointerPosition >= 100
-          ? { left: "100%", transform: "translate(-100%, -50%)" }
-          : { left: `${pointerPosition}%`, transform: "translate(-50%, -50%)" };
+    if (dose.completed) {
+      const loggedAtLabel = dose.actualTime
+        ? new Date(dose.actualTime).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+          })
+        : null;
 
-    const ticks = [0, 25, 50, 75, 100];
+      return (
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-secondary-400/30 bg-secondary-500/10 px-4 py-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary-500/20 text-secondary-300">
+              <Check className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-semibold text-white truncate">{name}</p>
+              <p className="text-sm text-white/70 truncate">
+                {protocol?.dosage ? `${protocol.dosage} · ` : ""}
+                {timeLabel}
+              </p>
+            </div>
+          </div>
+          <span className="text-sm font-medium text-secondary-300 shrink-0">
+            Logged{loggedAtLabel ? ` ${loggedAtLabel}` : ""}
+          </span>
+        </div>
+      );
+    }
 
     return (
-      <div className="mt-3">
-        <div className="relative mt-1 h-2 rounded-full bg-gray-700/40 overflow-hidden">
-          <div
-            className="absolute inset-y-0 left-0 bg-primary-500/70"
-            style={{ width: `${fillPercent}%` }}
-          />
-          <div
-            className="absolute top-1/2 h-4 w-[2px] bg-primary-200"
-            style={pointerStyle}
-          />
-          {ticks.map((tick) => (
-            <div
-              key={tick}
-              className="absolute inset-y-0 w-px bg-white/20"
-              style={{ left: `${tick}%` }}
-            />
-          ))}
+      <div className="flex items-center justify-between gap-4 rounded-xl border border-white/15 bg-black/20 px-4 py-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-500/15 text-primary-300">
+            <Icon className="w-5 h-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="font-semibold text-white truncate">{name}</p>
+            <p className="text-sm text-white/70 truncate">
+              {protocol?.dosage ? `${protocol.dosage} · ` : ""}
+              {timeLabel}
+            </p>
+          </div>
         </div>
-        <div className="mt-1 flex justify-between text-[9px] uppercase tracking-wide text-gray-500">
-          {ticks.map((tick) => (
-            <span key={tick}>{tick}u</span>
-          ))}
-        </div>
-        <p className="mt-2 text-xs text-gray-400">
-          Draw {displayUnits} units ({displayVolume} ml)
-        </p>
+        <button
+          type="button"
+          onClick={onLog}
+          disabled={!protocol}
+          className="shrink-0 rounded-lg bg-primary-500 hover:bg-primary-600 active:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold px-4 py-2 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+        >
+          Log dose
+        </button>
       </div>
     );
   };
@@ -1574,6 +1816,21 @@ export function PeptideTracker() {
         statusBadge = {
           text: `Due in ${daysUntil} days`,
           className: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+        };
+      }
+    }
+
+    // H2: an unparseable frequency must surface to the member instead of
+    // silently showing nothing (which reads as "nothing to worry about").
+    if (!statusBadge) {
+      const freqLower = protocol.frequency.toLowerCase();
+      if (
+        !freqLower.includes("every other day") &&
+        resolveFrequency(protocol.frequency).kind === "unknown"
+      ) {
+        statusBadge = {
+          text: "Unrecognized schedule — set it up",
+          className: "bg-red-500/20 text-red-300 border-red-400/40",
         };
       }
     }
@@ -1671,11 +1928,39 @@ export function PeptideTracker() {
 
               <div className="border-t border-gray-600 pt-3">
                 <span className="text-gray-400">Preparation:</span>
-                <p className="text-gray-300 text-xs mt-1">
-                  {protocol.vialAmount} vial + {protocol.reconstitution} BAC
-                  water = {protocol.syringeUnits} units per dose
-                </p>
-                <SyringeScale units={protocol.syringeUnits} />
+                {/* H1: never render a fabricated prep number. Real values
+                    only, computed syringe units only, or an honest empty
+                    state that sends the member to set it up. */}
+                {protocol.administrationType && protocol.administrationType !== "injection" ? (
+                  <p className="text-gray-300 text-xs mt-1">
+                    No injection prep needed for this administration type.
+                  </p>
+                ) : protocol.vialAmount && protocol.reconstitution && protocol.syringeUnits > 0 ? (
+                  <>
+                    <p className="text-gray-300 text-xs mt-1">
+                      {protocol.vialAmount} vial + {protocol.reconstitution} BAC
+                      water = {protocol.syringeUnits} units per dose
+                    </p>
+                    <SyringeModel
+                      trueUnits={protocol.syringeUnits}
+                      vialCapacityUnits={(() => {
+                        const volMatch = protocol.reconstitution.match(/(\d+\.?\d*)/);
+                        return volMatch ? parseFloat(volMatch[1]) * 100 : undefined;
+                      })()}
+                    />
+                  </>
+                ) : (
+                  <div className="mt-1">
+                    <p className="text-amber-300 text-xs">Prep not set up yet.</p>
+                    <button
+                      type="button"
+                      onClick={() => openCalculatorModal(protocol)}
+                      className="mt-1 text-xs font-semibold text-amber-200 underline underline-offset-2 hover:text-amber-100"
+                    >
+                      Set up your prep in the Dose Calculator
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1721,7 +2006,7 @@ export function PeptideTracker() {
       className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)",
+          "linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.88)), url(/hero-background.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -1766,29 +2051,131 @@ export function PeptideTracker() {
           </div>
         </div>
 
-        {/* Title Section */}
-        <div className="text-center py-8">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
-            <span className="text-primary-400">Peptide</span> Tracker
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Comprehensive peptide management system. Schedule doses, track
-            progress, monitor side effects with IRB-compliant data sharing.
-          </p>
+        {/* Daily Protocol Header — calm product framing, not a marketing hero */}
+        <div className="container mx-auto px-4 pt-8">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-sm font-semibold text-primary-300 uppercase tracking-wide">
+              {dayGreeting}
+            </p>
+            <div className="flex items-baseline justify-between flex-wrap gap-x-4 gap-y-1 mt-1 mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                Your daily protocol
+              </h1>
+              <span className="text-sm text-white/90">{todayLongLabel}</span>
+            </div>
+
+            {/* Today's Doses — the lead block. Real todaysDoses state, real
+                openDoseModal handler; no fabricated data, no decorative glow. */}
+            <div className="bg-gray-900/60 backdrop-blur-md rounded-2xl border border-white/20 p-6 mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-white">
+                  Today's doses
+                </h2>
+                {protocolsLoaded && currentProtocols.length > 0 && (
+                  <span className="text-sm text-white/60">
+                    {todaysDoseBuckets.completed.length} of{" "}
+                    {todaysDoseBuckets.pending.length +
+                      todaysDoseBuckets.completed.length}{" "}
+                    logged
+                  </span>
+                )}
+              </div>
+
+              {!protocolsLoaded ? (
+                <div className="space-y-3" aria-hidden="true">
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="h-14 rounded-xl bg-white/5 border border-white/10 animate-pulse motion-reduce:animate-none"
+                    />
+                  ))}
+                </div>
+              ) : currentProtocols.length === 0 ? (
+                <div className="text-center py-3">
+                  <p className="text-white font-medium mb-1">
+                    No protocols yet
+                  </p>
+                  <p className="text-sm text-white/90 mb-4">
+                    Add your first peptide protocol to start your daily
+                    tracking.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddProtocolModal(true)}
+                    className="rounded-lg bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold px-5 py-2.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                  >
+                    Add your first protocol
+                  </button>
+                </div>
+              ) : todaysDoseBuckets.pending.length === 0 &&
+                todaysDoseBuckets.completed.length === 0 ? (
+                <p className="text-center text-white/70 py-6">
+                  Nothing due today — check Dosing Calendar for your next
+                  scheduled dose.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {todaysDoseBuckets.pending.length === 0 ? (
+                    <p className="text-center text-secondary-300 font-medium py-2">
+                      All doses logged for today ✓ — see you tomorrow.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {todaysDoseBuckets.pending.map((dose) => (
+                        <TodayDoseRow
+                          key={dose.id}
+                          dose={dose}
+                          protocol={currentProtocols.find(
+                            (p) => p.id === dose.peptideId,
+                          )}
+                          onLog={() => {
+                            const protocol = currentProtocols.find(
+                              (p) => p.id === dose.peptideId,
+                            );
+                            if (protocol) openDoseModal(protocol);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {todaysDoseBuckets.completed.length > 0 && (
+                    <div className="space-y-2">
+                      {todaysDoseBuckets.pending.length > 0 && (
+                        <p className="text-xs uppercase tracking-wide text-white/60 pt-1">
+                          Logged today
+                        </p>
+                      )}
+                      {todaysDoseBuckets.completed.map((dose) => (
+                        <TodayDoseRow
+                          key={dose.id}
+                          dose={dose}
+                          protocol={currentProtocols.find(
+                            (p) => p.id === dose.peptideId,
+                          )}
+                          onLog={() => {}}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="container mx-auto px-4 pb-8">
           {/* Navigation Tabs */}
           <div className="flex justify-center mb-8">
-            <div className="bg-gradient-to-r from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-1 border border-primary-400/30">
+            <div className="bg-white/10 backdrop-blur-md rounded-xl p-1 border border-white/20">
               {(["current", "calendar"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all capitalize ${
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
                     activeTab === tab
-                      ? "bg-primary-500 text-white shadow-lg"
-                      : "text-gray-300 hover:text-white hover:bg-gray-700/50"
+                      ? "bg-primary-500 text-white"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {tab === "current" ? "Current Protocols" : "Dosing Calendar"}
@@ -1801,55 +2188,41 @@ export function PeptideTracker() {
           {activeTab === "current" && (
             <div className="max-w-6xl mx-auto">
               <div className="grid gap-6">
-                {/* Active Protocols - Full Width */}
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold text-white">
-                      Active Protocols
-                    </h3>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setShowAddProtocolModal(true)}
-                        className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Research Protocol
-                      </button>
-                      <button
-                        onClick={() => setShowQuickAddOral(true)}
-                        className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
-                      >
-                        <Pill className="w-4 h-4 mr-2" />
-                        Add Oral Med
-                      </button>
-                    </div>
-                  </div>
-
-                  {currentProtocols.length === 0 ? (
-                    <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
-                      <Syringe className="w-16 h-16 text-primary-400 mx-auto mb-6" />
-                      <h3 className="text-2xl font-bold text-white mb-4">
-                        Start Your First Protocol
+                {/* Active Protocols - Full Width. Hidden entirely when empty:
+                    the "Today's doses" empty state above already carries the
+                    "Add your first protocol" CTA, so an empty header + buttons
+                    here would just float over dead space. */}
+                {currentProtocols.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-2xl font-bold text-white">
+                        Active Protocols
                       </h3>
-                      <p className="text-gray-200 mb-8">
-                        Choose from our curated peptide library to begin
-                        tracking your peptide therapy journey.
-                      </p>
-                      <button
-                        onClick={() => setShowAddProtocolModal(true)}
-                        className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl"
-                      >
-                        Browse Peptide Library
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setShowAddProtocolModal(true)}
+                          className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Research Protocol
+                        </button>
+                        <button
+                          onClick={() => setShowQuickAddOral(true)}
+                          className="bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                        >
+                          <Pill className="w-4 h-4 mr-2" />
+                          Add Oral Med
+                        </button>
+                      </div>
                     </div>
-                  ) : (
+
                     <div className="grid gap-6 md:grid-cols-2">
                       {sortedProtocols.map((protocol) => (
                         <PeptideCard key={protocol.id} protocol={protocol} />
                       ))}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -2201,97 +2574,116 @@ export function PeptideTracker() {
                   <h4 className="font-semibold text-secondary-300 mb-3">
                     Weekly Schedule
                   </h4>
-                  <div className="grid grid-cols-7 gap-2">
-                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                      (day, index) => {
-                        // Determine if this day is active based on frequency
-                        const isActiveDay =
-                          selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("daily") ||
-                          selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("every day") ||
-                          (selectedProtocol.frequency.includes("5 days") &&
-                            index >= 1 &&
-                            index <= 5) ||
-                          (selectedProtocol.frequency.includes("3x per week") &&
-                            [1, 3, 5].includes(index)) ||
-                          (selectedProtocol.frequency.includes("2x per week") &&
-                            [1, 4].includes(index)) ||
-                          (selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("every other day") &&
-                            index % 2 === 1);
+                  {(() => {
+                    // H3: active days come from the SAME shared resolver the
+                    // reminder engine uses (peptide-frequency.ts), never an
+                    // invented Mon/Wed/Fri / Mon/Thu / index-parity guess.
+                    // A bare "3x per week"/"2x per week" with no explicit
+                    // days chosen is an unknown schedule — show a "set your
+                    // schedule" state instead of highlighting fabricated days.
+                    if (!hasKnownSchedule(selectedProtocol.frequency)) {
+                      return (
+                        <div className="text-sm text-gray-400 text-center py-6">
+                          Schedule not set — choose your days
+                        </div>
+                      );
+                    }
 
-                        // Determine dose times based on timing
-                        const doseTimes: string[] = [];
-                        if (isActiveDay) {
-                          const timing = selectedProtocol.timing.toLowerCase();
-                          if (
-                            timing.includes("am/pm") ||
-                            timing.includes("twice")
-                          ) {
-                            doseTimes.push("8:00 AM", "8:00 PM");
-                          } else if (timing.includes("am")) {
-                            doseTimes.push("8:00 AM");
-                          } else if (timing.includes("pm")) {
-                            doseTimes.push("8:00 PM");
-                          } else if (timing.includes("before meals")) {
-                            doseTimes.push("7:00 AM", "12:00 PM", "6:00 PM");
-                          } else if (timing.includes("after meals")) {
-                            doseTimes.push("9:00 AM", "2:00 PM", "8:00 PM");
-                          } else {
-                            doseTimes.push("Scheduled");
-                          }
-                        }
+                    const protocolStartDate = selectedProtocol.startDate
+                      ? parseLocalDateKey(selectedProtocol.startDate)
+                      : new Date();
+                    protocolStartDate.setHours(0, 0, 0, 0);
 
-                        return (
-                          <div key={day} className="text-center">
-                            <div className="text-xs font-semibold text-gray-300 mb-2">
-                              {day}
-                            </div>
-                            <div
-                              className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
-                                isActiveDay
-                                  ? "bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200"
-                                  : "bg-gray-700/20 border border-gray-600/20 text-gray-500"
-                              }`}
-                            >
-                              {doseTimes.length > 0 ? (
-                                doseTimes.map((time, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="font-medium whitespace-nowrap"
-                                  >
-                                    {time}
+                    const gridToday = new Date();
+                    gridToday.setHours(0, 0, 0, 0);
+                    const weekStart = new Date(gridToday);
+                    weekStart.setDate(gridToday.getDate() - gridToday.getDay());
+
+                    return (
+                      <>
+                        <div className="grid grid-cols-7 gap-2">
+                          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+                            (day, index) => {
+                              const cellDate = new Date(weekStart);
+                              cellDate.setDate(weekStart.getDate() + index);
+
+                              const isActiveDay = isDoseDayForProtocol(
+                                selectedProtocol.frequency,
+                                protocolStartDate,
+                                cellDate,
+                              );
+
+                              const doseTimes = isActiveDay
+                                ? parseDoseTimes(selectedProtocol.timing).map(
+                                    formatTime12h,
+                                  )
+                                : [];
+
+                              return (
+                                <div key={day} className="text-center">
+                                  <div className="text-xs font-semibold text-gray-300 mb-2">
+                                    {day}
                                   </div>
-                                ))
-                              ) : (
-                                <div className="text-gray-500">—</div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
-                  <div className="mt-3 text-xs text-gray-400 text-center">
-                    Times shown are suggested based on your protocol timing (
-                    {selectedProtocol.timing})
-                  </div>
+                                  <div
+                                    className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
+                                      isActiveDay
+                                        ? "bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200"
+                                        : "bg-gray-700/20 border border-gray-600/20 text-gray-500"
+                                    }`}
+                                  >
+                                    {doseTimes.length > 0 ? (
+                                      doseTimes.map((time, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="font-medium whitespace-nowrap"
+                                        >
+                                          {time}
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <div className="text-gray-500">—</div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            },
+                          )}
+                        </div>
+                        <div className="mt-3 text-xs text-gray-400 text-center">
+                          Times shown are suggested based on your protocol timing (
+                          {selectedProtocol.timing})
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
 
                 <div className="bg-amber-600/20 rounded-lg p-4">
                   <h4 className="font-semibold text-amber-300 mb-2">
                     Preparation Instructions
                   </h4>
-                  <p className="text-amber-100 text-sm">
-                    Reconstitute {selectedProtocol.vialAmount} vial with{" "}
-                    {selectedProtocol.reconstitution} of bacteriostatic water.
-                    Each dose requires {selectedProtocol.syringeUnits} units on
-                    an insulin syringe.
-                  </p>
+                  {/* H1: no fabricated prep numbers here either. */}
+                  {selectedProtocol.administrationType &&
+                  selectedProtocol.administrationType !== "injection" ? (
+                    <p className="text-amber-100 text-sm">
+                      No injection prep needed for this administration type.
+                    </p>
+                  ) : selectedProtocol.vialAmount &&
+                    selectedProtocol.reconstitution &&
+                    selectedProtocol.syringeUnits > 0 ? (
+                    <p className="text-amber-100 text-sm">
+                      Reconstitute {selectedProtocol.vialAmount} vial with{" "}
+                      {selectedProtocol.reconstitution} of bacteriostatic water.
+                      Each dose requires {selectedProtocol.syringeUnits} units on
+                      an insulin syringe.
+                    </p>
+                  ) : (
+                    <p className="text-amber-100 text-sm">
+                      Prep not set up yet — open the Dose Calculator from this
+                      protocol's card to set your vial size and reconstitution
+                      volume.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -2322,7 +2714,10 @@ export function PeptideTracker() {
                     </p>
                   </div>
                   <button
-                    onClick={() => setShowAddProtocolModal(false)}
+                    onClick={() => {
+                      setShowAddProtocolModal(false);
+                      setDeepLinkSlug(null);
+                    }}
                     className="bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-full p-3 transition-all duration-300 hover:scale-110"
                   >
                     <X className="w-6 h-6" />
@@ -2332,16 +2727,13 @@ export function PeptideTracker() {
               <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
                 <DosageCalculator
                   mode="addProtocol"
-                  peptideLibrary={peptideLibrary.map((p) => ({
-                    id: p.id,
-                    name: p.name,
-                    dosage: p.dosage,
-                    category: p.purpose,
-                    reconstitution: p.reconstitution,
-                    vialAmount: p.vialAmount,
-                  }))}
+                  peptideLibrary={addProtocolPeptideLibrary}
+                  initialPeptideSlug={deepLinkSlug}
                   onSaveProtocol={handleSaveProtocol}
-                  onClose={() => setShowAddProtocolModal(false)}
+                  onClose={() => {
+                    setShowAddProtocolModal(false);
+                    setDeepLinkSlug(null);
+                  }}
                 />
               </div>
             </div>

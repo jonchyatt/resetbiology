@@ -245,5 +245,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.882Z",
-  "mentions_fingerprint": "094d955065e9"
+  "mentions_fingerprint": "094d955065e9",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 07:51, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+      "quote": "for heart disease, one to three capsules, two to times a day for 10 to 20 days.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:23, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+      "quote": "If you're just doing this for longevity purposes, I would say one capsule, you know, once per day, for 30 days, or one or two times per days for ten to twenty days will be enough.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 (library article; corresponding dosage cue @ 08:23), https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+      "quote": "For senile purpura, 1 to 3 capsules, 2 to 3 times daily.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": ", 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 02:56, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+      "quote": "It's available in a tablet or capsule form",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:23, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+      "quote": "the maintenance therapy courses should be repeated every three to six months.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", 2026-04-08, saturday-morning-coffee-talk-72625--1e352582 @ 39:11, https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-72625--1e352582/",
+      "quote": "You can use like two times per year for 30 days and get benefit from it.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 07:51, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+      "quote": "for 10 to 20 days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", 2026-03-29, ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8 @ 08:23, https://library.hunterwilliamshealth.com/p/ventfort-the-bioregulator-everyone-can-benefit-from--7d2546f8/",
+      "quote": "for 30 days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

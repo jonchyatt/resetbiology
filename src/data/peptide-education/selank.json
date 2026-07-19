@@ -274,5 +274,59 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:09.125Z",
-  "mentions_fingerprint": "8ec3b33f6bcf"
+  "mentions_fingerprint": "8ec3b33f6bcf",
+  "structured_regimens": [
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "acute",
+      "field": "dose",
+      "citation": ", Semax vs Selank - Which Nootropic Peptide is Best for You? (2024-11-15, 2m6fKa4Wd6k @ 00:12:52.839, https://youtu.be/2m6fKa4Wd6k)",
+      "quote": "sank is again very similar to cmax it's going to be 200 to 600 micrograms and I take this anywhere between one to three times a day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "acute",
+      "field": "route",
+      "citation": ", Semax vs Selank - Which Nootropic Peptide is Best for You? (2024-11-15, 2m6fKa4Wd6k @ 00:13:20.000, https://youtu.be/2m6fKa4Wd6k)",
+      "quote": "I have my preference I do prefer this peptide in an inner nasal spray just because like when that anxiety starts coming on I just feel like the inner nasal sprays are a little quicker.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "acute",
+      "field": "frequency",
+      "citation": ", Semax vs Selank - Which Nootropic Peptide is Best for You? (2024-11-15, 2m6fKa4Wd6k @ 00:14:10.199, https://youtu.be/2m6fKa4Wd6k)",
+      "quote": "struggling really bad one day with anxiety I definitely have used this peptide more than once a day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": ", N-Acetyl Versions of Semax Selank Are They Really Better (2026-03-29, n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf @ 0:08:02, https://library.hunterwilliamshealth.com/p/n-acetyl-versions-of-semax-selank-are-they-really-better--cf280eaf/)",
+      "quote": "For individuals with severe anxiety or chronic stress, I would recommend just go straight to the in acetyloversion and probably start around 500 micro grams and then go up to like one milligram per.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

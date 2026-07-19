@@ -141,5 +141,59 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:09.481Z",
-  "mentions_fingerprint": "80d8f55106c3"
+  "mentions_fingerprint": "80d8f55106c3",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— peptide-qa-july-2025--936e4b81 (2026-03-29, 35:31, https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/)",
+      "quote": "I would do two milligrams of both per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "— email threadId 19af0c0c3b0300ba (2025-12-05, https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2)",
+      "quote": "Chonluten | 2 mg | Injection | 12 weeks",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— peptide-qa-july-2025--936e4b81 (2026-03-29, 35:31, https://library.hunterwilliamshealth.com/p/peptide-qa-july-2025--936e4b81/)",
+      "quote": "I would do two milligrams of both per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "— email threadId 19af0c0c3b0300ba (2025-12-05, https://open.spotify.com/episode/0heRIsC6pUEWN9mZptGkF2)",
+      "quote": "Chonluten | 2 mg | Injection | 12 weeks",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

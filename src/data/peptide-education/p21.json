@@ -428,5 +428,137 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:05.685Z",
-  "mentions_fingerprint": "4eb623f113a6"
+  "mentions_fingerprint": "4eb623f113a6",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "email threadId 19c01b888153d27d (2026-01-27)",
+      "quote": "Hunter's sweet spot: 100-250 mcg/day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "email threadId 19c01b888153d27d (2026-01-27)",
+      "quote": "Common range: 100-500 mcg/day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(hgI5Mpc-xDQ 01:57:11.679)",
+      "quote": "P21 [clears throat] dosage. I like 250 micrograms. Yep. To start.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "email threadId 19c01b888153d27d (2026-01-27)",
+      "quote": "Common range: 1-4 mg/day in divided doses.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": ", Peptides for Eye Health The Ultimate Vision Support Stack (2026-03-29; 15:53; https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/)",
+      "quote": "You can do it intramuscularly, but I recommend sub cutaneously every other day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": ", P21 The Brain Peptide (2026-04-08; 17:28; https://library.hunterwilliamshealth.com/p/p21-the-brain-peptide--72289902/)",
+      "quote": "this is one that definitely can be used intra nasally.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", P21 The Brain Peptide (2026-04-08; 18:28; https://library.hunterwilliamshealth.com/p/p21-the-brain-peptide--72289902/)",
+      "quote": "I will even do that honestly when I'm cycling it for like three days a week and I still notice good effects. So you might not even need to use it every day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": ", Peptide Q&A · April 2026 (2026-04-30; 20:29; https://library.hunterwilliamshealth.com/p/peptide-qa-april-2026--9bc7fd8c/)",
+      "quote": "Dosing wise, I like 250 micrograms, three to four times per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", P21 The Brain Peptide (2026-04-08; 16:52; https://library.hunterwilliamshealth.com/p/p21-the-brain-peptide--72289902/)",
+      "quote": "I think cycling wise, it's fine to do it for eight weeks on, eight week's off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": ", Peptides for Eye Health The Ultimate Vision Support Stack (2026-03-29; 15:53; https://library.hunterwilliamshealth.com/p/peptides-for-eye-health-the-ultimate-vision-support-stack--cf6c7315/)",
+      "quote": "Then you do this for six to eight weeks, repeated one to two times for a year.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

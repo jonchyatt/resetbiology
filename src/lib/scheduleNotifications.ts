@@ -1,5 +1,12 @@
 import { prisma } from './prisma'
 import { fromZonedTime } from 'date-fns-tz'
+import { isDoseDayForProtocol, parseDoseTimes } from './peptide-frequency'
+
+// Re-exported so existing importers (computeReminders.ts) are unaffected —
+// the parse itself now lives in peptide-frequency.ts (no prisma import) so
+// the client-side Weekly Schedule grid can reuse the exact same logic
+// without pulling a server-only module into the browser bundle (H3).
+export { parseDoseTimes }
 
 /**
  * Schedules push notifications for a protocol based on user preferences
@@ -148,49 +155,6 @@ export async function scheduleNotificationsForProtocol(
 }
 
 /**
- * Parse dose times from protocol notes/frequency string
- * Examples: "08:00", "08:00/20:00", "Daily 08:00", "Mon-Fri 08:00/20:00"
- * Also handles: "AM & PM (twice daily)", "AM", "PM", "twice daily"
- */
-export function parseDoseTimes(text: string): string[] {
-  const times: string[] = []
-
-  // First, try to match explicit time patterns like 08:00, 8:00 AM, etc.
-  const timeRegex = /\b(\d{1,2}):(\d{2})\b/g
-  let match
-
-  while ((match = timeRegex.exec(text)) !== null) {
-    const hours = match[1].padStart(2, '0')
-    const minutes = match[2]
-    times.push(`${hours}:${minutes}`)
-  }
-
-  // If no explicit times found, parse keywords
-  if (times.length === 0) {
-    const lowerText = text.toLowerCase()
-
-    // Check for "twice daily" or variations
-    if (lowerText.includes('twice') || (lowerText.includes('am') && lowerText.includes('pm'))) {
-      times.push('08:00', '20:00') // Morning and evening
-    }
-    // Check for AM only
-    else if (lowerText.includes('am') || lowerText.includes('morning')) {
-      times.push('08:00')
-    }
-    // Check for PM only
-    else if (lowerText.includes('pm') || lowerText.includes('evening')) {
-      times.push('20:00')
-    }
-    // Default to midday if nothing else matches
-    else if (lowerText.includes('daily') || lowerText.includes('once')) {
-      times.push('12:00')
-    }
-  }
-
-  return [...new Set(times)] // Remove duplicates
-}
-
-/**
  * Convert a local date + time within a timezone to an absolute UTC Date
  */
 export function toUtcFromLocal(date: Date, time: string, timeZone: string): Date {
@@ -202,38 +166,18 @@ export function toUtcFromLocal(date: Date, time: string, timeZone: string): Date
 /**
  * Pure rule: should a dose fire on this calendar day given the protocol's
  * frequency? Exported so the on-demand Drive cron can reuse the same logic
- * as the legacy Mongo path without duplication.
+ * as the legacy Mongo path without duplication. Delegates to the shared
+ * (frequency, startDate, date) primitive in peptide-frequency.ts so this
+ * scheduler and the Weekly Schedule display grid can never disagree (H3).
  */
 export function shouldScheduleOnDate(
   protocol: { startDate?: Date | null; frequency: string },
   date: Date,
 ): boolean {
-  const frequency = (protocol.frequency || '').toLowerCase()
   const startDate = protocol.startDate ? new Date(protocol.startDate) : new Date()
   startDate.setHours(0, 0, 0, 0)
 
-  if (frequency.includes('daily') || frequency.includes('every day')) {
-    return true
-  }
-  if (frequency.includes('every other day')) {
-    const daysSinceStart = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-    return daysSinceStart >= 0 && daysSinceStart % 2 === 0
-  }
-  const dayOfWeek = date.getDay()
-  if (frequency.includes('3x per week') || frequency.includes('3x/week')) {
-    return [1, 3, 5].includes(dayOfWeek)
-  }
-  if (frequency.includes('2x per week') || frequency.includes('2x/week')) {
-    return [1, 4].includes(dayOfWeek)
-  }
-  if (frequency.includes('mon-fri') || frequency.includes('5 days on')) {
-    return dayOfWeek >= 1 && dayOfWeek <= 5
-  }
-  if (frequency.includes('once per week')) {
-    return dayOfWeek === 1
-  }
-  // Default to daily if frequency is unrecognized
-  return true
+  return isDoseDayForProtocol(protocol.frequency || '', startDate, date)
 }
 
 /**

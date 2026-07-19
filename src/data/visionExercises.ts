@@ -74,11 +74,11 @@ export const visionExercises: VisionExercise[] = [
     equipment: ['Wall target', 'metronome (optional)'],
     checkpoints: [
       'Anchor chin with a light nod; imagine ears growing tall.',
-      'Trace horizontal infinity sign with eyes only for 60 sec.',
-      'Switch to vertical loops, then diagonal sequences.',
+      'Trace the horizontal sweep with eyes only for 60 sec.',
+      'Switch to vertical loops, then the infinity path.',
     ],
     guidance: [
-      { heading: 'Tempo cue', detail: 'Count 4 seconds per loop; no jerky jumps allowed.' },
+      { heading: 'Tempo cue', detail: 'Smooth and steady round each loop — no jerky jumps.' },
       { heading: 'Breath cue', detail: 'Inhale along the left arc, exhale along the right.' },
     ],
     progression: 'Add mild head turns after week 2 to simulate walking environments.',
@@ -93,9 +93,9 @@ export const visionExercises: VisionExercise[] = [
     focus: ['peripheral awareness', 'proprioception'],
     equipment: ['Room objects', 'sticky dots'],
     checkpoints: [
-      'Stare at a central focal point on wall.',
-      'Call out the color/shape of items detected in the edges.',
-      'Point toward targets without letting pupils leave the center.',
+      'Hold your gaze on the center letter — don’t chase the target.',
+      'Tap the target the instant it flashes at the edge.',
+      'Answer the letter check-ins without looking away — that proves you stayed centered.',
     ],
     guidance: [
       { heading: 'Cognitive cue', detail: 'Stack difficulty by adding category rules (e.g., only blue objects).' },
@@ -133,9 +133,9 @@ export const visionExercises: VisionExercise[] = [
     focus: ['saccades', 'speed'],
     equipment: ['Two wall targets'],
     checkpoints: [
-      'Place targets 60° apart at eye level.',
-      'Jump gaze between them on metronome beats.',
-      'Add diagonal targets for extra challenge.',
+      'Watch the target jump — read the letter each time it flashes.',
+      'Jump your gaze to each target as it flashes, on the beat.',
+      'Diagonal targets join in as you level up — track them the same way.',
     ],
     guidance: [
       { heading: 'Metronome', detail: 'Start 60 bpm; add +5 bpm once accuracy ≥ 90% for two sessions.' },
@@ -153,9 +153,9 @@ export const visionExercises: VisionExercise[] = [
     focus: ['laterality', 'midline'],
     equipment: ['Floor tape', 'letter cards'],
     checkpoints: [
-      'Eyes track letter moving left-right while opposite hand touches floor markers.',
-      'Call out left/right each rep to reinforce mapping.',
-      'Finish with alphabet visualization eyes closed.',
+      'Letter flashes left or right — tap the opposite button, crossed response.',
+      'Answer on the 3-count beat using the LEFT / RIGHT buttons.',
+      'From week 5, listen for "Rule flip" — same side instead of crossed.',
     ],
     guidance: [
       { heading: 'Rhythm', detail: 'Use 3-count cadence: look, call, tap.' },
@@ -173,9 +173,9 @@ export const visionExercises: VisionExercise[] = [
     focus: ['stability', 'awareness'],
     equipment: ['Full-length mirror'],
     checkpoints: [
-      'Stand one meter away; soften knees.',
-      'Trace rectangle path with eyes while ensuring head stays centered.',
-      'Reverse directions; finish with diagonal zig-zag scans.',
+      'Hold your gaze on the center letter while targets flash in each quadrant.',
+      'Tap the target the instant it appears — the sweep cycles through all four quadrants, then reverses.',
+      'Answer the letter check-ins without looking away — that proves your eyes did the sweeping, not your head.',
     ],
     guidance: [
       { heading: 'Quality check', detail: 'If head drifts >1 cm, slow down and reset posture.' },
@@ -193,8 +193,8 @@ export const visionExercises: VisionExercise[] = [
     equipment: ['Printed/onscreen chart'],
     checkpoints: [
       'Start 2 m from chart, heel-to-toe walk toward/away.',
-      'Read next lower line each step.',
-      'Switch to E-directional cues midday to vary stimulus.',
+      'Read the line, then call it clear or blurry — it updates every few steps.',
+      'Switch to E-directional cues midway to vary stimulus.',
     ],
     guidance: [
       { heading: 'Anchor', detail: 'Keep crown lifted, imagine strings pulling upward.' },
@@ -228,8 +228,8 @@ export const visionExercises: VisionExercise[] = [
     focus: ['fixation', 'endurance'],
     checkpoints: [
       'Project or imagine a 1m-wide infinity symbol.',
-      'Follow path clockwise 60 sec, counterclockwise 60 sec.',
-      'Change symbol size (large > small) each minute.',
+      'Follow the loop with smooth, continuous motion — eyes only, no head movement.',
+      'Notice the loop grow wide, then shrink tight, over the course of the set.',
     ],
     guidance: [
       { heading: 'Distance layering', detail: 'Alternate near (40 cm) vs. far (2 m) projections every loop.' },
