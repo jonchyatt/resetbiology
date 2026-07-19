@@ -4,6 +4,7 @@ import { getUserFromSession } from '@/lib/getUserFromSession';
 import { prisma } from '@/lib/prisma';
 import { enqueueDriveSync } from '@/lib/driveSyncQueue';
 import { awardWorkoutPoints } from '@/lib/workoutPoints';
+import { effectiveReadiness } from '@/lib/workoutReadiness';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -75,6 +76,10 @@ export async function POST(request: Request) {
       now.getSeconds()
     ).padStart(2, '0')}`;
 
+    // Server-computed effective readiness (PRIMARY slider, else DERIVED blend)
+    // -- what actually drives guidance/actuation, not just the raw slider.
+    const effReadiness = effectiveReadiness({ readinessScore, energyLevel, sorenessLevel, sleepHours, stressLevel });
+
     const checkIn = await prisma.workoutCheckIn.create({
       data: {
         userId: user.id,
@@ -104,7 +109,7 @@ export async function POST(request: Request) {
           data: {
             progress: {
               ...existingProgress,
-              lastReadinessScore: readinessScore ?? null,
+              lastReadinessScore: effReadiness,
               lastCheckInAt: now.toISOString(),
             },
           },
@@ -122,7 +127,7 @@ export async function POST(request: Request) {
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
     await enqueueDriveSync(user.id, new Date(), ['checkins']).catch(err => console.error('Drive enqueue failed:', err))
 
-    return NextResponse.json({ ok: true, checkIn, pointsAwarded: award.points });
+    return NextResponse.json({ ok: true, checkIn, pointsAwarded: award.points, effectiveReadiness: effReadiness });
   } catch (error: any) {
     console.error('POST /api/workouts/checkins error', error);
     return NextResponse.json({ ok: false, error: error?.message ?? 'Unable to save check-in' }, { status: 500 });

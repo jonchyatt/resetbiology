@@ -18,6 +18,7 @@ import { PortalHeader } from "@/components/Navigation/PortalHeader";
 import { RecentWorkouts } from "./RecentWorkouts";
 import { useToast } from "@/components/ui/Toast";
 import { localDayKey } from "@/lib/localDay";
+import { effectiveReadiness, readinessGuidance, RECOVER_MAX } from "@/lib/workoutReadiness";
 import {
   AssignmentPlanSession,
   AssignmentPersonalization,
@@ -61,6 +62,23 @@ const recoveryFocusOptions = [
 ];
 
 const classNames = (...classes: Array<string | undefined | null | false>) => classes.filter(Boolean).join(" ");
+
+// W3 banner styling per readinessGuidance().level -- teal/amber/rose per the
+// ticket's brand palette, matching the existing left-border + tint card idiom.
+const readinessBannerClass = (level: "ready" | "reduce" | "recover" | "none") => {
+  if (level === "ready") return "border-[#3FBFB5] bg-[#3FBFB5]/10 text-[#3FBFB5]";
+  if (level === "reduce") return "border-amber-400 bg-amber-400/10 text-amber-200";
+  if (level === "recover") return "border-rose-400 bg-rose-500/10 text-rose-200";
+  return "border-white/20 bg-slate-900/30 text-slate-300";
+};
+
+// Solid fill for the sparkline bars -- same three colors as the banner border.
+const readinessBarClass = (level: "ready" | "reduce" | "recover" | "none") => {
+  if (level === "ready") return "bg-[#3FBFB5]";
+  if (level === "reduce") return "bg-amber-400";
+  if (level === "recover") return "bg-rose-400";
+  return "bg-white/20";
+};
 
 export function WorkoutTracker() {
   const toast = useToast();
@@ -315,6 +333,46 @@ export function WorkoutTracker() {
       },
     };
   }, [checkIns]);
+
+  // W3: readiness banner + 7-day trend + deload flag, all derived from the
+  // already-fetched checkIns state -- no extra fetch, banner updates the
+  // instant fetchCheckIns() resolves after a submit.
+  const readinessActuation = useMemo(() => {
+    // checkIns arrives sorted desc by createdAt (server route), so the first
+    // entry seen per localDate is that day's latest.
+    const byDay = new Map<string, WorkoutCheckInRecord>();
+    checkIns.forEach((entry) => {
+      const key = (entry as { localDate?: string }).localDate;
+      if (key && !byDay.has(key)) byDay.set(key, entry);
+    });
+
+    const todayKey = localDayKey(new Date());
+    const todayScore = byDay.has(todayKey) ? effectiveReadiness(byDay.get(todayKey)!) : null;
+
+    const priorDay = (key: string) => {
+      const d = new Date(`${key}T00:00:00`);
+      d.setDate(d.getDate() - 1);
+      return localDayKey(d);
+    };
+
+    // 7-day sparkline window ending today, oldest -> newest, gap days = null.
+    const sparkline: Array<{ key: string; score: number | null }> = [];
+    let cursorKey = todayKey;
+    for (let i = 0; i < 7; i++) {
+      sparkline.unshift({ key: cursorKey, score: byDay.has(cursorKey) ? effectiveReadiness(byDay.get(cursorKey)!) : null });
+      cursorKey = priorDay(cursorKey);
+    }
+
+    // Deload: the 3 most recent DAYS THAT HAVE A CHECK-IN, consecutive on the
+    // calendar, all at/under RECOVER_MAX.
+    const recentDayKeys = Array.from(byDay.keys()).sort((a, b) => b.localeCompare(a)).slice(0, 3);
+    const consecutive =
+      recentDayKeys.length === 3 && recentDayKeys.every((key, idx) => idx === 0 || priorDay(recentDayKeys[idx - 1]) === key);
+    const showDeload =
+      consecutive && recentDayKeys.every((key) => (effectiveReadiness(byDay.get(key)!) ?? Infinity) <= RECOVER_MAX);
+
+    return { guidance: readinessGuidance(todayScore), sparkline, showDeload };
+  }, [checkIns]);
   const toggleEquipment = (item: string) => {
     setPreferredEquipment((prev) => {
       if (prev.includes(item)) {
@@ -563,6 +621,15 @@ export function WorkoutTracker() {
                         </div>
                         <span className="text-xs text-slate-400">{nextSession.intensity} intensity</span>
                       </div>
+                      <div className={classNames("mb-3 rounded-lg border-l-4 px-3 py-2 text-xs", readinessBannerClass(readinessActuation.guidance.level))}>
+                        <p className="font-semibold">{readinessActuation.guidance.headline}</p>
+                        <p className="mt-0.5 text-slate-300">{readinessActuation.guidance.detail}</p>
+                        {readinessActuation.showDeload && (
+                          <p className="mt-1 font-semibold text-rose-200">
+                            Three low days in a row — consider a deload week: halve your sets at the same weights.
+                          </p>
+                        )}
+                      </div>
                       <div className="flex gap-3">
                         <button
                           onClick={(e) => {
@@ -665,6 +732,8 @@ export function WorkoutTracker() {
                   )}
                 </div>
 
+                <ReadinessSparkline days={readinessActuation.sparkline} />
+
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                   <ReadinessSlider
                     label="Readiness"
@@ -752,6 +821,35 @@ export function WorkoutTracker() {
                       </div>
                     ))}
                 </div>
+
+                <details className="mt-4 rounded-xl border border-white/10 bg-gray-900/30 px-4 py-2 text-xs text-slate-300">
+                  <summary className="cursor-pointer select-none font-semibold text-white">How readiness works</summary>
+                  <div className="mt-2 space-y-2">
+                    <p>
+                      Subjective check-ins like this one are a validated way to monitor how your body is responding to
+                      training. On a middling day we reduce volume, not intensity — the work stays hard, there's just
+                      less of it. That's how we protect you from your most motivated bad days.
+                    </p>
+                    <ul className="space-y-1 text-[11px] text-slate-400">
+                      <li>
+                        Saw AE, Main LC, Gastin PB (2016). Monitoring the athlete training response: subjective
+                        self-reported measures trump commonly used objective measures. Br J Sports Med 50(5):281-291.{" "}
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/26423706/" target="_blank" rel="noreferrer" className="text-secondary-200 hover:underline">
+                          pubmed.ncbi.nlm.nih.gov/26423706
+                        </a>
+                      </li>
+                      <li>
+                        Zourdos MC, et al. (2016). Novel resistance training-specific rating of perceived exertion
+                        scale measuring repetitions in reserve. J Strength Cond Res 30(1):267-275.{" "}
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/26049792/" target="_blank" rel="noreferrer" className="text-secondary-200 hover:underline">
+                          pubmed.ncbi.nlm.nih.gov/26049792
+                        </a>
+                      </li>
+                      <li>Helms ER, et al. (2016). Application of the repetitions-in-reserve-based rating of perceived exertion scale for resistance training. Strength Cond J 38(4):42-49.</li>
+                    </ul>
+                    <p className="text-[11px] text-slate-500">Educational guidance, not medical advice — adjust to your own situation.</p>
+                  </div>
+                </details>
               </section>
             </div>
 
@@ -1064,6 +1162,29 @@ function ReadinessSlider({
         className="w-full accent-secondary-400"
       />
     </label>
+  );
+}
+
+// W3 item 4: 7-day effective-readiness trend, gap days rendered as gaps. No
+// chart library -- flex-of-divs, height scaled to score, color per guidance
+// level (matches readinessBannerClass, imported constants only).
+function ReadinessSparkline({ days }: { days: Array<{ key: string; score: number | null }> }) {
+  return (
+    <div className="mt-3 flex items-end gap-1 h-10">
+      {days.map((day) => {
+        const level = readinessGuidance(day.score).level;
+        return (
+          <div key={day.key} className="flex-1 flex items-end" title={day.score === null ? "No check-in" : `${day.score}%`}>
+            {day.score !== null && (
+              <div
+                className={classNames("w-full rounded-sm", readinessBarClass(level))}
+                style={{ height: `${Math.max(6, (day.score / 100) * 40)}px` }}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
