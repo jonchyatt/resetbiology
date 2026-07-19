@@ -2188,38 +2188,41 @@ export function PeptideTracker() {
           {activeTab === "current" && (
             <div className="max-w-6xl mx-auto">
               <div className="grid gap-6">
-                {/* Active Protocols - Full Width */}
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold text-white">
-                      Active Protocols
-                    </h3>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setShowAddProtocolModal(true)}
-                        className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Add Research Protocol
-                      </button>
-                      <button
-                        onClick={() => setShowQuickAddOral(true)}
-                        className="bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
-                      >
-                        <Pill className="w-4 h-4 mr-2" />
-                        Add Oral Med
-                      </button>
+                {/* Active Protocols - Full Width. Hidden entirely when empty:
+                    the "Today's doses" empty state above already carries the
+                    "Add your first protocol" CTA, so an empty header + buttons
+                    here would just float over dead space. */}
+                {currentProtocols.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-2xl font-bold text-white">
+                        Active Protocols
+                      </h3>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setShowAddProtocolModal(true)}
+                          className="bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Research Protocol
+                        </button>
+                        <button
+                          onClick={() => setShowQuickAddOral(true)}
+                          className="bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                        >
+                          <Pill className="w-4 h-4 mr-2" />
+                          Add Oral Med
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
-                  {currentProtocols.length === 0 ? null : (
                     <div className="grid gap-6 md:grid-cols-2">
                       {sortedProtocols.map((protocol) => (
                         <PeptideCard key={protocol.id} protocol={protocol} />
                       ))}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
