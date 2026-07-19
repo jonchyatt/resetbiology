@@ -364,12 +364,17 @@ export function WorkoutTracker() {
     }
 
     // Deload: the 3 most recent DAYS THAT HAVE A CHECK-IN, consecutive on the
-    // calendar, all at/under RECOVER_MAX.
+    // calendar, all at/under RECOVER_MAX. W4 verifier fix: also require the
+    // most recent of those low days to be today or yesterday -- otherwise a
+    // stale 3-low-day streak from weeks ago keeps showing the banner forever.
     const recentDayKeys = Array.from(byDay.keys()).sort((a, b) => b.localeCompare(a)).slice(0, 3);
     const consecutive =
       recentDayKeys.length === 3 && recentDayKeys.every((key, idx) => idx === 0 || priorDay(recentDayKeys[idx - 1]) === key);
+    const recentEnough = recentDayKeys.length > 0 && (recentDayKeys[0] === todayKey || recentDayKeys[0] === priorDay(todayKey));
     const showDeload =
-      consecutive && recentDayKeys.every((key) => (effectiveReadiness(byDay.get(key)!) ?? Infinity) <= RECOVER_MAX);
+      consecutive &&
+      recentEnough &&
+      recentDayKeys.every((key) => (effectiveReadiness(byDay.get(key)!) ?? Infinity) <= RECOVER_MAX);
 
     return { guidance: readinessGuidance(todayScore), sparkline, showDeload };
   }, [checkIns]);
@@ -596,7 +601,7 @@ export function WorkoutTracker() {
                       <div className="flex flex-wrap gap-4 text-xs text-slate-400">
                         <span>{completedSessions}/{activePlanSessions.length} sessions completed</span>
                         <span>•</span>
-                        <span>{Math.round(planCompletionRate * 100)}% complete</span>
+                        <span>Adherence: {Math.round(planCompletionRate * 100)}%</span>
                       </div>
                     </div>
                     <button
@@ -845,7 +850,18 @@ export function WorkoutTracker() {
                           pubmed.ncbi.nlm.nih.gov/26049792
                         </a>
                       </li>
-                      <li>Helms ER, et al. (2016). Application of the repetitions-in-reserve-based rating of perceived exertion scale for resistance training. Strength Cond J 38(4):42-49.</li>
+                      <li>
+                        Helms ER, et al. (2016). Application of the repetitions-in-reserve-based rating of perceived exertion
+                        scale for resistance training. Strength Cond J 38(4):42-49.{" "}
+                        <a
+                          href="https://journals.lww.com/nsca-scj/fulltext/2016/08000/application_of_the_repetitions_in_reserve_based.10.aspx"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-secondary-200 hover:underline"
+                        >
+                          journals.lww.com/nsca-scj
+                        </a>
+                      </li>
                     </ul>
                     <p className="text-[11px] text-slate-500">Educational guidance, not medical advice — adjust to your own situation.</p>
                   </div>
@@ -964,6 +980,7 @@ export function WorkoutTracker() {
                         </ul>
                       </div>
                     )}
+                    <ProtocolEducationBlock protocol={protocol} />
                     <button
                       disabled={assigningProtocolId === protocol.id}
                       onClick={() => handleAssignProtocol(protocol.id)}
@@ -973,6 +990,7 @@ export function WorkoutTracker() {
                     </button>
                     {protocol.researchLinks && protocol.researchLinks.length > 0 && (
                       <div className="mt-3 text-[11px] uppercase tracking-widest text-slate-500">
+                        <span className="mr-2 normal-case tracking-normal text-slate-600">Further reading:</span>
                         {protocol.researchLinks.slice(0, 2).map((link) => (
                           <a
                             key={link.url}
@@ -1083,6 +1101,7 @@ export function WorkoutTracker() {
                       <li>Duration: {formatProtocolDurationWeeks(protocol.durationWeeks)}</li>
                       <li>Sessions/week: {protocol.sessionsPerWeek ?? "--"}</li>
                     </ul>
+                    <ProtocolEducationBlock protocol={protocol} />
                     <button
                       disabled={assigningProtocolId === protocol.id}
                       onClick={() => {
@@ -1185,6 +1204,49 @@ function ReadinessSparkline({ days }: { days: Array<{ key: string; score: number
         );
       })}
     </div>
+  );
+}
+
+// W4: education block (whoItsFor / evidenceSummary / progressionRule /
+// deloadRule / citations) shared by the inline protocol-library section and
+// the protocol-library modal -- one render path, two call sites. Collapsible
+// so the cards stay scannable rather than becoming a wall of text.
+function ProtocolEducationBlock({ protocol }: { protocol: WorkoutProtocolRecord }) {
+  const hasEducation =
+    protocol.whoItsFor || protocol.evidenceSummary || protocol.progressionRule || protocol.deloadRule;
+  if (!hasEducation) return null;
+  return (
+    <details className="mt-3 rounded-xl border border-primary-400/20 bg-gray-900/30 px-3 py-2 text-xs text-slate-300">
+      <summary className="cursor-pointer select-none font-semibold text-white">Who it's for + evidence</summary>
+      <div className="mt-2 space-y-2">
+        {protocol.whoItsFor && <p>{protocol.whoItsFor}</p>}
+        {protocol.evidenceSummary && <p className="text-slate-400">{protocol.evidenceSummary}</p>}
+        {protocol.progressionRule && (
+          <p>
+            <span className="font-semibold text-white">Progression: </span>
+            {protocol.progressionRule}
+          </p>
+        )}
+        {protocol.deloadRule && (
+          <p>
+            <span className="font-semibold text-white">Deload: </span>
+            {protocol.deloadRule}
+          </p>
+        )}
+        {protocol.citations && protocol.citations.length > 0 && (
+          <ul className="space-y-1 border-t border-white/10 pt-2 text-[11px] text-slate-400">
+            {protocol.citations.map((citation) => (
+              <li key={citation.url}>
+                <a href={citation.url} target="_blank" rel="noreferrer" className="text-secondary-200 hover:underline">
+                  {citation.label}
+                </a>
+                <span className="text-slate-500"> — {citation.journal}, {citation.year}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </details>
   );
 }
 

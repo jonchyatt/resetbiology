@@ -174,6 +174,26 @@ export const summarizeAssignmentPlan = (plan?: AssignmentPlan) => {
 // are static seed data, not user-editable. Restart the process to reseed.
 let seedPromise: Promise<void> | null = null;
 
+// W4: no dedicated schema column for the education block (whoItsFor /
+// evidenceSummary / progressionRule / deloadRule / citations) and this ticket
+// may not touch prisma/schema.prisma. aiInsights is a Json column that no UI
+// code reads (verified: grep for `aiInsights` outside this file/type/data
+// files returns nothing) -- reused as the carrier. Write side nests the
+// education block under `education`; read side (getAvailableWorkoutProtocols)
+// flattens it back onto the record for the client, for BOTH the curated-3
+// (this upsert) and the seed-8 (scripts/seed-workout-protocols.ts, which nests
+// the same `education` key directly in its own aiInsights object literals).
+const buildAiInsightsColumn = (protocol: CuratedWorkoutProtocol) => ({
+  legacyInsights: protocol.aiInsights,
+  education: {
+    whoItsFor: protocol.whoItsFor,
+    evidenceSummary: protocol.evidenceSummary,
+    progressionRule: protocol.progressionRule,
+    deloadRule: protocol.deloadRule,
+    citations: protocol.citations,
+  },
+});
+
 export const ensureCuratedWorkoutProtocols = async () => {
   if (seedPromise) return seedPromise;
 
@@ -192,7 +212,7 @@ export const ensureCuratedWorkoutProtocols = async () => {
           focusAreas: protocol.focusAreas,
           equipment: protocol.equipment,
           readinessNotes: protocol.readinessGuidelines,
-          aiInsights: protocol.aiInsights,
+          aiInsights: buildAiInsightsColumn(protocol) as any,
           researchLinks: protocol.researchLinks as any,
           phases: protocol.phases as any,
         },
@@ -208,7 +228,7 @@ export const ensureCuratedWorkoutProtocols = async () => {
           focusAreas: protocol.focusAreas,
           equipment: protocol.equipment,
           readinessNotes: protocol.readinessGuidelines,
-          aiInsights: protocol.aiInsights,
+          aiInsights: buildAiInsightsColumn(protocol) as any,
           researchLinks: protocol.researchLinks as any,
           phases: protocol.phases as any,
           isPublic: true,
@@ -225,6 +245,23 @@ export const ensureCuratedWorkoutProtocols = async () => {
   }
 };
 
+// W4: pulls the education block back out of the aiInsights Json column (see
+// buildAiInsightsColumn above) and surfaces it as flat, typed fields the
+// client reads directly (WorkoutProtocolRecord.whoItsFor etc). Applies to
+// every row regardless of source (curated-3 upsert or seed-8 script) since
+// both land in the same collection with the same `aiInsights.education` shape.
+const flattenEducation = (protocol: any) => {
+  const education = protocol?.aiInsights?.education ?? null;
+  return {
+    ...protocol,
+    whoItsFor: education?.whoItsFor ?? null,
+    evidenceSummary: education?.evidenceSummary ?? null,
+    progressionRule: education?.progressionRule ?? null,
+    deloadRule: education?.deloadRule ?? null,
+    citations: education?.citations ?? null,
+  };
+};
+
 export const getAvailableWorkoutProtocols = async (userId: string) => {
   await ensureCuratedWorkoutProtocols();
   const protocols = await prisma.workoutProtocol.findMany({
@@ -236,5 +273,5 @@ export const getAvailableWorkoutProtocols = async (userId: string) => {
     },
   });
 
-  return protocols;
+  return protocols.map(flattenEducation);
 };

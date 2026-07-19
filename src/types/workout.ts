@@ -57,6 +57,17 @@ export interface ResearchLink {
   url: string;
 }
 
+// W4: bank-verified structured citation. Every URL shipped on one of these
+// must have been resolved (curl/fetch) by the session that added it -- see
+// data/rb-workout-rework/runtime-logs/scratch-2026-07-18-aedf/ticket-W4.md.
+export interface ProtocolCitation {
+  label: string;
+  journal: string;
+  year: number;
+  url: string;
+  pmid?: string;
+}
+
 export interface CuratedWorkoutProtocol {
   slug: string;
   name: string;
@@ -72,6 +83,12 @@ export interface CuratedWorkoutProtocol {
   aiInsights: string[];
   progressionNotes: string;
   researchLinks: ResearchLink[];
+  // W4 education block -- giver-voice, source-derived, never invented.
+  whoItsFor: string;
+  evidenceSummary: string;
+  progressionRule: string;
+  deloadRule: string;
+  citations: ProtocolCitation[];
   phases: ProtocolPhase[];
 }
 
@@ -91,6 +108,13 @@ export interface WorkoutProtocolRecord {
   aiInsights?: string[] | null;
   researchLinks?: ResearchLink[] | null;
   phases?: ProtocolPhase[];
+  // W4: flattened out of the aiInsights JSON column by getAvailableWorkoutProtocols
+  // (no dedicated schema column -- see workoutProtocolService.ts).
+  whoItsFor?: string | null;
+  evidenceSummary?: string | null;
+  progressionRule?: string | null;
+  deloadRule?: string | null;
+  citations?: ProtocolCitation[] | null;
 }
 
 export interface AssignmentPersonalization {
