@@ -24,7 +24,12 @@ export default function QuizResultsPage() {
       }
 
       setQuiz(savedQuiz);
-      setOutcome(determineQuizOutcome(savedQuiz));
+      try {
+        setOutcome(determineQuizOutcome(savedQuiz));
+      } catch (error) {
+        console.error("Failed to determine quiz outcome:", error);
+        setOutcome(null);
+      }
 
       if (user && !syncComplete) {
         try {
