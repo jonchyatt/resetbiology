@@ -42,7 +42,12 @@ const getCatalog = async (): Promise<any[]> => {
       throw err;
     });
   }
-  return catalogPromise;
+  const catalog = await catalogPromise;
+  if (!Array.isArray(catalog) || catalog.length === 0) {
+    catalogPromise = null; // don't pin an empty/malformed catalog -- let the next request retry
+    throw new Error('WGER catalog fetch returned an empty or malformed result');
+  }
+  return catalog;
 };
 
 const englishTranslation = (item: any) => {

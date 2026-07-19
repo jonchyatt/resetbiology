@@ -188,6 +188,7 @@ export function WorkoutTracker() {
     (async () => {
       try {
         const res = await fetch("/api/workout/exercises", { cache: "no-store" });
+        if (!res.ok) throw new Error(`Failed to load workout preferences: ${res.status}`);
         const data = await res.json();
         const saved = data?.workoutPreferences;
         if (saved && typeof saved === "object") {
