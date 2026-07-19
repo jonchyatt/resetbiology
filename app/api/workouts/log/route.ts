@@ -175,7 +175,7 @@ export async function POST(request: Request) {
           entry: JSON.stringify(entryData),
           mood: null,
           weight: null,
-          date: now,
+          date: taskDay,
         },
       });
     }

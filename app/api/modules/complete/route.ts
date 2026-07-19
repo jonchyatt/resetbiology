@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { resolveUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync, drainDriveSyncRowsNow } from '@/lib/driveSyncQueue'
+import { dayKeyToUtcMidnight, todayLocalKey } from '@/lib/localDay'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -10,7 +11,7 @@ function startOfDay(date: Date) {
   return d
 }
 
-async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: string): Promise<string> {
+async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: string, localDate: unknown): Promise<string> {
   const dayStart = startOfDay(timestamp)
   const dayEnd = new Date(dayStart)
   dayEnd.setDate(dayEnd.getDate() + 1)
@@ -70,7 +71,7 @@ async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: 
         entry: JSON.stringify(entryData),
         mood: null,
         weight: null,
-        date: timestamp,
+        date: dayKeyToUtcMidnight(typeof localDate === 'string' && localDate ? localDate : todayLocalKey()),
       },
     })
     return note
@@ -179,7 +180,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    const journalNote = await appendModuleToJournal(user.id, new Date(), moduleId)
+    const journalNote = await appendModuleToJournal(user.id, new Date(), moduleId, localDate)
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work) — this route also appends a note to
     // today's journal entry, so sync that too

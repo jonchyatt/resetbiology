@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
+import { dayKeyToUtcMidnight, todayLocalKey } from '@/lib/localDay';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -175,7 +176,7 @@ export async function POST(req: Request) {
           entry: JSON.stringify(entryData),
           mood: null,
           weight: null,
-          date: logTimestamp,
+          date: dayKeyToUtcMidnight(typeof localDate === 'string' && localDate ? localDate : todayLocalKey()),
         },
       });
     }
