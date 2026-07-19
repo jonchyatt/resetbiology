@@ -23,9 +23,27 @@ export const curatedWorkoutProtocols: CuratedWorkoutProtocol[] = [
       'Micro-deload baked every 3rd week for connective tissue',
     ],
     progressionNotes: 'Weeks 1-2 technique accumulation, 3-6 double progression, 7 deload, 8 re-peak.',
-    researchLinks: [
-      { label: 'Velocity-based loading', url: 'https://pubmed.ncbi.nlm.nih.gov/29369271/' },
-      { label: 'In-season tendon care', url: 'https://pubmed.ncbi.nlm.nih.gov/29589892/' },
+    // W4 audit: both prior researchLinks (PMID 29369271, 29589892) 404 -- removed.
+    researchLinks: [],
+    whoItsFor: 'Intermediate lifters running a structured 8-week strength block who want posterior-chain and connective-tissue work built in alongside an upper/lower split.',
+    evidenceSummary:
+      'Weekly volume is the primary driver of hypertrophy across a wide dose-response range, and reps-in-reserve targets give a workable way to keep hard sets honest without testing to failure every session. This block keeps most main lifts in the RIR 1-3 zone and adds a micro-deload every third week.',
+    progressionRule: 'Add a rep at the same RIR target until you hit the top of the prescribed range, then add load (~2.5-5%) and drop back to the bottom of the range.',
+    deloadRule: 'Every third week is a built-in micro-deload -- halve working-set volume at the same loads to let connective tissue catch up.',
+    citations: [
+      {
+        label: 'Schoenfeld BJ, Ogborn D, Krieger JW — Dose-response relationship between weekly resistance training volume and increases in muscle mass: systematic review and meta-analysis',
+        journal: 'J Sports Sci',
+        year: 2017,
+        url: 'https://pubmed.ncbi.nlm.nih.gov/27433992/',
+      },
+      {
+        label: 'Zourdos MC, et al — Novel resistance training-specific rating of perceived exertion scale measuring repetitions in reserve',
+        journal: 'J Strength Cond Res',
+        year: 2016,
+        url: 'https://pubmed.ncbi.nlm.nih.gov/26049792/',
+        pmid: '26049792',
+      },
     ],
     phases: [
       {
@@ -361,8 +379,22 @@ export const curatedWorkoutProtocols: CuratedWorkoutProtocol[] = [
       'Stacks nasal breathing cues to reinforce vagal tone',
     ],
     progressionNotes: 'Density increases weekly; deload built into week 4.',
-    researchLinks: [
-      { label: 'Low intensity steady state benefits', url: 'https://pubmed.ncbi.nlm.nih.gov/25603798/' },
+    // W4 audit: prior researchLink (PMID 25603798) resolves 200 but is an unrelated
+    // paper (church-based diet/activity study) -- mismatched citation, removed.
+    researchLinks: [],
+    whoItsFor: 'Anyone building an aerobic base and lactate-clearance capacity with rower/bike/bodyweight equipment, at any training level.',
+    evidenceSummary:
+      'Self-reported markers like resting heart rate and soreness are a reliable way to catch accumulating fatigue before it shows up in performance, which is why this protocol swaps in low-day options rather than pushing through elevated readings.',
+    progressionRule: "Increase session density week over week (same work, less rest) until week 4's built-in deload.",
+    deloadRule: "Week 4 is a scheduled deload -- return to Phase 1 volume and let interval density reset.",
+    citations: [
+      {
+        label: 'Saw AE, Main LC, Gastin PB — Monitoring the athlete training response: subjective self-reported measures trump commonly used objective measures: systematic review',
+        journal: 'Br J Sports Med',
+        year: 2016,
+        url: 'https://pubmed.ncbi.nlm.nih.gov/26423706/',
+        pmid: '26423706',
+      },
     ],
     phases: [
       {
@@ -518,8 +550,22 @@ export const curatedWorkoutProtocols: CuratedWorkoutProtocol[] = [
     ],
     aiInsights: ['Auto-matches breath cadence to nutrition tracker stress data.'],
     progressionNotes: 'Additions weekly, never more than 25 minutes.',
-    researchLinks: [
-      { label: 'Parasympathetic recovery', url: 'https://pubmed.ncbi.nlm.nih.gov/32042189/' },
+    // W4 audit: prior researchLink (PMID 32042189) resolves 200 but is an unrelated
+    // paper (fluorescence microscopy methods reply) -- mismatched citation, removed.
+    researchLinks: [],
+    whoItsFor: 'Anyone needing a short daily practice to maintain tissue quality and calm the nervous system, especially useful on rest days or after poor sleep.',
+    evidenceSummary:
+      'Self-reported soreness and sleep quality are a validated way to gauge how ready the body is for load, which is why this protocol scales session length to how you are feeling rather than a fixed progression.',
+    progressionRule: 'Add time to the breath or mobility section weekly, capped at 25 minutes total -- this is a maintenance practice, not a loading protocol.',
+    deloadRule: 'If soreness runs high, double the breath-work section length that day instead of adding new movement.',
+    citations: [
+      {
+        label: 'Saw AE, Main LC, Gastin PB — Monitoring the athlete training response: subjective self-reported measures trump commonly used objective measures: systematic review',
+        journal: 'Br J Sports Med',
+        year: 2016,
+        url: 'https://pubmed.ncbi.nlm.nih.gov/26423706/',
+        pmid: '26423706',
+      },
     ],
     phases: [
       {

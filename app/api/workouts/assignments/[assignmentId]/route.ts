@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession } from '@/lib/getUserFromSession';
 import { prisma } from '@/lib/prisma';
-import { summarizeAssignmentPlan } from '@/lib/workoutProtocolService';
+import { summarizeAssignmentPlan, logCompletedSession } from '@/lib/workoutProtocolService';
+import { awardWorkoutPoints } from '@/lib/workoutPoints';
+import { dayKeyToUtcMidnight } from '@/lib/localDay';
 import { AssignmentPlan, PlanSessionStatus } from '@/types/workout';
 
 export const runtime = 'nodejs';
@@ -31,48 +33,6 @@ const normalizePlan = (value: any): AssignmentPlan => {
   return JSON.parse(JSON.stringify(value)) as AssignmentPlan;
 };
 
-const logCompletedSession = async ({
-  assignmentId,
-  planSession,
-  userId,
-  protocolId,
-  notes,
-}: {
-  assignmentId: string;
-  planSession: any;
-  userId: string;
-  protocolId: string;
-  notes?: string | null;
-}) => {
-  const exercisesFromPlan = (planSession.blocks ?? []).flatMap((block: any) => block.exercises ?? []);
-  const exercises = exercisesFromPlan.map((exercise: any, index: number) => ({
-    id: `${assignmentId}-${planSession.id}-${index}`,
-    name: exercise.name,
-    category: exercise.pattern,
-    intensity: planSession.intensity,
-    notes: exercise.description,
-    sets: (exercise.sets ?? []).map((set: any) => ({
-      reps: set.reps ?? null,
-      weight: set.weight ?? null,
-      tempo: set.tempo,
-      restSeconds: set.restSeconds,
-      completed: true,
-    })),
-    source: 'protocol-plan',
-  }));
-
-  await prisma.workoutSession.create({
-    data: {
-      userId,
-      programId: protocolId,
-      exercises,
-      duration: Math.round((planSession.durationMinutes ?? 40) * 60),
-      notes: notes ?? planSession.summary,
-      completedAt: new Date(),
-    },
-  });
-};
-
 export async function PATCH(request: Request, { params }: { params: Promise<{ assignmentId: string }> }) {
   try {
     const user = await resolveUser();
@@ -82,7 +42,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ as
 
     const { assignmentId } = await params;
     const body = await request.json();
-    const { action, sessionId, status, notes } = body ?? {};
+    const { action, sessionId, status, notes, localDate } = body ?? {};
 
     const assignment = await prisma.workoutAssignment.findFirst({
       where: { id: assignmentId, userId: user.id },
@@ -125,6 +85,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ as
     plan.sessions[sessionIndex].updatedAt = new Date().toISOString();
     plan.sessions[sessionIndex].sessionNotes = notes ?? null;
 
+    let pointsAwarded = 0;
     if (action === 'complete-session') {
       await logCompletedSession({
         assignmentId: assignment.id,
@@ -133,12 +94,44 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ as
         protocolId: assignment.protocolId,
         notes,
       });
+
+      const award = await awardWorkoutPoints({
+        userId: user.id,
+        awardType: 'workout',
+        source: 'prescribed',
+        dayKey: typeof localDate === 'string' ? localDate : null,
+      });
+      pointsAwarded = award.points;
+
+      // Same resolved day key the award used (client localDate, validated
+      // and drift-bounded inside the helper, or its server-clock fallback) —
+      // keeps the DailyTask row and the DailyAward row pointed at the same day.
+      await prisma.dailyTask.upsert({
+        where: {
+          userId_date_taskName: {
+            userId: user.id,
+            date: dayKeyToUtcMidnight(award.dayKey),
+            taskName: 'workout',
+          },
+        },
+        update: { completed: true },
+        create: {
+          userId: user.id,
+          date: dayKeyToUtcMidnight(award.dayKey),
+          taskName: 'workout',
+          completed: true,
+        },
+      });
     }
 
     const summary = summarizeAssignmentPlan(plan);
-    const nextIndex =
-      plan.sessions.findIndex((session) => session.status === 'planned' || session.status === 'in-progress') ??
-      plan.sessions.length;
+    // F4.8: findIndex always returns a number (-1 when not found, never null/
+    // undefined), so `?? plan.sessions.length` here was dead -- the real
+    // "not found" fallback already lives in the `nextIndex > -1 ? ... : ...`
+    // guard below where currentSessionIndex is assigned.
+    const nextIndex = plan.sessions.findIndex(
+      (session) => session.status === 'planned' || session.status === 'in-progress'
+    );
 
     const updated = await prisma.workoutAssignment.update({
       where: { id: assignment.id },
@@ -150,7 +143,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ as
       include: { protocol: true },
     });
 
-    return NextResponse.json({ ok: true, assignment: updated });
+    return NextResponse.json({ ok: true, assignment: updated, pointsAwarded });
   } catch (error: any) {
     console.error('PATCH /api/workouts/assignments/[id] error', error);
     return NextResponse.json({ ok: false, error: error?.message ?? 'Unable to update assignment' }, { status: 500 });

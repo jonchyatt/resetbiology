@@ -35,9 +35,16 @@ export async function GET(request: NextRequest) {
     // Calculate streak
     const streak = await calculateStreak(user.id, dayKey)
 
+    const pointsAgg = await prisma.gamificationPoint.aggregate({
+      where: { userId: user.id },
+      _sum: { amount: true }
+    })
+    const totalPoints = pointsAgg._sum.amount ?? 0
+
     return NextResponse.json({
       tasks,
       streak,
+      totalPoints,
       date: today.toISOString()
     })
 

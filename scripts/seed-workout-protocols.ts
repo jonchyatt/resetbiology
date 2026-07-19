@@ -41,12 +41,27 @@ const WORKOUT_PROTOCOLS = [
       keyPrinciple: 'Tendons need mechanical load to orient collagen fibers properly. Isometrics provide sustained tension without movement, maximizing "creep effect" for collagen remodeling.',
       supplementation: '15g hydrolyzed collagen (from skin source) + 50mg vitamin C, 30-60 min pre-exercise',
       frequency: 'Can train same tendon 2x daily with 6-8 hour gap',
-      progression: 'Progress by increasing perceived effort (not hold time) within pain-free range'
+      progression: 'Progress by increasing perceived effort (not hold time) within pain-free range',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Anyone rehabbing a tendon or working proactively on connective-tissue resilience, using short daily isometric sessions.',
+        evidenceSummary: 'Sustained isometric tension held pain-free at a controlled perceived-effort level is the loading pattern this protocol is built around, progressing effort rather than hold time as tissue tolerates more.',
+        progressionRule: 'Progress by increasing perceived effort within the prescribed hold, not by adding hold time -- stay pain-free throughout.',
+        deloadRule: "Any return of pain drops you back to the prior week's effort level and position until it's pain-free again.",
+        citations: [
+          {
+            label: 'Helms ER, et al — Application of the repetitions-in-reserve-based RPE scale for resistance training',
+            journal: 'Strength Cond J',
+            year: 2016,
+            url: 'https://journals.lww.com/nsca-scj/fulltext/2016/08000/application_of_the_repetitions_in_reserve_based.10.aspx',
+          },
+        ],
+      },
     },
+    // W4 audit: 'Dr. Keith Baar - UC Davis Research Profile' 404, 'Using load to
+    // improve tendon tissue engineering' (ScienceDirect) 403 -- both removed.
     researchLinks: [
-      { label: 'Dr. Keith Baar - UC Davis Research Profile', url: 'https://health.ucdavis.edu/physiology/faculty/baar.html' },
-      { label: 'Tim Ferriss Podcast #797 - Dr. Keith Baar on Tendon Repair', url: 'https://tim.blog/2025/02/26/dr-keith-baar/' },
-      { label: 'Using load to improve tendon tissue engineering (2024)', url: 'https://www.sciencedirect.com/science/article/pii/S0945053X24001434' }
+      { label: 'Tim Ferriss Podcast #797 - Dr. Keith Baar on Tendon Repair', url: 'https://tim.blog/2025/02/26/dr-keith-baar/' }
     ],
     phases: [
       {
@@ -183,13 +198,29 @@ const WORKOUT_PROTOCOLS = [
       keyFinding: 'Meta-analysis of 270 trials (15,827 participants) found isometric exercise produced the largest BP reductions compared to all other exercise types',
       expectedResults: 'Average reductions: SBP -6.77 to -9.7 mmHg, DBP -3.96 to -4.8 mmHg (equivalent to medication monotherapy)',
       optimalProtocol: '4 × 2-minute contractions at 30% MVC, 3x/week for 8+ weeks',
-      mechanism: 'Improved endothelial function, reduced arterial stiffness, autonomic nervous system modulation'
+      mechanism: 'Improved endothelial function, reduced arterial stiffness, autonomic nervous system modulation',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Beginners looking to add a brief, low-equipment isometric practice alongside their existing cardiovascular care.',
+        evidenceSummary: 'The prescribed 4x2-minute holds at 30% effort follow the isometric protocol structure used across supervised research on this style of training; breathing normally throughout (never holding your breath) is part of the prescription, not optional.',
+        progressionRule: 'Once 4x2-minute holds at 30% effort feel sustainable, nudge intensity to 30-35% before adding further volume.',
+        deloadRule: 'Shorten holds back to Phase 1 durations (60-90 seconds) any week the sessions feel excessive.',
+        citations: [
+          {
+            label: 'Edwards JJ, et al — Exercise training and resting blood pressure: large-scale pairwise and network meta-analysis of randomised controlled trials',
+            journal: 'Br J Sports Med',
+            year: 2023,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/37491419/',
+            pmid: '37491419',
+          },
+        ],
+      },
     },
+    // W4 audit: 'Mayo Clinic - Isometric exercise and blood pressure' 403 -- removed.
     researchLinks: [
       { label: 'Isometric Exercise Training: Mechanisms and Protocol Application (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8758172/' },
       { label: 'Isometric training for blood pressure: Systematic review (Nature)', url: 'https://www.nature.com/articles/hr2015111' },
-      { label: 'Evidence-based guide to isometric training in hypertension', url: 'https://clinicalhypertension.biomedcentral.com/articles/10.1186/s40885-022-00232-3' },
-      { label: 'Mayo Clinic - Isometric exercise and blood pressure', url: 'https://www.mayoclinichealthsystem.org/hometown-health/speaking-of-health/isometric-exercise-and-blood-pressure' }
+      { label: 'Evidence-based guide to isometric training in hypertension', url: 'https://clinicalhypertension.biomedcentral.com/articles/10.1186/s40885-022-00232-3' }
     ],
     phases: [
       {
@@ -312,11 +343,27 @@ const WORKOUT_PROTOCOLS = [
       mechanism: 'The lymphatic system has no pump - it relies on muscle contractions and body movement. Rebounding creates rhythmic acceleration/deceleration that opens and closes lymphatic valves.',
       nasaStudy: '1980 NASA study found rebounding 68% more efficient than jogging for oxygen consumption',
       healthBounce: 'The "health bounce" (feet stay on mat) can increase lymph flow 15-30x according to lymphologists',
-      boneBenefit: 'The G-force loading also supports bone density without joint impact'
+      boneBenefit: 'The G-force loading also supports bone density without joint impact',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Beginners wanting a very low-impact daily movement practice, easing in gently with balance support available if needed.',
+        evidenceSummary: 'This is a gentle-intensity practice -- sessions are described by feel (very gentle to moderate) rather than a fixed-load prescription, so effort should stay conversational throughout.',
+        progressionRule: 'Build bounce duration gradually (2 to 5 to 10+ minutes) before adding jogging-bounce or twist variations.',
+        deloadRule: 'Drop back to the Phase 1 health-bounce-only session any day balance or tolerance feels off.',
+        citations: [
+          {
+            label: 'Helms ER, et al — Application of the repetitions-in-reserve-based RPE scale for resistance training',
+            journal: 'Strength Cond J',
+            year: 2016,
+            url: 'https://journals.lww.com/nsca-scj/fulltext/2016/08000/application_of_the_repetitions_in_reserve_based.10.aspx',
+          },
+        ],
+      },
     },
+    // W4 audit: 'Rebounding effectiveness on lymphedema (IJPTR)' 522 (Cloudflare
+    // timeout) -- removed.
     researchLinks: [
       { label: 'NASA Journal of Applied Physiology Study (1980)', url: 'https://www.jumpsport.com/blog/the-science-behind-trampolining-and-how-it-improves-health/' },
-      { label: 'Rebounding effectiveness on lymphedema (IJPTR)', url: 'https://ijptr.net/a-study-to-assess-the-effectiveness-of-rebounding-exercise-on-lymphedema-shailendra-mehta/' },
       { label: 'Trampoline exercise for balance in older adults', url: 'https://www.springfreetrampoline.com/blogs/beyond-the-bounce/trampoline-benefits-lymphatic-system' }
     ],
     phases: [
@@ -460,13 +507,28 @@ const WORKOUT_PROTOCOLS = [
       mechanism: 'BFR creates metabolic stress that triggers muscle protein synthesis at low loads (20-40% 1RM) that would normally require 70%+ 1RM',
       protocol: 'Standard: 30-15-15-15 reps (75 total) with 30 second rest, at 20-40% 1RM equivalent',
       results: 'Meta-analysis shows strength improvements of 10-20% in 4-6 weeks, comparable to heavy resistance training',
-      frequency: 'Can train 2-4x weekly, some research supports daily for short periods (1-3 weeks)'
+      frequency: 'Can train 2-4x weekly, some research supports daily for short periods (1-3 weeks)',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Intermediate trainees who want a hypertrophy stimulus from bodyweight work alone, using blood-flow-restriction bands.',
+        evidenceSummary: 'Training volume drives hypertrophy across a wide range of loads, which is the mechanism BFR training leans on -- accumulating volume at low external load rather than high load.',
+        progressionRule: 'Progress through exercise variations (e.g. push-up to decline to diamond) at the same 30-15-15-15 rep scheme before increasing occlusion pressure.',
+        deloadRule: 'Drop occlusion pressure and skip the advanced variation for a session any week recovery feels behind.',
+        citations: [
+          {
+            label: 'Lixandrão AM, et al — Magnitude of muscle strength and mass adaptations between high-load resistance training versus low-load resistance training associated with blood-flow restriction: systematic review and meta-analysis',
+            journal: 'Sports Med',
+            year: 2018,
+            url: 'https://link.springer.com/article/10.1007/s40279-017-0795-y',
+          },
+        ],
+      },
     },
+    // W4 audit: 'BFR and High-Performance Athletes (APS)' (journals.physiology.org) 403 -- removed.
     researchLinks: [
       { label: 'BFR Therapy for Rehabilitation (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8811521/' },
       { label: 'BFR Exercise Methodology and Safety (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6530612/' },
-      { label: 'Systemic Effects of BFR Training', url: 'https://ijspt.scholasticahq.com/article/25791-the-systemic-effects-of-blood-flow-restriction-training-a-systematic-review' },
-      { label: 'BFR and High-Performance Athletes (APS)', url: 'https://journals.physiology.org/doi/full/10.1152/japplphysiol.00982.2020' }
+      { label: 'Systemic Effects of BFR Training', url: 'https://ijspt.scholasticahq.com/article/25791-the-systemic-effects-of-blood-flow-restriction-training-a-systematic-review' }
     ],
     phases: [
       {
@@ -660,7 +722,22 @@ const WORKOUT_PROTOCOLS = [
       mechanism: 'Sustained Zone 2 activates PGC-1α, the master regulator of mitochondrial biogenesis. This creates new mitochondria in slow-twitch muscle fibers.',
       duration: 'Research suggests 60-120 minutes per session for optimal mitochondrial adaptations',
       alternative: 'Peter Attia also recommends 1x weekly Zone 5 session (4x4 minutes) for VO2max',
-      timeline: 'Capillary and mitochondrial changes visible within weeks in untrained individuals'
+      timeline: 'Capillary and mitochondrial changes visible within weeks in untrained individuals',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Anyone at any training level building a cardiovascular and metabolic base through sustained, conversational-pace cardio.',
+        evidenceSummary: 'Session intensity here is self-regulated by a simple perceived-effort check -- able to hold a conversation, but it takes effort -- the same practical anchor used to keep prescribed-effort training honest without a lab test.',
+        progressionRule: 'Extend session duration (30 to 45 to 60+ minutes) before adding the weekly Zone 5 interval session in Phase 3.',
+        deloadRule: 'Drop back to shorter Zone 2 sessions and skip the Zone 5 interval day any week fatigue is elevated.',
+        citations: [
+          {
+            label: 'Seiler S — What is best practice for training intensity and duration distribution in endurance athletes?',
+            journal: 'Int J Sports Physiol Perform',
+            year: 2010,
+            url: 'https://journals.humankinetics.com/view/journals/ijspp/5/3/article-p276.xml',
+          },
+        ],
+      },
     },
     researchLinks: [
       { label: 'Zone 2 Training: Myth or Scientific Reality (Sci-Sport)', url: 'https://sci-sport.com/en/zone-2-the-ideal-intensity-myth-or-scientific-reality-255/' },
@@ -798,7 +875,23 @@ const WORKOUT_PROTOCOLS = [
       injuryPrevention: 'Nordic curls reduce hamstring injury incidence significantly in athletes',
       muscleAdaptation: 'Eccentrics shift muscle optimum length, protecting against strain injuries',
       protocol: 'Mjølsnes protocol: 10 weeks, 2x/week, builds to 3 sets of 12 reps',
-      microDosing: 'Recent research supports "micro-dosing" - low volume is equally effective'
+      microDosing: 'Recent research supports "micro-dosing" - low volume is equally effective',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Intermediate trainees working on hamstring and quad eccentric strength for injury-risk reduction, at low weekly volume.',
+        evidenceSummary: 'A meta-analysis of 8,459 athletes found Nordic hamstring programs at this kind of low weekly volume (2x/week) roughly halve hamstring injury rates, which is why this protocol stays at 2 sessions/week throughout.',
+        progressionRule: 'Progress reps at the same tempo (5 to 8 to 10-12) before reducing hand-assistance on the Nordic curl itself.',
+        deloadRule: "Expect DOMS early -- if soreness is still limiting range of motion at the next session, repeat the prior week's rep target instead of advancing.",
+        citations: [
+          {
+            label: 'van Dyk N, Behan FP, Whiteley R — Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: systematic review and meta-analysis of 8459 athletes',
+            journal: 'Br J Sports Med',
+            year: 2019,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/30808663/',
+            pmid: '30808663',
+          },
+        ],
+      },
     },
     researchLinks: [
       { label: 'Nordic Hamstring Exercise Volume Meta-Analysis (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC6942028/' },
@@ -942,8 +1035,25 @@ const WORKOUT_PROTOCOLS = [
       batActivation: 'Brown fat activated at mild cold (16-19°C/60-66°F) - doesn\'t require extreme cold',
       duration: 'Research shows 2-6 hours of mild cold exposure daily for 14 days significantly increases BAT activity',
       shortExposure: 'Even 15-30 minutes daily of cool exposure can induce structural changes in BAT',
-      metabolism: 'Cold acclimation increased non-shivering thermogenesis from 10.8% to 17.8%'
+      metabolism: 'Cold acclimation increased non-shivering thermogenesis from 10.8% to 17.8%',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Beginners building cold tolerance gradually, from cool showers through to optional cold plunge work.',
+        evidenceSummary: 'Tracking your own tolerance -- reaching a point just short of shivering, rather than a fixed temperature or duration -- is the self-reported approach this protocol uses to pace exposure week to week.',
+        progressionRule: 'Increase duration and decrease temperature gradually across phases; only add full immersion once shorter cold showers feel manageable.',
+        deloadRule: 'Any week cold exposure feels excessive, return to end-of-shower cool water instead of a colder or longer session.',
+        citations: [
+          {
+            label: 'Saw AE, Main LC, Gastin PB — Monitoring the athlete training response: subjective self-reported measures trump commonly used objective measures: systematic review',
+            journal: 'Br J Sports Med',
+            year: 2016,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/26423706/',
+            pmid: '26423706',
+          },
+        ],
+      },
     },
+    // W4 audit: all 4 links below resolved 200 (curl) -- kept.
     researchLinks: [
       { label: 'Cold acclimation recruits human brown fat (JCI)', url: 'https://www.jci.org/articles/view/68993' },
       { label: 'Intermittent Cold Exposure and Brown Fat (PMC)', url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3895006/' },
@@ -1070,7 +1180,9 @@ const WORKOUT_PROTOCOLS = [
     summary: 'Comprehensive joint health routine combining controlled articular rotations (CARs), dynamic stretching, and joint-specific movements for longevity.',
     goal: 'Maintain and improve joint range of motion and health',
     level: 'all',
-    durationWeeks: 0, // Ongoing
+    durationWeeks: 0, // F4.7: intentional sentinel, not a bug -- this protocol is a
+    // daily-practice routine with no fixed end date. The UI (WorkoutTracker) already
+    // renders "Ongoing" for durationWeeks 0/null; do not backfill a numeric week count.
     sessionsPerWeek: 7,
     tags: ['mobility', 'joints', 'flexibility', 'longevity', 'daily-practice'],
     focusAreas: ['joints', 'mobility', 'flexibility', 'injury-prevention'],
@@ -1087,8 +1199,25 @@ const WORKOUT_PROTOCOLS = [
       cars: 'Controlled Articular Rotations (CARs) maintain joint capsule health through full range movement',
       useItOrLoseIt: 'Joints that aren\'t moved through full range will lose that range over time',
       dailyDose: 'Even 5-10 minutes of daily mobility work has significant long-term benefits',
-      morningRoutine: 'Best done in morning to assess daily mobility and "oil" the joints'
+      morningRoutine: 'Best done in morning to assess daily mobility and "oil" the joints',
+      // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
+      education: {
+        whoItsFor: 'Anyone wanting a daily 10-15 minute joint-health practice -- no fixed end date, meant as an ongoing habit.',
+        evidenceSummary: 'Moving joints through their full range regularly is how this protocol maintains capsule health; discomfort in a stretch is expected, sharp pain is not, and that distinction is the self-check built into the routine.',
+        progressionRule: 'This is a maintenance routine, not a progressive-overload one -- consistency (daily) matters more than adding reps or range.',
+        deloadRule: "On days full range isn't available, do partial-range CARs rather than skipping the joint entirely.",
+        citations: [
+          {
+            label: 'Saw AE, Main LC, Gastin PB — Monitoring the athlete training response: subjective self-reported measures trump commonly used objective measures: systematic review',
+            journal: 'Br J Sports Med',
+            year: 2016,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/26423706/',
+            pmid: '26423706',
+          },
+        ],
+      },
     },
+    // W4 audit: link below resolved 200 (curl) -- kept.
     researchLinks: [
       { label: 'Kinstretch/FRC Methodology', url: 'https://www.functionalanatomyseminars.com/' }
     ],

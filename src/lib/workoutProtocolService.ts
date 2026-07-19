@@ -9,6 +9,54 @@ import {
   ProtocolSession,
 } from '@/types/workout';
 
+// W1a item 5 (NEW5): relocated from app/api/workouts/assignments/[assignmentId]/route.ts
+// so the plan-session -> WorkoutSession record logic lives alongside the rest of the
+// protocol/plan domain logic. Carries planSession.title into the exercises JSON payload
+// (sessionTitle field) since WorkoutSession has no dedicated title column and this ticket
+// may not touch prisma/schema.prisma -- transformSession (WorkoutTracker.tsx) reads it back.
+export const logCompletedSession = async ({
+  assignmentId,
+  planSession,
+  userId,
+  protocolId,
+  notes,
+}: {
+  assignmentId: string;
+  planSession: AssignmentPlanSession;
+  userId: string;
+  protocolId: string;
+  notes?: string | null;
+}) => {
+  const exercisesFromPlan = (planSession.blocks ?? []).flatMap((block: any) => block.exercises ?? []);
+  const exercises = exercisesFromPlan.map((exercise: any, index: number) => ({
+    id: `${assignmentId}-${planSession.id}-${index}`,
+    name: exercise.name,
+    category: exercise.pattern,
+    intensity: planSession.intensity,
+    notes: exercise.description,
+    sessionTitle: planSession.title,
+    sets: (exercise.sets ?? []).map((set: any) => ({
+      reps: set.reps ?? null,
+      weight: set.weight ?? null,
+      tempo: set.tempo,
+      restSeconds: set.restSeconds,
+      completed: true,
+    })),
+    source: 'protocol-plan',
+  }));
+
+  await prisma.workoutSession.create({
+    data: {
+      userId,
+      programId: protocolId,
+      exercises,
+      duration: Math.round((planSession.durationMinutes ?? 40) * 60),
+      notes: notes ?? planSession.summary,
+      completedAt: new Date(),
+    },
+  });
+};
+
 type ProtocolLike = {
   id?: string;
   slug?: string;
@@ -118,8 +166,38 @@ export const summarizeAssignmentPlan = (plan?: AssignmentPlan) => {
   };
 };
 
+// F4.1: getAvailableWorkoutProtocols (a read endpoint) called this on every
+// GET, running N upserts per page load. Module-level cached promise makes the
+// upsert pass run at most once per server process -- later calls just await
+// the already-resolved promise, zero additional Prisma calls.
+// ponytail: process-lifetime cache, no TTL/invalidation -- curated protocols
+// are static seed data, not user-editable. Restart the process to reseed.
+let seedPromise: Promise<void> | null = null;
+
+// W4: no dedicated schema column for the education block (whoItsFor /
+// evidenceSummary / progressionRule / deloadRule / citations) and this ticket
+// may not touch prisma/schema.prisma. aiInsights is a Json column that no UI
+// code reads (verified: grep for `aiInsights` outside this file/type/data
+// files returns nothing) -- reused as the carrier. Write side nests the
+// education block under `education`; read side (getAvailableWorkoutProtocols)
+// flattens it back onto the record for the client, for BOTH the curated-3
+// (this upsert) and the seed-8 (scripts/seed-workout-protocols.ts, which nests
+// the same `education` key directly in its own aiInsights object literals).
+const buildAiInsightsColumn = (protocol: CuratedWorkoutProtocol) => ({
+  legacyInsights: protocol.aiInsights,
+  education: {
+    whoItsFor: protocol.whoItsFor,
+    evidenceSummary: protocol.evidenceSummary,
+    progressionRule: protocol.progressionRule,
+    deloadRule: protocol.deloadRule,
+    citations: protocol.citations,
+  },
+});
+
 export const ensureCuratedWorkoutProtocols = async () => {
-  await Promise.all(
+  if (seedPromise) return seedPromise;
+
+  seedPromise = Promise.all(
     curatedWorkoutProtocols.map(async (protocol: CuratedWorkoutProtocol) => {
       await prisma.workoutProtocol.upsert({
         where: { slug: protocol.slug },
@@ -134,7 +212,7 @@ export const ensureCuratedWorkoutProtocols = async () => {
           focusAreas: protocol.focusAreas,
           equipment: protocol.equipment,
           readinessNotes: protocol.readinessGuidelines,
-          aiInsights: protocol.aiInsights,
+          aiInsights: buildAiInsightsColumn(protocol) as any,
           researchLinks: protocol.researchLinks as any,
           phases: protocol.phases as any,
         },
@@ -150,14 +228,38 @@ export const ensureCuratedWorkoutProtocols = async () => {
           focusAreas: protocol.focusAreas,
           equipment: protocol.equipment,
           readinessNotes: protocol.readinessGuidelines,
-          aiInsights: protocol.aiInsights,
+          aiInsights: buildAiInsightsColumn(protocol) as any,
           researchLinks: protocol.researchLinks as any,
           phases: protocol.phases as any,
           isPublic: true,
         },
       });
     })
-  );
+  ).then(() => undefined);
+
+  try {
+    await seedPromise;
+  } catch (err) {
+    seedPromise = null; // allow a later call to retry instead of caching a rejection forever
+    throw err;
+  }
+};
+
+// W4: pulls the education block back out of the aiInsights Json column (see
+// buildAiInsightsColumn above) and surfaces it as flat, typed fields the
+// client reads directly (WorkoutProtocolRecord.whoItsFor etc). Applies to
+// every row regardless of source (curated-3 upsert or seed-8 script) since
+// both land in the same collection with the same `aiInsights.education` shape.
+const flattenEducation = (protocol: any) => {
+  const education = protocol?.aiInsights?.education ?? null;
+  return {
+    ...protocol,
+    whoItsFor: education?.whoItsFor ?? null,
+    evidenceSummary: education?.evidenceSummary ?? null,
+    progressionRule: education?.progressionRule ?? null,
+    deloadRule: education?.deloadRule ?? null,
+    citations: education?.citations ?? null,
+  };
 };
 
 export const getAvailableWorkoutProtocols = async (userId: string) => {
@@ -171,5 +273,5 @@ export const getAvailableWorkoutProtocols = async (userId: string) => {
     },
   });
 
-  return protocols;
+  return protocols.map(flattenEducation);
 };

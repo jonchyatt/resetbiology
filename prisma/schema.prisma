@@ -1365,3 +1365,22 @@ model MigrationManifest {
   @@index([userId, domain])
   @@map("migration_manifests")
 }
+
+// W2 workout-points economy fix (data/rb-workout-rework) — one row per
+// (userId, dayKey, awardType) award ever granted. The @@unique index IS the
+// once-per-day gate: prescribed-session completion, quick-add, and the
+// legacy session route all race to create this row for the same day: only
+// the first write wins, the rest catch P2002 and skip the point grant. This
+// replaces the old WorkoutSession-count-based "first workout of the day"
+// heuristic, which broke when two different completion paths both created
+// WorkoutSession rows and stepped on each other's count.
+model DailyAward {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  dayKey    String
+  awardType String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, dayKey, awardType])
+  @@map("daily_awards")
+}

@@ -3,6 +3,8 @@ import { auth0 } from '@/lib/auth0';
 import { getUserFromSession } from '@/lib/getUserFromSession';
 import { prisma } from '@/lib/prisma';
 import { enqueueDriveSync } from '@/lib/driveSyncQueue';
+import { awardWorkoutPoints } from '@/lib/workoutPoints';
+import { effectiveReadiness } from '@/lib/workoutReadiness';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -50,6 +52,7 @@ export async function POST(request: Request) {
       mood,
       notes,
       tags,
+      localDate: clientLocalDate,
     } = body ?? {};
 
     if (assignmentId) {
@@ -62,12 +65,20 @@ export async function POST(request: Request) {
     }
 
     const now = new Date();
-    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now
-      .getDate())
-      .padStart(2, '0')}`;
+    // The visitor's real calendar day, sent by the client -- falls back to
+    // the server clock (UTC on Vercel) only when the client didn't send one,
+    // fixing check-ins that landed on the wrong day for non-UTC visitors.
+    const localDate =
+      typeof clientLocalDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(clientLocalDate)
+        ? clientLocalDate
+        : `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     const localTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(
       now.getSeconds()
     ).padStart(2, '0')}`;
+
+    // Server-computed effective readiness (PRIMARY slider, else DERIVED blend)
+    // -- what actually drives guidance/actuation, not just the raw slider.
+    const effReadiness = effectiveReadiness({ readinessScore, energyLevel, sorenessLevel, sleepHours, stressLevel });
 
     const checkIn = await prisma.workoutCheckIn.create({
       data: {
@@ -98,7 +109,7 @@ export async function POST(request: Request) {
           data: {
             progress: {
               ...existingProgress,
-              lastReadinessScore: readinessScore ?? null,
+              lastReadinessScore: effReadiness,
               lastCheckInAt: now.toISOString(),
             },
           },
@@ -106,10 +117,17 @@ export async function POST(request: Request) {
       }
     }
 
+    const award = await awardWorkoutPoints({
+      userId: user.id,
+      awardType: 'readiness',
+      source: 'checkin',
+      dayKey: localDate,
+    });
+
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
     await enqueueDriveSync(user.id, new Date(), ['checkins']).catch(err => console.error('Drive enqueue failed:', err))
 
-    return NextResponse.json({ ok: true, checkIn });
+    return NextResponse.json({ ok: true, checkIn, pointsAwarded: award.points, effectiveReadiness: effReadiness });
   } catch (error: any) {
     console.error('POST /api/workouts/checkins error', error);
     return NextResponse.json({ ok: false, error: error?.message ?? 'Unable to save check-in' }, { status: 500 });

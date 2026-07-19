@@ -8,7 +8,7 @@ import { useUser } from "@auth0/nextjs-auth0"
 
 export function Dashboard() {
   const { user } = useUser()
-  const [totalPoints] = useState(1250)
+  const [totalPoints, setTotalPoints] = useState(0)
   const [currentStreak, setCurrentStreak] = useState(0)
   
   // Daily tasks state
@@ -55,6 +55,9 @@ export function Dashboard() {
           setDailyTasks(taskStates)
           if (data.streak !== undefined) {
             setCurrentStreak(data.streak)
+          }
+          if (data.totalPoints !== undefined) {
+            setTotalPoints(data.totalPoints)
           }
         }
       } catch (error) {

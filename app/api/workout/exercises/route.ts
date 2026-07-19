@@ -60,6 +60,10 @@ export async function GET(request: Request) {
     const customOnly = searchParams.get('customOnly') === 'true'
 
     let exercises = [...defaultExercises]
+    // W1a item 6 (NEW6): the tracker's personalization prefs (equipment/goal/
+    // session-time/recovery) persist here via the same profileData JSON spread
+    // pattern as customExercises below -- reuses this route, no new one added.
+    let workoutPreferences: any = null
 
     // If user is logged in, add their custom exercises
     if (session?.user) {
@@ -75,6 +79,7 @@ export async function GET(request: Request) {
         } else {
           exercises = [...exercises, ...customExercises]
         }
+        workoutPreferences = profileData?.workoutPreferences ?? null
       }
     }
 
@@ -96,7 +101,8 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       exercises,
-      total: exercises.length
+      total: exercises.length,
+      workoutPreferences
     })
 
   } catch (error) {
@@ -124,7 +130,23 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { exercises, importType } = body
+    const { exercises, importType, workoutPreferences } = body
+
+    // W1a item 6 (NEW6): persist the tracker's personalization prefs into
+    // profileData JSON, same spread pattern as customExercises below.
+    if (workoutPreferences && typeof workoutPreferences === 'object') {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          profileData: {
+            ...(user.profileData as any || {}),
+            workoutPreferences
+          }
+        }
+      })
+
+      return NextResponse.json({ success: true, workoutPreferences })
+    }
 
     // Handle bulk import
     if (importType === 'bulk' && Array.isArray(exercises)) {

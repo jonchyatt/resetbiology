@@ -2,6 +2,8 @@
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
+import { awardWorkoutPoints } from '@/lib/workoutPoints';
+import { dayKeyToUtcMidnight } from '@/lib/localDay';
 
 export async function POST(request: Request) {
   try {
@@ -73,54 +75,49 @@ export async function POST(request: Request) {
       },
     });
 
-    // Mark daily workout task completed
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
+    // DailyAward's unique index (userId, dayKey, awardType) is the once-per-
+    // day gate now, not a WorkoutSession count -- a count broke the moment a
+    // second path (prescribed-session completion) started creating
+    // WorkoutSession rows too, forfeiting this route's award. See
+    // src/lib/workoutPoints.ts.
+    const award = await awardWorkoutPoints({
+      userId: user.id,
+      awardType: 'workout',
+      source: 'quick-add',
+      dayKey: localDate,
+    });
+    const pointsAwarded = award.points;
+
+    // Mark daily workout task completed on the SAME resolved day the award
+    // used (client localDate, validated and drift-bounded inside the
+    // helper, or its server-clock fallback) — not a separate server-clock
+    // startOfDay, which could land the checkmark on a different day than
+    // the award (mirrors app/api/workouts/assignments/[assignmentId]/route.ts).
+    const taskDay = dayKeyToUtcMidnight(award.dayKey);
 
     await prisma.dailyTask.upsert({
       where: {
         userId_date_taskName: {
           userId: user.id,
-          date: startOfDay,
+          date: taskDay,
           taskName: 'workout',
         },
       },
       update: { completed: true },
       create: {
         userId: user.id,
-        date: startOfDay,
+        date: taskDay,
         taskName: 'workout',
         completed: true,
       },
     });
 
-    // Award points only for the first logged workout of the day
+    // Journal-entry lookup range stays server-clock-anchored (unchanged) —
+    // out of scope for this fix, which is the DailyTask/award day mismatch.
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
     const nextDay = new Date(startOfDay);
     nextDay.setDate(nextDay.getDate() + 1);
-
-    const workoutsToday = await prisma.workoutSession.count({
-      where: {
-        userId: user.id,
-        completedAt: {
-          gte: startOfDay,
-          lt: nextDay,
-        },
-      },
-    });
-
-    let pointsAwarded = 0;
-    if (workoutsToday === 1) {
-      await prisma.gamificationPoint.create({
-        data: {
-          userId: user.id,
-          amount: 40,
-          pointType: 'fitness',
-          activitySource: 'Logged workout session',
-          earnedAt: now,
-        },
-      });
-      pointsAwarded = 40;
-    }
 
     const timestamp = now.toLocaleTimeString('en-US', {
       hour: 'numeric',

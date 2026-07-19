@@ -29,6 +29,21 @@ const roundNumber = (value: number | null | undefined, digits = 1) =>
     ? Number.parseFloat(value.toFixed(digits))
     : null;
 
+// F4.6: exercise descriptions come from third-party WGER HTML (untrusted).
+// Strip tags, then decode the handful of entities WGER descriptions use --
+// no dangerouslySetInnerHTML, renders as inert plain text.
+const stripHtml = (html: string): string =>
+  html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#0?39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
 export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuickAddResult) => void }) {
   const [term, setTerm] = useState("");
   const [results, setResults] = useState<WorkoutSearchResult[]>([]);
@@ -262,7 +277,7 @@ export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuick
           </div>
 
           {selected.description && (
-            <p className="text-xs text-slate-400 leading-snug" dangerouslySetInnerHTML={{ __html: selected.description }} />
+            <p className="text-xs text-slate-400 leading-snug">{stripHtml(selected.description)}</p>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-300">
