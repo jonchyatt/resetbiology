@@ -5,6 +5,7 @@ import { CronHealthMonitor } from '@/lib/cronHealthMonitoring'
 import { isVaultConnected } from '@/lib/vaultService'
 import { listActiveProtocolsLite } from '@/lib/protocols-store'
 import { computeDueReminders } from '@/lib/computeReminders'
+import { computeDueVisionReminders, isVisionSessionCompletedToday } from '@/lib/computeVisionReminders'
 import webpush from 'web-push'
 
 export const dynamic = 'force-dynamic'
@@ -333,6 +334,194 @@ async function sendDriveReminders() {
 }
 
 // ---------------------------------------------------------------------------
+// PASS 3 — Vision-session reminders (on-demand, mirrors PASS 2's dedupe path)
+// ---------------------------------------------------------------------------
+//
+// Vision has nothing pre-materialized (no ScheduledNotification rows) — the
+// due-window / DST / rest-day / already-completed logic lives in the R1a
+// sibling module `computeVisionReminders`. This pass only wires that pure
+// compute into the existing preferences → dedupe → send pipeline.
+
+async function sendVisionReminders() {
+  const now = new Date()
+
+  const visionPrefs = await prisma.notificationPreference.findMany({
+    where: {
+      protocolType: 'vision',
+      dailyReminderTime: { not: null },
+      OR: [{ pushEnabled: true }, { emailEnabled: true }],
+    },
+  })
+
+  if (visionPrefs.length === 0) {
+    return { found: 0, sent: 0, failed: 0, results: [], errors: [] }
+  }
+
+  const results: Array<{ userId: string; protocolId: string; status: string; doseTime: string }> = []
+  const errors: Array<{ userId: string; protocolId?: string; error: string }> = []
+  let totalDue = 0
+
+  for (const pref of visionPrefs) {
+    try {
+      // protocolId on NotificationPreference is a loose ref (not an FK), same
+      // pattern as the peptide path — look it up and verify ownership rather
+      // than trusting the stored id blindly.
+      const enrollment = await prisma.visionProgramEnrollment.findUnique({
+        where: { id: pref.protocolId },
+      })
+      if (!enrollment || enrollment.userId !== pref.userId) continue
+      if (enrollment.status !== 'active') continue
+
+      const reminder = computeDueVisionReminders({
+        enrollment: {
+          startDate: enrollment.startDate,
+          status: enrollment.status,
+          testDayOffset: enrollment.testDayOffset ?? null,
+        },
+        pref: {
+          pushEnabled: pref.pushEnabled,
+          emailEnabled: pref.emailEnabled,
+          protocolType: pref.protocolType,
+          dailyReminderTime: pref.dailyReminderTime,
+          timezone: pref.timezone ?? null,
+        },
+        now,
+      })
+
+      if (!reminder.due || !reminder.reminderInstant) continue
+
+      // Cast: isVisionSessionCompletedToday's prisma param is typed
+      // `(args: unknown) => Promise<unknown>` (R1a sibling file, out of
+      // scope here) which the real PrismaClient's findFirst signature
+      // doesn't structurally satisfy under strict contravariant checking.
+      // Runtime behavior is correct — only the declared type is too narrow.
+      const completedToday = await isVisionSessionCompletedToday(
+        prisma as unknown as Parameters<typeof isVisionSessionCompletedToday>[0],
+        enrollment.id,
+        reminder.week,
+        reminder.day,
+        reminder.localDate,
+      )
+      if (completedToday) continue
+
+      const channels: Array<'push' | 'email'> = []
+      if (pref.pushEnabled) channels.push('push')
+      if (pref.emailEnabled) channels.push('email')
+      totalDue += channels.length
+
+      const user = await prisma.user.findUnique({
+        where: { id: pref.userId },
+        include: { pushSubscriptions: true },
+      })
+      if (!user) {
+        errors.push({ userId: pref.userId, protocolId: pref.protocolId, error: 'user vanished' })
+        continue
+      }
+
+      for (const type of channels) {
+        // Same dedupe shape as PASS 2: doseTime is the reminder instant since
+        // vision has no separate "dose" concept.
+        try {
+          await prisma.notificationDelivery.create({
+            data: {
+              userId: pref.userId,
+              protocolId: enrollment.id,
+              doseTime: reminder.reminderInstant,
+              type,
+            },
+          })
+        } catch (err: any) {
+          if (err.code === 'P2002') continue // already delivered
+          errors.push({
+            userId: pref.userId,
+            protocolId: enrollment.id,
+            error: `dedup write failed: ${err.message}`,
+          })
+          continue
+        }
+
+        try {
+          if (type === 'push') {
+            if (!ensureVapid()) {
+              errors.push({ userId: pref.userId, protocolId: enrollment.id, error: 'VAPID not configured' })
+              continue
+            }
+            if (user.pushSubscriptions.length === 0) {
+              errors.push({ userId: pref.userId, protocolId: enrollment.id, error: 'No push subscriptions' })
+              continue
+            }
+            const subscriptionsToDelete: string[] = []
+            for (const sub of user.pushSubscriptions) {
+              try {
+                await webpush.sendNotification(
+                  { endpoint: sub.endpoint, keys: sub.keys as any },
+                  JSON.stringify({
+                    title: 'Vision training time',
+                    body: `Week ${reminder.week}, Day ${reminder.day} — ${reminder.sessionFocus} (~${reminder.estMinutes} min)`,
+                    url: '/vision-training',
+                    tag: `vision-${enrollment.id}-${reminder.reminderInstant.getTime()}`,
+                  }),
+                )
+                results.push({
+                  userId: pref.userId,
+                  protocolId: enrollment.id,
+                  status: 'sent',
+                  doseTime: reminder.reminderInstant.toISOString(),
+                })
+              } catch (error: any) {
+                if (error.statusCode === 410 || error.statusCode === 404) {
+                  subscriptionsToDelete.push(sub.id)
+                }
+                errors.push({
+                  userId: pref.userId,
+                  protocolId: enrollment.id,
+                  error: `push: ${error.message} [${error.statusCode}]`,
+                })
+              }
+            }
+            if (subscriptionsToDelete.length > 0) {
+              await prisma.pushSubscription.deleteMany({
+                where: { id: { in: subscriptionsToDelete } },
+              })
+            }
+          } else if (type === 'email') {
+            if (!user.email) {
+              errors.push({ userId: pref.userId, protocolId: enrollment.id, error: 'No email on file' })
+              continue
+            }
+            await sendDoseReminderEmail({
+              email: user.email,
+              name: user.name || 'Reset Biology member',
+              peptideName: `Vision Training — Week ${reminder.week}, Day ${reminder.day}: ${reminder.sessionFocus}`,
+              dosage: undefined,
+              reminderTime: reminder.reminderInstant,
+            })
+            results.push({
+              userId: pref.userId,
+              protocolId: enrollment.id,
+              status: 'sent-email',
+              doseTime: reminder.reminderInstant.toISOString(),
+            })
+          }
+        } catch (error: any) {
+          errors.push({
+            userId: pref.userId,
+            protocolId: enrollment.id,
+            error: `send failed: ${error.message}`,
+          })
+        }
+      }
+    } catch (err: any) {
+      // Failure isolation — one bad vision pref never breaks the pass, let
+      // alone the peptide passes running alongside it.
+      errors.push({ userId: pref.userId, protocolId: pref.protocolId, error: `vision pass error: ${err.message}` })
+    }
+  }
+
+  return { found: totalDue, sent: results.length, failed: errors.length, results, errors }
+}
+
+// ---------------------------------------------------------------------------
 // Dispatcher — runs both passes, aggregates, records health
 // ---------------------------------------------------------------------------
 
@@ -341,7 +530,7 @@ async function sendNotifications() {
   try {
     await monitor.start('notification-send')
 
-    const [mongoResult, driveResult] = await Promise.all([
+    const [mongoResult, driveResult, visionResult] = await Promise.all([
       sendMongoNotifications().catch((err) => ({
         found: 0,
         sent: 0,
@@ -356,22 +545,30 @@ async function sendNotifications() {
         results: [],
         errors: [{ userId: 'pass-2', error: err.message }],
       })),
+      sendVisionReminders().catch((err) => ({
+        found: 0,
+        sent: 0,
+        failed: 0,
+        results: [],
+        errors: [{ userId: 'pass-3', error: err.message }],
+      })),
     ])
 
-    const totalFound = mongoResult.found + driveResult.found
-    const totalSent = mongoResult.sent + driveResult.sent
-    const totalFailed = mongoResult.failed + driveResult.failed
+    const totalFound = mongoResult.found + driveResult.found + visionResult.found
+    const totalSent = mongoResult.sent + driveResult.sent + visionResult.sent
+    const totalFailed = mongoResult.failed + driveResult.failed + visionResult.failed
 
     console.log('📊 Send complete:', {
       mongo: { found: mongoResult.found, sent: mongoResult.sent, failed: mongoResult.failed },
       drive: { found: driveResult.found, sent: driveResult.sent, failed: driveResult.failed },
+      vision: { found: visionResult.found, sent: visionResult.sent, failed: visionResult.failed },
     })
 
     await monitor.complete({
       notificationsFound: totalFound,
       notificationsSent: totalSent,
       notificationsFailed: totalFailed,
-      metadata: { mongo: mongoResult, drive: driveResult },
+      metadata: { mongo: mongoResult, drive: driveResult, vision: visionResult },
     })
 
     return {
@@ -380,6 +577,7 @@ async function sendNotifications() {
       failed: totalFailed,
       mongo: mongoResult,
       drive: driveResult,
+      vision: visionResult,
     }
   } catch (error: any) {
     console.error('💥 Fatal error in sendNotifications:', error)
