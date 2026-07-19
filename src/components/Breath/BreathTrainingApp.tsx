@@ -8,6 +8,7 @@ import { Configurator } from "./Configurator"
 import { SessionStats } from "./SessionStats"
 import { BreathStorage } from "@/lib/breathStorage"
 import { BreathState, BreathSettings, DEFAULT_SETTINGS, CycleData, SessionData } from "@/types/breath"
+import { useToast } from "@/components/ui/Toast"
 
 interface BreathTrainingAppProps {
   onSessionComplete?: (session: any) => void
@@ -43,6 +44,7 @@ function settingsFromExercise(
 }
 
 export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainingAppProps) {
+  const toast = useToast()
   // Core state machine
   const [state, setState] = useState<BreathState>('idle')
   const [settings, setSettings] = useState<BreathSettings>(() => {
@@ -436,7 +438,7 @@ export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainin
       }
     } catch (error) {
       console.error('Failed to save breath session to database:', error)
-      alert(`Breath session saved locally, but failed to sync to server: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      toast.error(`Breath session saved locally, but failed to sync to server: ${error instanceof Error ? error.message : 'Unknown error'}`)
       // Continue anyway - data is still saved locally
     }
 
