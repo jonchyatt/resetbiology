@@ -118,6 +118,48 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
+// T2: optional browser-side push dance (permission request + SW ready +
+// subscribe). MUST NEVER be awaited from the durable-save path —
+// navigator.serviceWorker.ready never settles when no service worker is
+// registered for this scope (the observed hang: permission granted, no SW
+// registered). Called fire-and-forget after the protocol save has already
+// resolved; a hard timeout keeps the dangling promise from lingering.
+const PUSH_SETUP_TIMEOUT_MS = 5000;
+
+async function setupPushSubscription(): Promise<void> {
+  if (!("Notification" in window)) return;
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted" || !("serviceWorker" in navigator)) return;
+
+  const registration = await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("service worker not ready (timed out)")),
+        PUSH_SETUP_TIMEOUT_MS,
+      ),
+    ),
+  ]);
+
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  if (!vapidKey) {
+    console.error("❌ VAPID public key not configured");
+    return;
+  }
+  const applicationServerKey = urlBase64ToUint8Array(vapidKey);
+
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: applicationServerKey as BufferSource,
+  });
+
+  await fetch("/api/notifications/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ subscription: subscription.toJSON() }),
+  });
+}
+
 interface PeptideProtocol {
   id: string;
   name: string;
@@ -138,7 +180,9 @@ interface PeptideProtocol {
 interface DoseEntry {
   id: string;
   peptideId: string;
-  scheduledTime: string;
+  // T2 FINDING 1: the server can store `time: null` — scheduledTime is
+  // sourced from it (see fetchTodaysDoses) so it's genuinely nullable here.
+  scheduledTime: string | null;
   actualTime?: string;
   completed: boolean;
   notes?: string;
@@ -363,7 +407,10 @@ export function PeptideTracker() {
     [todayKey],
   );
 
-  const parseTimeToMinutes = useCallback((time: string) => {
+  // T2 FINDING 1: time can be null (server stores `time: time || null`) —
+  // never crash, just sort it to the end.
+  const parseTimeToMinutes = useCallback((time: string | null | undefined) => {
+    if (typeof time !== "string") return 24 * 60;
     const [hoursStr, minutesStr] = time.split(":");
     const hours = Number.parseInt(hoursStr, 10);
     const minutes = Number.parseInt(minutesStr ?? "0", 10);
@@ -380,17 +427,18 @@ export function PeptideTracker() {
           parseTimeToMinutes(b.scheduledTime),
       );
 
+    // T2 FINDING 1: prefer the dose's own ISO timestamp (contract R2);
+    // parseTimeToMinutes is only evaluated as a fallback when actualTime is
+    // absent, so a null/invalid scheduledTime never reaches it eagerly.
     const completed = todaysDoses
       .filter((dose) => dose.completed)
       .sort((a, b) => {
-        const fallbackA = parseTimeToMinutes(a.scheduledTime) * 60 * 1000;
-        const fallbackB = parseTimeToMinutes(b.scheduledTime) * 60 * 1000;
         const timeA = a.actualTime
           ? new Date(a.actualTime).getTime()
-          : fallbackA;
+          : parseTimeToMinutes(a.scheduledTime) * 60 * 1000;
         const timeB = b.actualTime
           ? new Date(b.actualTime).getTime()
-          : fallbackB;
+          : parseTimeToMinutes(b.scheduledTime) * 60 * 1000;
         return timeB - timeA;
       });
 
@@ -1144,46 +1192,22 @@ export function PeptideTracker() {
       if (data.success) {
         const protocolId = data.protocol.id;
 
-        // Set up notifications if enabled
+        // T2 durable-save success boundary: the protocol POST above is the
+        // save. Notification preferences are persisted server-side here too
+        // (still part of the durable save — awaited, but its own try/catch
+        // so a failure here can't fail protocol creation). The browser-side
+        // permission/SW/push-subscribe dance is OPTIONAL and fire-and-forget
+        // (setupPushSubscription, not awaited) — it must never gate this
+        // function's return, because navigator.serviceWorker.ready never
+        // settles when no service worker is registered (the observed hang:
+        // permission granted, no SW, modal spins "Adding Protocol..."
+        // forever even though the POST above already returned 200).
         if (
           protocolData.notifications &&
           (protocolData.notifications.pushEnabled ||
             protocolData.notifications.emailEnabled)
         ) {
           try {
-            // Request push permission if push is enabled
-            if (
-              protocolData.notifications.pushEnabled &&
-              "Notification" in window
-            ) {
-              const permission = await Notification.requestPermission();
-              if (permission === "granted" && "serviceWorker" in navigator) {
-                // Subscribe to push
-                const registration = await navigator.serviceWorker.ready;
-
-                // Convert VAPID key to proper format
-                const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-                if (!vapidKey) {
-                  console.error("❌ VAPID public key not configured");
-                  return;
-                }
-                const applicationServerKey = urlBase64ToUint8Array(vapidKey);
-
-                const subscription = await registration.pushManager.subscribe({
-                  userVisibleOnly: true,
-                  applicationServerKey: applicationServerKey as BufferSource,
-                });
-
-                // Save subscription
-                await fetch("/api/notifications/subscribe", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ subscription: subscription.toJSON() }),
-                });
-              }
-            }
-
-            // Save notification preferences
             await fetch("/api/notifications/preferences", {
               method: "POST",
               credentials: "include",
@@ -1196,11 +1220,19 @@ export function PeptideTracker() {
                 timezone: getClientTimezone(),
               }),
             });
-
             console.log(`✅ Notification preferences saved for protocol`);
           } catch (notifError) {
-            console.error("Failed to setup notifications:", notifError);
-            // Don't fail the whole protocol creation if notifications fail
+            console.error("Failed to save notification preferences:", notifError);
+            // Don't fail the whole protocol creation if preference save fails
+          }
+
+          if (protocolData.notifications.pushEnabled) {
+            setupPushSubscription().catch((pushError) => {
+              console.warn(
+                "Push subscription setup skipped (non-blocking):",
+                pushError,
+              );
+            });
           }
         }
 
@@ -1695,9 +1727,13 @@ export function PeptideTracker() {
 
       if (data.success) {
         console.log("✅ Protocol deleted successfully");
-        // Refresh protocols and doses
-        fetchUserProtocols();
-        fetchTodaysDoses();
+        // T2 FINDING 2: doses must land in state BEFORE protocols refresh
+        // triggers regeneration (matches the doses-then-protocols bootstrap
+        // ordering above) — firing these concurrently let a late doses
+        // fetch overwrite the regenerated slot label with the raw
+        // log-moment string.
+        await fetchTodaysDoses();
+        await fetchUserProtocols();
         fetchDoseHistory();
       } else {
         console.error("Failed to delete protocol:", data.error);
@@ -1726,7 +1762,16 @@ export function PeptideTracker() {
       .replace(/\s+Package\s*$/i, "")
       .trim();
     const Icon = protocol?.administrationType === "oral" ? Pill : Syringe;
-    const timeLabel = formatTime12h(dose.scheduledTime);
+    // T2 FINDING 1 (R2): null/invalid scheduledTime falls back to the
+    // dose's own ISO timestamp instead of rendering nothing.
+    const timeLabel = dose.scheduledTime
+      ? formatTime12h(dose.scheduledTime)
+      : dose.actualTime
+        ? new Date(dose.actualTime).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+          })
+        : "";
 
     if (dose.completed) {
       const loggedAtLabel = dose.actualTime

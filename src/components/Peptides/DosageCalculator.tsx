@@ -233,6 +233,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const [selectedPeptideId, setSelectedPeptideId] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  // T2: synchronous re-entrancy guard. isSaving is React state — the DOM
+  // `disabled` attribute lags a tick behind setIsSaving(true), so it alone
+  // can't stop a second click that lands in the same tick as the first.
+  // This ref is set synchronously before any await, closing that gap.
+  const savingInFlightRef = useRef(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isCustomPeptide, setIsCustomPeptide] = useState<boolean>(false);
   const [customPeptideName, setCustomPeptideName] = useState<string>("");
@@ -359,6 +364,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   const handleProtocolSave = async () => {
     if (!onSaveProtocol || mode !== 'addProtocol') return;
+    // T2: a second click landing before the disabled attribute commits
+    // cannot start a duplicate save.
+    if (savingInFlightRef.current) return;
 
     // Validation: custom schedule requires selected days
     if (scheduleType === 'custom' && selectedDays.length === 0) {
@@ -378,6 +386,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     }
 
     try {
+      savingInFlightRef.current = true;
       setIsSaving(true);
       const formattedDosage = `${inputs.desiredDose}${inputs.doseUnit}`;
 
@@ -422,6 +431,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       console.error('Error saving protocol:', error);
       alert('Failed to save protocol. Please try again.');
     } finally {
+      savingInFlightRef.current = false;
       setIsSaving(false);
     }
   };
