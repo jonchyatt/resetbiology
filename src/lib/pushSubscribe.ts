@@ -2,6 +2,23 @@
 // Extracted from NotificationPreferences.tsx so any settings surface
 // (peptide modal, vision session reminders) can reuse the same behavior.
 
+// ponytail: same hang class as PeptideTracker.setupPushSubscription —
+// navigator.serviceWorker.ready never settles when no service worker is
+// registered for this scope. Race it against a timeout so every caller of
+// subscribeToPush() always settles instead of spinning forever.
+const SERVICE_WORKER_READY_TIMEOUT_MS = 5000
+function waitForServiceWorkerReady(): Promise<ServiceWorkerRegistration> {
+  return Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error('Service worker not ready (timed out)')),
+        SERVICE_WORKER_READY_TIMEOUT_MS
+      )
+    )
+  ])
+}
+
 // Convert base64 VAPID key to Uint8Array format required by Push API
 export function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -39,7 +56,7 @@ export async function subscribeToPush(): Promise<PushSubscription> {
     throw new Error('Notification permission denied')
   }
 
-  const registration = await navigator.serviceWorker.ready
+  const registration = await waitForServiceWorkerReady()
 
   const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
   if (!vapidKey) {

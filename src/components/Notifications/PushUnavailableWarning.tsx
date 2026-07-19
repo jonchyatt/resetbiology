@@ -4,6 +4,23 @@ import { AlertCircle, X, RefreshCw, Bell } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { usePushAvailability } from '@/hooks/usePushAvailability'
 
+// ponytail: same hang class as PeptideTracker.setupPushSubscription —
+// navigator.serviceWorker.ready never settles when no service worker is
+// registered for this scope. Race it against a timeout so this
+// user-triggered path always settles instead of spinning "Enabling..." forever.
+const SERVICE_WORKER_READY_TIMEOUT_MS = 5000
+function waitForServiceWorkerReady(): Promise<ServiceWorkerRegistration> {
+  return Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error('Service worker not ready (timed out)')),
+        SERVICE_WORKER_READY_TIMEOUT_MS
+      )
+    )
+  ])
+}
+
 export default function PushUnavailableWarning() {
   const availability = usePushAvailability()
   const [dismissed, setDismissed] = useState(false)
@@ -35,8 +52,8 @@ export default function PushUnavailableWarning() {
       setPermissionState(permission)
 
       if (permission === 'granted') {
-        // Subscribe to push notifications
-        const registration = await navigator.serviceWorker.ready
+        // Subscribe to push notifications (bounded — see waitForServiceWorkerReady)
+        const registration = await waitForServiceWorkerReady()
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
