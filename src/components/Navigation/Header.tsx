@@ -23,10 +23,6 @@ export function Header() {
   const { user, isLoading } = useUser()
   const isAdmin = user?.role === 'admin'
 
-  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
-  // the content. Each such route owns its own navigation (← Back links).
-  if (shouldHideHeader(pathname)) return null
-
   // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -38,6 +34,11 @@ export function Header() {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isUserMenuOpen])
 
+  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
+  // the content. Each such route owns its own navigation (← Back links).
+  // Must come after all hooks above so hook order never depends on pathname.
+  if (shouldHideHeader(pathname)) return null
+
   return (
     <header
       className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200"
@@ -46,11 +47,11 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-            <img 
-              src="/reset-logo-pro.png" 
-              alt="Reset Biology" 
-              className="h-14 w-auto rounded-xl drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-sm p-2 border border-white/20"
+          <Link href="/" className="flex items-center py-2 transition-opacity hover:opacity-80">
+            <img
+              src="/reset-logo-pro.png"
+              alt="Reset Biology"
+              className="h-11 w-auto object-contain"
             />
           </Link>
 
@@ -67,7 +68,7 @@ export function Header() {
                 </Link>
                 <a
                   href="/auth/login?returnTo=/portal"
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                  className="rounded-lg border border-teal-600/40 px-4 py-2 text-teal-700 transition-colors hover:bg-teal-600/10"
                 >
                   Login / Sign Up
                 </a>
@@ -160,7 +161,7 @@ export function Header() {
                   </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
-                    className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
+                    className="block rounded-lg border border-teal-600/40 px-4 py-2 text-center text-teal-700 transition-colors hover:bg-teal-600/10"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Login / Sign Up
