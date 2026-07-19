@@ -9,12 +9,12 @@ import { computeDayStreak } from '@/lib/streak'
 // portal_modules table (scripts/seed-portal-modules.ts) is dashboard nav
 // tiles, a different thing. The real modules are two hardcoded arrays:
 // src/components/Audio/ModuleLibrary.tsx (7, /audio route) and
-// app/modules/foundation/page.tsx (5, /modules/foundation route), which
+// src/components/Audio/ModuleLibrary.tsx (the single real catalog since W1-T1) (5, /modules/foundation route), which
 // already write into the same free-form ModuleCompletion.moduleId column.
 // 12 is their combined size — the real total of what's offered today. If a
 // DB-backed module catalog ever ships, swap this constant for a query
 // against it instead of hardcoding a bigger number.
-const KNOWN_MODULE_CATALOG_SIZE = 12
+const KNOWN_MODULE_CATALOG_SIZE = 7
 
 // GET: real per-user progress numbers for the Profile page's Progress tab
 // (app/profile/page.tsx) — replaces the "0/30" hardcoded literals.
