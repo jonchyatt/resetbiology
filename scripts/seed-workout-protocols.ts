@@ -207,10 +207,11 @@ const WORKOUT_PROTOCOLS = [
         deloadRule: 'Shorten holds back to Phase 1 durations (60-90 seconds) any week the sessions feel excessive.',
         citations: [
           {
-            label: 'Helms ER, et al — Application of the repetitions-in-reserve-based RPE scale for resistance training',
-            journal: 'Strength Cond J',
-            year: 2016,
-            url: 'https://journals.lww.com/nsca-scj/fulltext/2016/08000/application_of_the_repetitions_in_reserve_based.10.aspx',
+            label: 'Edwards JJ, et al — Exercise training and resting blood pressure: large-scale pairwise and network meta-analysis of randomised controlled trials',
+            journal: 'Br J Sports Med',
+            year: 2023,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/37491419/',
+            pmid: '37491419',
           },
         ],
       },
@@ -515,10 +516,10 @@ const WORKOUT_PROTOCOLS = [
         deloadRule: 'Drop occlusion pressure and skip the advanced variation for a session any week recovery feels behind.',
         citations: [
           {
-            label: 'Schoenfeld BJ, Ogborn D, Krieger JW — Dose-response relationship between weekly resistance training volume and increases in muscle mass: systematic review and meta-analysis',
-            journal: 'J Sports Sci',
-            year: 2017,
-            url: 'https://pubmed.ncbi.nlm.nih.gov/27433992/',
+            label: 'Lixandrão AM, et al — Magnitude of muscle strength and mass adaptations between high-load resistance training versus low-load resistance training associated with blood-flow restriction: systematic review and meta-analysis',
+            journal: 'Sports Med',
+            year: 2018,
+            url: 'https://link.springer.com/article/10.1007/s40279-017-0795-y',
           },
         ],
       },
@@ -730,10 +731,10 @@ const WORKOUT_PROTOCOLS = [
         deloadRule: 'Drop back to shorter Zone 2 sessions and skip the Zone 5 interval day any week fatigue is elevated.',
         citations: [
           {
-            label: 'Helms ER, et al — Application of the repetitions-in-reserve-based RPE scale for resistance training',
-            journal: 'Strength Cond J',
-            year: 2016,
-            url: 'https://journals.lww.com/nsca-scj/fulltext/2016/08000/application_of_the_repetitions_in_reserve_based.10.aspx',
+            label: 'Seiler S — What is best practice for training intensity and duration distribution in endurance athletes?',
+            journal: 'Int J Sports Physiol Perform',
+            year: 2010,
+            url: 'https://journals.humankinetics.com/view/journals/ijspp/5/3/article-p276.xml',
           },
         ],
       },
@@ -878,15 +879,16 @@ const WORKOUT_PROTOCOLS = [
       // W4 education block -- see src/lib/workoutProtocolService.ts flattenEducation.
       education: {
         whoItsFor: 'Intermediate trainees working on hamstring and quad eccentric strength for injury-risk reduction, at low weekly volume.',
-        evidenceSummary: 'Nordic curl volume research shows low weekly volume (2x/week) performs comparably to higher volume for eccentric strength gains, which is why this protocol stays at 2 sessions/week throughout.',
+        evidenceSummary: 'A meta-analysis of 8,459 athletes found Nordic hamstring programs at this kind of low weekly volume (2x/week) roughly halve hamstring injury rates, which is why this protocol stays at 2 sessions/week throughout.',
         progressionRule: 'Progress reps at the same tempo (5 to 8 to 10-12) before reducing hand-assistance on the Nordic curl itself.',
         deloadRule: "Expect DOMS early -- if soreness is still limiting range of motion at the next session, repeat the prior week's rep target instead of advancing.",
         citations: [
           {
-            label: 'Schoenfeld BJ, Ogborn D, Krieger JW — Dose-response relationship between weekly resistance training volume and increases in muscle mass: systematic review and meta-analysis',
-            journal: 'J Sports Sci',
-            year: 2017,
-            url: 'https://pubmed.ncbi.nlm.nih.gov/27433992/',
+            label: 'van Dyk N, Behan FP, Whiteley R — Including the Nordic hamstring exercise in injury prevention programmes halves the rate of hamstring injuries: systematic review and meta-analysis of 8459 athletes',
+            journal: 'Br J Sports Med',
+            year: 2019,
+            url: 'https://pubmed.ncbi.nlm.nih.gov/30808663/',
+            pmid: '30808663',
           },
         ],
       },
