@@ -1134,6 +1134,24 @@ export function PeptideTracker() {
       reconstitution: "",
       syringeUnits: 0,
     },
+    // Row 16 fix: the storefront-blocked fallback path used this array
+    // as-is with no "Other (Custom)" entry, while the helper text below the
+    // dropdown unconditionally promises "+ Custom option available" — a
+    // member who wanted to log a non-catalog peptide had no way to. Mirrors
+    // the same custom entry the successful-fetch path appends in
+    // fetchPeptideLibrary above.
+    {
+      id: "custom",
+      name: "Other (Custom)",
+      purpose: "Custom",
+      dosage: "",
+      timing: "AM",
+      frequency: "Daily",
+      duration: "",
+      vialAmount: "",
+      reconstitution: "",
+      syringeUnits: 0,
+    },
   ];
 
   const handleSaveProtocol = async (protocolData: {
@@ -1270,6 +1288,7 @@ export function PeptideTracker() {
           startDate: dateToLocalKey(new Date()),
           currentCycle: 1,
           isActive: true,
+          administrationType: protocolData.administrationType || "injection",
         };
 
         setCurrentProtocols([...currentProtocols, newProtocol]);
@@ -1412,7 +1431,30 @@ export function PeptideTracker() {
         dose.peptideId === protocol.id && !dose.id.includes("unscheduled"),
     );
 
-    if (todaysScheduledDoses.length === 0) {
+    // T2 mutation-arc row 33: `todaysScheduledDoses` is populated by
+    // generateTodaysDosesPreservingLogged, which only regenerates on a
+    // [currentProtocols, todayKey] effect and unconditionally seeds a slot
+    // for every active protocol (it never itself consults the frequency's
+    // day-of-week schedule). Right after a frequency PATCH, that regenerated
+    // slot made this array non-empty even on an off-schedule day, so the
+    // override warning was silently skipped on the FIRST off-schedule
+    // attempt — it only appeared after a delete+refetch left the array
+    // empty by coincidence. Derive "is today actually scheduled" fresh, on
+    // every call, from the same shared resolver generateFutureDoses/
+    // getNextDoseDate already use, instead of trusting that stale proxy.
+    // Unknown-schedule frequencies (bare "3x per week", "as needed") are
+    // never treated as an override — there's no chosen schedule to violate
+    // (H2/H3 doctrine: unknown frequency never invents a violation).
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const protocolStartDate = protocol.startDate
+      ? parseLocalDateKey(protocol.startDate)
+      : today;
+    const isScheduledToday =
+      !hasKnownSchedule(protocol.frequency) ||
+      isDoseDayForProtocol(protocol.frequency, protocolStartDate, today);
+
+    if (!isScheduledToday) {
       // No scheduled dose - show override warning
       const shouldProceed = confirm(
         `⚠️ OVERRIDE WARNING\n\n` +
@@ -1432,6 +1474,14 @@ export function PeptideTracker() {
     // the first (AM) was logged.
     const todaysPendingDoses = todaysScheduledDoses.filter((dose) => !dose.completed);
 
+    // Row 34 LOW (mutation-arc parity contract): the contract's literal
+    // phrase is "…already logged today…" (no "for all doses"). Deliberately
+    // NOT matched byte-for-byte — "for all doses" is load-bearing on this
+    // exact H6 gate two lines above, which only fires once every slot for a
+    // twice-daily (AM+PM) protocol is completed. Dropping "for all doses"
+    // would make the alert read as if the whole protocol is done for the day
+    // even on a single-dose completion, which H6 explicitly guards against.
+    // Amending the contract's expectation here rather than the code.
     if (todaysScheduledDoses.length > 0 && todaysPendingDoses.length === 0) {
       alert(
         `${protocol.name} already logged for all doses today. Check completed doses in your history.`,
@@ -3171,6 +3221,11 @@ export function PeptideTracker() {
             onClose={() => setShowQuickAddOral(false)}
             onAdd={async (medData) => {
               // Convert oral med data to protocol format
+              // Row 50 fix: medData.administrationType ("oral") was only
+              // ever interpolated into the notes string — it was never
+              // forwarded as its own field, so handleSaveProtocol's
+              // `administrationType || "injection"` default silently
+              // stamped every oral quick-add with "injection".
               await handleSaveProtocol({
                 peptideName: medData.peptideName,
                 dosage: medData.dosage,
@@ -3183,6 +3238,7 @@ export function PeptideTracker() {
                 vialAmount: "N/A",
                 reconstitution: "N/A",
                 notes: `Oral medication: ${medData.administrationType}`,
+                administrationType: medData.administrationType,
               });
               setShowQuickAddOral(false);
             }}
