@@ -562,5 +562,137 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:07.289Z",
-  "mentions_fingerprint": "ffcc4793d97c"
+  "mentions_fingerprint": "ffcc4793d97c",
+  "structured_regimens": [
+    {
+      "source_expert": "trevor-bachmeyer",
+      "speaker": "Trevor",
+      "context": "acute",
+      "field": "dose",
+      "citation": "(2026-01-19, ICbMnq3E-jo 00:13:23.839, https://youtu.be/ICbMnq3E-jo)",
+      "quote": "showed one single dose one single dose of methylene blue 1 milligram at 10% improved memory consolidation and retrieval in healthy humans by 10%.",
+      "dose_value": 1,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "trevor-bachmeyer",
+      "speaker": "Trevor",
+      "context": "acute",
+      "field": "frequency",
+      "citation": "(2026-01-19, ICbMnq3E-jo 00:13:41.200, https://youtu.be/ICbMnq3E-jo)",
+      "quote": "One dose one one we're not talking a week of this.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29, mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3 19:14, https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/)",
+      "quote": "low-dose methylene blue. So 0.5 to two milligrams per day. Again, a very low dos.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 11:54, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/)",
+      "quote": "five to 20 milligrams per day for low-dose cognitive benefits",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 11:54, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/)",
+      "quote": "40, 60 milligrams a day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "trevor-bachmeyer",
+      "speaker": "Trevor",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-04-07, 7Pz8i1D4MJE 00:32:01.679, https://youtu.be/7Pz8i1D4MJE)",
+      "quote": "5 milligrams is a therapeutic sweet spot",
+      "dose_value": 5,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "trevor-bachmeyer",
+      "speaker": "Trevor",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-04-07, 7Pz8i1D4MJE 00:32:04.240, https://youtu.be/7Pz8i1D4MJE)",
+      "quote": "1 milligram is really all you need.",
+      "dose_value": 1,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-03-29, the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54 13:33, https://library.hunterwilliamshealth.com/p/the-truth-about-methylene-blue-benefits-risks-my-results--b0dd3a54/)",
+      "quote": "administration can do oral, sublingual, There is IV used in clinical settings, but you don't really need to get into that. And then topical for wound healing.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-30, peptide-qa-february-2026--cba19117 36:57, https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/)",
+      "quote": "I'd definitely cycle it if you're going to use it.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-29, mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3 19:47, https://library.hunterwilliamshealth.com/p/mitochondria-overload-the-hidden-dangers-of-your-favorite-peptides--877491b3/)",
+      "quote": "repeat that cycle two times a year because that ends up in 12 months.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

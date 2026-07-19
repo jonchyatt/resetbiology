@@ -461,5 +461,72 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:05.551Z",
-  "mentions_fingerprint": "9d99f71c9ec2"
+  "mentions_fingerprint": "9d99f71c9ec2",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-04-30 library publication; Saturday Morning Coffee Talk · 4/18/26; saturday-morning-coffee-talk-41826--d0f249d7; 1:21:19; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/)",
+      "quote": "My preference, if you're going to do both, would be 25 to 50 milligrams of D HEA in the morning and then 10 to 25 milligrams. Of pregnanolones at night.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-04-30 library publication; Saturday Morning Coffee Talk · 4/18/26; saturday-morning-coffee-talk-41826--d0f249d7; 1:21:19; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/)",
+      "quote": "oral DHEA and pregnenolone for men morning or night.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(same source)",
+      "quote": "I did get some injectable D He A that I'm going experiment with and see if that has an effect.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-02-08; Saturday Morning Coffee Talk | 2/7/26; JccJTHbWF84; 01:03:21.200; https://youtu.be/JccJTHbWF84)",
+      "quote": "the need for vaginal estradile and DHEA can help.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-04-30 library publication; Saturday Morning Coffee Talk · 4/18/26; saturday-morning-coffee-talk-41826--d0f249d7; 1:21:19; https://library.hunterwilliamshealth.com/p/saturday-morning-coffee-talk-41826--d0f249d7/)",
+      "quote": "My preference, if you're going to do both, would be 25 to 50 milligrams of D HEA in the morning",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

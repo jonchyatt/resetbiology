@@ -257,6 +257,7 @@ function runHitTrace() {
   const referenceGrades = []
   const engineGrades = []
   const referenceUnlocks = []
+  const engineUnlockRequests = []
   const engineUnlocks = []
 
   for (let i = 0; i < 10; i++) {
@@ -273,9 +274,41 @@ function runHitTrace() {
     actual = result.state
     const grade = result.events.find(e => e.kind === 'grade')
     if (grade) engineGrades.push({ note: grade.note, correct: grade.correct, latencyMs: grade.latencyMs })
-    const unlocked = result.events.find(e => e.kind === 'unlock')
-    if (unlocked) engineUnlocks.push(unlocked.note)
+    const request = result.events.find(e => e.kind === 'curriculumUnlockRequest')
+    const unlockedBeforeAck = result.events.find(e => e.kind === 'unlock')
+    if (i < 9 && request) throw new Error(`curriculum unlock requested early after hit ${i + 1}`)
+    if (unlockedBeforeAck) throw new Error('curriculum mutated before persistence acknowledgment')
     engineTransitions.push([actual.score, actual.combo, actual.cityHealth])
+
+    if (i === 9) {
+      if (!request) throw new Error('R9a emitted no curriculum unlock request at the four-note threshold')
+      if (request.note !== 'A4') throw new Error(`R9a requested ${request.note} instead of first-uncovered A4`)
+      if (request.requestId !== 'fixture-game:curriculum:0') throw new Error(`nondeterministic request id ${request.requestId}`)
+      if (actual.unlockedNotes.join(',') !== 'C4,D4,E4,F4' || actual.consecutiveCorrect !== 10) {
+        throw new Error('curriculum request mutated roster or streak before acknowledgment')
+      }
+      engineUnlockRequests.push(request.note)
+      const acknowledged = engine.tick(actual, {
+        inputMode: 'click', isListening: false, pitch: null, fsrs: {},
+        curriculumUnlockAck: {
+          requestId: request.requestId,
+          gameId: request.gameId,
+          note: request.note,
+          sessionCandidateRoster: [...request.sessionCandidateRoster],
+          committed: true,
+        },
+      }, 0, seededRng(7))
+      actual = acknowledged.state
+      const committedUnlock = acknowledged.events.find(e => e.kind === 'unlock')
+      if (!committedUnlock || committedUnlock.note !== 'A4') {
+        throw new Error('exact successful acknowledgment did not emit the R9a A4 unlock')
+      }
+      if (actual.pendingCurriculumUnlock !== null || actual.consecutiveCorrect !== 0 ||
+          actual.unlockedNotes.join(',') !== request.sessionCandidateRoster.join(',')) {
+        throw new Error('successful acknowledgment did not atomically commit the candidate roster')
+      }
+      engineUnlocks.push(committedUnlock.note)
+    }
     const resolvedAttackId = actual.activeAttack.attackId
     engine.finalizeHitLockedDeath(actual, resolvedAttackId, [], seededRng(7))
     actual.lasers = []
@@ -293,9 +326,18 @@ function runHitTrace() {
   actual = wrong.state
   engineTransitions.push([actual.score, actual.combo, actual.cityHealth])
 
+  if (referenceUnlocks.join(',') !== 'D4' || engineUnlockRequests.join(',') !== 'A4' || engineUnlocks.join(',') !== 'A4') {
+    throw new Error('declared R9a unlock departure receipt is incomplete')
+  }
+  const declaredR9aUnlockDeparture = {
+    legacyReferenceUnlocks: referenceUnlocks,
+    r9aFirstUncoveredRequests: engineUnlockRequests,
+    r9aCommittedUnlocks: engineUnlocks,
+    requestBeforeMutationAndExactAck: true,
+  }
   return {
-    reference: { transitions: referenceTransitions, grades: referenceGrades, unlocks: referenceUnlocks },
-    engine: { transitions: engineTransitions, grades: engineGrades, unlocks: engineUnlocks },
+    reference: { transitions: referenceTransitions, grades: referenceGrades, declaredR9aUnlockDeparture },
+    engine: { transitions: engineTransitions, grades: engineGrades, declaredR9aUnlockDeparture },
   }
 }
 
@@ -396,7 +438,7 @@ const traces = [
     value.reference = { fires: value.reference.fires.slice(0, 1), grades: value.reference.grades.slice(0, 1) }
     return value
   }],
-  ['t5 click hit/wrong transitions', runHitTrace],
+  ['t5 click transitions + declared R9a request/ack unlock departure', runHitTrace],
   ['t6 R3b stable formation has no passive shield loss', runEscapeTrace],
   ['t7 R7-authorized due-first full-wave order (formation geometry excluded)', runSpawnTrace],
 ]

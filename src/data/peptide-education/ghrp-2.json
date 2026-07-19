@@ -436,5 +436,20 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:07.749Z",
-  "mentions_fingerprint": "560d7da1551c"
+  "mentions_fingerprint": "560d7da1551c",
+  "structured_regimens": [
+    {
+      "source_expert": "taylor-williams",
+      "speaker": "Taylor Williams",
+      "context": "acute",
+      "field": "duration",
+      "citation": "",
+      "quote": "I would just do that in a shorter window. Usually like a four to six week window.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

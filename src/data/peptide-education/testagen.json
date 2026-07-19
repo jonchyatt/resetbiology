@@ -234,5 +234,46 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:09.531Z",
-  "mentions_fingerprint": "b37cbd80b022"
+  "mentions_fingerprint": "b37cbd80b022",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23)",
+      "quote": "So I add in two milligrams of testogen a day, five days on, two days off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23)",
+      "quote": "So I add in two milligrams of testogen a day, five days on, two days off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "— peptide-qa-december-2025--f7613f71 (2026-03-30, 20:23)",
+      "quote": "And what I want to do is use that for 30 days, six weeks and see where my fertility is.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

@@ -1,7 +1,14 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Save, AlertCircle } from "lucide-react";
+import type { PeptideCard } from "@/data/peptide-education/generated";
+import {
+  RegimenSourcePicker,
+  mapRouteToAdministrationType,
+  type AdministrationType,
+} from "./RegimenSourcePicker";
+import { SyringeModel } from "./SyringeModel";
 
 /*********************************
  * Types
@@ -24,14 +31,17 @@ export interface CalculatorOutputs {
 
 export interface DosageCalculatorProps {
   mode?: 'calculate' | 'addProtocol'; // New: determine behavior
-  peptideLibrary?: Array<{           // New: from MongoDB
+  peptideLibrary?: Array<{           // New: from MongoDB, or a peptide-education library card
     id?: string;
     name: string;
     dosage?: string;
     category?: string;
     reconstitution?: string;
     vialAmount?: string;
+    slug?: string;                   // present for peptide-education library cards
+    source?: 'storefront' | 'library' | 'custom';
   }>;
+  initialPeptideSlug?: string | null; // deep-link preselect (?peptide=<slug>)
   onSaveProtocol?: (protocol: {      // New: save protocol to DB
     peptideId?: string;
     peptideName: string;
@@ -45,6 +55,7 @@ export interface DosageCalculatorProps {
     vialAmount: string;
     reconstitution: string;
     notes?: string;
+    administrationType?: AdministrationType;
     notifications?: {               // New: notification preferences
       pushEnabled: boolean;
       emailEnabled: boolean;
@@ -105,7 +116,7 @@ const PEPTIDE_PRESETS = [
 /*********************************
  * Core calculation engine
  *********************************/
-const calculateDosage = (inputs: CalculatorInputs): CalculatorOutputs => {
+export const calculateDosage = (inputs: CalculatorInputs): CalculatorOutputs => {
   const safeTotalVolume = Number(inputs.totalVolume) || 0;
   const safePeptideAmount = Number(inputs.peptideAmount) || 0;
   const safeDesired = Number(inputs.desiredDose) || 0;
@@ -157,130 +168,6 @@ const formatNumber = (n: number, digits = 2) =>
   Number.isFinite(n) ? Number(n.toFixed(digits)) : 0;
 
 /*********************************
- * Visual Syringe Component
- *********************************/
-const TOTAL_INSULIN_UNITS = 50; // standard 0.5 ml insulin syringe scale
-const UNITS_PER_LABEL = 5;
-
-const SyringeVisual: React.FC<{
-  volumeInMl: number;
-  insulinUnits?: number;
-}> = ({ volumeInMl, insulinUnits }) => {
-  const barrelTop = 32;
-  const barrelHeight = 210;
-  const barrelBottom = barrelTop + barrelHeight;
-  const units = clamp(volumeInMl * 100, 0, TOTAL_INSULIN_UNITS);
-  const fillHeight = barrelHeight * (units / TOTAL_INSULIN_UNITS);
-  const stopperY = barrelBottom - fillHeight;
-  const needleWidth = 2;
-  const needleHeight = 44;
-  const needleX = 58;
-  const needleY = barrelBottom - 4;
-  const needleRadius = needleWidth / 2;
-  const capWidth = 16;
-  const capHeight = 40;
-  const capX = needleX + needleWidth / 2 - capWidth / 2;
-  const capY = barrelBottom;
-  const capRadius = 6;
-
-  return (
-    <div className="relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-[260px] lg:max-w-[240px] mx-auto">
-      <div className="flex flex-col items-center">
-        <svg viewBox="0 0 140 310" className="w-40 drop-shadow-xl" aria-label="Insulin syringe fill visualization">
-          {/* Barrel */}
-          <path
-            d={`M48 ${barrelTop - 8}h26c3.3 0 6 2.7 6 6v6h-38v-6c0-3.3 2.7-6 6-6z`}
-            fill="rgba(255,255,255,0.18)"
-          />
-          <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.24)" strokeWidth="1.8" />
-
-          {/* Tick marks */}
-          {Array.from({ length: TOTAL_INSULIN_UNITS / UNITS_PER_LABEL + 1 }).map((_, index) => {
-            const y = barrelTop + (barrelHeight / (TOTAL_INSULIN_UNITS / UNITS_PER_LABEL)) * index;
-            const labelValue = TOTAL_INSULIN_UNITS - index * UNITS_PER_LABEL;
-            return (
-              <g key={index}>
-                <line x1="40" x2="78" y1={y} y2={y} stroke="rgba(255,255,255,0.22)" strokeWidth={index % 2 === 0 ? 1.6 : 1} />
-                <text
-                  x="36"
-                  y={y + 4}
-                  textAnchor="end"
-                  fontSize="7"
-                  fontWeight={index % 2 === 0 ? 'bold' : 'normal'}
-                  fill="rgba(255,255,255,0.6)"
-                >
-                  {labelValue}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Fill */}
-          <clipPath id="insulin-barrel">
-            <rect x="40" y={barrelTop} width="40" height={barrelHeight} rx="6" ry="6" />
-          </clipPath>
-          <g clipPath="url(#insulin-barrel)">
-            <rect
-              x="40"
-              y={stopperY}
-              width="40"
-              height={barrelBottom - stopperY}
-              fill="url(#insulin-fill)"
-              className="transition-all duration-500 ease-out"
-            />
-          </g>
-
-          {/* Stopper */}
-          <rect x="38" y={Math.min(Math.max(stopperY - 6, barrelTop), barrelBottom - 10)} width="44" height="10" rx="3" fill="rgba(0,0,0,0.55)" />
-
-          <defs>
-            <linearGradient id="insulin-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#6FE7DC" />
-              <stop offset="100%" stopColor="#3FBFB5" />
-            </linearGradient>
-          </defs>
-
-          {/* Needle and cap */}
-          <rect x="58" y="14" width="8" height="18" rx="3" ry="3" fill="rgba(255,255,255,0.2)" />
-          <rect x={needleX} y={needleY} width={needleWidth} height={needleHeight} rx={needleRadius} ry={needleRadius} fill="rgba(255,255,255,0.7)" />
-          <rect
-            x={capX}
-            y={capY}
-            width={capWidth}
-            height={capHeight}
-            rx={capRadius}
-            ry={capRadius}
-            fill="rgba(255,120,60,0.55)"
-          />
-
-          <text x="86" y={barrelTop - 12} fontSize="8" fill="rgba(255,255,255,0.7)" letterSpacing="1.4">
-            UNITS
-          </text>
-        </svg>
-
-        <div className="text-center mt-4">
-          <p className="text-4xl font-extrabold text-primary-300 tracking-tight" aria-live="polite">
-            {formatNumber(units, 1)} u
-          </p>
-          <p className="mt-1 text-sm text-gray-300" aria-live="polite">
-            {formatNumber(volumeInMl, volumeInMl < 1 ? 3 : 2)} ml drawn
-          </p>
-        </div>
-
-        <div className="w-full mt-4" aria-hidden>
-          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-            <div
-              className="h-2 bg-primary-600 transition-all duration-500"
-              style={{ width: `${(units / TOTAL_INSULIN_UNITS) * 100}%` }}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/*********************************
  * Reconstitution Guide Component
  *********************************/
 const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number; instructions?: string }>
@@ -315,6 +202,7 @@ const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number; ins
 export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   mode = 'calculate',
   peptideLibrary,
+  initialPeptideSlug,
   onSaveProtocol,
   onClose,
   importedPeptide,
@@ -323,7 +211,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   onSavePreset,
 }) => {
   const defaultInputs: CalculatorInputs = {
-    desiredDose: 250, // default in mcg for peptides like BPC-157
+    // addProtocol mode: no hardcoded dose — filled from a cited regimen or
+    // typed by the user (see CITATION-GROUNDED DOSING CONTRACT). calculate
+    // mode is always seeded from importedPeptide below, so 250 there is
+    // inert (never shown to a user before being overridden).
+    desiredDose: mode === 'addProtocol' ? 0 : 250,
     doseUnit: "mcg",
     peptideConcentration: 0, // will be derived and displayed
     totalVolume: 1,
@@ -332,13 +224,27 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   };
 
   const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
-  const [peptideName, setPeptideName] = useState<string>("BPC-157");
+  // addProtocol mode starts with NO peptide selected (H4) — auto-selecting
+  // peptideLibrary[0] previously landed on whatever the storefront listed
+  // first, which could be a diluent like Bacteriostatic Water, not a real
+  // peptide. "calculate" mode (standalone tool, no protocol attached) keeps
+  // a reasonable starting display name.
+  const [peptideName, setPeptideName] = useState<string>(mode === "addProtocol" ? "" : "BPC-157");
   const [selectedPeptideId, setSelectedPeptideId] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isCustomPeptide, setIsCustomPeptide] = useState<boolean>(false);
   const [customPeptideName, setCustomPeptideName] = useState<string>("");
+
+  // Citation-grounded dosing (addProtocol mode, library-sourced peptides)
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [eduCard, setEduCard] = useState<PeptideCard | null>(null);
+  const [eduLoading, setEduLoading] = useState<boolean>(false);
+  const [administrationType, setAdministrationType] = useState<AdministrationType>("injection");
+  const [adminTypeAutoNote, setAdminTypeAutoNote] = useState<string | null>(null);
+  const adminTypeTouchedRef = useRef(false);
+  const appliedInitialSlugRef = useRef(false);
 
   // New state for scheduling (addProtocol mode)
   const [scheduleType, setScheduleType] = useState<string>('daily');
@@ -503,6 +409,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         vialAmount: `${inputs.peptideAmount}mg`,
         reconstitution: `${inputs.totalVolume}ml`,
         notes,
+        administrationType,
         notifications: {
           pushEnabled,
           emailEnabled,
@@ -537,6 +444,15 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       setCustomPeptideName('');
     }
 
+    // New peptide selected: citation-grounded dose/route from the previous
+    // selection no longer applies. Clear dose + admin-type back to the
+    // no-hardcoded-default state; the eduCard fetch + route-map effects
+    // below will re-populate from this peptide's own cited sources.
+    setSelectedSlug(peptide.slug ?? null);
+    adminTypeTouchedRef.current = false;
+    setAdminTypeAutoNote(null);
+    setAdministrationType('injection');
+
     setInputs((prev) => {
       let totalVolume = 1;
 
@@ -553,15 +469,69 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         ...prev,
         totalVolume,
         peptideAmount,
+        desiredDose: 0,
       };
     });
   }, [peptideLibrary]);
 
+  // H4: no auto-select-first-item. The picker used to default to
+  // peptideLibrary[0], which could silently land on a diluent (e.g.
+  // "Bacteriostatic Water 10mL") if the storefront happened to list it
+  // first, then compute prep math for the diluent instead of a real
+  // peptide. The selector now starts empty ("Select a peptide" placeholder)
+  // until the member makes an explicit choice.
+
+  // Deep-link preselect: ?peptide=<slug> from /education/peptides/[slug]'s
+  // "Start Protocol" link. Runs once per modal mount — this is an explicit
+  // navigation intent, not an indiscriminate first-item default.
   useEffect(() => {
-    if (mode !== 'addProtocol' || !peptideLibrary || peptideLibrary.length === 0) return;
-    if (selectedPeptideId) return;
-    loadPeptideFromLibrary(peptideLibrary[0].name);
-  }, [mode, peptideLibrary, loadPeptideFromLibrary, selectedPeptideId]);
+    if (!initialPeptideSlug || appliedInitialSlugRef.current || !peptideLibrary) return;
+    const match = peptideLibrary.find((item) => item.slug === initialPeptideSlug);
+    if (match) {
+      appliedInitialSlugRef.current = true;
+      loadPeptideFromLibrary(match.id || match.name);
+    }
+  }, [initialPeptideSlug, peptideLibrary, loadPeptideFromLibrary]);
+
+  // Fetch the full cited card (structured_regimens) for a library-sourced
+  // peptide selection. Storefront/custom selections have no slug -> no fetch.
+  useEffect(() => {
+    if (!selectedSlug) {
+      setEduCard(null);
+      return;
+    }
+    let cancelled = false;
+    setEduLoading(true);
+    fetch(`/api/peptides/education-library/${selectedSlug}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled) setEduCard(data?.card ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setEduCard(null);
+      })
+      .finally(() => {
+        if (!cancelled) setEduLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedSlug]);
+
+  // Auto-map administrationType from an unambiguous cited route — only if
+  // the user hasn't already picked one manually for this peptide selection.
+  useEffect(() => {
+    if (!eduCard || adminTypeTouchedRef.current) return;
+    const mapped = mapRouteToAdministrationType(eduCard.structured_regimens);
+    if (mapped) {
+      setAdministrationType(mapped);
+      setAdminTypeAutoNote(mapped);
+    }
+  }, [eduCard]);
+
+  const handleSelectRegimenDose = useCallback((value: number, unit: "mg" | "mcg" | null) => {
+    setInputs((prev) => ({ ...prev, desiredDose: value, doseUnit: unit ?? prev.doseUnit }));
+  }, []);
 
   // Keep display peptideConcentration synced (from vial + volume)
   const displayConcentration = useMemo(() => {
@@ -573,6 +543,15 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     const match = PEPTIDE_PRESETS.find((preset) => preset.name.toLowerCase() === peptideName.toLowerCase());
     return match?.instructions ?? null;
   }, [peptideName]);
+
+  const groupedPeptideLibrary = useMemo(() => {
+    const list = peptideLibrary ?? [];
+    return {
+      storefront: list.filter((p) => (p.source ?? 'storefront') === 'storefront' && p.id !== 'custom'),
+      library: list.filter((p) => p.source === 'library'),
+      custom: list.filter((p) => p.source === 'custom' || p.id === 'custom'),
+    };
+  }, [peptideLibrary]);
 
   return (
     <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-6 border border-primary-400/30 shadow-2xl">
@@ -605,18 +584,41 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   onChange={(event) => loadPeptideFromLibrary(event.target.value)}
                   className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
-                  {peptideLibrary.map((peptide) => {
-                    const optionValue = peptide.id || peptide.name;
-                    const displayName = peptide.name
-                      .replace(/\s*-\s*peptide\s*$/i, '')
-                      .replace(/\s+Package\s*$/i, '')
-                      .trim();
+                  {/* H4: no item is auto-selected, so show an explicit
+                      placeholder until the member picks a real peptide. */}
+                  {!(selectedPeptideId || peptideName) && (
+                    <option value="" disabled>Select a peptide</option>
+                  )}
+                  {(() => {
+                    const renderOption = (peptide: NonNullable<typeof peptideLibrary>[number]) => {
+                      const optionValue = peptide.id || peptide.name;
+                      const displayName = peptide.name
+                        .replace(/\s*-\s*peptide\s*$/i, '')
+                        .replace(/\s+Package\s*$/i, '')
+                        .trim();
+                      return (
+                        <option key={optionValue} value={optionValue} className="bg-gray-800 text-amber-100">
+                          {displayName}
+                        </option>
+                      );
+                    };
+                    const { storefront, library, custom } = groupedPeptideLibrary;
+                    // Legacy callers that only ever pass storefront items still render flat.
+                    if (library.length === 0) {
+                      return peptideLibrary.map(renderOption);
+                    }
                     return (
-                      <option key={optionValue} value={optionValue} className="bg-gray-800 text-amber-100">
-                        {displayName}
-                      </option>
+                      <>
+                        {storefront.length > 0 && (
+                          <optgroup label="Storefront Products">{storefront.map(renderOption)}</optgroup>
+                        )}
+                        <optgroup label={`Peptide Library (${library.length})`}>{library.map(renderOption)}</optgroup>
+                        {custom.length > 0 && (
+                          <optgroup label="Custom">{custom.map(renderOption)}</optgroup>
+                        )}
+                      </>
                     );
-                  })}
+                  })()}
                 </select>
 
                 {/* Custom Peptide Name Input */}
@@ -637,14 +639,44 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 )}
 
                 <p className="text-xs text-amber-300/70">
-                  {(peptideLibrary?.length ?? 0) - 1} products from store + Custom option available
+                  {groupedPeptideLibrary.storefront.length} store product{groupedPeptideLibrary.storefront.length === 1 ? '' : 's'}
+                  {groupedPeptideLibrary.library.length > 0 ? ` + ${groupedPeptideLibrary.library.length} peptide library cards` : ''} + Custom option available
                 </p>
+
+                {selectedSlug && (
+                  <RegimenSourcePicker card={eduCard} loading={eduLoading} onSelectDose={handleSelectRegimenDose} />
+                )}
               </div>
             ) : (
               <div className="bg-gradient-to-br from-rose-900/20 to-rose-900/10 backdrop-blur-sm rounded-xl p-4 border border-rose-400/30 text-sm text-rose-200">
                 Peptide library unavailable. Please close and try again.
               </div>
             )
+          )}
+
+          {/* Administration type */}
+          {mode === 'addProtocol' && (
+            <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-2">
+              <label className="block text-sm text-amber-300 font-medium">Administration Type</label>
+              <select
+                aria-label="Administration type"
+                value={administrationType}
+                onChange={(e) => {
+                  adminTypeTouchedRef.current = true;
+                  setAdminTypeAutoNote(null);
+                  setAdministrationType(e.target.value as AdministrationType);
+                }}
+                className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+              >
+                <option value="injection" className="bg-gray-800 text-amber-100">Injection</option>
+                <option value="oral" className="bg-gray-800 text-amber-100">Oral</option>
+                <option value="nasal" className="bg-gray-800 text-amber-100">Nasal</option>
+                <option value="topical" className="bg-gray-800 text-amber-100">Topical</option>
+              </select>
+              {adminTypeAutoNote && (
+                <p className="text-xs text-amber-300/70">Auto-detected from a cited route — change it if that's wrong.</p>
+              )}
+            </div>
           )}
 
           {/* Volume & Vial size */}
@@ -700,15 +732,38 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   step="any"
                   aria-label="Desired dose value"
                   inputMode="decimal"
-                  value={inputs.desiredDose}
+                  placeholder={mode === 'addProtocol' ? 'enter dose' : undefined}
+                  value={inputs.desiredDose === 0 ? "" : inputs.desiredDose}
                   onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
-                  onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
+                  onBlur={(e) => {
+                    if (e.target.value === "") return; // empty stays empty — no forced default
+                    setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }));
+                  }}
                   className="w-20 sm:w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 />
                 <select
                   aria-label="Dose unit"
                   value={inputs.doseUnit}
-                  onChange={(e) => setInputs((s) => ({ ...s, doseUnit: e.target.value as "mg" | "mcg" }))}
+                  onChange={(e) => {
+                    const nextUnit = e.target.value as "mg" | "mcg";
+                    setInputs((s) => {
+                      if (nextUnit === s.doseUnit) return s;
+                      // H5: switching units must convert the real value
+                      // (mg<->mcg is always x1000), never silently
+                      // reinterpret the same number under a new unit — that
+                      // would change the actual dose 1000x with no
+                      // confirmation. The displayed number updates to the
+                      // correctly-converted figure so the conversion is
+                      // visible, not hidden. IU is never touched here.
+                      const converted =
+                        s.desiredDose === 0
+                          ? 0
+                          : nextUnit === "mg"
+                            ? s.desiredDose / 1000
+                            : s.desiredDose * 1000;
+                      return { ...s, doseUnit: nextUnit, desiredDose: converted };
+                    });
+                  }}
                   className="w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
                   <option value="mcg" className="bg-gray-800 text-amber-100">mcg</option>
@@ -848,9 +903,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
         {/* Visual Display */}
         <div className="flex flex-col items-center justify-start h-full gap-6">
-          <SyringeVisual
+          <SyringeModel
+            trueUnits={results.insulinUnits}
             volumeInMl={results.volumeToDraw}
-            insulinUnits={results.insulinUnits}
+            vialCapacityUnits={inputs.totalVolume > 0 ? inputs.totalVolume * 100 : undefined}
           />
 
           {mode === 'addProtocol' && (

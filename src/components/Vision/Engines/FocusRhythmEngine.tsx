@@ -12,12 +12,12 @@
  * — the real exercise happens in the user's hand at the same rhythm.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Pause, Play, Volume2, VolumeX, X } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
 import { clampScore } from './types'
 import { fitCanvasToElement } from '@/lib/vision/canvasKit'
-import { SpeechQueue, playTone, unlockAudio } from '@/lib/vision/audioKit'
+import { SpeechQueue, playTone, unlockAudio, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 
 type DepthPhase = 'far-hold' | 'growing' | 'near-hold' | 'shrinking'
 
@@ -48,7 +48,7 @@ const NPC_PROMPT_INTERVAL_SEC = 60
 
 type Flash = 'correct' | 'wrong' | null
 
-export default function FocusRhythmEngine({ exercise, prescription, muted, onProgress, onComplete, onExit }: EngineProps) {
+export default function FocusRhythmEngine({ exercise, prescription, onProgress, onComplete, onExit }: EngineProps) {
   // bpm is a per-beat rate (matches SaccadeEngine + the doctrine text: "metronome
   // at 50 bpm" / "one respiratory cycle per switch") — each beat is ONE movement
   // (far->near or near->far), not a full round trip. A full rep is 2 beats.
@@ -60,7 +60,8 @@ export default function FocusRhythmEngine({ exercise, prescription, muted, onPro
   const targetSeconds = Math.max(30, prescription.targetSeconds || 180)
 
   const [running, setRunning] = useState(false)
-  const [isMuted, setIsMuted] = useState(!!muted)
+  // T7: read shared mute state directly — see DownshiftEngine.tsx.
+  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [finished, setFinished] = useState(false)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
   const [phaseUi, setPhaseUi] = useState<DepthPhase>('far-hold')
@@ -97,10 +98,6 @@ export default function FocusRhythmEngine({ exercise, prescription, muted, onPro
   if (!speechRef.current) speechRef.current = new SpeechQueue()
 
   const checkpoints = exercise.checkpoints.length > 0 ? exercise.checkpoints : [exercise.summary]
-
-  useEffect(() => {
-    if (speechRef.current) speechRef.current.muted = isMuted
-  }, [isMuted])
 
   const stopLoop = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -354,7 +351,9 @@ export default function FocusRhythmEngine({ exercise, prescription, muted, onPro
           </p>
         </div>
         <button
-          onClick={() => setIsMuted(m => !m)}
+          onClick={() => {
+            if (speechRef.current) speechRef.current.muted = !getSharedMuted()
+          }}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
           className="p-2 rounded-lg bg-gray-800/40 backdrop-blur-sm hover:bg-gray-700/50 text-gray-300 hover:text-white transition-all min-w-11 min-h-11 flex items-center justify-center"
         >

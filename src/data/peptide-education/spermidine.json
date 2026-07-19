@@ -207,5 +207,124 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.115Z",
-  "mentions_fingerprint": "2b5a7e80d5c8"
+  "mentions_fingerprint": "2b5a7e80d5c8",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 8:58, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/)",
+      "quote": "a larger 12-month trial of spermatine supplementation at 0.9 milligrams per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 10:06, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/)",
+      "quote": "So 3.3 mg and then upto 40mg per-day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 10:06, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/)",
+      "quote": "the 0.6 to 1.2 milligram per day is the typical weep germ or plant extract supplement amount.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 9:31, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/)",
+      "quote": "but 5 to 10 mg, definitely, absolutely.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 10:37, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/)",
+      "quote": "The high dose is going to be 15 to 40 milligrams per day of purified spermidine.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-04-30, peptide-qa-march-2026--dd9aa173, 34:02, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/)",
+      "quote": "You can go as high as 40 milligrams",
+      "dose_value": 40,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 14:52, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/)",
+      "quote": "Most of the time you can get it in the form of a capsule. I do think there are some companies that sell it as a liquid that you could do it like a sublingual dropper or whatever, But I've used it In the Form of A Capsule.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-04-30, peptide-qa-march-2026--dd9aa173, 34:02, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/)",
+      "quote": "And then for spermidine, I like somewhere around like 10 milligrams per day of spermidine.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-30, spermidine-the-longevity-supplement-i-take-daily--b7bbff8d, 8:25, https://library.hunterwilliamshealth.com/p/spermidine-the-longevity-supplement-i-take-daily--b7bbff8d/)",
+      "quote": "It can't be something that we are just doing once every three weeks.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

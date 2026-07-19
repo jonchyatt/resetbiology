@@ -174,5 +174,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.939Z",
-  "mentions_fingerprint": "8c563309d2aa"
+  "mentions_fingerprint": "8c563309d2aa",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "dose",
+      "citation": "â€” 2026-03-29 â€” Amino Asylum GAC Extreme Review Research Guide [amino-asylum-gac-extreme-review-research-guide--d3e3953f @ 03:56 â€” https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/]",
+      "quote": "It's got 200 milligrams of aceto-l carnitene.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "acute",
+      "field": "route",
+      "citation": "â€” 2026-03-29 â€” Amino Asylum GAC Extreme Review Research Guide [amino-asylum-gac-extreme-review-research-guide--d3e3953f @ 03:56 â€” https://library.hunterwilliamshealth.com/p/amino-asylum-gac-extreme-review-research-guide--d3e3953f/]",
+      "quote": "obviously this is the injected form.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "â€” 2025-03-02 [email threadId 1955918cc4dbdc51]",
+      "quote": "1g Acetyl L-Carnitine orally in the morning",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "â€” 2025-11-18 [email threadId 19a993b895f1dcb2]",
+      "quote": "+ 1 g acetyl-L-carnitine oral AM",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "â€” 2026-03-30 [injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3 @ 18:50 â€” https://library.hunterwilliamshealth.com/p/injectable-l-carnitine-dosing-pain-management-and-clinical-data--e7d315c3/]",
+      "quote": "Usually will take two 500 milligram capsules of this, which is 1000 milligrams, one gram. of acetyl-L-carnitine first thing in the morning.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "â€” 2025-03-02 [email threadId 1955918cc4dbdc51]",
+      "quote": "1g Acetyl L-Carnitine orally in the morning",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "â€” 2025-11-18 [email threadId 19a993b895f1dcb2]",
+      "quote": "+ 1 g acetyl-L-carnitine oral AM",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "â€” 2026-03-29 [semax-how-to-use-it-for-maximum-focus--cf7bc9d7 @ 15:19 â€” https://library.hunterwilliamshealth.com/p/semax-how-to-use-it-for-maximum-focus--cf7bc9d7/]",
+      "quote": "that would be the oral form",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

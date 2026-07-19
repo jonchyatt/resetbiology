@@ -183,5 +183,137 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:07.682Z",
-  "mentions_fingerprint": "73edb2c9da59"
+  "mentions_fingerprint": "73edb2c9da59",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— email threadId 19ae14e47514bea3 (2025-12-02, https://open.spotify.com/episode/06bZXi5BoRP4pGOAUMbEJm)",
+      "quote": "Livagen | 2 mg | Daily | Subq | 12 weeks.",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— the-peptide-stack-for-liver-health--f509f742 (2026-03-30, 24:05, https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/)",
+      "quote": "Again, the dosage for this is gonna be the same as Ovagen. Its gonna 2 mg per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "— peptide-qa-february-2026--cba19117 (2026-03-30, 20:28, https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/)",
+      "quote": "Should I do, you know, one milligram a day to two milligrams a days of both of those, and those should help bring things back into balance.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "— email threadId 19ae14e47514bea3 (2025-12-02, https://open.spotify.com/episode/06bZXi5BoRP4pGOAUMbEJm)",
+      "quote": "Livagen | 2 mg | Daily | Subq | 12 weeks.",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "— peptide-qa-march-2026--dd9aa173 (2026-04-30, 12:19, https://library.hunterwilliamshealth.com/p/peptide-qa-march-2026--dd9aa173/)",
+      "quote": "there's two injectable bi oregulators, which I've got dosing guides on and everything on the cheat sheet. One of those being Ovagen and the other being Livagen.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— email threadId 19ae14e47514bea3 (2025-12-02, https://open.spotify.com/episode/06bZXi5BoRP4pGOAUMbEJm)",
+      "quote": "Livagen | 2 mg | Daily | Subq | 12 weeks.",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— the-peptide-stack-for-liver-health--f509f742 (2026-03-30, 24:05, https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/)",
+      "quote": "Its gonna 2 mg per day.",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "— peptide-qa-february-2026--cba19117 (2026-03-30, 20:28, https://library.hunterwilliamshealth.com/p/peptide-qa-february-2026--cba19117/)",
+      "quote": "one milligram a day to two milligrams a days of both of those.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "— email threadId 19ae14e47514bea3 (2025-12-02, https://open.spotify.com/episode/06bZXi5BoRP4pGOAUMbEJm)",
+      "quote": "Livagen | 2 mg | Daily | Subq | 12 weeks.",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "— the-peptide-stack-for-liver-health--f509f742 (2026-03-30, 24:35, https://library.hunterwilliamshealth.com/p/the-peptide-stack-for-liver-health--f509f742/)",
+      "quote": "over that 12 weeks to ensure a fully functioning liver is restored.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

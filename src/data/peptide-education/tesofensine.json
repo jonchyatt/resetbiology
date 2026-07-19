@@ -378,5 +378,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.769Z",
-  "mentions_fingerprint": "0ad83d2e521e"
+  "mentions_fingerprint": "0ad83d2e521e",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29)",
+      "quote": "Typically, I am always going to recommend people start with 250 micrograms or 0.25 milligrams. Now in studies, they have had people take up to one milligrams a day with no problems whatsoever and only benefits.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29)",
+      "quote": "The sweet spot for most people is going be 500 micro grams, but to be honest, get as good a benefit at 250 grams as I do 500 grams.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29)",
+      "quote": "Some people go as high as 500 micro grams. studies, they even go up to like one milligram or 1.5 milligrams, but I like 250 micrograms.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29)",
+      "quote": "start really low with the one that we have you can start with one 125 micrograms I Don't feel anything of that.",
+      "dose_value": 125,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-03-29)",
+      "quote": "And I like 250 micrograms per day taken orally.",
+      "dose_value": 250,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29)",
+      "quote": "I like 250 micrograms per day taken orally.",
+      "dose_value": 250,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29)",
+      "quote": "Like 250 micro grams every other day for me That's a sweet spot because it has a long half-life.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-29)",
+      "quote": "I do cycle tests with Fencing usually like eight weeks on eight week off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

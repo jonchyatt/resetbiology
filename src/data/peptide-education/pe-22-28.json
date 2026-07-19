@@ -325,5 +325,111 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.553Z",
-  "mentions_fingerprint": "01be7b284644"
+  "mentions_fingerprint": "01be7b284644",
+  "structured_regimens": [
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "acute",
+      "field": "dose",
+      "citation": "",
+      "quote": "PE2228 at 3 micrograms per kilogram in mice",
+      "dose_value": 3,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "acute",
+      "field": "duration",
+      "citation": "",
+      "quote": "over four days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "starting at 250 micrograms per day",
+      "dose_value": 250,
+      "dose_unit": "mcg",
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "dose",
+      "citation": "",
+      "quote": "you could probably go up to 500 micro-gram per day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "route",
+      "citation": "",
+      "quote": "a sub cue injection",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "route",
+      "citation": "",
+      "quote": "nasal spray",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "",
+      "quote": "once daily in the morning",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    },
+    {
+      "source_expert": null,
+      "speaker": null,
+      "context": "chronic",
+      "field": "duration",
+      "citation": "",
+      "quote": "four to five days on, and then two to three days off",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": true
+    }
+  ]
 }

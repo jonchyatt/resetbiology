@@ -288,7 +288,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 3,
           exerciseMinutes: 15,
           exerciseIds: ['box-breath-vision', 'smooth-tracking', 'figure8-fixation'],
-          coachingCues: ['Count 4 seconds per loop', 'No head movement']
+          coachingCues: ['Smooth and steady, no jerky jumps', 'No head movement']
         },
         {
           day: 3,
@@ -405,7 +405,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 3,
           exerciseMinutes: 20,
           exerciseIds: ['peripheral-pointing', 'mirror-scan'],
-          coachingCues: ['Add category rules', 'Count objects per sweep']
+          coachingCues: ['Trust your reach as targets creep outward', 'Recall the center letter the instant a check-in appears']
         },
         {
           day: 3,
@@ -572,7 +572,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 3,
           exerciseMinutes: 24,
           exerciseIds: ['palming-reset', 'peripheral-pointing', 'mirror-scan'],
-          coachingCues: ['Push to edges', 'Add category filtering']
+          coachingCues: ['Push to edges', 'Ignore the faint decoy patches — tap only the bright one']
         },
         {
           day: 2,
@@ -581,7 +581,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 3,
           exerciseMinutes: 24,
           exerciseIds: ['laterality-ladder', 'peripheral-pointing', 'focus-trombone'],
-          coachingCues: ['Add math challenges', 'Verbal responses required']
+          coachingCues: ['Watch for a rule flip on the ladder — same side, then back to crossed', 'Recall the center letter without breaking fixation']
         },
         {
           day: 3,

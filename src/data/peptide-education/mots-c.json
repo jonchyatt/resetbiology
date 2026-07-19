@@ -50,5 +50,85 @@
     "stale": true
   },
   "generated_at": "2026-07-17T10:59:10.151Z",
-  "mentions_fingerprint": "97d170e1550e"
+  "mentions_fingerprint": "97d170e1550e",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29)",
+      "quote": "five milligrams subcutaneously.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-03-29)",
+      "quote": "You could also do it intramuscularly for a little bit more of a performance enhancement benefit.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29)",
+      "quote": "two to three times per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-29)",
+      "quote": "four to eight weeks, then reevaluate.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "baseline",
+      "field": "dose",
+      "citation": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+      "quote": "2 mg",
+      "dose_value": 2,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": true,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "baseline",
+      "field": "frequency",
+      "citation": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+      "quote": "Every 3rd day",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": true,
+      "flag": false
+    }
+  ]
 }

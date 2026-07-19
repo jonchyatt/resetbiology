@@ -230,5 +230,124 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:08.497Z",
-  "mentions_fingerprint": "0284f957a83c"
+  "mentions_fingerprint": "0284f957a83c",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-04-18, Saturday Morning Coffee Talk 4/18/26 @ 01:24:12.750)",
+      "quote": "This is what I would start with is like 100 micrograms three times per week. So I would do 100 micrograms on my training days pre or post workout and I would run that for a little while and see how you do.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-30, best-non-glp-peptides-for-fat-loss--168fde2b @ 7:44)",
+      "quote": "So the best dosage for this is 100 micrograms per day, Monday through Friday morning, obviously in a fasted state.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29, ace-031-myostatin-inhibitor-for-faster-gains-worth-the-hype--31302c8f @ 13:53)",
+      "quote": "Now, when I use this, I got a one milligram vial and a 250 micrograms, two times per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "(2026-03-29, ace-031-myostatin-inhibitor-for-faster-gains-worth-the-hype--31302c8f @ 15:57)",
+      "quote": "if it comes in a one milligram vial, you could probably do like one milligrams per week and see more pronounced benefit.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "route",
+      "citation": "(2026-03-29, ace-031-myostatin-inhibitor-for-faster-gains-worth-the-hype--31302c8f @ 15:26)",
+      "quote": "people will do this subcutaneously or intramuscularly. I just did this up cutaneously.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-04-18, Saturday Morning Coffee Talk 4/18/26 @ 01:24:18.630)",
+      "quote": "three times per week. So I would do 100 micrograms on my training days pre or post workout",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-30, best-non-glp-peptides-for-fat-loss--168fde2b @ 7:44)",
+      "quote": "100 micrograms per day, Monday through Friday morning, obviously in a fasted state.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "(2026-03-29, ace-031-myostatin-inhibitor-for-faster-gains-worth-the-hype--31302c8f @ 13:53)",
+      "quote": "250 micrograms, two times per week.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "(2026-03-29, ace-031-myostatin-inhibitor-for-faster-gains-worth-the-hype--31302c8f @ 14:23)",
+      "quote": "people are going to cycle this for like six to eight weeks with breaks in between to assess progress and side effects. I did give this one a month, so I used it for a months. From what we can gather, it's around 10 to 15 days",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    }
+  ]
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
+import { SpeechQueue } from '@/lib/vision/audioKit'
 
 type EDirection = 'up' | 'down' | 'left' | 'right'
 export type BinocularMode = 'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'
@@ -122,8 +123,15 @@ export default function BinocularChart({
     if (feedback) { const t = setTimeout(() => setFeedback(null), 400); return () => clearTimeout(t) }
   }, [feedback])
 
+  // Voice-out seam (T5b) — same SpeechQueue instance SessionRunner/engines use.
+  const speechRef = useRef<SpeechQueue | null>(null)
+  useEffect(() => {
+    speechRef.current = new SpeechQueue()
+    return () => speechRef.current?.stop()
+  }, [])
+
   const regenerateChart = useCallback(() => {
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+    speechRef.current?.stop()
     setChartData(generateChartData(exerciseType))
     setCurrentLineIndex(0); setCurrentLetterIndex(0); setConsecutiveFailures(0)
   }, [exerciseType])

@@ -648,5 +648,124 @@
     "distilled_by": "codex"
   },
   "generated_at": "2026-07-17T10:59:06.820Z",
-  "mentions_fingerprint": "d2f16e6b74cb"
+  "mentions_fingerprint": "d2f16e6b74cb",
+  "structured_regimens": [
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "[2026-06-17] (the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691, 13:19; https://library.hunterwilliamshealth.com/p/the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691/)",
+      "quote": "One milligram a day I think is going to be the general optimization sweet spot for a lot of people, especially women.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "[2026-06-17] (the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691, 13:52; https://library.hunterwilliamshealth.com/p/the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691/)",
+      "quote": "For some women, even a lot of tinier women they even do better on 500 micrograms per day.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "[2026-06-17] (the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691, 14:22; https://library.hunterwilliamshealth.com/p/the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691/)",
+      "quote": "two milligrams per day, this is the FDA approved dose that's used in all the trials.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "dose",
+      "citation": "[2026-06-17] (the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691, 36:27; https://library.hunterwilliamshealth.com/p/the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691/)",
+      "quote": "I would do closer to like a 600 micrograms of Tessamarolin with 200 micro grams of ipamerelin, rather than the full one milligram dose of testamarolin and 300 micro gram dose.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": true,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "route",
+      "citation": "[2026-06-17] (the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691, 32:33; https://library.hunterwilliamshealth.com/p/the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691/)",
+      "quote": "I like sub-Q injections.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "frequency",
+      "citation": "[2026-06-17] (the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691, 18:03; https://library.hunterwilliamshealth.com/p/the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691/)",
+      "quote": "We have standard timing, which is once daily at bedtime, one to two hours after the last meal.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter",
+      "context": "chronic",
+      "field": "duration",
+      "citation": "[2026-06-17] (the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691, 26:05; https://library.hunterwilliamshealth.com/p/the-tesamorelin-masterclass-the-complete-users-guide-2026--ae437691/)",
+      "quote": "Visceral fat protocol, again, 16 to 24 weeks, which is four to six months, and you can take eight to 12 weeks off.",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": false,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "baseline",
+      "field": "dose",
+      "citation": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+      "quote": "1 mg",
+      "dose_value": 1,
+      "dose_unit": "mg",
+      "is_range_or_multi": false,
+      "frozen_2023": true,
+      "flag": false
+    },
+    {
+      "source_expert": "hunter-williams",
+      "speaker": "Hunter Williams",
+      "context": "baseline",
+      "field": "frequency",
+      "citation": "Hunter Williams + Jay Campbell Cheat Sheet 2023",
+      "quote": "5 days on, 2 days off",
+      "dose_value": null,
+      "dose_unit": null,
+      "is_range_or_multi": false,
+      "frozen_2023": true,
+      "flag": false
+    }
+  ]
 }
