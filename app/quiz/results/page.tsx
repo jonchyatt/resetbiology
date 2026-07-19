@@ -16,7 +16,14 @@ export default function QuizResultsPage() {
 
   useEffect(() => {
     const syncQuizData = async () => {
-      const savedQuiz = loadQuizFromStorage();
+      let savedQuiz;
+      try {
+        savedQuiz = loadQuizFromStorage();
+      } catch (error) {
+        console.error("Failed to load saved quiz responses:", error);
+        router.push("/quiz");
+        return;
+      }
 
       if (!savedQuiz || !savedQuiz.completedAt) {
         router.push("/quiz");
@@ -53,7 +60,9 @@ export default function QuizResultsPage() {
     };
 
     if (!isLoading) {
-      syncQuizData();
+      syncQuizData().catch((error) => {
+        console.error("Unhandled quiz sync error:", error);
+      });
     }
   }, [user, isLoading, syncComplete, retryTick, router]);
 
