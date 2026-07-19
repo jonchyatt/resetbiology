@@ -8,7 +8,7 @@ export function Footer() {
     <footer className="border-t border-white/10 bg-slate-950 px-4 py-12 text-slate-300">
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1fr_auto] md:items-start">
         <div className="max-w-2xl">
-          <img src="/reset-logo-pro.png" alt="Reset Biology" className="h-14 w-auto" />
+          <img src="/reset-logo-pro.png" alt="Reset Biology" className="h-16 w-auto object-contain" />
           <p className="mt-6 text-sm leading-6">Educational content only. Not medical advice. Reset Biology sells no products and provides no medical care.</p>
           <p className="mt-2 text-sm leading-6">Free access funded by the Satori Living Foundation. {/* src: LMP §00 */}</p>
         </div>
