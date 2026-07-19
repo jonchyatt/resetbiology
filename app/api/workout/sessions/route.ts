@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { awardWorkoutPoints } from '@/lib/workoutPoints'
 
 // GET: Load user's workout history
 export async function GET(request: Request) {
@@ -98,15 +99,15 @@ export async function POST(request: Request) {
       }
     })
 
-    // Award gamification points for completing workout
-    await prisma.gamificationPoint.create({
-      data: {
-        userId: user.id,
-        amount: 50, // 50 points per workout
-        pointType: 'workout',
-        activitySource: 'Completed workout session',
-        earnedAt: new Date()
-      }
+    // Award gamification points for completing workout -- once per day via
+    // the DailyAward unique index (userId, dayKey, awardType), same gate
+    // every other workout-completion path uses (src/lib/workoutPoints.ts).
+    // The old unbounded 50-per-call award is gone.
+    const award = await awardWorkoutPoints({
+      userId: user.id,
+      awardType: 'workout',
+      source: 'legacy',
+      dayKey: null,
     })
 
     // Update daily task if exists
@@ -133,7 +134,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       session: workoutSession,
-      pointsAwarded: 50
+      pointsAwarded: award.points
     })
 
   } catch (error) {

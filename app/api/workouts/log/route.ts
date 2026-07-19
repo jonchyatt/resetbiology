@@ -2,6 +2,7 @@
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
+import { awardWorkoutPoints } from '@/lib/workoutPoints';
 
 export async function POST(request: Request) {
   try {
@@ -94,33 +95,21 @@ export async function POST(request: Request) {
       },
     });
 
-    // Award points only for the first logged workout of the day
     const nextDay = new Date(startOfDay);
     nextDay.setDate(nextDay.getDate() + 1);
 
-    const workoutsToday = await prisma.workoutSession.count({
-      where: {
-        userId: user.id,
-        completedAt: {
-          gte: startOfDay,
-          lt: nextDay,
-        },
-      },
+    // DailyAward's unique index (userId, dayKey, awardType) is the once-per-
+    // day gate now, not a WorkoutSession count -- a count broke the moment a
+    // second path (prescribed-session completion) started creating
+    // WorkoutSession rows too, forfeiting this route's award. See
+    // src/lib/workoutPoints.ts.
+    const award = await awardWorkoutPoints({
+      userId: user.id,
+      awardType: 'workout',
+      source: 'quick-add',
+      dayKey: localDate,
     });
-
-    let pointsAwarded = 0;
-    if (workoutsToday === 1) {
-      await prisma.gamificationPoint.create({
-        data: {
-          userId: user.id,
-          amount: 40,
-          pointType: 'fitness',
-          activitySource: 'Logged workout session',
-          earnedAt: now,
-        },
-      });
-      pointsAwarded = 40;
-    }
+    const pointsAwarded = award.points;
 
     const timestamp = now.toLocaleTimeString('en-US', {
       hour: 'numeric',

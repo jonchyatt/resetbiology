@@ -360,11 +360,14 @@ export function WorkoutTracker() {
       const res = await fetch(`/api/workouts/assignments/${activeAssignment.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, sessionId, notes: notes ?? null }),
+        body: JSON.stringify({ action, sessionId, notes: notes ?? null, localDate: localDayKey(new Date()) }),
       });
       const data = await res.json();
       if (!res.ok || !data?.ok) {
         throw new Error(data?.error || "Unable to update session");
+      }
+      if (data?.pointsAwarded > 0) {
+        toast.success(`+${data.pointsAwarded} points — session complete`);
       }
       await Promise.all([fetchAssignments(), fetchRecentWorkouts()]);
     } catch (error: any) {
@@ -381,6 +384,7 @@ export function WorkoutTracker() {
       const payload = {
         ...readinessPayload,
         assignmentId: activeAssignment?.id ?? null,
+        localDate: localDayKey(new Date()),
       };
       const res = await fetch("/api/workouts/checkins", {
         method: "POST",
@@ -390,6 +394,9 @@ export function WorkoutTracker() {
       const data = await res.json();
       if (!res.ok || !data?.ok) {
         throw new Error(data?.error || "Unable to save readiness");
+      }
+      if (data?.pointsAwarded > 0) {
+        toast.success(`+${data.pointsAwarded} points — readiness logged`);
       }
       await fetchCheckIns();
       setReadinessPayload((prev) => ({ ...prev, notes: "" }));
