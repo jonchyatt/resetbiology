@@ -120,6 +120,85 @@ const dropped = [...PRE_CHANGE_ID_SET].filter((id) => !postChangeIdSet.has(id))
 assert.deepEqual(dropped, [], `ids dropped from the program: ${dropped.join(', ')}`)
 pass('every pre-change exercise id still exists somewhere in the program (nothing dropped)')
 
+// (f) STRONGER than (e): per-session preservation, not just global set membership.
+//     (e) alone would not catch an id silently MOVED from one day to another --
+//     this check verifies every session's OLD exerciseIds array is still a subset
+//     of that SAME session's NEW array (append-only per session, no reordering-drop).
+//     Snapshot taken from the pre-change worktree (commit 8910d024^) via
+//     `git show 8910d024^:src/data/visionProtocols.ts` walked the same way.
+const PRE_CHANGE_PER_SESSION: Record<string, string[]> = {
+  '1:1': ['palming-reset', 'box-breath-vision'], '1:2': ['palming-reset', 'box-breath-vision'],
+  '1:3': ['palming-reset', 'focus-pushups'], '1:4': ['box-breath-vision', 'smooth-tracking'],
+  '1:5': ['palming-reset', 'figure8-fixation'],
+  '2:1': ['palming-reset', 'focus-pushups', 'figure8-fixation'],
+  '2:2': ['box-breath-vision', 'smooth-tracking', 'figure8-fixation'],
+  '2:3': ['palming-reset', 'focus-trombone'],
+  '2:4': ['focus-pushups', 'smooth-tracking', 'figure8-fixation'],
+  '2:5': ['palming-reset', 'focus-trombone'],
+  '3:1': ['palming-reset', 'peripheral-pointing'],
+  '3:2': ['box-breath-vision', 'mirror-scan', 'peripheral-pointing'],
+  '3:3': ['focus-pushups', 'mirror-scan', 'snellen-layering-walks'],
+  '3:4': ['focus-trombone', 'peripheral-pointing'],
+  '3:5': ['palming-reset', 'snellen-layering-walks'],
+  '4:1': ['palming-reset', 'snellen-layering-walks', 'focus-trombone'],
+  '4:2': ['peripheral-pointing', 'mirror-scan'],
+  '4:3': ['box-breath-vision', 'focus-pushups', 'peripheral-pointing', 'snellen-layering-walks'],
+  '4:4': ['palming-reset', 'focus-trombone', 'mirror-scan'],
+  '4:5': ['peripheral-pointing', 'snellen-layering-walks'],
+  '5:1': ['palming-reset', 'eye-jumps'], '5:2': ['eye-jumps', 'peripheral-pointing'],
+  '5:3': ['box-breath-vision', 'laterality-ladder', 'eye-jumps'],
+  '5:4': ['focus-pushups', 'eye-jumps', 'snellen-layering-walks'],
+  '5:5': ['palming-reset', 'eye-jumps', 'laterality-ladder'],
+  '6:1': ['palming-reset', 'eye-jumps', 'laterality-ladder'],
+  '6:2': ['focus-pushups', 'eye-jumps', 'mirror-scan', 'snellen-layering-walks'],
+  '6:3': ['laterality-ladder', 'eye-jumps', 'peripheral-pointing'],
+  '6:4': ['box-breath-vision', 'eye-jumps', 'laterality-ladder', 'focus-trombone'],
+  '6:5': ['palming-reset', 'eye-jumps', 'snellen-layering-walks'],
+  '7:1': ['palming-reset', 'peripheral-pointing', 'mirror-scan'],
+  '7:2': ['laterality-ladder', 'peripheral-pointing', 'focus-trombone'],
+  '7:3': ['snellen-layering-walks', 'laterality-ladder', 'eye-jumps'],
+  '7:4': ['peripheral-pointing', 'eye-jumps', 'laterality-ladder', 'mirror-scan'],
+  '7:5': ['palming-reset', 'peripheral-pointing', 'snellen-layering-walks'],
+  '8:1': ['palming-reset', 'eye-jumps', 'laterality-ladder'],
+  '8:2': ['eye-jumps', 'focus-trombone', 'snellen-layering-walks'],
+  '8:3': ['smooth-tracking', 'eye-jumps', 'peripheral-pointing', 'laterality-ladder'],
+  '8:4': ['eye-jumps', 'laterality-ladder', 'peripheral-pointing', 'snellen-layering-walks'],
+  '8:5': ['palming-reset', 'eye-jumps', 'peripheral-pointing'],
+  '9:1': ['palming-reset', 'focus-trombone'], '9:2': ['focus-pushups', 'focus-trombone'],
+  '9:3': ['box-breath-vision', 'focus-trombone', 'snellen-layering-walks'],
+  '9:4': ['focus-pushups', 'focus-trombone', 'eye-jumps'],
+  '9:5': ['palming-reset', 'focus-trombone'],
+  '10:1': ['palming-reset', 'focus-pushups'],
+  '10:2': ['focus-trombone', 'focus-pushups', 'snellen-layering-walks'],
+  '10:3': ['figure8-fixation', 'focus-trombone', 'smooth-tracking'],
+  '10:4': ['focus-pushups', 'focus-trombone', 'snellen-layering-walks'],
+  '10:5': ['palming-reset', 'focus-trombone'],
+  '11:1': ['palming-reset', 'focus-pushups', 'peripheral-pointing', 'eye-jumps'],
+  '11:2': ['snellen-layering-walks', 'peripheral-pointing', 'focus-trombone'],
+  '11:3': ['eye-jumps', 'laterality-ladder', 'peripheral-pointing', 'focus-trombone'],
+  '11:4': ['palming-reset', 'focus-pushups', 'smooth-tracking'],
+  '11:5': ['palming-reset', 'peripheral-pointing', 'snellen-layering-walks'],
+  '12:1': ['palming-reset', 'focus-pushups', 'eye-jumps'],
+  '12:2': ['focus-trombone', 'smooth-tracking', 'figure8-fixation'],
+  '12:3': ['eye-jumps', 'peripheral-pointing', 'laterality-ladder'],
+  '12:4': ['focus-pushups', 'eye-jumps', 'peripheral-pointing', 'snellen-layering-walks'],
+  '12:5': ['palming-reset', 'focus-trombone'],
+}
+const perSessionFindings: string[] = []
+for (const wp of visionMasterProgram.weeklyPlans) {
+  for (const session of wp.sessions) {
+    const key = `${wp.week}:${session.day}`
+    const before = PRE_CHANGE_PER_SESSION[key]
+    assert.ok(before, `no pre-change snapshot for ${key} -- snapshot incomplete`)
+    const afterSet = new Set(session.exerciseIds)
+    for (const id of before!) {
+      if (!afterSet.has(id)) perSessionFindings.push(`${key}: lost pre-existing id '${id}'`)
+    }
+  }
+}
+assert.deepEqual(perSessionFindings, [], `per-session id loss detected: ${perSessionFindings.join('; ')}`)
+pass('per-session preservation: every session\'s pre-change exerciseIds remain in that SAME session (append-only, not just moved elsewhere)')
+
 // Bonus sanity: gabor-contrast itself is now a new id in the post-change set
 assert.ok(postChangeIdSet.has('gabor-contrast'), 'gabor-contrast must now exist in the program id set')
 pass('gabor-contrast is present in the post-change program id set')
