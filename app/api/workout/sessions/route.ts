@@ -79,7 +79,8 @@ export async function POST(request: Request) {
       duration,
       programId,
       notes,
-      completedAt
+      completedAt,
+      localDate
     } = body
 
     if (!exercises || !Array.isArray(exercises)) {
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
       userId: user.id,
       awardType: 'workout',
       source: 'legacy',
-      dayKey: null,
+      dayKey: typeof localDate === 'string' ? localDate : null,
     })
 
     // Update daily task if exists

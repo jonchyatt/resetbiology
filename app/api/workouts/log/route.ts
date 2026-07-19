@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
 import { awardWorkoutPoints } from '@/lib/workoutPoints';
+import { dayKeyToUtcMidnight } from '@/lib/localDay';
 
 export async function POST(request: Request) {
   try {
@@ -74,30 +75,6 @@ export async function POST(request: Request) {
       },
     });
 
-    // Mark daily workout task completed
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    await prisma.dailyTask.upsert({
-      where: {
-        userId_date_taskName: {
-          userId: user.id,
-          date: startOfDay,
-          taskName: 'workout',
-        },
-      },
-      update: { completed: true },
-      create: {
-        userId: user.id,
-        date: startOfDay,
-        taskName: 'workout',
-        completed: true,
-      },
-    });
-
-    const nextDay = new Date(startOfDay);
-    nextDay.setDate(nextDay.getDate() + 1);
-
     // DailyAward's unique index (userId, dayKey, awardType) is the once-per-
     // day gate now, not a WorkoutSession count -- a count broke the moment a
     // second path (prescribed-session completion) started creating
@@ -110,6 +87,37 @@ export async function POST(request: Request) {
       dayKey: localDate,
     });
     const pointsAwarded = award.points;
+
+    // Mark daily workout task completed on the SAME resolved day the award
+    // used (client localDate, validated and drift-bounded inside the
+    // helper, or its server-clock fallback) — not a separate server-clock
+    // startOfDay, which could land the checkmark on a different day than
+    // the award (mirrors app/api/workouts/assignments/[assignmentId]/route.ts).
+    const taskDay = dayKeyToUtcMidnight(award.dayKey);
+
+    await prisma.dailyTask.upsert({
+      where: {
+        userId_date_taskName: {
+          userId: user.id,
+          date: taskDay,
+          taskName: 'workout',
+        },
+      },
+      update: { completed: true },
+      create: {
+        userId: user.id,
+        date: taskDay,
+        taskName: 'workout',
+        completed: true,
+      },
+    });
+
+    // Journal-entry lookup range stays server-clock-anchored (unchanged) —
+    // out of scope for this fix, which is the DailyTask/award day mismatch.
+    const startOfDay = new Date(now);
+    startOfDay.setHours(0, 0, 0, 0);
+    const nextDay = new Date(startOfDay);
+    nextDay.setDate(nextDay.getDate() + 1);
 
     const timestamp = now.toLocaleTimeString('en-US', {
       hour: 'numeric',

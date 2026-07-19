@@ -26,7 +26,12 @@ function resolveDayKey(dayKey?: string | null): string {
   const now = new Date();
   if (dayKey && DAY_KEY_RE.test(dayKey)) {
     const parsed = new Date(`${dayKey}T00:00:00.000Z`);
-    if (!Number.isNaN(parsed.getTime()) && Math.abs(now.getTime() - parsed.getTime()) <= DRIFT_BOUND_MS) {
+    // Anchor the comparison at midday UTC of the parsed day, not midnight —
+    // midnight-anchoring rejects legitimate evening completions in western
+    // timezones (UTC-6 after ~20:00 local already exceeds a 26h midnight
+    // bound). Midday keeps the same 26h slack on both sides of the day.
+    const anchor = parsed.getTime() + 12 * 60 * 60 * 1000;
+    if (!Number.isNaN(parsed.getTime()) && Math.abs(now.getTime() - anchor) <= DRIFT_BOUND_MS) {
       return dayKey;
     }
   }
