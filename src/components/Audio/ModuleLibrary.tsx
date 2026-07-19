@@ -1,16 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Play, Lock, CheckCircle, Star, Clock } from "lucide-react"
+import { Play, Lock, CheckCircle, Star } from "lucide-react"
 import { AudioPlayer } from "./AudioPlayer"
 import { useToast } from "@/components/ui/Toast"
 import type { MentalMasteryModule } from "@/types"
 
-interface ModuleLibraryProps {
-  userId: string
-}
+type LibraryModule = MentalMasteryModule & { available: boolean }
 
-export function ModuleLibrary({ userId }: ModuleLibraryProps) {
+export function ModuleLibrary() {
   const toast = useToast()
   const [selectedModule, setSelectedModule] = useState<MentalMasteryModule | null>(null)
   const [completedModules, setCompletedModules] = useState<string[]>([])
@@ -48,7 +46,9 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
       } catch (error: any) {
         console.error('Failed to load module completions:', error)
         if (active) {
-          setLoadError(error?.message || 'Failed to load module completions')
+          const message = error?.message || 'Failed to load module completions'
+          setLoadError(message)
+          toast.error(message)
         }
       }
     }
@@ -58,86 +58,80 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
     return () => {
       active = false
     }
-  }, [])
+  }, [toast])
 
-  // Mock Mental Mastery modules with psychological progression
-  const modules: MentalMasteryModule[] = [
+  const modules: LibraryModule[] = [
     {
       id: 'module-1',
       title: 'Mental Mastery Module 1',
       description: 'Foundation: Reset your relationship with food, body, and medication dependency.',
-      audioUrl: '/1mmm1.mp3', // Real audio file
-      duration: 1800, // Estimated 30 minutes - will be updated after listening
+      audioUrl: '/1mmm1.mp3',
       category: 'Foundation',
       requiredForDeposit: true,
-      order: 1
+      order: 1,
+      available: true,
     },
     {
       id: 'module-2', 
       title: 'Breaking the Shame-Hunger Cycle',
       description: 'Foundation: How shame creates hunger signals and perpetuates medication dependency.',
       audioUrl: '/audio/foundation-shame-cycle.mp3',
-      duration: 2100, // 35 minutes
       category: 'Foundation',
       requiredForDeposit: true,
-      order: 2
+      order: 2,
+      available: false,
     },
     {
       id: 'module-3',
       title: 'Your Identity Beyond the Scale',
       description: 'Foundation: Building an identity that supports long-term metabolic health independent of medications.',
       audioUrl: '/audio/foundation-identity.mp3',
-      duration: 1650, // 27.5 minutes
       category: 'Foundation',
       requiredForDeposit: true,
-      order: 3
+      order: 3,
+      available: false,
     },
     {
       id: 'module-4',
       title: 'Stress Biology & Cortisol Mastery',
       description: 'Integration: Advanced stress management techniques that work synergistically with Retatrutide.',
       audioUrl: '/audio/integration-stress-mastery.mp3',
-      duration: 2400, // 40 minutes
       category: 'Integration',
       requiredForDeposit: true,
-      order: 4
+      order: 4,
+      available: false,
     },
     {
       id: 'module-5',
       title: 'The Confidence Protocol',
       description: 'Integration: Building unshakeable confidence as your body transforms.',
       audioUrl: '/audio/integration-confidence.mp3',
-      duration: 1950, // 32.5 minutes
       category: 'Integration',
       requiredForDeposit: false,
-      order: 5
+      order: 5,
+      available: false,
     },
     {
       id: 'module-6',
       title: 'Metabolic Freedom Formula',
       description: 'Mastery: The complete system for maintaining results after tapering off Retatrutide.',
       audioUrl: '/audio/mastery-freedom-formula.mp3',
-      duration: 3600, // 60 minutes - flagship module
       category: 'Mastery',
       requiredForDeposit: true,
-      order: 6
+      order: 6,
+      available: false,
     },
     {
       id: 'module-7',
       title: 'The Graduate Protocol',
       description: 'Mastery: Advanced strategies for helping others achieve metabolic freedom.',
       audioUrl: '/audio/mastery-graduate-protocol.mp3',
-      duration: 2700, // 45 minutes
       category: 'Mastery',
       requiredForDeposit: false,
-      order: 7
+      order: 7,
+      available: false,
     }
   ]
-
-  const handleModuleProgress = (moduleId: string, progress: number) => {
-    console.log(`Module ${moduleId} progress: ${progress}%`)
-    // TODO: Save progress to database/Google Drive
-  }
 
   const handleModuleComplete = async (moduleId: string) => {
     if (isSaving) return
@@ -195,7 +189,9 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
     }
   }
 
-  const isModuleAccessible = (module: MentalMasteryModule) => {
+  const isModuleAccessible = (module: LibraryModule) => {
+    if (!module.available) return false
+
     // Foundation modules: Always accessible
     if (module.category === 'Foundation') return true
     
@@ -216,10 +212,9 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
     return false
   }
 
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    return `${mins} min`
-  }
+  const requiredModules = modules.filter(module => module.available && module.requiredForDeposit)
+  const completedRequiredCount = requiredModules.filter(module => completedModules.includes(module.id)).length
+  const completedAvailableCount = modules.filter(module => module.available && completedModules.includes(module.id)).length
 
   if (selectedModule) {
     return (
@@ -232,13 +227,12 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
             ← Back to Library
           </button>
           <div className="text-sm text-gray-500">
-            Module {selectedModule.order} of {modules.length}
+            Module {selectedModule.order} of {modules.filter(module => module.available).length}
           </div>
         </div>
         
               <AudioPlayer 
                 module={selectedModule}
-                onProgress={(progress) => handleModuleProgress(selectedModule.id, progress)}
                 onComplete={() => void handleModuleComplete(selectedModule.id)}
               />
       </div>
@@ -267,20 +261,20 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-900">Your Learning Progress</h2>
           <div className="text-right">
-            <p className="text-2xl font-bold text-primary-600">{completedModules.length}</p>
-            <p className="text-sm text-gray-600">/ {modules.filter(m => m.requiredForDeposit).length} Required</p>
+            <p className="text-2xl font-bold text-primary-600">{completedRequiredCount}</p>
+            <p className="text-sm text-gray-600">/ {requiredModules.length} Required</p>
           </div>
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
           <div 
             className="bg-gradient-to-r from-primary-400 to-secondary-400 h-3 rounded-full transition-all duration-500"
-            style={{ width: `${(completedModules.length / modules.filter(m => m.requiredForDeposit).length) * 100}%` }}
+            style={{ width: `${requiredModules.length ? (completedRequiredCount / requiredModules.length) * 100 : 0}%` }}
           />
         </div>
         
         <p className="text-sm text-gray-600 text-center">
-          {modules.filter(m => m.requiredForDeposit).length - completedModules.length} modules remaining to secure your stake
+          {requiredModules.length - completedRequiredCount} modules remaining to secure your stake
         </p>
       </div>
 
@@ -299,13 +293,15 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
             
             <div className="grid gap-4">
               {categoryModules.map(module => {
-                const isCompleted = completedModules.includes(module.id)
+                const isComingSoon = !module.available
+                const isCompleted = module.available && completedModules.includes(module.id)
                 const isAccessible = isModuleAccessible(module)
                 
                 return (
                   <div 
                     key={module.id}
                     className={`bg-white rounded-lg p-4 border transition-all ${
+                      isComingSoon ? 'border-gray-100 bg-gray-50' :
                       isCompleted ? 'border-green-200 bg-green-50' :
                       isAccessible ? 'border-gray-200 hover:border-primary-200 cursor-pointer' :
                       'border-gray-100 bg-gray-50'
@@ -330,7 +326,7 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
                             {module.title}
                           </h3>
                           
-                          {module.requiredForDeposit && (
+                          {module.requiredForDeposit && module.available && (
                             <Star className="w-4 h-4 text-yellow-500 ml-2" />
                           )}
                         </div>
@@ -342,9 +338,7 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
                         </p>
                         
                         <div className="flex items-center text-xs text-gray-500">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {formatDuration(module.duration)}
-                          {module.requiredForDeposit && (
+                          {module.requiredForDeposit && module.available && (
                             <span className="ml-3 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
                               Required for Payout
                             </span>
@@ -356,6 +350,10 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
                         {isCompleted ? (
                           <div className="text-green-600 font-semibold text-sm">
                             ✓ Complete
+                          </div>
+                        ) : isComingSoon ? (
+                          <div className="text-gray-400 text-sm">
+                            Coming soon
                           </div>
                         ) : isAccessible ? (
                           <div className="text-primary-600 font-semibold text-sm">
@@ -385,13 +383,13 @@ export function ModuleLibrary({ userId }: ModuleLibraryProps) {
         </p>
         <div className="flex justify-center space-x-6 text-sm">
           <div>
-            <span className="text-green-400 font-semibold">{completedModules.length}</span> Completed
+            <span className="text-green-400 font-semibold">{completedAvailableCount}</span> Completed
           </div>
           <div>
-            <span className="text-yellow-400 font-semibold">{modules.filter(m => isModuleAccessible(m) && !completedModules.includes(m.id)).length}</span> Available
+            <span className="text-yellow-400 font-semibold">{modules.filter(m => m.available && isModuleAccessible(m) && !completedModules.includes(m.id)).length}</span> Available
           </div>
           <div>
-            <span className="text-gray-400 font-semibold">{modules.filter(m => !isModuleAccessible(m)).length}</span> Locked
+            <span className="text-gray-400 font-semibold">{modules.filter(m => !m.available).length}</span> Coming soon
           </div>
         </div>
       </div>

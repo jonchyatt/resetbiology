@@ -33,7 +33,7 @@ export interface MentalMasteryModule {
   title: string
   description: string
   audioUrl: string
-  duration: number
+  duration?: number
   category: string
   requiredForDeposit: boolean
   order: number

@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/audio',
+        destination: '/modules',
+        permanent: true,
+      },
+      {
         source: '/cellular-peptide',
         destination: '/order',
         permanent: true,

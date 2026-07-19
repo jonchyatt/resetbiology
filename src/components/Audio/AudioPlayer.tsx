@@ -119,7 +119,7 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
         <div className="text-right ml-4">
           <div className="flex items-center text-gray-500 text-sm mb-1">
             <Clock className="w-4 h-4 mr-1" />
-            {formatTime(module.duration)}
+            {duration > 0 ? formatTime(duration) : 'Loading audio…'}
           </div>
           {module.requiredForDeposit && (
             <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
