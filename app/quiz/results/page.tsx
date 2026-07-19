@@ -55,14 +55,6 @@ export default function QuizResultsPage() {
   if (!quiz) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
-      {syncFailed && (
-        <div className="mx-auto mt-4 max-w-2xl rounded-lg border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-          Your results are saved on this device, but syncing them to your account failed.{' '}
-          <button type="button" onClick={() => { setSyncFailed(false); setRetryTick((t) => t + 1); }} className="underline font-medium">
-            Retry sync
-          </button>
-        </div>
-      )}
         <div className="text-white">Loading your results...</div>
       </div>
     );
@@ -79,6 +71,14 @@ export default function QuizResultsPage() {
       }}
       data-outcome={outcome ?? undefined}
     >
+      {syncFailed && (
+        <div className="mx-auto mt-4 max-w-2xl rounded-lg border border-amber-400/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+          Your results are saved on this device, but syncing them to your account failed.{' '}
+          <button type="button" onClick={() => { setSyncFailed(false); setRetryTick((t) => t + 1); }} className="underline font-medium">
+            Retry sync
+          </button>
+        </div>
+      )}
       <div className="max-w-2xl mx-auto pt-16">
         <div className="bg-gray-900/70 border border-primary-400/30 rounded-2xl p-8 md:p-12 text-center shadow-2xl">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Your Next Step, {quiz.preferredName}</h1>
