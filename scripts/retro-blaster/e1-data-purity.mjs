@@ -56,7 +56,10 @@ globalThis.localStorage = localStorage
 const fsrs = await import(new URL('../../src/lib/fsrs.ts', import.meta.url))
 const family = await import(new URL('../../src/lib/fsrsFamily.ts', import.meta.url))
 const engine = await import(new URL('../../src/components/PitchDefender/retroBlasterEngine.ts', import.meta.url))
+const curriculum = await import(new URL('../../src/components/PitchDefender/retroBlasterCurriculum.ts', import.meta.url))
 const gameTypes = await import(new URL('../../src/components/PitchDefender/types.ts', import.meta.url))
+const pitchMath = await import(new URL('../../src/components/PitchDefender/pitchMath.ts', import.meta.url))
+const placement = await import(new URL('../../src/components/PitchDefender/retroBlasterPlacement.ts', import.meta.url))
 
 function loadRealShell() {
   const filename = resolve(root, 'src/components/PitchDefender/RetroBlasterII.tsx')
@@ -79,6 +82,9 @@ function loadRealShell() {
     ['@/lib/fsrsFamily', family],
     ['./types', gameTypes],
     ['./retroBlasterEngine', engine],
+    ['./retroBlasterCurriculum', curriculum],
+    ['./pitchMath', pitchMath],
+    ['./retroBlasterPlacement', placement],
     ['./usePitchDetection', { usePitchDetection() { throw new Error('Component mount is outside this fixture') } }],
     ['./audioEngine', { initAudio() {}, loadPianoSamples() {}, playPianoNote() {} }],
     ['./retroBlasterRenderer', { render() {} }],
@@ -244,6 +250,22 @@ const fixtures = [
   }],
   ['5', 'sibling regression sweep', () => {
     const protectedBase = process.env.RETRO_PROTECTED_BASE || 'origin/master'
+    const hubPath = 'src/components/PitchDefender/PitchDefender.tsx'
+    const authorizedHubCard = `              <a
+                href="/pitch-defender/retro-2"
+                title="Rebuilt arcade ear-trainer — sing or key the note carried by each descending alien."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(217, 70, 239, 0.16))',
+                  color: '#a5f3fc',
+                  border: '2px solid rgba(34, 211, 238, 0.48)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Retro Blaster II
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Rebuilt arcade ear-trainer. Sing or key each alien&apos;s note.</div>
+              </a>
+`
     const siblingPaths = [
       'src/components/PitchDefender/RetroBlaster.tsx',
       'src/components/PitchDefender/DrillMode.tsx',
@@ -253,18 +275,26 @@ const fixtures = [
     ]
     const diff = execFileSync('git', ['diff', '--name-only', protectedBase], { cwd: root, encoding: 'utf8' })
       .split(/\r?\n/).filter(Boolean).map(path => path.replaceAll('\\', '/'))
-    const changedSibling = siblingPaths.filter(path => diff.includes(path))
+    const changedSibling = siblingPaths.filter(path => path !== hubPath && diff.includes(path))
     assert(changedSibling.length === 0, `sibling diff detected: ${changedSibling.join(', ')}`)
-    for (const path of siblingPaths.slice(1)) {
+    for (const path of siblingPaths.slice(1).filter(path => path !== hubPath)) {
       const current = readFileSync(resolve(root, path), 'utf8').replaceAll('\r\n', '\n')
       const baseline = execFileSync('git', ['show', `${protectedBase}:${path}`], { cwd: root, encoding: 'utf8' })
         .replaceAll('\r\n', '\n')
       assert(current === baseline, `${path} differs from origin/master`)
       assert(current.includes("'pitch_fsrs_memory'"), `${path} lost its VOICE key literal`)
     }
-    return `git diff clean for siblings against ${protectedBase}; 4 legacy literals intact`
+    const currentHub = readFileSync(resolve(root, hubPath), 'utf8').replaceAll('\r\n', '\n')
+    const baselineHub = execFileSync('git', ['show', `${protectedBase}:${hubPath}`], { cwd: root, encoding: 'utf8' })
+      .replaceAll('\r\n', '\n')
+    assert(currentHub.includes(authorizedHubCard), 'authorized Retro Blaster II hub card missing or changed')
+    const hubMatches = baselineHub.includes(authorizedHubCard)
+      ? currentHub === baselineHub
+      : currentHub.replace(authorizedHubCard, '') === baselineHub
+    assert(hubMatches, 'hub drift exceeds authorized Retro Blaster II card')
+    return `git diff clean for siblings against ${protectedBase}; exact idempotent Retro Blaster II hub card; 4 legacy literals intact`
   }],
-  ['6', 'active-lane roster source', () => {
+  ['6', 'active-lane store selector with explicit session rosters', () => {
     const earNotes = gameTypes.INTRO_ORDER.slice(0, 7)
     const voiceNotes = gameTypes.INTRO_ORDER.slice(0, 6)
     const earStore = Object.fromEntries(earNotes.map((note, index) => [note, memory(note, { weak: index === 0 })]))
@@ -274,8 +304,8 @@ const fixtures = [
       [family.FSRS_VOICE_KEY]: JSON.stringify(voiceStore),
     })
     const stores = shell.loadRetroBlasterFamilyStores()
-    const clickState = shell.buildRetroBlasterState('easy', 'click', stores, 1000)
-    const micState = shell.buildRetroBlasterState('easy', 'mic', stores, 1000)
+    const clickState = shell.buildRetroBlasterState('easy', 'click', stores, earNotes, 1000)
+    const micState = shell.buildRetroBlasterState('easy', 'mic', stores, voiceNotes, 1000)
     assert(clickState.unlockedNotes.length === 7, `click roster used ${clickState.unlockedNotes.length} notes instead of EAR's 7`)
     assert(micState.unlockedNotes.length === 6, `mic roster used ${micState.unlockedNotes.length} notes instead of VOICE's 6`)
     assert(shell.activeLaneStore(stores, 'click') === stores.ear, 'click selector did not return EAR store')
@@ -292,7 +322,7 @@ const fixtures = [
     assert(Object.keys(stores.voice).length === 0, 'gameplay did not receive the corruption fallback')
     assert(localStorage.getItem(family.FSRS_VOICE_KEY) === corruptRaw, 'load overwrote corrupt source bytes')
     assert(localStorage.getItem(`${family.FSRS_VOICE_KEY}.bak`) === corruptRaw, 'corrupt bytes were not backed up')
-    shell.buildRetroBlasterState('easy', 'mic', stores, 1000)
+    shell.buildRetroBlasterState('easy', 'mic', stores, gameTypes.INTRO_ORDER.slice(0, 2), 1000)
     const saved = family.saveStore(family.FSRS_VOICE_KEY, stores.voice)
     assert(saved === false, 'dirty-load latch allowed fallback persistence without a grade')
     assert(localStorage.getItem(family.FSRS_VOICE_KEY) === corruptRaw, 'gameplay overwrote corrupt source bytes')

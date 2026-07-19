@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Play, Pause, Volume2, VolumeX, ChevronLeft, CheckCircle } from 'lucide-react'
 import type { EngineProps, EngineResult, EngineMetrics, Prescription } from './types'
 import { clampScore } from './types'
 import { fitCanvasToElement, drawGaborPatch, drawFixationCross, drawGlow, prefersReducedMotion } from '@/lib/vision/canvasKit'
-import { SpeechQueue, Metronome, playTone, unlockAudio } from '@/lib/vision/audioKit'
+import { SpeechQueue, Metronome, playTone, unlockAudio, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 
 /**
  * PeripheralEngine (W1.5) — serves peripheral-pointing, mirror-scan, laterality-ladder.
@@ -66,7 +66,7 @@ function formatMetricLabel(key: string): string {
     .trim()
 }
 
-export default function PeripheralEngine({ exercise, prescription, muted, onProgress, onComplete, onExit }: EngineProps) {
+export default function PeripheralEngine({ exercise, prescription, onProgress, onComplete, onExit }: EngineProps) {
   const mode = useMemo<Mode>(() => resolveMode(exercise.id), [exercise.id])
   const modeLabel =
     mode === 'laterality'
@@ -77,7 +77,8 @@ export default function PeripheralEngine({ exercise, prescription, muted, onProg
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
-  const [isMuted, setIsMuted] = useState(!!muted)
+  // T7: read shared mute state directly — see DownshiftEngine.tsx.
+  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
   const [finished, setFinished] = useState(false)
   const [result, setResult] = useState<EngineResult | null>(null)
@@ -301,7 +302,10 @@ export default function PeripheralEngine({ exercise, prescription, muted, onProg
       const side: 'L' | 'R' = Math.random() < 0.5 ? 'L' : 'R'
       if ((prescriptionRef.current.week ?? 0) >= 5 && totalTrialsRef.current > 0 && Math.random() < 0.15) {
         ruleInvertedRef.current = !ruleInvertedRef.current
-        speechRef.current?.speak('Rule flip! Same side now.', { interrupt: true })
+        speechRef.current?.speak(
+          ruleInvertedRef.current ? 'Rule flip! Same side now.' : 'Rule flip! Opposite side again.',
+          { interrupt: true }
+        )
         setFlipBanner(true)
         const id = setTimeout(() => setFlipBanner(false), 1600)
         timeoutsRef.current.add(id)
@@ -588,8 +592,9 @@ export default function PeripheralEngine({ exercise, prescription, muted, onProg
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // speechRef reads the shared store directly (SpeechQueue.muted getter),
+  // no push needed. Metronome.muted is a local field, still needs syncing.
   useEffect(() => {
-    if (speechRef.current) speechRef.current.muted = isMuted
     if (metronomeRef.current) metronomeRef.current.muted = isMuted
   }, [isMuted])
 
@@ -661,7 +666,9 @@ export default function PeripheralEngine({ exercise, prescription, muted, onProg
           <p className="text-xs text-gray-500">{modeLabel}</p>
         </div>
         <button
-          onClick={() => setIsMuted((m) => !m)}
+          onClick={() => {
+            if (speechRef.current) speechRef.current.muted = !getSharedMuted()
+          }}
           className="rounded-lg bg-gray-800/30 p-2 text-gray-400 backdrop-blur-sm transition-all duration-300 hover:bg-gray-700/30 hover:text-white"
         >
           {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
@@ -730,7 +737,7 @@ export default function PeripheralEngine({ exercise, prescription, muted, onProg
             {flipBanner && (
               <div className="absolute inset-x-0 top-4 flex justify-center">
                 <span className="animate-pulse rounded-lg bg-yellow-500/90 px-4 py-2 text-sm font-bold text-gray-900 shadow-lg">
-                  Rule flip! Same side now.
+                  {ruleInvertedRef.current ? 'Rule flip! Same side now.' : 'Rule flip! Opposite side again.'}
                 </span>
               </div>
             )}

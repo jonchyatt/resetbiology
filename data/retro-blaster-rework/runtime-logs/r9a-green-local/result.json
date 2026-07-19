@@ -1,0 +1,1231 @@
+{
+  "schema": "retro-blaster-r9a-curriculum/green-v1",
+  "generatedAt": "2026-07-15T18:27:32.097Z",
+  "mode": "--green",
+  "exactBase": "2a773d5903d4558cee4c3b3c09a11659908cf575",
+  "head": "2a773d5903d4558cee4c3b3c09a11659908cf575",
+  "originMaster": "2a773d5903d4558cee4c3b3c09a11659908cf575",
+  "fixture": {
+    "path": "scripts/retro-blaster/r9a-curriculum-fixture.ts",
+    "sha256": "D7D92335518D2FD57E54A994C57C2AD199863559B7976001F8C3CE4B9E0A7156"
+  },
+  "output": "C:\\Users\\jonch\\rbw-retro-blaster\\data\\retro-blaster-rework\\runtime-logs\\r9a-green-local\\result.json",
+  "policyKey": "retro_blaster_curriculum_v1",
+  "lockName": "retro-blaster-curriculum-v1",
+  "inspectedSourceHashes": {
+    "engine": "201C37698C81277184BC38DC73BAB7E3372EF22A43949E07BFE2B607DD598A0E",
+    "shell": "579F1990C42DB09F61F77141B47357EC8310D4047FA4B6D08AA91594F0A4E317",
+    "types": "FE36957396DF11499A3508C89D773E419DB5767894F80F072B067EB3AE0AFDEB",
+    "family": "8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46",
+    "audio": "68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430",
+    "detector": "9ED5801EF0D19EC65C73B639A70F3E11A394ADE4562D0442D8B375F25A651CC2",
+    "renderer": "109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3",
+    "sibling": "CAA31FCE012E82DA1BD7E6DA2AEE5300522BD0450DEC1D293AAAA1FA6FE407C5",
+    "r8a": "D4739A13D6F2B3BA6CA524F7AEBD91F0286AC1592B3338FDCCF7A88E05022813",
+    "r8c": "418ED347CBEF7F8B61236051C323CFA3E4BE2B6EF2BCB0F57047914487A977DB",
+    "e1": "D9F9FA39B7A5893F4F1E66F6A5DE3822FEF49D4D1ED592517849C69F3BE0AC6C",
+    "familyRegression": "34BD5BA807143C032AD446CC36D81F0182238C87DBBD78C5B178B123188189BE"
+  },
+  "counts": {
+    "total": 52,
+    "protectedPass": 10,
+    "contractPass": 42,
+    "expectedRed": 0,
+    "unexpectedPass": 0,
+    "unexpectedFail": 0
+  },
+  "shapeValid": true,
+  "status": "PASS",
+  "touchedPathAudit": {
+    "trackedSourceDiff": [
+      "src/components/PitchDefender/RetroBlasterII.tsx",
+      "src/components/PitchDefender/retroBlasterEngine.ts"
+    ],
+    "untrackedSource": [
+      "src/components/PitchDefender/retroBlasterCurriculum.ts"
+    ]
+  },
+  "rows": [
+    {
+      "id": "P-01",
+      "group": "protected-baseline",
+      "contract": "exact shared product base is checked out",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "head": "2a773d5903d4558cee4c3b3c09a11659908cf575",
+        "originMaster": "2a773d5903d4558cee4c3b3c09a11659908cf575"
+      }
+    },
+    {
+      "id": "P-02",
+      "group": "protected-baseline",
+      "contract": "product source changes stay inside the exact R9a ceiling",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "tracked": [
+          "src/components/PitchDefender/RetroBlasterII.tsx",
+          "src/components/PitchDefender/retroBlasterEngine.ts"
+        ],
+        "untracked": [
+          "src/components/PitchDefender/retroBlasterCurriculum.ts"
+        ],
+        "expectedTracked": [
+          "src/components/PitchDefender/RetroBlasterII.tsx",
+          "src/components/PitchDefender/retroBlasterEngine.ts"
+        ],
+        "expectedUntracked": [
+          "src/components/PitchDefender/retroBlasterCurriculum.ts"
+        ]
+      }
+    },
+    {
+      "id": "P-03",
+      "group": "protected-baseline",
+      "contract": "canonical INTRO_ORDER is exact and unique",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "introOrder": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4",
+          "F4",
+          "B4",
+          "C5",
+          "A3",
+          "G3",
+          "E3",
+          "C3",
+          "D3",
+          "F3",
+          "B3"
+        ]
+      }
+    },
+    {
+      "id": "P-04",
+      "group": "protected-baseline",
+      "contract": "unlock thresholds remain exact for distinct sizes 2 through 14",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "thresholds": {
+          "2": 5,
+          "3": 7,
+          "4": 10,
+          "5": 13,
+          "6": 16,
+          "7": 20,
+          "8": 8,
+          "9": 10,
+          "10": 12,
+          "11": 14,
+          "12": 16,
+          "13": 18,
+          "14": 20
+        }
+      }
+    },
+    {
+      "id": "P-05",
+      "group": "protected-baseline",
+      "contract": "six protected source hashes remain exact while engine and shell intentionally change",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "expected": {
+          "engine": "219DD9F312349281B3555B3DC78D4BC47D34C9F0C1E145EFD41ACF65408E0405",
+          "shell": "8F7BF26EAD3FA57ACDA75A2DD557F08CED30F50E871B682D461317C1D7AC5C0F",
+          "types": "FE36957396DF11499A3508C89D773E419DB5767894F80F072B067EB3AE0AFDEB",
+          "family": "8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46",
+          "audio": "68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430",
+          "detector": "9ED5801EF0D19EC65C73B639A70F3E11A394ADE4562D0442D8B375F25A651CC2",
+          "renderer": "109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3",
+          "sibling": "CAA31FCE012E82DA1BD7E6DA2AEE5300522BD0450DEC1D293AAAA1FA6FE407C5"
+        },
+        "actual": {
+          "engine": "201C37698C81277184BC38DC73BAB7E3372EF22A43949E07BFE2B607DD598A0E",
+          "shell": "579F1990C42DB09F61F77141B47357EC8310D4047FA4B6D08AA91594F0A4E317",
+          "types": "FE36957396DF11499A3508C89D773E419DB5767894F80F072B067EB3AE0AFDEB",
+          "family": "8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46",
+          "audio": "68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430",
+          "detector": "9ED5801EF0D19EC65C73B639A70F3E11A394ADE4562D0442D8B375F25A651CC2",
+          "renderer": "109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3",
+          "sibling": "CAA31FCE012E82DA1BD7E6DA2AEE5300522BD0450DEC1D293AAAA1FA6FE407C5"
+        }
+      }
+    },
+    {
+      "id": "P-06",
+      "group": "protected-baseline",
+      "contract": "EAR and VOICE family keys remain separate",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "earKeyPresent": true,
+        "voiceKeyPresent": true
+      }
+    },
+    {
+      "id": "P-07",
+      "group": "protected-baseline",
+      "contract": "pure engine owns no browser storage or Web Lock I/O",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "forbiddenMatches": []
+      }
+    },
+    {
+      "id": "P-08",
+      "group": "protected-baseline",
+      "contract": "closed R8c identity-mask and request/ack seams remain present",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "r8cHooks": true
+      }
+    },
+    {
+      "id": "P-09",
+      "group": "protected-baseline",
+      "contract": "closed R8a RADIO CHECK remains readiness-only at base",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "radioCheckPresent": true
+      }
+    },
+    {
+      "id": "P-10",
+      "group": "protected-baseline",
+      "contract": "native Node Web Locks substrate is available and exclusive",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "node": "v24.14.0",
+        "order": [
+          "A-in",
+          "A-out",
+          "B-in",
+          "B-out"
+        ]
+      }
+    },
+    {
+      "id": "R-01",
+      "group": "policy-module",
+      "contract": "dedicated curriculum policy module exists",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "path": "src/components/PitchDefender/retroBlasterCurriculum.ts",
+        "exists": true
+      }
+    },
+    {
+      "id": "R-02",
+      "group": "policy-module",
+      "contract": "single symbolic product curriculum key is declared outside engine and shell",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "moduleHasKey": true,
+        "engineHasLiteral": false,
+        "shellHasLiteral": false
+      }
+    },
+    {
+      "id": "R-03",
+      "group": "fresh-start",
+      "contract": "absent zero-review learner starts with exactly C4,A4",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "actual": [
+          "C4",
+          "A4"
+        ],
+        "expected": [
+          "C4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "R-04",
+      "group": "session-resolution",
+      "contract": "builder receives an explicit resolved session roster",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "currentBuilderDerivesFromReviewStore": false
+      }
+    },
+    {
+      "id": "R-05",
+      "group": "migration",
+      "contract": "absent fresh migration",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": null,
+        "reviewed": [],
+        "productActual": [
+          "C4",
+          "A4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "R-06",
+      "group": "migration",
+      "contract": "corrupt fresh migration",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": "{bad",
+        "reviewed": [],
+        "productActual": [
+          "C4",
+          "A4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "R-07",
+      "group": "migration",
+      "contract": "legacy one-review floor reconstruction",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": null,
+        "reviewed": [
+          "C4"
+        ],
+        "productActual": [
+          "C4",
+          "A4",
+          "G4",
+          "E4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4"
+        ]
+      }
+    },
+    {
+      "id": "R-08",
+      "group": "migration",
+      "contract": "legacy five-prefix reconstruction",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": null,
+        "reviewed": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ],
+        "productActual": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ]
+      }
+    },
+    {
+      "id": "R-09",
+      "group": "migration",
+      "contract": "legacy non-prefix reviewed union",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": null,
+        "reviewed": [
+          "C4",
+          "B4"
+        ],
+        "productActual": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "B4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "B4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "B4"
+        ]
+      }
+    },
+    {
+      "id": "R-10",
+      "group": "migration",
+      "contract": "legacy no-C4 reviewed union",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": null,
+        "reviewed": [
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ],
+        "productActual": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4",
+          "G4",
+          "E4",
+          "D4"
+        ]
+      }
+    },
+    {
+      "id": "R-11",
+      "group": "migration",
+      "contract": "valid policy never reapplies legacy floor",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": "{\"revision\":1,\"unlockedNotes\":[\"C4\",\"A4\"]}",
+        "reviewed": [
+          "C4"
+        ],
+        "productActual": [
+          "C4",
+          "A4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "R-12",
+      "group": "migration",
+      "contract": "valid policy unions active-lane non-prefix review",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "raw": "{\"revision\":1,\"unlockedNotes\":[\"C4\",\"A4\"]}",
+        "reviewed": [
+          "D4"
+        ],
+        "productActual": [
+          "C4",
+          "A4",
+          "D4"
+        ],
+        "referenceExpected": [
+          "C4",
+          "A4",
+          "D4"
+        ],
+        "assertedExpected": [
+          "C4",
+          "A4",
+          "D4"
+        ]
+      }
+    },
+    {
+      "id": "R-13",
+      "group": "normalization",
+      "contract": "duplicates and unknown notes repair without relocking",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "input": [
+          "C4",
+          "A4",
+          "A4",
+          "H9"
+        ],
+        "productActual": {
+          "source": "policy",
+          "sessionRoster": [
+            "C4",
+            "A4"
+          ],
+          "durableRoster": [
+            "C4",
+            "A4"
+          ],
+          "extensionFields": {},
+          "needsWrite": true
+        },
+        "referenceNormalized": [
+          "C4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "R-14",
+      "group": "normalization",
+      "contract": "missing C4 or normalized size one is corrupt",
+      "expectation": "PASS",
+      "evidenceClass": "reference-oracle",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "missingAnchor": {
+          "source": "corrupt",
+          "sessionRoster": [
+            "C4",
+            "A4"
+          ],
+          "durableRoster": [],
+          "extensionFields": {},
+          "needsWrite": true
+        },
+        "sizeOne": {
+          "source": "corrupt",
+          "sessionRoster": [
+            "C4",
+            "A4"
+          ],
+          "durableRoster": [],
+          "extensionFields": {},
+          "needsWrite": true
+        }
+      }
+    },
+    {
+      "id": "R-15",
+      "group": "normalization",
+      "contract": "repairable unknown top-level fields survive normalized commits",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "merged": {
+          "record": {
+            "futureFlag": {
+              "x": 1
+            },
+            "revision": 1,
+            "unlockedNotes": [
+              "C4",
+              "A4",
+              "G4"
+            ]
+          },
+          "durableRoster": [
+            "C4",
+            "A4",
+            "G4"
+          ],
+          "extensionFields": {
+            "futureFlag": {
+              "x": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "R-16",
+      "group": "lane-law",
+      "contract": "curriculum breadth is product-global while review union is active-lane-only",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "singularKey": "retro_blaster_curriculum_v1",
+        "zeroReviewVoice": {
+          "source": "policy",
+          "sessionRoster": [
+            "C4",
+            "A4",
+            "G4",
+            "E4",
+            "D4"
+          ],
+          "durableRoster": [
+            "C4",
+            "A4",
+            "G4",
+            "E4",
+            "D4"
+          ],
+          "extensionFields": {},
+          "needsWrite": false
+        },
+        "voiceWithNonPrefixReview": {
+          "source": "policy",
+          "sessionRoster": [
+            "C4",
+            "A4",
+            "G4",
+            "E4",
+            "D4",
+            "B4"
+          ],
+          "durableRoster": [
+            "C4",
+            "A4",
+            "G4",
+            "E4",
+            "D4"
+          ],
+          "extensionFields": {},
+          "needsWrite": true
+        }
+      }
+    },
+    {
+      "id": "R-17",
+      "group": "cross-lane-demand",
+      "contract": "wide inherited VOICE exposure does not increase demand or bulk introductions",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "narrow": {
+          "roster": [
+            "C4",
+            "A4"
+          ],
+          "configuredDemandFloorMs": 1101,
+          "measuredFirstDemandFloorMs": 1101,
+          "requiredApmCeiling": 54.49591280653951,
+          "pendingIntroductionsAtLoad": 0
+        },
+        "wide": {
+          "roster": [
+            "C4",
+            "A4",
+            "G4",
+            "E4",
+            "D4"
+          ],
+          "configuredDemandFloorMs": 1101,
+          "measuredFirstDemandFloorMs": 1101,
+          "requiredApmCeiling": 54.49591280653951,
+          "pendingIntroductionsAtLoad": 0
+        },
+        "timingEqual": true,
+        "noBulkLoad": true,
+        "singleIntroductionPushSite": true,
+        "policyCanProduceWideVoice": true
+      }
+    },
+    {
+      "id": "R-18",
+      "group": "stale-tab",
+      "contract": "every write uses the exact origin-wide exclusive Web Lock",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "calls": [
+          {
+            "name": "retro-blaster-curriculum-v1",
+            "mode": "exclusive"
+          }
+        ],
+        "result": {
+          "ok": true,
+          "record": {
+            "revision": 1,
+            "unlockedNotes": [
+              "C4",
+              "A4"
+            ]
+          },
+          "durableRoster": [
+            "C4",
+            "A4"
+          ],
+          "extensionFields": {}
+        },
+        "writes": 1
+      }
+    },
+    {
+      "id": "R-19",
+      "group": "stale-tab",
+      "contract": "locked callback re-reads unions and writes synchronously",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "order": [
+          "lock-in",
+          "read",
+          "write",
+          "lock-out"
+        ],
+        "result": {
+          "ok": true,
+          "record": {
+            "revision": 1,
+            "unlockedNotes": [
+              "C4",
+              "A4",
+              "G4"
+            ]
+          },
+          "durableRoster": [
+            "C4",
+            "A4",
+            "G4"
+          ],
+          "extensionFields": {}
+        }
+      }
+    },
+    {
+      "id": "R-20",
+      "group": "stale-tab",
+      "contract": "no unlocked persistence fallback exists",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "result": {
+          "ok": false,
+          "durableRoster": [],
+          "extensionFields": {},
+          "reason": "locks-unavailable"
+        },
+        "reads": 0,
+        "writes": 0
+      }
+    },
+    {
+      "id": "R-21",
+      "group": "stale-tab",
+      "contract": "stale writers monotonically union rather than narrow durable state",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "trials": 100,
+        "firstA": 50,
+        "firstB": 50,
+        "finalLocked": [
+          "C4",
+          "A4",
+          "G4",
+          "E4"
+        ],
+        "unsafeFinal": [
+          "C4",
+          "A4",
+          "E4"
+        ],
+        "unsafeLostUpdate": true
+      }
+    },
+    {
+      "id": "R-22",
+      "group": "stale-tab",
+      "contract": "corrupt locked reread retains last repairable extension bag",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "merged": {
+          "record": {
+            "futureFlag": {
+              "retained": true
+            },
+            "revision": 1,
+            "unlockedNotes": [
+              "C4",
+              "A4",
+              "G4",
+              "E4"
+            ]
+          },
+          "durableRoster": [
+            "C4",
+            "A4",
+            "G4",
+            "E4"
+          ],
+          "extensionFields": {
+            "futureFlag": {
+              "retained": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "R-23",
+      "group": "lifecycle",
+      "contract": "queued lock request owns an AbortController and exact teardown",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "abortName": "AbortError",
+        "controllersInShell": 2
+      }
+    },
+    {
+      "id": "R-24",
+      "group": "lifecycle",
+      "contract": "normal readiness handoff preserves migration while teardown blocks resurrection",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "delayedLockLifecyclePresent": true,
+        "startGameDoesNotAbortSession": true
+      }
+    },
+    {
+      "id": "R-25",
+      "group": "engine-authority",
+      "contract": "immutable pending curriculum request exists in pure engine state",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "pending": {
+          "requestId": "r9a-pending:curriculum:0",
+          "gameId": "r9a-pending",
+          "note": "G4",
+          "sessionCandidateRoster": [
+            "C4",
+            "A4",
+            "G4"
+          ]
+        },
+        "roster": [
+          "C4",
+          "A4"
+        ]
+      }
+    },
+    {
+      "id": "R-26",
+      "group": "engine-authority",
+      "contract": "request identity uses gameId and deterministic curriculum serial",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "requestId": "r9a-serial:curriculum:0",
+        "nextSerial": 1
+      }
+    },
+    {
+      "id": "R-27",
+      "group": "engine-authority",
+      "contract": "threshold emits request before roster streak or ceremony mutation",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "roster": [
+          "C4",
+          "A4"
+        ],
+        "streak": 5,
+        "pendingIntroductions": [],
+        "events": [
+          "grade",
+          "sfx",
+          "curriculumUnlockRequest"
+        ]
+      }
+    },
+    {
+      "id": "R-28",
+      "group": "engine-authority",
+      "contract": "exact next-active-tick ack alone commits unlock",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "roster": [
+          "C4",
+          "A4",
+          "G4"
+        ],
+        "streak": 0,
+        "introductions": [
+          "G4"
+        ],
+        "events": [
+          {
+            "kind": "unlock",
+            "note": "G4",
+            "inputMode": "click"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-29",
+      "group": "engine-authority",
+      "contract": "stale mismatched duplicate inactive and post-route acks are inert",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "wrongPending": {
+          "requestId": "r9a-ack-inert:curriculum:0",
+          "gameId": "r9a-ack-inert",
+          "note": "G4",
+          "sessionCandidateRoster": [
+            "C4",
+            "A4",
+            "G4"
+          ]
+        },
+        "inactivePending": {
+          "requestId": "r9a-ack-inert:curriculum:0",
+          "gameId": "r9a-ack-inert",
+          "note": "G4",
+          "sessionCandidateRoster": [
+            "C4",
+            "A4",
+            "G4"
+          ]
+        },
+        "duplicateEvents": [],
+        "postRouteGameId": "r9a-ack-after-route",
+        "postRoutePendingGameId": "r9a-ack-inert",
+        "postRouteEvents": []
+      }
+    },
+    {
+      "id": "R-30",
+      "group": "engine-authority",
+      "contract": "failed persistence preserves roster and streak and emits save-blocked only",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "roster": [
+          "C4",
+          "A4"
+        ],
+        "streak": 5,
+        "introductions": [],
+        "events": [
+          {
+            "kind": "curriculumSaveBlocked"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R-31",
+      "group": "engine-authority",
+      "contract": "aborted queued persistence is silent and cannot ack",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "abortCatchIsSilent": true
+      }
+    },
+    {
+      "id": "R-32",
+      "group": "unlock-order",
+      "contract": "unlock selects first uncovered canonical note, not roster length index",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "roster": [
+          "C4",
+          "A4",
+          "E4"
+        ],
+        "requested": "G4",
+        "candidate": [
+          "C4",
+          "A4",
+          "G4",
+          "E4"
+        ],
+        "referenceChoice": "G4"
+      }
+    },
+    {
+      "id": "R-33",
+      "group": "unlock-order",
+      "contract": "write succeeds before unlock event or NEW SIGNAL queue",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "durableBeforeAck": [
+          "C4",
+          "A4",
+          "G4"
+        ],
+        "eventsAfterAck": [
+          "unlock"
+        ],
+        "introductionsAfterAck": [
+          "G4"
+        ]
+      }
+    },
+    {
+      "id": "R-34",
+      "group": "recovery-status",
+      "contract": "failed unlock exposes exact non-modal save-paused status",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "statusPresent": true
+      }
+    },
+    {
+      "id": "R-35",
+      "group": "radio-check",
+      "contract": "RADIO CHECK roster derives dynamically from resolved session roster",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "currentStaticRoster": false
+      }
+    },
+    {
+      "id": "R-36",
+      "group": "radio-check",
+      "contract": "fresh readiness renders 2 controls, size 3 renders 3, and 4+ caps at 4",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "dynamicControlSource": true
+      }
+    },
+    {
+      "id": "R-37",
+      "group": "radio-check",
+      "contract": "out-of-range number key returns before preventDefault and dispatch",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "handler": "const onReadinessKey = (event: KeyboardEvent) => {\n      if (!/^[1-4]$/.test(event.key)) return\n      const note = radioCheckRoster[Number(event.key) - 1]\n      if (!note) return\n      event.preventDefault()\n      answerEarReadiness(note)\n    }\n    ",
+        "lookupIndex": 102,
+        "missingNoteReturnIndex": 161,
+        "preventDefaultIndex": 191,
+        "answerIndex": 214
+      }
+    },
+    {
+      "id": "R-38",
+      "group": "radio-check",
+      "contract": "VOICE readiness renders no EAR controls while consuming the same product roster",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "currentSessionRosterResolver": true
+      }
+    },
+    {
+      "id": "R-39",
+      "group": "proof-amendments",
+      "contract": "E1 row label honestly names explicit roster pass-through and selector proof",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "honestLabelPresent": true,
+        "obsoleteLabelPresent": false
+      }
+    },
+    {
+      "id": "R-40",
+      "group": "proof-amendments",
+      "contract": "R8c fixture no longer asserts four-note opening or exported INITIAL_UNLOCK",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "obsoleteInitialUnlockAssertion": false
+      }
+    },
+    {
+      "id": "R-41",
+      "group": "proof-amendments",
+      "contract": "R8a fixture binds bounded roster and pre-preventDefault negative",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "currentR9aAmendmentPresent": true
+      }
+    },
+    {
+      "id": "R-42",
+      "group": "proof-amendments",
+      "contract": "family regression includes the R9a fixture as its own row",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "currentFamilyRowPresent": true
+      }
+    }
+  ]
+}

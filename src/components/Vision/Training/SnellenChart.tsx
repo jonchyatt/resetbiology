@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
+import { SpeechQueue } from '@/lib/vision/audioKit'
 
 interface SnellenChartProps {
   chartSize: string // "20/20", "20/40", etc.
@@ -185,6 +186,14 @@ export default function SnellenChart({
     getLetterChoices(CONFUSABLE_LETTERS[Math.floor(Math.random() * CONFUSABLE_LETTERS.length)])
   )
 
+  // Voice-out seam (T5b) — same SpeechQueue instance SessionRunner/engines use,
+  // so this legacy trainer speaks with the one educator voice.
+  const speechRef = useRef<SpeechQueue | null>(null)
+  useEffect(() => {
+    speechRef.current = new SpeechQueue()
+    return () => speechRef.current?.stop()
+  }, [])
+
   // Reset chart when resetTrigger or exerciseType changes
   useEffect(() => {
     if (progressionMode === 'single') {
@@ -296,9 +305,7 @@ export default function SnellenChart({
   // Generate new chart
   const regenerateChart = useCallback(() => {
     // Cancel any speech to prevent audio overlap
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel()
-    }
+    speechRef.current?.stop()
     setChartData(generateChartData(exerciseType))
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
@@ -408,14 +415,8 @@ export default function SnellenChart({
   }
 
   const speak = (text: string) => {
-    if ('speechSynthesis' in window) {
-      // Cancel any ongoing speech to prevent audio overlap/looping
-      window.speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.rate = 1.0
-      utterance.pitch = 1.0
-      window.speechSynthesis.speak(utterance)
-    }
+    // interrupt: true preserves the old cancel-then-speak semantics
+    speechRef.current?.speak(text, { interrupt: true })
   }
 
   // Get base size for letters/E based on device - SMALLER test text, bigger buttons

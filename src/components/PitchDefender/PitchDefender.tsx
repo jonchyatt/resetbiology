@@ -994,6 +994,20 @@ export default function PitchDefender() {
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Pixel Space Invaders. Sing any alien&apos;s note. EASY + TRUE.</div>
               </a>
               <a
+                href="/pitch-defender/retro-2"
+                title="Rebuilt arcade ear-trainer — sing or key the note carried by each descending alien."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(217, 70, 239, 0.16))',
+                  color: '#a5f3fc',
+                  border: '2px solid rgba(34, 211, 238, 0.48)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Retro Blaster II
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Rebuilt arcade ear-trainer. Sing or key each alien&apos;s note.</div>
+              </a>
+              <a
                 href="/pitch-defender/note-runner"
                 title="Notes scroll right-to-left along the staff. When a note reaches the target zone, scrolling pauses until you sing the correct pitch. Self-paced accuracy drill — no time pressure."
                 className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"

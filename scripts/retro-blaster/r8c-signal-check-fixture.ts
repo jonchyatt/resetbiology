@@ -632,12 +632,21 @@ check('R8C-29', 'negative skew and timeout cancellation re-arm cadence without a
 
 check('R8C-30', 'machine answer seam drives input only and player-facing invariance is independent', () => {
   assert.equal(noteSwapEqual, true)
+  const masked = selectFirst(makeState({ reviewed: true, gameId: 'r8c-identity-silence' })).state
+  const maskedView = engine.toViewState(masked, 'click', false)
+  assert.equal(maskedView.identityMaskActive, true)
+  assert.equal(maskedView.activeAttack?.note, '?')
+  assert(maskedView.noteButtons.every(button => !button.active))
+  const guided = selectFirst(makeState({ wave: 1, reviewed: true, gameId: 'r8c-no-color-hint' })).state
+  const guidedBoundary = reachTelegraphBoundary(guided)
+  const noHintView = engine.toViewState(guidedBoundary.state, 'click', false)
+  assert(noHintView.noteButtons.every(button => !button.active))
   assert(source.shell.includes('data-retro-signal-check'))
   assert(source.shell.includes('data-retro-identity-mask'))
   assert(source.shell.includes('retroFormationState'))
   assert(source.shell.includes('retroSoulState'))
   assert(source.shell.includes('retroAudioReceipt'))
-  return { noteSwapWholeViewIndependent: noteSwapEqual, proofDatasetsPresent: true }
+  return { noteSwapWholeViewIndependent: noteSwapEqual, identityMasked: true, colorHintSilence: true, proofDatasetsPresent: true }
 })
 
 check('R8C-31', 'VOICE source meter and timeout eligibility remain unchanged', () => {
@@ -652,23 +661,55 @@ check('R8C-31', 'VOICE source meter and timeout eligibility remain unchanged', (
   return { cuePolicy: 'guided', audioHash: hashes.audio, detectorHash: hashes.detector }
 })
 
-check('R8C-32', 'four-note opening remains exact with no R9 curriculum state', () => {
-  assert.equal(engine.INITIAL_UNLOCK, 4)
-  assert.equal(source.shell.includes('INTRO_ORDER.slice(0, INITIAL_UNLOCK)'), true)
+check('R8C-32', 'fresh two-note curriculum contract replaces the four-note policy constant', () => {
+  const curriculumSource = readFileSync('src/components/PitchDefender/retroBlasterCurriculum.ts', 'utf8')
+  assert.equal('INITIAL_UNLOCK' in engine, false)
+  assert.equal(source.engine.includes('INITIAL_UNLOCK'), false)
+  assert.equal(curriculumSource.includes('INTRO_ORDER.slice(0, 2)'), true)
   assert.equal(`${source.engine}\n${source.shell}`.includes('retro_blaster_curriculum_v1'), false)
-  return { initialUnlock: engine.INITIAL_UNLOCK, notes: NOTES }
+  return { freshRoster: ['C4', 'A4'], policyModuleOnlyKey: true }
 })
 
-check('R8C-33', 'protected audio detector family routes assets dependencies and lockfiles are byte-identical', () => {
+check('R8C-33', 'protected Retro source audio detector family dependencies and lockfiles remain exact across sibling commits', () => {
+  const hubPath = 'src/components/PitchDefender/PitchDefender.tsx'
+  const authorizedHubCard = `              <a
+                href="/pitch-defender/retro-2"
+                title="Rebuilt arcade ear-trainer — sing or key the note carried by each descending alien."
+                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(217, 70, 239, 0.16))',
+                  color: '#a5f3fc',
+                  border: '2px solid rgba(34, 211, 238, 0.48)',
+                  fontFamily: 'monospace',
+                }}
+              >
+                Retro Blaster II
+                <div className="text-[11px] font-normal mt-0.5 opacity-70">Rebuilt arcade ear-trainer. Sing or key each alien&apos;s note.</div>
+              </a>
+`
   assert.equal(hashes.audio, PROTECTED_HASHES.audio)
   assert.equal(hashes.family, PROTECTED_HASHES.family)
   assert.equal(hashes.detector, PROTECTED_HASHES.detector)
-  const changedSource = git('diff', '--name-only', BASE, '--', 'src').split(/\r?\n/).filter(Boolean).sort()
+  const trackedSource = git('diff', '--name-only', BASE, '--', 'src/components/PitchDefender')
+    .split(/\r?\n/).filter(Boolean)
+  const untrackedSource = git('ls-files', '--others', '--exclude-standard', '--', 'src/components/PitchDefender')
+    .split(/\r?\n/).filter(Boolean)
+  const changedSource = [...new Set([...trackedSource, ...untrackedSource])].sort()
   assert.deepEqual(changedSource, [
+    'src/components/PitchDefender/PitchDefender.tsx',
     'src/components/PitchDefender/RetroBlasterII.tsx',
+    'src/components/PitchDefender/retroBlasterCurriculum.ts',
     'src/components/PitchDefender/retroBlasterEngine.ts',
+    'src/components/PitchDefender/retroBlasterPlacement.ts',
     'src/components/PitchDefender/retroBlasterRenderer.ts',
   ])
+  const currentHub = readFileSync(hubPath, 'utf8').replace(/\r\n/g, '\n')
+  const releaseBaseHub = execFileSync('git', ['show', `origin/master:${hubPath}`], { encoding: 'utf8' }).replace(/\r\n/g, '\n')
+  assert(currentHub.includes(authorizedHubCard), 'authorized Retro Blaster II hub card missing or changed')
+  const hubMatches = releaseBaseHub.includes(authorizedHubCard)
+    ? currentHub === releaseBaseHub
+    : currentHub.replace(authorizedHubCard, '') === releaseBaseHub
+  assert.equal(hubMatches, true, 'hub drift exceeds authorized Retro Blaster II card')
   assert.equal(git('diff', '--name-only', BASE, '--', 'package.json', 'package-lock.json'), '')
   return { changedSource, protected: PROTECTED_HASHES }
 })
