@@ -170,12 +170,64 @@ export function PeptideTracker() {
     return date;
   };
 
-  // "08:00" -> "8:00 AM" for the Weekly Schedule grid display.
+  // "08:00" -> "8:00 AM" for the Weekly Schedule grid + Today's-doses row.
+  // T1 R3: TOTAL — only a canonical 24h "HH:MM" formats; anything else
+  // (legacy "05:08 AM"-style rows already in the DB, garbage) is returned
+  // unchanged. Never NaN, never a silently-wrong "5:00".
   const formatTime12h = (time: string): string => {
+    if (!/^([01]?\d|2[0-3]):[0-5]\d$/.test(time)) return time;
     const [h, m] = time.split(":").map(Number);
     const period = h >= 12 ? "PM" : "AM";
     const h12 = h % 12 || 12;
-    return `${h12}:${(m || 0).toString().padStart(2, "0")} ${period}`;
+    return `${h12}:${m.toString().padStart(2, "0")} ${period}`;
+  };
+
+  // Derive today's dose slot(s) for a protocol from its timing string —
+  // canonical 24h "HH:MM", the protocol's own value, never the log moment
+  // (T1 R1/R5). Shared by generateTodaysDosesPreservingLogged (building
+  // pending rows) and logDose (recovering the slot a log satisfies).
+  const slotsForProtocol = (protocol: PeptideProtocol) => {
+    const lowerTiming = protocol.timing.toLowerCase();
+
+    // Check for explicit slash-separated times first (e.g., "08:00/20:00")
+    if (protocol.timing.includes("/")) {
+      const times = protocol.timing.split("/").map((t) => t.trim());
+      return times.map((time, idx) => ({
+        id: `slot-${idx}`,
+        time: time,
+        period: "any" as const,
+      }));
+    }
+
+    // Check for "twice daily" or "AM & PM"
+    if (
+      lowerTiming.includes("twice") ||
+      (lowerTiming.includes("am") && lowerTiming.includes("pm"))
+    ) {
+      return [
+        { id: "am", time: "08:00", period: "am" as const },
+        { id: "pm", time: "20:00", period: "pm" as const },
+      ];
+    }
+
+    // Check for single time in HH:MM format
+    const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/);
+    if (timeMatch) {
+      const hours = timeMatch[1].padStart(2, "0");
+      const minutes = timeMatch[2];
+      return [
+        { id: "0", time: `${hours}:${minutes}`, period: "any" as const },
+      ];
+    }
+
+    // Fall back to AM/PM keywords
+    const defaultTime = protocol.timing.includes("AM")
+      ? "08:00"
+      : protocol.timing.includes("PM")
+        ? "20:00"
+        : "12:00";
+
+    return [{ id: "0", time: defaultTime, period: "any" as const }];
   };
 
   // Presentation-only header framing — "your daily protocol" greeting + date.
@@ -1206,60 +1258,38 @@ export function PeptideTracker() {
     protocols: PeptideProtocol[],
     dayKey: string,
   ) => {
-    const slotsForProtocol = (protocol: PeptideProtocol) => {
-      const lowerTiming = protocol.timing.toLowerCase();
-
-      // Check for explicit slash-separated times first (e.g., "08:00/20:00")
-      if (protocol.timing.includes("/")) {
-        const times = protocol.timing.split("/").map((t) => t.trim());
-        return times.map((time, idx) => ({
-          id: `slot-${idx}`,
-          time: time,
-          period: "any" as const,
-        }));
-      }
-
-      // Check for "twice daily" or "AM & PM"
-      if (
-        lowerTiming.includes("twice") ||
-        (lowerTiming.includes("am") && lowerTiming.includes("pm"))
-      ) {
-        return [
-          { id: "am", time: "08:00", period: "am" as const },
-          { id: "pm", time: "20:00", period: "pm" as const },
-        ];
-      }
-
-      // Check for single time in HH:MM format
-      const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/);
-      if (timeMatch) {
-        const hours = timeMatch[1].padStart(2, "0");
-        const minutes = timeMatch[2];
-        return [
-          { id: "0", time: `${hours}:${minutes}`, period: "any" as const },
-        ];
-      }
-
-      // Fall back to AM/PM keywords
-      const defaultTime = protocol.timing.includes("AM")
-        ? "08:00"
-        : protocol.timing.includes("PM")
-          ? "20:00"
-          : "12:00";
-
-      return [{ id: "0", time: defaultTime, period: "any" as const }];
-    };
-
     setTodaysDoses((current) => {
       const activeProtocols = protocols.filter((protocol) => protocol.isActive);
       const activeIds = new Set(activeProtocols.map((protocol) => protocol.id));
 
-      const logged = current.filter(
-        (dose) =>
-          dose.completed &&
-          dose.dateKey === dayKey &&
-          activeIds.has(dose.peptideId),
-      );
+      // T1 R1: reload must render the protocol's own slot time, never
+      // whatever the dose's `time` field holds (that's the actual log
+      // moment, R4) — recover the slot from the protocol's own schedule,
+      // matched by am/pm the same way hasLoggedForSlot does below. Falls
+      // back to whatever scheduledTime the dose already carried if the
+      // owning protocol is gone (deleted protocol, history preserved).
+      const logged = current
+        .filter(
+          (dose) =>
+            dose.completed &&
+            dose.dateKey === dayKey &&
+            activeIds.has(dose.peptideId),
+        )
+        .map((dose) => {
+          const protocol = protocols.find((p) => p.id === dose.peptideId);
+          if (!protocol) return dose;
+          const slots = slotsForProtocol(protocol);
+          const loggedHour = dose.actualTime
+            ? new Date(dose.actualTime).getHours()
+            : null;
+          const matched =
+            slots.find((slot) => {
+              if (slot.period === "am") return loggedHour !== null && loggedHour < 12;
+              if (slot.period === "pm") return loggedHour !== null && loggedHour >= 12;
+              return true;
+            }) ?? slots[0];
+          return matched ? { ...dose, scheduledTime: matched.time } : dose;
+        });
 
       const pendingMap = new Map(
         current
@@ -1513,10 +1543,6 @@ export function PeptideTracker() {
     if (!selectedProtocol) return;
 
     const now = new Date();
-    const currentTime = now.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
 
     // Get user's local date components
     const year = now.getFullYear();
@@ -1525,6 +1551,23 @@ export function PeptideTracker() {
     const hours = String(now.getHours()).padStart(2, "0");
     const minutes = String(now.getMinutes()).padStart(2, "0");
     const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    // T1 R4: canonical 24h "HH:MM" for the log moment — this is what the
+    // `time` field on the dose POST means (the log moment), never the
+    // protocol's scheduled slot.
+    const loggedTime24h = `${hours}:${minutes}`;
+
+    // T1 R1: the row this log satisfies keeps the protocol's OWN slot time,
+    // never the log moment. Recover it from the pending row being replaced
+    // (the normal path); fall back to the protocol's own schedule for the
+    // unscheduled-override path where there's no pending row id.
+    const pendingSlot = todaysDoses.find(
+      (dose) => dose.id === selectedProtocol.scheduledDoseId,
+    );
+    const scheduledTime =
+      pendingSlot?.scheduledTime ??
+      slotsForProtocol(selectedProtocol)[0]?.time ??
+      loggedTime24h;
 
     // Save dose to database
     try {
@@ -1535,7 +1578,7 @@ export function PeptideTracker() {
         body: JSON.stringify({
           protocolId: selectedProtocol.id,
           dosage: selectedProtocol.dosage,
-          time: currentTime,
+          time: loggedTime24h,
           notes: doseNotes || null,
           sideEffects:
             doseSideEffects.length > 0 ? doseSideEffects.join(", ") : null,
@@ -1557,7 +1600,7 @@ export function PeptideTracker() {
         const newDose: DoseEntry = {
           id: data.dose?.id || `${selectedProtocol.id}-logged-${Date.now()}`,
           peptideId: selectedProtocol.id,
-          scheduledTime: currentTime,
+          scheduledTime,
           actualTime: now.toISOString(),
           completed: true,
           notes: doseNotes || undefined,

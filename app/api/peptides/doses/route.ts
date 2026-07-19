@@ -127,7 +127,11 @@ export async function POST(request: Request) {
           notes: protocol.notes
         },
         dosage,
-        time: time || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        // T1 R4: never fabricate a time server-side — server tz != member
+        // tz. Client sends canonical 24h "HH:MM" derived from the log
+        // moment; if absent, store null and let the UI render from the
+        // ISO `doseDate` timestamp instead (R2).
+        time: time || null,
         notes: notes || null,
         sideEffects: sideEffects || null,
         doseDate: doseDate ? new Date(doseDate) : new Date(),
