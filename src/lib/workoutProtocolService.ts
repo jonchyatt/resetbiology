@@ -166,8 +166,18 @@ export const summarizeAssignmentPlan = (plan?: AssignmentPlan) => {
   };
 };
 
+// F4.1: getAvailableWorkoutProtocols (a read endpoint) called this on every
+// GET, running N upserts per page load. Module-level cached promise makes the
+// upsert pass run at most once per server process -- later calls just await
+// the already-resolved promise, zero additional Prisma calls.
+// ponytail: process-lifetime cache, no TTL/invalidation -- curated protocols
+// are static seed data, not user-editable. Restart the process to reseed.
+let seedPromise: Promise<void> | null = null;
+
 export const ensureCuratedWorkoutProtocols = async () => {
-  await Promise.all(
+  if (seedPromise) return seedPromise;
+
+  seedPromise = Promise.all(
     curatedWorkoutProtocols.map(async (protocol: CuratedWorkoutProtocol) => {
       await prisma.workoutProtocol.upsert({
         where: { slug: protocol.slug },
@@ -205,7 +215,14 @@ export const ensureCuratedWorkoutProtocols = async () => {
         },
       });
     })
-  );
+  ).then(() => undefined);
+
+  try {
+    await seedPromise;
+  } catch (err) {
+    seedPromise = null; // allow a later call to retry instead of caching a rejection forever
+    throw err;
+  }
 };
 
 export const getAvailableWorkoutProtocols = async (userId: string) => {

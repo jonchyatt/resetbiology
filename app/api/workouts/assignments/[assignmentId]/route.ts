@@ -94,9 +94,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ as
     }
 
     const summary = summarizeAssignmentPlan(plan);
-    const nextIndex =
-      plan.sessions.findIndex((session) => session.status === 'planned' || session.status === 'in-progress') ??
-      plan.sessions.length;
+    // F4.8: findIndex always returns a number (-1 when not found, never null/
+    // undefined), so `?? plan.sessions.length` here was dead -- the real
+    // "not found" fallback already lives in the `nextIndex > -1 ? ... : ...`
+    // guard below where currentSessionIndex is assigned.
+    const nextIndex = plan.sessions.findIndex(
+      (session) => session.status === 'planned' || session.status === 'in-progress'
+    );
 
     const updated = await prisma.workoutAssignment.update({
       where: { id: assignment.id },

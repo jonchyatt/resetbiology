@@ -1070,7 +1070,9 @@ const WORKOUT_PROTOCOLS = [
     summary: 'Comprehensive joint health routine combining controlled articular rotations (CARs), dynamic stretching, and joint-specific movements for longevity.',
     goal: 'Maintain and improve joint range of motion and health',
     level: 'all',
-    durationWeeks: 0, // Ongoing
+    durationWeeks: 0, // F4.7: intentional sentinel, not a bug -- this protocol is a
+    // daily-practice routine with no fixed end date. The UI (WorkoutTracker) already
+    // renders "Ongoing" for durationWeeks 0/null; do not backfill a numeric week count.
     sessionsPerWeek: 7,
     tags: ['mobility', 'joints', 'flexibility', 'longevity', 'daily-practice'],
     focusAreas: ['joints', 'mobility', 'flexibility', 'injury-prevention'],
