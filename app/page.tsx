@@ -26,7 +26,11 @@ export default async function Home() {
         Free. Funded by the Satori Living Foundation. {/* src: LMP §00 */}
       </aside>
 
-      <section className="border-b border-white/10 px-4 py-20 sm:py-28 lg:py-36">
+      <section className="relative overflow-hidden border-b border-white/10 px-4 py-20 sm:py-28 lg:py-36">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(63,191,181,0.14),transparent_70%)]"
+        />
         <div className="mx-auto max-w-5xl">
           <div className="max-w-4xl">
             <p className="mb-6 text-sm font-semibold tracking-[0.12em] text-primary-300">RESET BIOLOGY</p>
@@ -49,28 +53,31 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="px-4 py-20 sm:py-28">
+      <section className="bg-slate-900/40 px-4 py-20 sm:py-28">
         <div className="mx-auto max-w-5xl">
           <div className="max-w-2xl">
             <h2 className="text-balance text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">How it works</h2>
           </div>
-          <ol className="mt-12 divide-y divide-white/10 border-y border-white/10">
-            <li className="grid gap-4 py-8 sm:grid-cols-[9rem_1fr] sm:gap-8">
-              <h3 className="text-lg font-semibold text-primary-300">Tell us where you are</h3>
-              <p className="max-w-2xl text-pretty leading-7 text-slate-300">
-                Begin with the intake at /get-started. {/* src: LMP §00 */}
+          <ol className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6">
+            <li className="rounded-xl border border-white/10 p-6">
+              <span className="text-sm font-semibold tracking-[0.08em] text-primary-300/60">01</span>
+              <h3 className="mt-2 text-lg font-semibold text-primary-300">Tell us where you are</h3>
+              <p className="mt-3 text-pretty leading-7 text-slate-300">
+                Begin with a short intake — about two minutes. {/* src: LMP §00 */}
               </p>
             </li>
-            <li className="grid gap-4 py-8 sm:grid-cols-[9rem_1fr] sm:gap-8">
-              <h3 className="text-lg font-semibold text-primary-300">Work your day</h3>
-              <div className="max-w-2xl space-y-3 text-pretty leading-7 text-slate-300">
+            <li className="rounded-xl border border-white/10 p-6">
+              <span className="text-sm font-semibold tracking-[0.08em] text-primary-300/60">02</span>
+              <h3 className="mt-2 text-lg font-semibold text-primary-300">Work your day</h3>
+              <div className="mt-3 space-y-3 text-pretty leading-7 text-slate-300">
                 <p>Use the daily check-in, nutrition, breath, mind training, and journal. {/* src: LMP §2.2 */}</p>
                 <p>Your data lives in your own Google Drive. {/* src: LMP §00 */}</p>
               </div>
             </li>
-            <li className="grid gap-4 py-8 sm:grid-cols-[9rem_1fr] sm:gap-8">
-              <h3 className="text-lg font-semibold text-primary-300">Fair access</h3>
-              <div className="max-w-2xl space-y-3 text-pretty leading-7 text-slate-300">
+            <li className="rounded-xl border border-white/10 p-6">
+              <span className="text-sm font-semibold tracking-[0.08em] text-primary-300/60">03</span>
+              <h3 className="mt-2 text-lg font-semibold text-primary-300">Fair access</h3>
+              <div className="mt-3 space-y-3 text-pretty leading-7 text-slate-300">
                 <p>For members whose path includes peptides, we connect you to a member-owned co-op run by an independent licensed provider. {/* src: LMP §2.2 */}</p>
                 <p>Reset Biology sells nothing and takes no payment. {/* src: LMP §2.2 */}</p>
               </div>
