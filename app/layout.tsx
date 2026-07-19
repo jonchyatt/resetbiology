@@ -4,11 +4,17 @@ import { Header } from '@/components/Navigation/Header';
 import { Footer } from '@/components/Navigation/Footer';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
 import { ToastProvider } from '@/components/ui/Toast';
+import { auth0 } from '@/lib/auth0';
 import './globals.css';
 
 export const metadata = { title: 'ResetBiology' };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Server-side session read so Auth0Provider can seed useUser()'s SWR cache
+  // with the initial user on first paint — without this the client hook
+  // never resolves an authenticated user (see ClientAuth0Provider.tsx).
+  const session = await auth0.getSession();
+
   return (
     <html lang="en">
       <head>
@@ -27,7 +33,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           style={{ height: 'env(safe-area-inset-top, 0px)' }}
           aria-hidden="true"
         />
-        <ClientAuth0Provider>
+        <ClientAuth0Provider user={session?.user}>
 <ToastProvider>
             <Header />
             {children}
