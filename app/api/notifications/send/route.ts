@@ -390,13 +390,8 @@ async function sendVisionReminders() {
 
       if (!reminder.due || !reminder.reminderInstant) continue
 
-      // Cast: isVisionSessionCompletedToday's prisma param is typed
-      // `(args: unknown) => Promise<unknown>` (R1a sibling file, out of
-      // scope here) which the real PrismaClient's findFirst signature
-      // doesn't structurally satisfy under strict contravariant checking.
-      // Runtime behavior is correct — only the declared type is too narrow.
       const completedToday = await isVisionSessionCompletedToday(
-        prisma as unknown as Parameters<typeof isVisionSessionCompletedToday>[0],
+        prisma,
         enrollment.id,
         reminder.week,
         reminder.day,

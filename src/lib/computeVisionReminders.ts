@@ -15,6 +15,7 @@
 
 import { fromZonedTime } from 'date-fns-tz'
 import { getTodaySession, effectiveStartDate, type DailySession } from '@/data/visionProtocols'
+import type { PrismaClient } from '@prisma/client'
 
 export interface VisionEnrollmentInput {
   startDate: Date | string
@@ -91,7 +92,7 @@ function estimatedMinutes(session: DailySession): number {
  * correctness here — kept for a future caller that wants an extra guard.
  */
 export async function isVisionSessionCompletedToday(
-  prisma: { visionDailySession: { findFirst: (args: unknown) => Promise<unknown> } },
+  prisma: Pick<PrismaClient, 'visionDailySession'>,
   enrollmentId: string,
   week: number,
   day: number,
