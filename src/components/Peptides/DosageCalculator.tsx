@@ -348,29 +348,37 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     setSelectedTimes(prev => prev.filter(t => t !== time));
   };
 
-  const formatScheduleString = (type: string, days: string[], times: string[]): string => {
-    let dayStr: string;
-
+  // Bare schedule-type label ("Daily", "3x per week", "Mon/Wed/Fri", ...)
+  // with NO time suffix — this is the value that gets PERSISTED as
+  // protocol.frequency. Times live in their own `timing` field already, so
+  // baking them into frequency too was pure duplication. It also broke the
+  // Edit Protocol modal's frequency <select>, whose options are these bare
+  // labels: a stored "Daily 08:00" never matches the "Daily" option, so
+  // re-opening Edit always showed "Select frequency..." for anything just
+  // created here (confirmed live 2026-07-19, matches the known "row 23
+  // edit-modal frequency not preselected" finding). Edit's own save path
+  // already writes the bare label — this makes Create match it.
+  const scheduleDayLabel = (type: string, days: string[]): string => {
     switch (type) {
       case 'daily':
-        dayStr = 'Daily';
-        break;
+        return 'Daily';
       case 'everyOtherDay':
-        dayStr = 'Every other day';
-        break;
+        return 'Every other day';
       case 'monFri':
-        dayStr = 'Mon-Fri';
-        break;
+        return 'Mon-Fri';
       case 'custom':
-        dayStr = days.length === 7
+        return days.length === 7
           ? 'Daily'
           : days.length === 5 && !days.includes('Sat') && !days.includes('Sun')
           ? 'Mon-Fri'
           : days.join('/');
-        break;
       default:
-        dayStr = 'Daily';
+        return 'Daily';
     }
+  };
+
+  const formatScheduleString = (type: string, days: string[], times: string[]): string => {
+    const dayStr = scheduleDayLabel(type, days);
 
     const timeStr = times.join('/');
     return `${dayStr} ${timeStr}`;
@@ -427,7 +435,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         schedule: {
           days: daysToSave,
           times: selectedTimes,
-          frequency: formatScheduleString(scheduleType, daysToSave, selectedTimes)
+          frequency: scheduleDayLabel(scheduleType, daysToSave)
         },
         duration,
         vialAmount: `${inputs.peptideAmount}mg`,

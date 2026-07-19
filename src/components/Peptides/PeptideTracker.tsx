@@ -1244,6 +1244,14 @@ export function PeptideTracker() {
             // Don't fail the whole protocol creation if preference save fails
           }
 
+          // Bug fix: the preference row above saves fine server-side, but
+          // the bell-icon color reads the local protocolNotifications map
+          // (set only by fetchNotificationPreferences, at bootstrap or from
+          // the notification modal's own save). Without this refresh a
+          // freshly-created protocol shows a gray/disabled bell even though
+          // reminders ARE enabled in the database — re-sync it here.
+          fetchNotificationPreferences();
+
           if (protocolData.notifications.pushEnabled) {
             setupPushSubscription().catch((pushError) => {
               console.warn(
