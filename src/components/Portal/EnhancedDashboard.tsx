@@ -614,7 +614,7 @@ export function EnhancedDashboard() {
             </h1>
             {currentStreak > 0 && (
               <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600/20 rounded-full border border-secondary-400/30">
-                <span className="text-secondary-300 font-medium">🔥 Current streak: {currentStreak} days</span>
+                <span className="text-secondary-300 font-medium">🔥 Current streak: {currentStreak} {currentStreak === 1 ? 'day' : 'days'}</span>
               </div>
             )}
             {reason ? (
@@ -636,7 +636,7 @@ export function EnhancedDashboard() {
                   Free Access — Satori Living Foundation Grant
                 </p>
                 <p className="text-amber-100/70 text-xs">
-                  Thanks to a generous grant, your access is free through September 2026. No payment required.
+                  Free access, funded by the Satori Living Foundation. No payment required.
                 </p>
               </div>
             </div>
@@ -669,10 +669,10 @@ export function EnhancedDashboard() {
                     Claim Your Free Access — Satori Living Foundation Grant
                   </h3>
                   <p className="text-gray-200 mb-1">
-                    Thanks to a generous grant, register free and get 6 months of full access — no card required.
+                    Free access, funded by the Satori Living Foundation — no card required.
                   </p>
                   <p className="text-sm text-gray-300">
-                    Full subscriber access through September 2026
+                    Full subscriber access, free
                   </p>
                 </div>
 

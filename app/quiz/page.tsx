@@ -767,32 +767,7 @@ export default function QuizPage() {
                 )}
               </div>
 
-              {false && quiz.peptideChoice !== null && (
-                <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 border border-primary-400/40 rounded-lg p-6 animate-fade-in">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center">
-                      <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-white font-bold text-lg mb-2">Additional resources</h3>
-                      <p className="text-gray-300 text-sm mb-4">
-                        [JON COPY NEEDED]
-                      </p>
-                      <button
-                        onClick={() => {
-                          updateQuiz({ watchedPeptideVideo: true })
-                          alert('Additional resources are not available yet.')
-                        }}
-                        className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-400 hover:to-secondary-400 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary-400/20"
-                      >
-                        {quiz.watchedPeptideVideo ? '✓ Watched Video' : 'Watch Video'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+              
             </div>
           )}
 
