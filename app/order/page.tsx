@@ -5,7 +5,7 @@ import { PortalHeader } from '@/components/Navigation/PortalHeader';
 
 export default function PeptideCoopPage() {
   return (
-    <div
+    <main
       className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black pt-28"
       style={{
         backgroundImage:
@@ -110,6 +110,6 @@ export default function PeptideCoopPage() {
           </div>
         </section>
       </div>
-    </div>
+    </main>
   );
 }

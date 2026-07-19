@@ -10,7 +10,7 @@ const steps = [
 
 export default function ProcessPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+    <main className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       <div className="relative z-10">
         <section className="pt-24 pb-16">
           <div className="container mx-auto px-4 text-center">
@@ -51,6 +51,6 @@ export default function ProcessPage() {
           </div>
         </section>
       </div>
-    </div>
+    </main>
   );
 }
