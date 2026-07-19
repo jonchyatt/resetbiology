@@ -23,6 +23,16 @@ const nextConfig: NextConfig = {
         destination: '/get-started',
         permanent: true,
       },
+      {
+        source: '/cellular-peptide',
+        destination: '/order',
+        permanent: true,
+      },
+      {
+        source: '/cellular-peptide/:slug',
+        destination: '/order',
+        permanent: true,
+      },
     ];
   },
   // Required for @react-three packages to work with Next.js

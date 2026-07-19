@@ -103,15 +103,6 @@ function GetStartedContent() {
             {submitResult.recommendedAction.message}
           </p>
 
-          {submitResult.selectedOffer && (
-            <div className="bg-gray-800/50 rounded-xl p-6 mb-8 border border-primary-500/20">
-              <p className="text-gray-400 text-sm mb-2">You selected</p>
-              <p className="text-white font-semibold text-lg capitalize">
-                {submitResult.selectedOffer.replace(/-/g, " ")} Plan
-              </p>
-            </div>
-          )}
-
           <div className="flex flex-col gap-4">
             <a
               href={submitResult.recommendedAction.url}
