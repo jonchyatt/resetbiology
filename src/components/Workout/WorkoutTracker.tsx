@@ -106,7 +106,7 @@ export function WorkoutTracker() {
     try {
       setHistoryLoading(true);
       setHistoryError(null);
-      const response = await fetch("/api/workouts/recent?limit=200", { cache: "no-store" });
+      const response = await fetch("/api/workouts/recent?limit=100", { cache: "no-store" });
       const data = await response.json();
       if (!data?.ok || !Array.isArray(data.items)) {
         throw new Error(data?.error || "Failed to load workouts");
@@ -196,10 +196,11 @@ export function WorkoutTracker() {
           if (typeof saved.sessionPreference === "string") setSessionPreference(saved.sessionPreference);
           if (typeof saved.recoveryFocus === "string") setRecoveryFocus(saved.recoveryFocus);
         }
+        setPrefsHydrated(true);
       } catch (error) {
         console.error("Load workout preferences error", error);
-      } finally {
-        setPrefsHydrated(true);
+        // ponytail: hydration failed, leave prefsHydrated false so the autosave
+        // effect below stays disabled and doesn't POST defaults over saved prefs.
       }
     })();
   }, []);
