@@ -47,13 +47,13 @@ const URL_RE = /https?:\/\/[^\s\]\)]+/;
 function CitationRef({ citation }: { citation: string }) {
   const urlMatch = citation.match(URL_RE);
   if (!urlMatch) {
-    return <span className="text-amber-300/60 italic">{citation || "uncited"}</span>;
+    return <span className="text-gray-500 italic">{citation || "uncited"}</span>;
   }
   const url = urlMatch[0];
   const before = citation.slice(0, urlMatch.index);
   const after = citation.slice((urlMatch.index ?? 0) + url.length);
   return (
-    <span className="text-amber-300/60 italic">
+    <span className="text-gray-500 italic">
       {before}
       <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary-300 hover:text-primary-200 underline not-italic">
         source
@@ -91,8 +91,8 @@ export function RegimenSourcePicker({ card, loading, onSelectDose }: RegimenSour
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-amber-300/80 font-medium">Cited dosing sources — pick one, then edit freely</p>
-      <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+      <p className="text-xs text-gray-500 italic">Cited dosing sources — pick one, then edit freely</p>
+      <div className="space-y-2">
         {doseRegimens.map((r, i) => {
           // Structured-value gate only — no free-text scraping. See
           // CITATION-GROUNDED DOSING CONTRACT above.
