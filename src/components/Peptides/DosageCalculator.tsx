@@ -239,6 +239,14 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   // This ref is set synchronously before any await, closing that gap.
   const savingInFlightRef = useRef(false);
   const [errors, setErrors] = useState<string[]>([]);
+  // T3: gate the error BANNER's render behind interaction, not its
+  // computation. `errors` still recomputes on every `inputs` change
+  // (including mount) so the disabled logic below is untouched. The latch
+  // is set ONLY inside real user event handlers (onChange/onBlur/submit)
+  // below — never from an effect — so it survives StrictMode's double
+  // mount-effect invoke and programmatic seeds (imported peptide, deep-link
+  // ?peptide=<slug>, defaultInputs) without tripping.
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
   const [isCustomPeptide, setIsCustomPeptide] = useState<boolean>(false);
   const [customPeptideName, setCustomPeptideName] = useState<string>("");
 
@@ -277,7 +285,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   // Live results
   const results = useMemo(() => calculateDosage(inputs), [inputs]);
 
-  // Validation
+  // Validation. Pure computation only — must NOT touch hasInteracted here.
+  // "effect ran more than once" is not a proxy for "the member touched
+  // something": StrictMode double-invokes this on the same mount, and
+  // programmatic setInputs calls (loadPeptideFromLibrary, imported-peptide
+  // seed, deep-link seed) re-run it too. The latch lives in the event
+  // handlers that actually originate from user input instead.
   useEffect(() => {
     const e: string[] = [];
     if (inputs.totalVolume <= 0) e.push("Total volume must be greater than 0 ml.");
@@ -294,6 +307,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   const handleSave = async () => {
     if (!onSaveToLog) return;
+    setHasInteracted(true);
     try {
       setIsSaving(true);
       await onSaveToLog({
@@ -364,6 +378,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   const handleProtocolSave = async () => {
     if (!onSaveProtocol || mode !== 'addProtocol') return;
+    setHasInteracted(true);
     // T2: a second click landing before the disabled attribute commits
     // cannot start a duplicate save.
     if (savingInFlightRef.current) return;
@@ -566,7 +581,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   return (
     <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-6 border border-primary-400/30 shadow-2xl">
       {/* Alerts */}
-      {errors.length > 0 && (
+      {hasInteracted && errors.length > 0 && (
         <div className="mb-4 bg-red-500/10 border border-red-400/30 text-red-200 rounded-lg p-3 flex items-start gap-2" role="alert">
           <AlertCircle className="w-5 h-5 mt-0.5" />
           <div>
@@ -591,7 +606,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <select
                   aria-label="Select peptide"
                   value={selectedPeptideId || peptideName}
-                  onChange={(event) => loadPeptideFromLibrary(event.target.value)}
+                  onChange={(event) => {
+                    setHasInteracted(true);
+                    loadPeptideFromLibrary(event.target.value);
+                  }}
                   className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 >
                   {/* H4: no item is auto-selected, so show an explicit
@@ -696,7 +714,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <span className="text-sm text-amber-300 font-medium">Total volume (ml)</span>
                 <select
                   aria-label="Total volume"
-                  onChange={(e) => setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) }))}
+                  onChange={(e) => {
+                    setHasInteracted(true);
+                    setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) }));
+                  }}
                   value={inputs.totalVolume}
                   className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all w-full"
                 >
@@ -711,7 +732,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   type="number"
                   aria-label="Peptide amount in vial"
                   value={inputs.peptideAmount}
-                  onChange={(e) => setInputs((s) => ({ ...s, peptideAmount: parseFloat(e.target.value) || 0 }))}
+                  onChange={(e) => {
+                    setHasInteracted(true);
+                    setInputs((s) => ({ ...s, peptideAmount: parseFloat(e.target.value) || 0 }));
+                  }}
                   placeholder="e.g., 10, 50, 100"
                   min="0"
                   step="any"
@@ -744,9 +768,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   inputMode="decimal"
                   placeholder={mode === 'addProtocol' ? 'enter dose' : undefined}
                   value={inputs.desiredDose === 0 ? "" : inputs.desiredDose}
-                  onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
+                  onChange={(e) => {
+                    setHasInteracted(true);
+                    setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }));
+                  }}
                   onBlur={(e) => {
                     if (e.target.value === "") return; // empty stays empty — no forced default
+                    setHasInteracted(true);
                     setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }));
                   }}
                   className="w-20 sm:w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
@@ -755,6 +783,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   aria-label="Dose unit"
                   value={inputs.doseUnit}
                   onChange={(e) => {
+                    setHasInteracted(true);
                     const nextUnit = e.target.value as "mg" | "mcg";
                     setInputs((s) => {
                       if (nextUnit === s.doseUnit) return s;
@@ -788,7 +817,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               max={unitMinMax.max}
               step={unitMinMax.step}
               value={inputs.desiredDose}
-              onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) }))}
+              onChange={(e) => {
+                setHasInteracted(true);
+                setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) }));
+              }}
               className="w-full accent-amber-400"
             />
             <div className="flex justify-between text-xs text-amber-300/70">
