@@ -818,64 +818,7 @@ export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainin
                 </button>
               </div>
 
-              {/* Secondary Actions */}
-              <div className="flex gap-2">
-                <button
-                  onClick={async () => {
-                    const sessions = await storage.getAllSessions(1)
-                    if (sessions.length > 0) {
-                      const csv = storage.exportToCSV([sessions[0]])
-                      const blob = new Blob([csv], { type: 'text/csv' })
-                      const url = URL.createObjectURL(blob)
-                      const a = document.createElement('a')
-                      a.href = url
-                      a.download = `breath-session-${new Date().toISOString().split('T')[0]}.csv`
-                      document.body.appendChild(a)
-                      a.click()
-                      document.body.removeChild(a)
-                      URL.revokeObjectURL(url)
-                    }
-                  }}
-                  className="flex-1 bg-slate-800/60 hover:bg-slate-700/60 text-gray-300 font-medium py-2.5 px-3 rounded-lg transition-colors text-xs border border-slate-600/40"
-                >
-                  Export CSV
-                </button>
-                <button
-                  onClick={async () => {
-                    try {
-                      const sessions = await storage.getAllSessions(1)
-                      if (sessions.length > 0) {
-                        const proceed = confirm(`Export to Google Sheets?\n\nThis will:\n• Create or update your breath training spreadsheet\n• Track progress across multiple sessions\n• Calculate trends and improvements\n\nNote: Requires Google account authorization.`)
-                        
-                        if (proceed) {
-                          // Call the Google Drive export API
-                          const response = await fetch('/api/breath/export', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ sessions })
-                          })
-                          
-                          const result = await response.json()
-                          
-                          if (response.ok) {
-                            alert(`✅ Export successful!\n\nYour breath training data has been exported to Google Sheets.\n\nSpreadsheet URL: ${result.spreadsheetUrl}`)
-                          } else {
-                            alert(`❌ Export failed: ${result.error}\n\nPlease make sure you're signed in with Google.`)
-                          }
-                        }
-                      }
-                    } catch (error) {
-                      alert('Export error: ' + error)
-                    }
-                  }}
-                  className="flex-1 bg-slate-800/60 hover:bg-slate-700/60 text-gray-300 font-medium py-2.5 px-3 rounded-lg transition-colors text-xs flex items-center justify-center gap-1.5 border border-slate-600/40"
-                >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-                  </svg>
-                  Export to Sheets
-                </button>
-              </div>
+
             </div>
             </div>
           </div>
