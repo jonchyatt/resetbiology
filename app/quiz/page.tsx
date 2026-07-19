@@ -344,13 +344,13 @@ export default function QuizPage() {
                       <div className="text-primary-300 font-bold text-2xl mb-2">Level {quiz.guidanceLevel || 5}</div>
                       <div className="text-gray-300 text-sm">
                         {quiz.guidanceLevel && quiz.guidanceLevel <= 3 && (
-                          "Full IRB research protocol - told what to take and when to take it"
+                          "Structured guidance with clear next steps"
                         )}
                         {quiz.guidanceLevel && quiz.guidanceLevel >= 4 && quiz.guidanceLevel <= 7 && (
                           "Balanced approach - guidance with flexibility"
                         )}
                         {quiz.guidanceLevel && quiz.guidanceLevel >= 8 && (
-                          "I'm solid - just give me the peptides"
+                          "I'm solid - I prefer more independence"
                         )}
                       </div>
                     </div>
@@ -696,7 +696,7 @@ export default function QuizPage() {
             </div>
           )}
 
-          {/* Question 9: Superior Peptide Choice */}
+          {/* Question 9: Co-op connection interest */}
           {quiz.currentStep === 9 && (
             <div className="space-y-6">
               <div className="text-center mb-8">
@@ -707,7 +707,7 @@ export default function QuizPage() {
 
               <div className="mb-6">
                 <p className="text-xl text-gray-200 mb-6">
-                  Have you considered that you might naturally choose the superior peptide once you understand the difference?
+                  Would you like to learn how a co-op connection can fit into your path? {/* src: LMP §2.2 */}
                 </p>
 
                 <div className="space-y-4">
@@ -731,7 +731,7 @@ export default function QuizPage() {
                       </div>
                       <div>
                         <div className="text-white font-semibold text-lg">Yes</div>
-                        <div className="text-gray-400 text-sm">I'd like to understand the difference</div>
+                        <div className="text-gray-400 text-sm">I&apos;d like to learn about the co-op connection. {/* src: LMP §2.2 */}</div>
                       </div>
                     </div>
                   </button>
@@ -756,7 +756,7 @@ export default function QuizPage() {
                       </div>
                       <div>
                         <div className="text-white font-semibold text-lg">No</div>
-                        <div className="text-gray-400 text-sm">I'm already familiar with my options</div>
+                        <div className="text-gray-400 text-sm">Not right now</div>
                       </div>
                     </div>
                   </button>
@@ -767,8 +767,7 @@ export default function QuizPage() {
                 )}
               </div>
 
-              {/* Video Link - appears after selection */}
-              {quiz.peptideChoice !== null && (
+              {false && quiz.peptideChoice !== null && (
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 border border-primary-400/40 rounded-lg p-6 animate-fade-in">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center">
@@ -777,15 +776,14 @@ export default function QuizPage() {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-white font-bold text-lg mb-2">Learn About Retatrutide</h3>
+                      <h3 className="text-white font-bold text-lg mb-2">Additional resources</h3>
                       <p className="text-gray-300 text-sm mb-4">
-                        Discover why Retatrutide represents the next evolution in GLP-1 peptides and how it compares to other options.
+                        [JON COPY NEEDED]
                       </p>
                       <button
                         onClick={() => {
                           updateQuiz({ watchedPeptideVideo: true })
-                          // TODO: Open video modal/popup here
-                          alert('Video popup will be implemented - showing Retatrutide comparison')
+                          alert('Additional resources are not available yet.')
                         }}
                         className="bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-400 hover:to-secondary-400 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-primary-400/20"
                       >
