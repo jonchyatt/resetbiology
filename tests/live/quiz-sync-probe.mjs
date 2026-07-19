@@ -35,8 +35,10 @@ async function waitForPostCount(posts, count, label) {
   assert(posts.length >= count, `${label}: expected ${count} sync POST(s), saw ${posts.length}`)
 }
 
+const QUIZ_CARD = 'div.max-w-2xl.w-full'
+
 async function selectFirstChoice(page, step) {
-  const selected = await page.locator('button:not([disabled])').evaluateAll(buttons => {
+  const selected = await page.locator(`${QUIZ_CARD} button:not([disabled])`).evaluateAll(buttons => {
     const choice = buttons.find(button => !/^(Back|Next|See Your Personalized Results)/i.test(button.textContent?.trim() || ''))
     if (!choice) return false
     choice.click()
@@ -72,7 +74,7 @@ async function completeQuiz(page) {
     }
 
     await page.waitForTimeout(100)
-    const next = page.getByRole('button', {
+    const next = page.locator(QUIZ_CARD).getByRole('button', {
       name: step === 12 ? /See Your Personalized Results/i : /^Next$/i,
     })
 
