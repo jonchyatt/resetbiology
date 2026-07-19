@@ -118,6 +118,48 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
+// T2: optional browser-side push dance (permission request + SW ready +
+// subscribe). MUST NEVER be awaited from the durable-save path —
+// navigator.serviceWorker.ready never settles when no service worker is
+// registered for this scope (the observed hang: permission granted, no SW
+// registered). Called fire-and-forget after the protocol save has already
+// resolved; a hard timeout keeps the dangling promise from lingering.
+const PUSH_SETUP_TIMEOUT_MS = 5000;
+
+async function setupPushSubscription(): Promise<void> {
+  if (!("Notification" in window)) return;
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted" || !("serviceWorker" in navigator)) return;
+
+  const registration = await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise<never>((_, reject) =>
+      setTimeout(
+        () => reject(new Error("service worker not ready (timed out)")),
+        PUSH_SETUP_TIMEOUT_MS,
+      ),
+    ),
+  ]);
+
+  const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+  if (!vapidKey) {
+    console.error("❌ VAPID public key not configured");
+    return;
+  }
+  const applicationServerKey = urlBase64ToUint8Array(vapidKey);
+
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: applicationServerKey as BufferSource,
+  });
+
+  await fetch("/api/notifications/subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ subscription: subscription.toJSON() }),
+  });
+}
+
 interface PeptideProtocol {
   id: string;
   name: string;
@@ -138,7 +180,9 @@ interface PeptideProtocol {
 interface DoseEntry {
   id: string;
   peptideId: string;
-  scheduledTime: string;
+  // T2 FINDING 1: the server can store `time: null` — scheduledTime is
+  // sourced from it (see fetchTodaysDoses) so it's genuinely nullable here.
+  scheduledTime: string | null;
   actualTime?: string;
   completed: boolean;
   notes?: string;
@@ -170,12 +214,64 @@ export function PeptideTracker() {
     return date;
   };
 
-  // "08:00" -> "8:00 AM" for the Weekly Schedule grid display.
+  // "08:00" -> "8:00 AM" for the Weekly Schedule grid + Today's-doses row.
+  // T1 R3: TOTAL — only a canonical 24h "HH:MM" formats; anything else
+  // (legacy "05:08 AM"-style rows already in the DB, garbage) is returned
+  // unchanged. Never NaN, never a silently-wrong "5:00".
   const formatTime12h = (time: string): string => {
+    if (!/^([01]?\d|2[0-3]):[0-5]\d$/.test(time)) return time;
     const [h, m] = time.split(":").map(Number);
     const period = h >= 12 ? "PM" : "AM";
     const h12 = h % 12 || 12;
-    return `${h12}:${(m || 0).toString().padStart(2, "0")} ${period}`;
+    return `${h12}:${m.toString().padStart(2, "0")} ${period}`;
+  };
+
+  // Derive today's dose slot(s) for a protocol from its timing string —
+  // canonical 24h "HH:MM", the protocol's own value, never the log moment
+  // (T1 R1/R5). Shared by generateTodaysDosesPreservingLogged (building
+  // pending rows) and logDose (recovering the slot a log satisfies).
+  const slotsForProtocol = (protocol: PeptideProtocol) => {
+    const lowerTiming = protocol.timing.toLowerCase();
+
+    // Check for explicit slash-separated times first (e.g., "08:00/20:00")
+    if (protocol.timing.includes("/")) {
+      const times = protocol.timing.split("/").map((t) => t.trim());
+      return times.map((time, idx) => ({
+        id: `slot-${idx}`,
+        time: time,
+        period: "any" as const,
+      }));
+    }
+
+    // Check for "twice daily" or "AM & PM"
+    if (
+      lowerTiming.includes("twice") ||
+      (lowerTiming.includes("am") && lowerTiming.includes("pm"))
+    ) {
+      return [
+        { id: "am", time: "08:00", period: "am" as const },
+        { id: "pm", time: "20:00", period: "pm" as const },
+      ];
+    }
+
+    // Check for single time in HH:MM format
+    const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/);
+    if (timeMatch) {
+      const hours = timeMatch[1].padStart(2, "0");
+      const minutes = timeMatch[2];
+      return [
+        { id: "0", time: `${hours}:${minutes}`, period: "any" as const },
+      ];
+    }
+
+    // Fall back to AM/PM keywords
+    const defaultTime = protocol.timing.includes("AM")
+      ? "08:00"
+      : protocol.timing.includes("PM")
+        ? "20:00"
+        : "12:00";
+
+    return [{ id: "0", time: defaultTime, period: "any" as const }];
   };
 
   // Presentation-only header framing — "your daily protocol" greeting + date.
@@ -311,7 +407,10 @@ export function PeptideTracker() {
     [todayKey],
   );
 
-  const parseTimeToMinutes = useCallback((time: string) => {
+  // T2 FINDING 1: time can be null (server stores `time: time || null`) —
+  // never crash, just sort it to the end.
+  const parseTimeToMinutes = useCallback((time: string | null | undefined) => {
+    if (typeof time !== "string") return 24 * 60;
     const [hoursStr, minutesStr] = time.split(":");
     const hours = Number.parseInt(hoursStr, 10);
     const minutes = Number.parseInt(minutesStr ?? "0", 10);
@@ -328,17 +427,18 @@ export function PeptideTracker() {
           parseTimeToMinutes(b.scheduledTime),
       );
 
+    // T2 FINDING 1: prefer the dose's own ISO timestamp (contract R2);
+    // parseTimeToMinutes is only evaluated as a fallback when actualTime is
+    // absent, so a null/invalid scheduledTime never reaches it eagerly.
     const completed = todaysDoses
       .filter((dose) => dose.completed)
       .sort((a, b) => {
-        const fallbackA = parseTimeToMinutes(a.scheduledTime) * 60 * 1000;
-        const fallbackB = parseTimeToMinutes(b.scheduledTime) * 60 * 1000;
         const timeA = a.actualTime
           ? new Date(a.actualTime).getTime()
-          : fallbackA;
+          : parseTimeToMinutes(a.scheduledTime) * 60 * 1000;
         const timeB = b.actualTime
           ? new Date(b.actualTime).getTime()
-          : fallbackB;
+          : parseTimeToMinutes(b.scheduledTime) * 60 * 1000;
         return timeB - timeA;
       });
 
@@ -1092,46 +1192,22 @@ export function PeptideTracker() {
       if (data.success) {
         const protocolId = data.protocol.id;
 
-        // Set up notifications if enabled
+        // T2 durable-save success boundary: the protocol POST above is the
+        // save. Notification preferences are persisted server-side here too
+        // (still part of the durable save — awaited, but its own try/catch
+        // so a failure here can't fail protocol creation). The browser-side
+        // permission/SW/push-subscribe dance is OPTIONAL and fire-and-forget
+        // (setupPushSubscription, not awaited) — it must never gate this
+        // function's return, because navigator.serviceWorker.ready never
+        // settles when no service worker is registered (the observed hang:
+        // permission granted, no SW, modal spins "Adding Protocol..."
+        // forever even though the POST above already returned 200).
         if (
           protocolData.notifications &&
           (protocolData.notifications.pushEnabled ||
             protocolData.notifications.emailEnabled)
         ) {
           try {
-            // Request push permission if push is enabled
-            if (
-              protocolData.notifications.pushEnabled &&
-              "Notification" in window
-            ) {
-              const permission = await Notification.requestPermission();
-              if (permission === "granted" && "serviceWorker" in navigator) {
-                // Subscribe to push
-                const registration = await navigator.serviceWorker.ready;
-
-                // Convert VAPID key to proper format
-                const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-                if (!vapidKey) {
-                  console.error("❌ VAPID public key not configured");
-                  return;
-                }
-                const applicationServerKey = urlBase64ToUint8Array(vapidKey);
-
-                const subscription = await registration.pushManager.subscribe({
-                  userVisibleOnly: true,
-                  applicationServerKey: applicationServerKey as BufferSource,
-                });
-
-                // Save subscription
-                await fetch("/api/notifications/subscribe", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ subscription: subscription.toJSON() }),
-                });
-              }
-            }
-
-            // Save notification preferences
             await fetch("/api/notifications/preferences", {
               method: "POST",
               credentials: "include",
@@ -1144,11 +1220,19 @@ export function PeptideTracker() {
                 timezone: getClientTimezone(),
               }),
             });
-
             console.log(`✅ Notification preferences saved for protocol`);
           } catch (notifError) {
-            console.error("Failed to setup notifications:", notifError);
-            // Don't fail the whole protocol creation if notifications fail
+            console.error("Failed to save notification preferences:", notifError);
+            // Don't fail the whole protocol creation if preference save fails
+          }
+
+          if (protocolData.notifications.pushEnabled) {
+            setupPushSubscription().catch((pushError) => {
+              console.warn(
+                "Push subscription setup skipped (non-blocking):",
+                pushError,
+              );
+            });
           }
         }
 
@@ -1206,60 +1290,38 @@ export function PeptideTracker() {
     protocols: PeptideProtocol[],
     dayKey: string,
   ) => {
-    const slotsForProtocol = (protocol: PeptideProtocol) => {
-      const lowerTiming = protocol.timing.toLowerCase();
-
-      // Check for explicit slash-separated times first (e.g., "08:00/20:00")
-      if (protocol.timing.includes("/")) {
-        const times = protocol.timing.split("/").map((t) => t.trim());
-        return times.map((time, idx) => ({
-          id: `slot-${idx}`,
-          time: time,
-          period: "any" as const,
-        }));
-      }
-
-      // Check for "twice daily" or "AM & PM"
-      if (
-        lowerTiming.includes("twice") ||
-        (lowerTiming.includes("am") && lowerTiming.includes("pm"))
-      ) {
-        return [
-          { id: "am", time: "08:00", period: "am" as const },
-          { id: "pm", time: "20:00", period: "pm" as const },
-        ];
-      }
-
-      // Check for single time in HH:MM format
-      const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/);
-      if (timeMatch) {
-        const hours = timeMatch[1].padStart(2, "0");
-        const minutes = timeMatch[2];
-        return [
-          { id: "0", time: `${hours}:${minutes}`, period: "any" as const },
-        ];
-      }
-
-      // Fall back to AM/PM keywords
-      const defaultTime = protocol.timing.includes("AM")
-        ? "08:00"
-        : protocol.timing.includes("PM")
-          ? "20:00"
-          : "12:00";
-
-      return [{ id: "0", time: defaultTime, period: "any" as const }];
-    };
-
     setTodaysDoses((current) => {
       const activeProtocols = protocols.filter((protocol) => protocol.isActive);
       const activeIds = new Set(activeProtocols.map((protocol) => protocol.id));
 
-      const logged = current.filter(
-        (dose) =>
-          dose.completed &&
-          dose.dateKey === dayKey &&
-          activeIds.has(dose.peptideId),
-      );
+      // T1 R1: reload must render the protocol's own slot time, never
+      // whatever the dose's `time` field holds (that's the actual log
+      // moment, R4) — recover the slot from the protocol's own schedule,
+      // matched by am/pm the same way hasLoggedForSlot does below. Falls
+      // back to whatever scheduledTime the dose already carried if the
+      // owning protocol is gone (deleted protocol, history preserved).
+      const logged = current
+        .filter(
+          (dose) =>
+            dose.completed &&
+            dose.dateKey === dayKey &&
+            activeIds.has(dose.peptideId),
+        )
+        .map((dose) => {
+          const protocol = protocols.find((p) => p.id === dose.peptideId);
+          if (!protocol) return dose;
+          const slots = slotsForProtocol(protocol);
+          const loggedHour = dose.actualTime
+            ? new Date(dose.actualTime).getHours()
+            : null;
+          const matched =
+            slots.find((slot) => {
+              if (slot.period === "am") return loggedHour !== null && loggedHour < 12;
+              if (slot.period === "pm") return loggedHour !== null && loggedHour >= 12;
+              return true;
+            }) ?? slots[0];
+          return matched ? { ...dose, scheduledTime: matched.time } : dose;
+        });
 
       const pendingMap = new Map(
         current
@@ -1513,10 +1575,6 @@ export function PeptideTracker() {
     if (!selectedProtocol) return;
 
     const now = new Date();
-    const currentTime = now.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
 
     // Get user's local date components
     const year = now.getFullYear();
@@ -1525,6 +1583,23 @@ export function PeptideTracker() {
     const hours = String(now.getHours()).padStart(2, "0");
     const minutes = String(now.getMinutes()).padStart(2, "0");
     const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    // T1 R4: canonical 24h "HH:MM" for the log moment — this is what the
+    // `time` field on the dose POST means (the log moment), never the
+    // protocol's scheduled slot.
+    const loggedTime24h = `${hours}:${minutes}`;
+
+    // T1 R1: the row this log satisfies keeps the protocol's OWN slot time,
+    // never the log moment. Recover it from the pending row being replaced
+    // (the normal path); fall back to the protocol's own schedule for the
+    // unscheduled-override path where there's no pending row id.
+    const pendingSlot = todaysDoses.find(
+      (dose) => dose.id === selectedProtocol.scheduledDoseId,
+    );
+    const scheduledTime =
+      pendingSlot?.scheduledTime ??
+      slotsForProtocol(selectedProtocol)[0]?.time ??
+      loggedTime24h;
 
     // Save dose to database
     try {
@@ -1535,7 +1610,7 @@ export function PeptideTracker() {
         body: JSON.stringify({
           protocolId: selectedProtocol.id,
           dosage: selectedProtocol.dosage,
-          time: currentTime,
+          time: loggedTime24h,
           notes: doseNotes || null,
           sideEffects:
             doseSideEffects.length > 0 ? doseSideEffects.join(", ") : null,
@@ -1557,7 +1632,7 @@ export function PeptideTracker() {
         const newDose: DoseEntry = {
           id: data.dose?.id || `${selectedProtocol.id}-logged-${Date.now()}`,
           peptideId: selectedProtocol.id,
-          scheduledTime: currentTime,
+          scheduledTime,
           actualTime: now.toISOString(),
           completed: true,
           notes: doseNotes || undefined,
@@ -1652,9 +1727,13 @@ export function PeptideTracker() {
 
       if (data.success) {
         console.log("✅ Protocol deleted successfully");
-        // Refresh protocols and doses
-        fetchUserProtocols();
-        fetchTodaysDoses();
+        // T2 FINDING 2: doses must land in state BEFORE protocols refresh
+        // triggers regeneration (matches the doses-then-protocols bootstrap
+        // ordering above) — firing these concurrently let a late doses
+        // fetch overwrite the regenerated slot label with the raw
+        // log-moment string.
+        await fetchTodaysDoses();
+        await fetchUserProtocols();
         fetchDoseHistory();
       } else {
         console.error("Failed to delete protocol:", data.error);
@@ -1683,7 +1762,16 @@ export function PeptideTracker() {
       .replace(/\s+Package\s*$/i, "")
       .trim();
     const Icon = protocol?.administrationType === "oral" ? Pill : Syringe;
-    const timeLabel = formatTime12h(dose.scheduledTime);
+    // T2 FINDING 1 (R2): null/invalid scheduledTime falls back to the
+    // dose's own ISO timestamp instead of rendering nothing.
+    const timeLabel = dose.scheduledTime
+      ? formatTime12h(dose.scheduledTime)
+      : dose.actualTime
+        ? new Date(dose.actualTime).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+          })
+        : "";
 
     if (dose.completed) {
       const loggedAtLabel = dose.actualTime

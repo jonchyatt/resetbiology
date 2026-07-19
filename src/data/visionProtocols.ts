@@ -908,6 +908,16 @@ export const visionMasterProgram: VisionMasterProgram = {
   ]
 };
 
+// Effective "today" for getTodaySession(): real startDate shifted back by the
+// tester's traversal cursor (testDayOffset days), never mutating startDate itself.
+// Shared by app/api/vision/program/route.ts (tester traversal UI) and
+// computeVisionReminders.ts (cron reminder compute) so both derive the same
+// program day from the same enrollment row.
+export function effectiveStartDate(enrollment: { startDate: Date | string; testDayOffset?: number | null }): Date {
+  const offsetDays = enrollment.testDayOffset ?? 0
+  return new Date(new Date(enrollment.startDate).getTime() - offsetDays * 86400000)
+}
+
 // Helper to get today's session based on enrollment
 export function getTodaySession(
   enrollmentStartDate: Date,

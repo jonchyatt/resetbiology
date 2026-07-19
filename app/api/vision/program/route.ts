@@ -2,20 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { visionMasterProgram, getTodaySession } from '@/data/visionProtocols'
+import { visionMasterProgram, getTodaySession, effectiveStartDate } from '@/data/visionProtocols'
 import { visionExerciseMap } from '@/data/visionExercises'
 import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
 
 // Tester allowlist for the "rip through the program" traversal bypass.
 // Gates isTester payload flag + the advance_day/reset_test_cursor PATCH actions.
 const TESTER_EMAILS = ['jonchyatt@gmail.com', 'drmccrna@gmail.com']
-
-// Effective "today" for getTodaySession(): real startDate shifted back by the
-// tester's traversal cursor (testDayOffset days), never mutating startDate itself.
-function effectiveStartDate(enrollment: { startDate: Date | string; testDayOffset?: number | null }): Date {
-  const offsetDays = enrollment.testDayOffset ?? 0
-  return new Date(new Date(enrollment.startDate).getTime() - offsetDays * 86400000)
-}
 
 // GET: Get user's program enrollment and today's session
 export async function GET(req: NextRequest) {
