@@ -2006,7 +2006,7 @@ export function PeptideTracker() {
       className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)",
+          "linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.88)), url(/hero-background.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -2061,12 +2061,12 @@ export function PeptideTracker() {
               <h1 className="text-2xl md:text-3xl font-bold text-white">
                 Your daily protocol
               </h1>
-              <span className="text-sm text-white/70">{todayLongLabel}</span>
+              <span className="text-sm text-white/90">{todayLongLabel}</span>
             </div>
 
             {/* Today's Doses — the lead block. Real todaysDoses state, real
                 openDoseModal handler; no fabricated data, no decorative glow. */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 mb-8">
+            <div className="bg-gray-900/60 backdrop-blur-md rounded-2xl border border-white/20 p-6 mb-8">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-white">
                   Today's doses
@@ -2091,11 +2091,11 @@ export function PeptideTracker() {
                   ))}
                 </div>
               ) : currentProtocols.length === 0 ? (
-                <div className="text-center py-6">
+                <div className="text-center py-3">
                   <p className="text-white font-medium mb-1">
                     No protocols yet
                   </p>
-                  <p className="text-sm text-white/70 mb-4">
+                  <p className="text-sm text-white/90 mb-4">
                     Add your first peptide protocol to start your daily
                     tracking.
                   </p>
@@ -2212,24 +2212,7 @@ export function PeptideTracker() {
                     </div>
                   </div>
 
-                  {currentProtocols.length === 0 ? (
-                    <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
-                      <Syringe className="w-16 h-16 text-primary-400 mx-auto mb-6" />
-                      <h3 className="text-2xl font-bold text-white mb-4">
-                        Start Your First Protocol
-                      </h3>
-                      <p className="text-gray-200 mb-8">
-                        Choose from our curated peptide library to begin
-                        tracking your peptide therapy journey.
-                      </p>
-                      <button
-                        onClick={() => setShowAddProtocolModal(true)}
-                        className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl"
-                      >
-                        Browse Peptide Library
-                      </button>
-                    </div>
-                  ) : (
+                  {currentProtocols.length === 0 ? null : (
                     <div className="grid gap-6 md:grid-cols-2">
                       {sortedProtocols.map((protocol) => (
                         <PeptideCard key={protocol.id} protocol={protocol} />
