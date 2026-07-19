@@ -2368,7 +2368,7 @@ export function PeptideTracker() {
           {/* Dosing Calendar Tab */}
           {activeTab === "calendar" && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl">
+              <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-8 border border-white/20 shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-8 h-8 text-primary-400" />
@@ -2387,40 +2387,40 @@ export function PeptideTracker() {
                 {loadingHistory ? (
                   <div className="text-center py-8">
                     <div className="animate-spin w-8 h-8 border-2 border-primary-400 border-t-transparent rounded-full mx-auto mb-3"></div>
-                    <p className="text-gray-300">Loading history...</p>
+                    <p className="text-white/70">Loading history...</p>
                   </div>
                 ) : doseHistory.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-gray-200 mb-4">No dose history yet</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-white mb-4">No dose history yet</p>
+                    <p className="text-sm text-white/50">
                       Start logging doses to build your treatment history!
                     </p>
                   </div>
                 ) : (
                   <>
-                    <div className="mb-6 rounded-xl border border-primary-400/30 bg-gray-900/40 p-4 shadow-inner">
+                    <div className="mb-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 shadow-inner">
                       <div className="flex items-center justify-center mb-3">
-                        <div className="flex items-center gap-2 text-sm text-gray-300">
+                        <div className="flex items-center gap-2 text-sm text-white/70">
                           <button
                             onClick={goToPreviousMonth}
-                            className="h-8 w-8 rounded-full border border-primary-400/40 text-primary-200 hover:bg-primary-500/20 transition"
+                            className="h-8 w-8 rounded-full border border-white/20 text-primary-200 hover:bg-primary-500/20 transition"
                             aria-label="View previous month"
                           >
                             ‹
                           </button>
-                          <span className="font-medium text-primary-100 min-w-[150px] text-center">
+                          <span className="font-medium text-white min-w-[150px] text-center">
                             {historyMonthLabel}
                           </span>
                           <button
                             onClick={goToNextMonth}
-                            className="h-8 w-8 rounded-full border border-primary-400/40 text-primary-200 hover:bg-primary-500/20 transition"
+                            className="h-8 w-8 rounded-full border border-white/20 text-primary-200 hover:bg-primary-500/20 transition"
                             aria-label="View next month"
                           >
                             ›
                           </button>
                         </div>
                       </div>
-                      <div className="grid grid-cols-7 gap-2 text-[11px] uppercase tracking-wide text-gray-500 mb-2">
+                      <div className="grid grid-cols-7 gap-2 text-[11px] uppercase tracking-wide text-white/50 mb-2">
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                           (day) => (
                             <div key={day} className="text-center font-medium">
@@ -2486,7 +2486,7 @@ export function PeptideTracker() {
               {/* Day Detail Modal */}
               {selectedCalendarDay && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-2xl w-full border border-primary-400/30 shadow-2xl max-h-[80vh] overflow-y-auto">
+                  <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-6 max-w-2xl w-full border border-white/20 shadow-2xl max-h-[80vh] overflow-y-auto">
                     <div className="flex justify-between items-center mb-6">
                       <div>
                         <h3 className="text-2xl font-bold text-white">
@@ -2499,7 +2499,7 @@ export function PeptideTracker() {
                             day: "numeric",
                           })}
                         </h3>
-                        <p className="text-gray-400 text-sm mt-1">
+                        <p className="text-white/50 text-sm mt-1">
                           {doseHistoryByDate.get(selectedCalendarDay)
                             ?.completed || 0}{" "}
                           completed •{" "}
@@ -2510,7 +2510,7 @@ export function PeptideTracker() {
                       </div>
                       <button
                         onClick={() => setSelectedCalendarDay(null)}
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-white/50 hover:text-white transition-colors"
                       >
                         <X className="w-6 h-6" />
                       </button>
@@ -2648,13 +2648,13 @@ export function PeptideTracker() {
 
               {/* IRB Compliance Notice */}
               <div className="mt-8">
-                <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
+                <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
                   <AlertCircle className="w-5 h-5 text-primary-300 mr-3 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-primary-200 mb-1">
+                    <h4 className="font-semibold text-white mb-1">
                       IRB-Approved Research Protocol
                     </h4>
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-white/70 text-sm">
                       Your peptide data is securely tracked and can be shared
                       with healthcare providers for research purposes. All data
                       handling follows IRB compliance standards for participant
