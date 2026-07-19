@@ -9,6 +9,54 @@ import {
   ProtocolSession,
 } from '@/types/workout';
 
+// W1a item 5 (NEW5): relocated from app/api/workouts/assignments/[assignmentId]/route.ts
+// so the plan-session -> WorkoutSession record logic lives alongside the rest of the
+// protocol/plan domain logic. Carries planSession.title into the exercises JSON payload
+// (sessionTitle field) since WorkoutSession has no dedicated title column and this ticket
+// may not touch prisma/schema.prisma -- transformSession (WorkoutTracker.tsx) reads it back.
+export const logCompletedSession = async ({
+  assignmentId,
+  planSession,
+  userId,
+  protocolId,
+  notes,
+}: {
+  assignmentId: string;
+  planSession: AssignmentPlanSession;
+  userId: string;
+  protocolId: string;
+  notes?: string | null;
+}) => {
+  const exercisesFromPlan = (planSession.blocks ?? []).flatMap((block: any) => block.exercises ?? []);
+  const exercises = exercisesFromPlan.map((exercise: any, index: number) => ({
+    id: `${assignmentId}-${planSession.id}-${index}`,
+    name: exercise.name,
+    category: exercise.pattern,
+    intensity: planSession.intensity,
+    notes: exercise.description,
+    sessionTitle: planSession.title,
+    sets: (exercise.sets ?? []).map((set: any) => ({
+      reps: set.reps ?? null,
+      weight: set.weight ?? null,
+      tempo: set.tempo,
+      restSeconds: set.restSeconds,
+      completed: true,
+    })),
+    source: 'protocol-plan',
+  }));
+
+  await prisma.workoutSession.create({
+    data: {
+      userId,
+      programId: protocolId,
+      exercises,
+      duration: Math.round((planSession.durationMinutes ?? 40) * 60),
+      notes: notes ?? planSession.summary,
+      completedAt: new Date(),
+    },
+  });
+};
+
 type ProtocolLike = {
   id?: string;
   slug?: string;

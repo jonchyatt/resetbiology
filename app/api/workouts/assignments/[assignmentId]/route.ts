@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession } from '@/lib/getUserFromSession';
 import { prisma } from '@/lib/prisma';
-import { summarizeAssignmentPlan } from '@/lib/workoutProtocolService';
+import { summarizeAssignmentPlan, logCompletedSession } from '@/lib/workoutProtocolService';
 import { AssignmentPlan, PlanSessionStatus } from '@/types/workout';
 
 export const runtime = 'nodejs';
@@ -29,48 +29,6 @@ const normalizePlan = (value: any): AssignmentPlan => {
   }
   // Ensure deep clone so we can safely mutate
   return JSON.parse(JSON.stringify(value)) as AssignmentPlan;
-};
-
-const logCompletedSession = async ({
-  assignmentId,
-  planSession,
-  userId,
-  protocolId,
-  notes,
-}: {
-  assignmentId: string;
-  planSession: any;
-  userId: string;
-  protocolId: string;
-  notes?: string | null;
-}) => {
-  const exercisesFromPlan = (planSession.blocks ?? []).flatMap((block: any) => block.exercises ?? []);
-  const exercises = exercisesFromPlan.map((exercise: any, index: number) => ({
-    id: `${assignmentId}-${planSession.id}-${index}`,
-    name: exercise.name,
-    category: exercise.pattern,
-    intensity: planSession.intensity,
-    notes: exercise.description,
-    sets: (exercise.sets ?? []).map((set: any) => ({
-      reps: set.reps ?? null,
-      weight: set.weight ?? null,
-      tempo: set.tempo,
-      restSeconds: set.restSeconds,
-      completed: true,
-    })),
-    source: 'protocol-plan',
-  }));
-
-  await prisma.workoutSession.create({
-    data: {
-      userId,
-      programId: protocolId,
-      exercises,
-      duration: Math.round((planSession.durationMinutes ?? 40) * 60),
-      notes: notes ?? planSession.summary,
-      completedAt: new Date(),
-    },
-  });
 };
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ assignmentId: string }> }) {

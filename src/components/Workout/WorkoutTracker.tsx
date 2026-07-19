@@ -1,25 +1,23 @@
 ﻿"use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
 import {
   Activity,
   Brain,
   Calendar,
   CheckCircle2,
-  Clock,
   Dumbbell,
-  Flame,
   ListChecks,
   Plus,
   Sparkles,
   Target,
-  TrendingUp,
   X,
 } from "lucide-react";
 import { WorkoutQuickAdd, WorkoutQuickAddResult } from "./WorkoutQuickAdd";
 import { PortalHeader } from "@/components/Navigation/PortalHeader";
 import { RecentWorkouts } from "./RecentWorkouts";
+import { useToast } from "@/components/ui/Toast";
+import { localDayKey } from "@/lib/localDay";
 import {
   AssignmentPlanSession,
   AssignmentPersonalization,
@@ -28,7 +26,7 @@ import {
   WorkoutProtocolRecord,
 } from "@/types/workout";
 
-interface WorkoutEntry {
+export interface WorkoutEntry {
   id: string;
   name: string;
   category: string;
@@ -38,6 +36,7 @@ interface WorkoutEntry {
   totalWeight: number;
   durationSeconds: number;
   completedAt: string;
+  localDate?: string | null;
   notes?: string | null;
 }
 
@@ -64,13 +63,12 @@ const recoveryFocusOptions = [
 const classNames = (...classes: Array<string | undefined | null | false>) => classes.filter(Boolean).join(" ");
 
 export function WorkoutTracker() {
+  const toast = useToast();
   const [todaysWorkouts, setTodaysWorkouts] = useState<WorkoutEntry[]>([]);
   const [historyItems, setHistoryItems] = useState<WorkoutEntry[] | null>(null);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState<string | null>(null);
   const [logSuccess, setLogSuccess] = useState<WorkoutQuickAddResult | null>(null);
-  const [recentRefresh, setRecentRefresh] = useState(0);
-  const [historyRefresh, setHistoryRefresh] = useState(0);
 
   const [protocols, setProtocols] = useState<WorkoutProtocolRecord[]>([]);
   const [protocolsLoading, setProtocolsLoading] = useState(false);
@@ -89,6 +87,7 @@ export function WorkoutTracker() {
   const [goalPriority, setGoalPriority] = useState(goalOptions[0].value);
   const [sessionPreference, setSessionPreference] = useState(sessionTimeOptions[0].value);
   const [recoveryFocus, setRecoveryFocus] = useState(recoveryFocusOptions[0].value);
+  const [prefsHydrated, setPrefsHydrated] = useState(false);
 
   const [readinessPayload, setReadinessPayload] = useState({
     readinessScore: 80,
@@ -99,39 +98,29 @@ export function WorkoutTracker() {
     mood: "Focused",
     notes: "",
   });
-  const fetchTodaysWorkouts = useCallback(async () => {
-    try {
-      const response = await fetch("/api/workouts/recent?limit=100", { cache: "no-store" });
-      const data = await response.json();
-      if (!data?.ok || !Array.isArray(data.items)) {
-        throw new Error(data?.error || "Failed to load workouts");
-      }
-      const todayKey = new Date().toDateString();
-      const todays = data.items
-        .filter((session: any) => new Date(session.completedAt).toDateString() === todayKey)
-        .map(transformSession)
-        .sort((a: WorkoutEntry, b: WorkoutEntry) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
-      setTodaysWorkouts(todays);
-    } catch (error) {
-      console.error("Error loading today's workouts:", error);
-    }
-  }, []);
-
-  const fetchHistory = useCallback(async () => {
+  // W1a item 1 (F4.2 + NEW4): ONE fetch feeds both "today" and history, bucketed
+  // by local day (stored localDate first, localDayKey(completedAt) fallback) --
+  // mirrors NutritionTracker.tsx:282-286, replaces the old triple-fetch + UTC
+  // toDateString()/toISOString() bucketing.
+  const fetchRecentWorkouts = useCallback(async () => {
     try {
       setHistoryLoading(true);
       setHistoryError(null);
       const response = await fetch("/api/workouts/recent?limit=200", { cache: "no-store" });
       const data = await response.json();
       if (!data?.ok || !Array.isArray(data.items)) {
-        throw new Error(data?.error || "Failed to load workout history");
+        throw new Error(data?.error || "Failed to load workouts");
       }
       const entries = data.items
         .map(transformSession)
         .sort((a: WorkoutEntry, b: WorkoutEntry) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
       setHistoryItems(entries);
+      const todayKey = localDayKey(new Date());
+      setTodaysWorkouts(
+        entries.filter((entry: WorkoutEntry) => (entry.localDate || localDayKey(new Date(entry.completedAt))) === todayKey)
+      );
     } catch (error: any) {
-      console.error("History error", error);
+      console.error("Recent workouts error", error);
       setHistoryError(error?.message || "Unable to load workout history");
     } finally {
       setHistoryLoading(false);
@@ -181,21 +170,52 @@ export function WorkoutTracker() {
   }, []);
 
   useEffect(() => {
-    fetchTodaysWorkouts();
+    fetchRecentWorkouts();
     fetchProtocols();
     fetchAssignments();
     fetchCheckIns();
-  }, [fetchTodaysWorkouts, fetchProtocols, fetchAssignments, fetchCheckIns]);
-
-  useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory, historyRefresh]);
+  }, [fetchRecentWorkouts, fetchProtocols, fetchAssignments, fetchCheckIns]);
 
   useEffect(() => {
     if (!logSuccess) return;
     const timer = setTimeout(() => setLogSuccess(null), 5000);
     return () => clearTimeout(timer);
   }, [logSuccess]);
+
+  // W1a item 6 (NEW6): hydrate saved personalization prefs from the member's
+  // profile on mount (GET /api/workout/exercises -- see route for the field).
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/workout/exercises", { cache: "no-store" });
+        const data = await res.json();
+        const saved = data?.workoutPreferences;
+        if (saved && typeof saved === "object") {
+          if (Array.isArray(saved.preferredEquipment)) setPreferredEquipment(saved.preferredEquipment);
+          if (typeof saved.goalPriority === "string") setGoalPriority(saved.goalPriority);
+          if (typeof saved.sessionPreference === "string") setSessionPreference(saved.sessionPreference);
+          if (typeof saved.recoveryFocus === "string") setRecoveryFocus(saved.recoveryFocus);
+        }
+      } catch (error) {
+        console.error("Load workout preferences error", error);
+      } finally {
+        setPrefsHydrated(true);
+      }
+    })();
+  }, []);
+
+  // Persist prefs whenever changed, once the hydrate-from-profile read above has
+  // finished (guards against overwriting saved prefs with defaults on first paint).
+  useEffect(() => {
+    if (!prefsHydrated) return;
+    fetch("/api/workout/exercises", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        workoutPreferences: { preferredEquipment, goalPriority, sessionPreference, recoveryFocus },
+      }),
+    }).catch((error) => console.error("Save workout preferences error", error));
+  }, [prefsHydrated, preferredEquipment, goalPriority, sessionPreference, recoveryFocus]);
 
   const todaysTotals = useMemo(
     () =>
@@ -235,9 +255,12 @@ export function WorkoutTracker() {
     >();
 
     historyItems.forEach((entry) => {
-      const date = new Date(entry.completedAt);
-      const key = date.toISOString().split("T")[0];
+      const key = entry.localDate || localDayKey(new Date(entry.completedAt));
       if (!groups.has(key)) {
+        // Parsed WITHOUT a "Z" suffix (local-time parse) so the label reflects the
+        // calendar day the key names, not a UTC-shifted one -- see localDay.ts
+        // weekdayOfDayKey doc for why this matters.
+        const date = new Date(`${key}T00:00:00`);
         groups.set(key, {
           key,
           date,
@@ -341,11 +364,10 @@ export function WorkoutTracker() {
       if (!res.ok || !data?.ok) {
         throw new Error(data?.error || "Unable to update session");
       }
-      await Promise.all([fetchAssignments(), fetchTodaysWorkouts()]);
-      setRecentRefresh((prev) => prev + 1);
-      setHistoryRefresh((prev) => prev + 1);
-    } catch (error) {
+      await Promise.all([fetchAssignments(), fetchRecentWorkouts()]);
+    } catch (error: any) {
       console.error("Session action error", error);
+      toast.error(error?.message || "Unable to update session. Please try again.");
     } finally {
       setSessionActionLoading(false);
     }
@@ -369,21 +391,43 @@ export function WorkoutTracker() {
       }
       await fetchCheckIns();
       setReadinessPayload((prev) => ({ ...prev, notes: "" }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Check-in submit error", error);
+      toast.error(error?.message || "Unable to save your readiness check-in. Please try again.");
     } finally {
       setCheckInSubmitting(false);
     }
   };
 
+  const handleRemoveProtocol = async () => {
+    if (!activeAssignment) return;
+    const confirmed = await toast.confirm({
+      title: "Remove this protocol?",
+      body: "This archives your active assignment. You can re-assign it later from the library.",
+      confirmLabel: "Remove",
+      destructive: true,
+    });
+    if (!confirmed) return;
+    try {
+      const res = await fetch(`/api/workouts/assignments/${activeAssignment.id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error || "Unable to remove protocol");
+      }
+      await fetchAssignments();
+      toast.success("Protocol removed.");
+    } catch (error: any) {
+      console.error("Remove protocol error", error);
+      toast.error(error?.message || "Unable to remove protocol");
+    }
+  };
+
   const handleQuickAddLogged = useCallback(
     (result: WorkoutQuickAddResult) => {
-      fetchTodaysWorkouts();
-      setRecentRefresh((prev) => prev + 1);
-      setHistoryRefresh((prev) => prev + 1);
+      fetchRecentWorkouts();
       setLogSuccess(result);
     },
-    [fetchTodaysWorkouts]
+    [fetchRecentWorkouts]
   );
 
   return (
@@ -468,11 +512,7 @@ export function WorkoutTracker() {
                 {/* Active Protocol Card - Clickable to start training */}
                 <div
                   className="rounded-2xl border border-primary-400/30 bg-gray-900/40 p-5 shadow-inner cursor-pointer hover:border-primary-400/50 transition-all group"
-                  onClick={() => {
-                    if (nextSession) {
-                      // Could open a training modal or navigate to session
-                    }
-                  }}
+                  onClick={() => setShowProtocolLibrary(true)}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -495,7 +535,7 @@ export function WorkoutTracker() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        // Could add remove/pause functionality
+                        handleRemoveProtocol();
                       }}
                       className="p-2 text-gray-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
                       title="Remove protocol"
@@ -553,7 +593,7 @@ export function WorkoutTracker() {
                     <h2 className="text-xl font-semibold text-white">Logged sessions</h2>
                   </div>
                   <button
-                    onClick={() => fetchTodaysWorkouts()}
+                    onClick={() => fetchRecentWorkouts()}
                     className="rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-widest text-slate-200 transition hover:border-white/40"
                   >
                     Refresh
@@ -714,7 +754,7 @@ export function WorkoutTracker() {
                   }}
                 />
               </section>
-              <RecentWorkouts refreshToken={recentRefresh} />
+              <RecentWorkouts items={historyItems ? historyItems.slice(0, 25) : []} />
             </div>
           </div>
           <section className="relative z-10 rounded-3xl border border-primary-400/30 bg-gray-900/40 p-6 shadow-inner">
@@ -801,7 +841,7 @@ export function WorkoutTracker() {
                       ))}
                     </div>
                     <ul className="mt-3 space-y-1 text-xs text-slate-400">
-                      <li>Duration: {protocol.durationWeeks ?? "--"} weeks</li>
+                      <li>Duration: {formatProtocolDurationWeeks(protocol.durationWeeks)}</li>
                       <li>Sessions/week: {protocol.sessionsPerWeek ?? "--"}</li>
                       <li>Focus: {(protocol.focusAreas ?? []).join(", ") || "holistic"}</li>
                     </ul>
@@ -853,7 +893,7 @@ export function WorkoutTracker() {
                 <p className="text-sm text-slate-400">Every prescription + freestyle session captured.</p>
               </div>
               <button
-                onClick={() => setHistoryRefresh((prev) => prev + 1)}
+                onClick={() => fetchRecentWorkouts()}
                 className="flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-slate-200 transition hover:border-white/40"
               >
                 Refresh
@@ -933,7 +973,7 @@ export function WorkoutTracker() {
                       ))}
                     </div>
                     <ul className="mt-3 space-y-1 text-xs text-slate-400">
-                      <li>Duration: {protocol.durationWeeks ?? "--"} weeks</li>
+                      <li>Duration: {formatProtocolDurationWeeks(protocol.durationWeeks)}</li>
                       <li>Sessions/week: {protocol.sessionsPerWeek ?? "--"}</li>
                     </ul>
                     <button
@@ -956,30 +996,6 @@ export function WorkoutTracker() {
     </div>
   );
 }
-function StatCard({ icon, label, value, subtext }: { icon: ReactNode; label: string; value: ReactNode; subtext: string }) {
-  return (
-    <article className="rounded-2xl border border-primary-400/20 bg-gray-900/30 p-4 shadow-inner">
-      <div className="flex items-center gap-3">
-        <div className="rounded-xl bg-white/5 p-3">{icon}</div>
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{label}</p>
-          <p className="text-2xl font-semibold text-white">{value}</p>
-          <p className="text-xs text-slate-400">{subtext}</p>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function AssignmentBadge({ label, value, accent }: { label: string; value: string; accent: string }) {
-  return (
-    <div className={classNames("rounded-2xl border border-white/5 px-4 py-3 text-sm text-slate-200 shadow-md shadow-emerald-500/20", `bg-gradient-to-br ${accent}`)}>
-      <p className="text-xs uppercase tracking-[0.3em] text-slate-300">{label}</p>
-      <p className="text-base font-semibold text-white">{value}</p>
-    </div>
-  );
-}
-
 function PreferenceSelect({
   label,
   value,
@@ -1107,7 +1123,12 @@ function transformSession(session: any): WorkoutEntry {
 
   return {
     id: session.id,
-    name: exercises[0]?.name || session.notes || "Workout Session",
+    // W1a item 5 (NEW5): prefer the plan session's title (persisted onto each
+    // exercise entry by logCompletedSession -- see workoutProtocolService.ts)
+    // over the first-exercise name, so a 6-exercise prescribed session shows
+    // its plan title instead of "Goblet Squat". Freestyle/quick-add logs have
+    // no sessionTitle and fall back to the exercise-derived name as before.
+    name: exercises[0]?.sessionTitle || exercises[0]?.name || session.notes || "Workout Session",
     category: exercises[0]?.category || "General",
     intensity: exercises[0]?.intensity,
     totalSets: summary.sets,
@@ -1115,8 +1136,16 @@ function transformSession(session: any): WorkoutEntry {
     totalWeight: summary.weight,
     durationSeconds: session.duration ?? 0,
     completedAt: session.completedAt,
+    localDate: session.localDate ?? null,
     notes: session.notes,
   };
+}
+
+// W1a item 4 (F4.7 UI half): 0 or null/undefined durationWeeks means the
+// protocol is deliberately ongoing -- never render "0 weeks" or "--".
+function formatProtocolDurationWeeks(weeks?: number | null) {
+  if (!weeks) return "Ongoing";
+  return `${weeks} weeks`;
 }
 
 function formatDuration(seconds: number) {
