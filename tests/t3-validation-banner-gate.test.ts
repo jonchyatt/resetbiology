@@ -7,6 +7,14 @@
 // the real source structurally. Idiom follows tests/t1-time-contract.test.ts
 // and tests/t2-durable-save-boundary.test.ts (self-checking, `npx tsx`, no
 // framework).
+//
+// Fix-wave (on top of 1564db2b): the original mirror modeled the latch as
+// "effect ran more than once" — which is indistinguishable from StrictMode's
+// double-invoke of the SAME mount, and from a programmatic setInputs seed
+// (imported peptide, deep-link ?peptide=<slug>) re-running the same effect.
+// Both blind-verification failures traced to that exact equivalence. The
+// latch now lives ONLY in real user event handlers; the validation effect
+// is pure and never touches it, no matter how many times it runs.
 
 let failed = false;
 
@@ -20,27 +28,39 @@ function check(label: string, pass: boolean, detail?: string) {
 }
 
 // ---------------------------------------------------------------------------
-// Mirrors the validation useEffect + hasInteracted latch in
-// DosageCalculator.tsx: `errors` recomputes on every inputs change
-// (including the mount run); `hasInteracted` flips true on the first
-// post-mount run, or on a submit attempt. Same validation rule
-// (desiredDose <= 0) as the reported bug.
+// Mirrors the validation useEffect (pure — recomputes `errors`, never
+// touches the latch) + hasInteracted (set only from event-handler call
+// sites: field onChange/onBlur, select onChange, submit attempts) in
+// DosageCalculator.tsx. Same validation rule (desiredDose <= 0) as the
+// reported bug.
 // ---------------------------------------------------------------------------
 class ValidationLatch {
   hasInteracted = false;
-  private isFirstRun = true;
   errors: string[] = [];
 
-  // Mirrors the `useEffect(() => {...}, [inputs])` body.
+  // Mirrors the `useEffect(() => {...}, [inputs])` body post-fix: pure
+  // computation, no latch write. Safe to call any number of times —
+  // StrictMode double-invoke and repeated programmatic seeds included.
   runValidationEffect(desiredDose: number) {
     const e: string[] = [];
     if (desiredDose <= 0) e.push("Desired dose must be greater than 0.");
     this.errors = e;
-    if (this.isFirstRun) {
-      this.isFirstRun = false;
-    } else {
-      this.hasInteracted = true;
-    }
+  }
+
+  // Mirrors a real onChange/onBlur handler: setHasInteracted(true) then
+  // setInputs(...), i.e. the actual code shape in the fixed component
+  // (e.g. desiredDose input onChange at DosageCalculator.tsx).
+  fieldOnChange(desiredDose: number) {
+    this.hasInteracted = true;
+    this.runValidationEffect(desiredDose);
+  }
+
+  // Mirrors a programmatic seed: loadPeptideFromLibrary called from the
+  // deep-link initialPeptideSlug effect, or the importedPeptide mount
+  // effect — both call setInputs directly, never through an onChange
+  // handler, so they must NOT touch the latch.
+  programmaticSeed(desiredDose: number) {
+    this.runValidationEffect(desiredDose);
   }
 
   // Mirrors setHasInteracted(true) at the top of handleSave /
@@ -72,14 +92,38 @@ try {
     `errors=${JSON.stringify(onMount.errors)} bannerVisible=${onMount.bannerVisible}`,
   );
 
-  // 2. Show-after-interaction: member edits the dose field and leaves it
-  // invalid (e.g. types then clears it back to 0) — a second inputs change,
-  // still invalid. Banner must now appear.
+  // 1b. StrictMode double-invoke: dev-mode re-runs the SAME mount's effect
+  // a second time on the same instance (refs/state preserved). Must still
+  // stay clean — this is the exact HIGH finding from blind verification.
+  const strictMode = new ValidationLatch();
+  strictMode.runValidationEffect(0); // effect setup #1 (StrictMode)
+  strictMode.runValidationEffect(0); // effect setup #2 (StrictMode replay)
+  check(
+    "StrictMode double-invoke of the validation effect does NOT trip the banner",
+    strictMode.bannerVisible === false,
+    `bannerVisible=${strictMode.bannerVisible}`,
+  );
+
+  // 1c. Programmatic seed (deep-link ?peptide=<slug> / imported peptide):
+  // setInputs runs from a non-interactive effect, re-running validation,
+  // but the member touched nothing. Must stay clean — the other HIGH
+  // finding from blind verification.
+  const deepLink = new ValidationLatch();
+  deepLink.runValidationEffect(0); // initial mount, no slug yet
+  deepLink.programmaticSeed(0); // loadPeptideFromLibrary sets desiredDose:0
+  check(
+    "programmatic seed (deep-link / imported peptide) does NOT trip the banner",
+    deepLink.bannerVisible === false,
+    `bannerVisible=${deepLink.bannerVisible}`,
+  );
+
+  // 2. Show-after-interaction: member edits the dose field through the real
+  // onChange code path and leaves it invalid. Banner must now appear.
   const afterEdit = new ValidationLatch();
   afterEdit.runValidationEffect(0); // mount
-  afterEdit.runValidationEffect(0); // field edit, still invalid
+  afterEdit.fieldOnChange(0); // real onChange, still invalid
   check(
-    "editing a relevant field and leaving it invalid shows the banner",
+    "editing a relevant field via onChange and leaving it invalid shows the banner",
     afterEdit.bannerVisible === true,
   );
 
@@ -104,7 +148,7 @@ try {
     "submit stays disabled on mount while dose is 0 (pre-interaction)",
     disabledCheck.invalidForSubmit === true,
   );
-  disabledCheck.runValidationEffect(500); // member fixes the dose
+  disabledCheck.fieldOnChange(500); // member fixes the dose
   check(
     "submit becomes enabled once the field is actually valid",
     disabledCheck.invalidForSubmit === false,
@@ -119,8 +163,10 @@ try {
 
 // ---------------------------------------------------------------------------
 // Structural cross-check against the real source: the banner render must be
-// gated by hasInteracted, and the disabled expressions must NOT reference
-// hasInteracted (disabled logic is unchanged per the ticket).
+// gated by hasInteracted, disabled expressions must NOT reference
+// hasInteracted (disabled logic is unchanged per the ticket), the effect-
+// run-count heuristic must be gone, and the latch must only be set from
+// event-handler call sites, not from the validation effect body.
 // ---------------------------------------------------------------------------
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -153,6 +199,66 @@ try {
   check(
     "validation useEffect still recomputes errors unconditionally (setErrors(e) present)",
     /setErrors\(e\);/.test(source),
+  );
+
+  check(
+    "effect-run-count heuristic (isFirstValidationRunRef) is gone",
+    !source.includes("isFirstValidationRunRef"),
+  );
+
+  // Isolate the validation useEffect body (setErrors(e) through its closing
+  // `}, [inputs]);`) and assert it never calls setHasInteracted — the latch
+  // must not be settable from effect re-runs, only from event handlers.
+  const effectStart = source.indexOf("setErrors(e);");
+  const effectEnd = source.indexOf("}, [inputs]);", effectStart);
+  check(
+    "validation effect body isolated for inspection",
+    effectStart !== -1 && effectEnd !== -1,
+  );
+  const effectBody = source.slice(effectStart, effectEnd);
+  check(
+    "validation effect body does NOT call setHasInteracted (latch is event-handler-only)",
+    !effectBody.includes("setHasInteracted"),
+    effectBody,
+  );
+
+  // The deep-link seed (initialPeptideSlug effect) and the imported-peptide
+  // mount effect must not call setHasInteracted either — same class as
+  // above, the other HIGH finding.
+  const initialSlugEffectStart = source.indexOf("if (!initialPeptideSlug ||");
+  const initialSlugEffectEnd = source.indexOf("[initialPeptideSlug, peptideLibrary, loadPeptideFromLibrary]);");
+  check(
+    "deep-link initialPeptideSlug effect isolated for inspection",
+    initialSlugEffectStart !== -1 && initialSlugEffectEnd !== -1,
+  );
+  const initialSlugEffectBody = source.slice(initialSlugEffectStart, initialSlugEffectEnd);
+  check(
+    "deep-link initialPeptideSlug effect does NOT call setHasInteracted",
+    !initialSlugEffectBody.includes("setHasInteracted"),
+    initialSlugEffectBody,
+  );
+
+  const importedPeptideEffectStart = source.indexOf("if (!importedPeptide) return;");
+  const importedPeptideEffectEnd = source.indexOf("}, [importedPeptide]);");
+  check(
+    "importedPeptide mount effect isolated for inspection",
+    importedPeptideEffectStart !== -1 && importedPeptideEffectEnd !== -1,
+  );
+  const importedPeptideEffectBody = source.slice(importedPeptideEffectStart, importedPeptideEffectEnd);
+  check(
+    "importedPeptide mount effect does NOT call setHasInteracted",
+    !importedPeptideEffectBody.includes("setHasInteracted"),
+    importedPeptideEffectBody,
+  );
+
+  // At least the totalVolume/peptideAmount/desiredDose onChange handlers
+  // must set the latch — this is the positive half of the fix (real
+  // interaction still trips the banner).
+  const setHasInteractedCount = (source.match(/setHasInteracted\(true\)/g) || []).length;
+  check(
+    "setHasInteracted(true) appears at multiple real call sites (handlers + submit, not just one)",
+    setHasInteractedCount >= 5,
+    `count=${setHasInteractedCount}`,
   );
 } catch (err) {
   check("structural source cross-check ran without error", false, String(err));
