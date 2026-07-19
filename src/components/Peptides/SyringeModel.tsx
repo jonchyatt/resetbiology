@@ -102,15 +102,22 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
   const stopperHeight = 12;
   const stopperTopY = stopperY - stopperHeight;
 
-  // Plunger rod: fixed anchor near the top; the rod visually shortens as the
-  // stopper rises toward it (more dose drawn = more of the rod is "inside"),
-  // animating on the same easing/timing as the fill so they never detach.
-  const rodTopY = 54;
+  // Neck anchor: fixed reference point for the static shoulder taper only
+  // (the barrel's neck geometry doesn't move with the dose).
+  const neckTopY = 54;
+
+  // Plunger assembly (rod + flange) is one rigid piece of plastic attached to
+  // the stopper: it must translate as a unit with the stopper, not stretch.
+  // Rod length is fixed (the gap at the empty/rest state); the whole
+  // assembly's Y position is derived from the stopper's Y 1:1. May clip
+  // above the SVG viewBox near full draw — that's correct, real plungers
+  // extend past the barrel opening at high doses.
   const rodWidth = 7;
-  const rodHeight = Math.max(stopperTopY - rodTopY, 0);
+  const rodLength = barrelBottom - stopperHeight - neckTopY;
+  const plungerTopY = stopperTopY - rodLength;
   const flangeWidth = 36;
   const flangeHeight = 14;
-  const flangeY = rodTopY - flangeHeight;
+  const flangeY = plungerTopY - flangeHeight;
 
   // Needle hub (distinct cone) + fine needle line, below the barrel.
   const hubTopY = barrelBottom;
@@ -161,7 +168,7 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
 
           {/* Shoulder — tapered neck between the barrel opening and the exposed rod */}
           <path
-            d={`M46 ${barrelTop} L${60 - rodWidth / 2 - 3} ${rodTopY + 6} L${60 + rodWidth / 2 + 3} ${rodTopY + 6} L74 ${barrelTop} Z`}
+            d={`M46 ${barrelTop} L${60 - rodWidth / 2 - 3} ${neckTopY + 6} L${60 + rodWidth / 2 + 3} ${neckTopY + 6} L74 ${barrelTop} Z`}
             fill="rgba(255,255,255,0.1)"
             stroke="rgba(255,255,255,0.2)"
             strokeWidth="1"
@@ -200,7 +207,7 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
           {/* Plunger rod — visible through the glass above the stopper; not
               clipped to the barrel since part of it sits above the opening. */}
           {hasUnits && (
-            <rect x={60 - rodWidth / 2} y={rodTopY} width={rodWidth} height={rodHeight} rx="2" fill="rgba(241,245,249,0.6)" style={fillTransition} />
+            <rect x={60 - rodWidth / 2} y={plungerTopY} width={rodWidth} height={rodLength} rx="2" fill="rgba(241,245,249,0.6)" style={fillTransition} />
           )}
 
           {/* Tick marks — majors keep their exact calibrated values/positions;
