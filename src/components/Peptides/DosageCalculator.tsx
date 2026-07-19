@@ -239,6 +239,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   // This ref is set synchronously before any await, closing that gap.
   const savingInFlightRef = useRef(false);
   const [errors, setErrors] = useState<string[]>([]);
+  // T3: gate the error BANNER's render behind interaction, not its
+  // computation. `errors` still recomputes on every `inputs` change
+  // (including mount) so the disabled logic below is untouched. This latch
+  // only flips true after the first post-mount inputs change or a submit
+  // attempt, so the modal opens clean.
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+  const isFirstValidationRunRef = useRef(true);
   const [isCustomPeptide, setIsCustomPeptide] = useState<boolean>(false);
   const [customPeptideName, setCustomPeptideName] = useState<string>("");
 
@@ -284,6 +291,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     if (inputs.peptideAmount <= 0) e.push("Peptide amount in vial must be greater than 0 mg.");
     if (inputs.desiredDose <= 0) e.push("Desired dose must be greater than 0.");
     setErrors(e);
+    if (isFirstValidationRunRef.current) {
+      isFirstValidationRunRef.current = false;
+    } else {
+      setHasInteracted(true);
+    }
   }, [inputs]);
 
   // Derived values for visuals
@@ -294,6 +306,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   const handleSave = async () => {
     if (!onSaveToLog) return;
+    setHasInteracted(true);
     try {
       setIsSaving(true);
       await onSaveToLog({
@@ -364,6 +377,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
   const handleProtocolSave = async () => {
     if (!onSaveProtocol || mode !== 'addProtocol') return;
+    setHasInteracted(true);
     // T2: a second click landing before the disabled attribute commits
     // cannot start a duplicate save.
     if (savingInFlightRef.current) return;
@@ -566,7 +580,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   return (
     <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-6 border border-primary-400/30 shadow-2xl">
       {/* Alerts */}
-      {errors.length > 0 && (
+      {hasInteracted && errors.length > 0 && (
         <div className="mb-4 bg-red-500/10 border border-red-400/30 text-red-200 rounded-lg p-3 flex items-start gap-2" role="alert">
           <AlertCircle className="w-5 h-5 mt-0.5" />
           <div>
