@@ -526,7 +526,7 @@ export function WorkoutTracker() {
             <span className="text-primary-400">Workout</span> Tracker
           </h2>
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Custom fitness programs with analytics. Track your strength gains, endurance metrics, and body composition progress.
+            Custom fitness programs with analytics. Track logged sessions, sets, reps, and training history.
           </p>
         </div>
 
@@ -858,9 +858,9 @@ export function WorkoutTracker() {
                   <summary className="cursor-pointer select-none font-semibold text-white">How readiness works</summary>
                   <div className="mt-2 space-y-2">
                     <p>
-                      Subjective check-ins like this one are a validated way to monitor how your body is responding to
-                      training. On a middling day we reduce volume, not intensity — the work stays hard, there's just
-                      less of it. That's how we protect you from your most motivated bad days.
+                      Subjective check-ins like this one are a way to monitor how your body is responding to training.
+                      On a middling day, the tracker suggests reducing volume, not intensity — the work stays hard,
+                      there's just less of it. That can help you pace your training on days when you feel off.
                     </p>
                     <ul className="space-y-1 text-[11px] text-slate-400">
                       <li>

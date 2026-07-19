@@ -559,7 +559,7 @@ export function NutritionTracker() {
           <span className="text-secondary-400">Nutrition</span> Tracker
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-          Protein first. Fuel your protocols, hit your deficit, protect lean mass.
+          Protein first. Track your macros and daily targets.
         </p>
       </div>
 

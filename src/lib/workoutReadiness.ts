@@ -59,12 +59,12 @@ export function readinessGuidance(score: number | null): ReadinessGuidance {
     return {
       level: "recover",
       headline: "Recovery day",
-      detail: "Swap today's session for the mobility work — training hard on a low-readiness day costs more than it builds.",
+      detail: "Consider swapping today's session for the mobility work when readiness is low.",
     };
   }
   return {
     level: "reduce",
     headline: "Ease off today",
-    detail: "Drop about one set per exercise and stop 2-3 reps shy of failure (RPE ~7-8).",
+    detail: "One general option: drop about one set per exercise and stop 2-3 reps shy of failure (RPE ~7-8).",
   };
 }

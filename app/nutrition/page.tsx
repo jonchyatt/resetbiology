@@ -13,5 +13,5 @@ export default function NutritionPage() {
 
 export const metadata = {
   title: "Nutrition Tracker - Reset Biology",
-  description: "Automated meal plans optimized for peptide effectiveness. Track macros with peptide-specific recommendations.",
+  description: "Track meals, macros, and the daily targets you set.",
 }

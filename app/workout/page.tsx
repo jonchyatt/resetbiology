@@ -13,5 +13,5 @@ export default function WorkoutPage() {
 
 export const metadata = {
   title: "Workout Tracker - Reset Biology",
-  description: "Custom fitness programs with analytics. Track your strength gains, endurance metrics, and body composition progress.",
+  description: "Custom fitness programs with analytics. Track logged sessions, sets, reps, and training history.",
 }
