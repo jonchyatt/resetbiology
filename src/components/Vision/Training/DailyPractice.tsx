@@ -21,6 +21,7 @@ import SnellenQuickCheck, { type SnellenQuickCheckResult } from './SnellenQuickC
 import SessionRunner, { type SessionRunnerFinishPayload } from './SessionRunner'
 import WeeklyAssessment, { type WeeklyAssessmentResult } from './WeeklyAssessment'
 import ProgressDashboard from './ProgressDashboard'
+import SessionRemindersCard from './SessionRemindersCard'
 import type { EngineResult } from '@/components/Vision/Engines/types'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
@@ -925,6 +926,9 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                   </div>
                 )}
               </div>
+
+              {/* Session reminders */}
+              <SessionRemindersCard />
 
               {/* Coaching cues */}
               <div className="bg-yellow-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-xl p-4">
