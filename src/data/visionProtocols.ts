@@ -345,8 +345,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Mirror Work',
           focus: 'Stability under scanning',
           baselineMinutes: 3,
-          exerciseMinutes: 18,
-          exerciseIds: ['box-breath-vision', 'mirror-scan', 'peripheral-pointing'],
+          exerciseMinutes: 21,
+          exerciseIds: ['box-breath-vision', 'mirror-scan', 'peripheral-pointing', 'gabor-contrast'],
           coachingCues: ['Head stays locked', 'Full range eye movement']
         },
         {
@@ -363,8 +363,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Distance Toggle',
           focus: 'Rapid accommodation shifts',
           baselineMinutes: 3,
-          exerciseMinutes: 18,
-          exerciseIds: ['focus-trombone', 'peripheral-pointing'],
+          exerciseMinutes: 21,
+          exerciseIds: ['focus-trombone', 'peripheral-pointing', 'gabor-contrast'],
           coachingCues: ['One breath per toggle', 'Maintain peripheral awareness']
         },
         {
@@ -403,8 +403,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Peripheral Challenge',
           focus: 'Push peripheral limits',
           baselineMinutes: 3,
-          exerciseMinutes: 20,
-          exerciseIds: ['peripheral-pointing', 'mirror-scan'],
+          exerciseMinutes: 23,
+          exerciseIds: ['peripheral-pointing', 'mirror-scan', 'gabor-contrast'],
           coachingCues: ['Trust your reach as targets creep outward', 'Recall the center letter the instant a check-in appears']
         },
         {
@@ -421,8 +421,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Distance Mastery',
           focus: 'Far vision development',
           baselineMinutes: 5,
-          exerciseMinutes: 18,
-          exerciseIds: ['palming-reset', 'focus-trombone', 'mirror-scan'],
+          exerciseMinutes: 21,
+          exerciseIds: ['palming-reset', 'focus-trombone', 'mirror-scan', 'gabor-contrast'],
           coachingCues: ['Push far distance', 'Step back when clear']
         },
         {
@@ -462,8 +462,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Speed + Peripheral',
           focus: 'Dual challenge',
           baselineMinutes: 3,
-          exerciseMinutes: 22,
-          exerciseIds: ['eye-jumps', 'peripheral-pointing'],
+          exerciseMinutes: 25,
+          exerciseIds: ['eye-jumps', 'peripheral-pointing', 'gabor-contrast'],
           coachingCues: ['Maintain peripheral awareness', 'No head bobbing']
         },
         {
@@ -480,8 +480,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Endurance Stack',
           focus: 'Extended focus work',
           baselineMinutes: 3,
-          exerciseMinutes: 24,
-          exerciseIds: ['focus-pushups', 'eye-jumps', 'snellen-layering-walks'],
+          exerciseMinutes: 27,
+          exerciseIds: ['focus-pushups', 'eye-jumps', 'snellen-layering-walks', 'gabor-contrast'],
           coachingCues: ['Push duration', 'Breathe through fatigue']
         },
         {
@@ -520,8 +520,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Fatigue Protocol',
           focus: 'Vision under stress',
           baselineMinutes: 3,
-          exerciseMinutes: 25,
-          exerciseIds: ['focus-pushups', 'eye-jumps', 'mirror-scan', 'snellen-layering-walks'],
+          exerciseMinutes: 28,
+          exerciseIds: ['focus-pushups', 'eye-jumps', 'mirror-scan', 'snellen-layering-walks', 'gabor-contrast'],
           coachingCues: ['No rest between drills', 'Maintain quality']
         },
         {
@@ -538,8 +538,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Combo Challenge',
           focus: 'All speed skills',
           baselineMinutes: 3,
-          exerciseMinutes: 24,
-          exerciseIds: ['box-breath-vision', 'eye-jumps', 'laterality-ladder', 'focus-trombone'],
+          exerciseMinutes: 27,
+          exerciseIds: ['box-breath-vision', 'eye-jumps', 'laterality-ladder', 'focus-trombone', 'gabor-contrast'],
           coachingCues: ['Push limits safely', 'Rest if blur persists']
         },
         {
@@ -579,8 +579,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Cognitive Stack',
           focus: 'Vision + thinking',
           baselineMinutes: 3,
-          exerciseMinutes: 24,
-          exerciseIds: ['laterality-ladder', 'peripheral-pointing', 'focus-trombone'],
+          exerciseMinutes: 27,
+          exerciseIds: ['laterality-ladder', 'peripheral-pointing', 'focus-trombone', 'gabor-contrast'],
           coachingCues: ['Watch for a rule flip on the ladder — same side, then back to crossed', 'Recall the center letter without breaking fixation']
         },
         {
@@ -597,8 +597,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Full Challenge',
           focus: 'All advanced skills',
           baselineMinutes: 3,
-          exerciseMinutes: 26,
-          exerciseIds: ['peripheral-pointing', 'eye-jumps', 'laterality-ladder', 'mirror-scan'],
+          exerciseMinutes: 29,
+          exerciseIds: ['peripheral-pointing', 'eye-jumps', 'laterality-ladder', 'mirror-scan', 'gabor-contrast'],
           coachingCues: ['No rest between', 'Push limits']
         },
         {
@@ -637,8 +637,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Reading Application',
           focus: 'Speed to reading',
           baselineMinutes: 3,
-          exerciseMinutes: 24,
-          exerciseIds: ['eye-jumps', 'focus-trombone', 'snellen-layering-walks'],
+          exerciseMinutes: 27,
+          exerciseIds: ['eye-jumps', 'focus-trombone', 'snellen-layering-walks', 'gabor-contrast'],
           coachingCues: ['Read aloud at each jump', 'Comprehension counts']
         },
         {
@@ -655,8 +655,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Peak Performance',
           focus: 'All skills maxed',
           baselineMinutes: 3,
-          exerciseMinutes: 28,
-          exerciseIds: ['eye-jumps', 'laterality-ladder', 'peripheral-pointing', 'snellen-layering-walks'],
+          exerciseMinutes: 31,
+          exerciseIds: ['eye-jumps', 'laterality-ladder', 'peripheral-pointing', 'snellen-layering-walks', 'gabor-contrast'],
           coachingCues: ['Personal best attempts', 'Record all metrics']
         },
         {
@@ -687,8 +687,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Distance Baseline',
           focus: 'Far vision assessment',
           baselineMinutes: 8,
-          exerciseMinutes: 18,
-          exerciseIds: ['palming-reset', 'focus-trombone'],
+          exerciseMinutes: 21,
+          exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
           coachingCues: ['Full far Snellen test', 'Record max clear distance']
         },
         {
@@ -705,8 +705,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Distance Challenge',
           focus: 'Push far limits',
           baselineMinutes: 5,
-          exerciseMinutes: 22,
-          exerciseIds: ['box-breath-vision', 'focus-trombone', 'snellen-layering-walks'],
+          exerciseMinutes: 25,
+          exerciseIds: ['box-breath-vision', 'focus-trombone', 'snellen-layering-walks', 'gabor-contrast'],
           coachingCues: ['Step back 5cm when clear', 'Outdoor practice if possible']
         },
         {
@@ -723,8 +723,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Week 9 Review',
           focus: 'Distance progress',
           baselineMinutes: 8,
-          exerciseMinutes: 18,
-          exerciseIds: ['palming-reset', 'focus-trombone'],
+          exerciseMinutes: 21,
+          exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
           coachingCues: ['Record new far max', 'Log reader glasses stage']
         }
       ],
@@ -745,8 +745,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Near Point Push',
           focus: 'Minimize near point',
           baselineMinutes: 5,
-          exerciseMinutes: 22,
-          exerciseIds: ['palming-reset', 'focus-pushups'],
+          exerciseMinutes: 25,
+          exerciseIds: ['palming-reset', 'focus-pushups', 'gabor-contrast'],
           coachingCues: ['Push closer in 0.5cm increments', 'Exhale on approach']
         },
         {
@@ -763,8 +763,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Sustained Clarity',
           focus: 'Hold focus longer',
           baselineMinutes: 5,
-          exerciseMinutes: 24,
-          exerciseIds: ['figure8-fixation', 'focus-trombone', 'smooth-tracking'],
+          exerciseMinutes: 27,
+          exerciseIds: ['figure8-fixation', 'focus-trombone', 'smooth-tracking', 'gabor-contrast'],
           coachingCues: ['Extend hold times', '10+ seconds per distance']
         },
         {
@@ -781,8 +781,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Phase 5 Complete',
           focus: 'Distance mastery assessment',
           baselineMinutes: 8,
-          exerciseMinutes: 18,
-          exerciseIds: ['palming-reset', 'focus-trombone'],
+          exerciseMinutes: 21,
+          exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
           coachingCues: ['Full range test', 'Compare to Week 1 baselines']
         }
       ],
@@ -804,8 +804,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Complete Stack',
           focus: 'All skills rotation',
           baselineMinutes: 5,
-          exerciseMinutes: 25,
-          exerciseIds: ['palming-reset', 'focus-pushups', 'peripheral-pointing', 'eye-jumps'],
+          exerciseMinutes: 28,
+          exerciseIds: ['palming-reset', 'focus-pushups', 'peripheral-pointing', 'eye-jumps', 'gabor-contrast'],
           coachingCues: ['Touch each skill area', 'Quality check all']
         },
         {
@@ -822,8 +822,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Stress Test',
           focus: 'Performance under pressure',
           baselineMinutes: 3,
-          exerciseMinutes: 28,
-          exerciseIds: ['eye-jumps', 'laterality-ladder', 'peripheral-pointing', 'focus-trombone'],
+          exerciseMinutes: 31,
+          exerciseIds: ['eye-jumps', 'laterality-ladder', 'peripheral-pointing', 'focus-trombone', 'gabor-contrast'],
           coachingCues: ['No breaks between', 'Maintain all quality']
         },
         {
@@ -840,8 +840,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Week 11 Review',
           focus: 'Integration check',
           baselineMinutes: 5,
-          exerciseMinutes: 20,
-          exerciseIds: ['palming-reset', 'peripheral-pointing', 'snellen-layering-walks'],
+          exerciseMinutes: 23,
+          exerciseIds: ['palming-reset', 'peripheral-pointing', 'snellen-layering-walks', 'gabor-contrast'],
           coachingCues: ['Full skill assessment', 'Identify weak areas']
         }
       ],
@@ -862,8 +862,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Final Prep',
           focus: 'Pre-assessment review',
           baselineMinutes: 5,
-          exerciseMinutes: 22,
-          exerciseIds: ['palming-reset', 'focus-pushups', 'eye-jumps'],
+          exerciseMinutes: 25,
+          exerciseIds: ['palming-reset', 'focus-pushups', 'eye-jumps', 'gabor-contrast'],
           coachingCues: ['Polish all skills', 'Prepare for final test']
         },
         {
@@ -880,8 +880,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Comprehensive Test B',
           focus: 'Speed + peripheral',
           baselineMinutes: 5,
-          exerciseMinutes: 22,
-          exerciseIds: ['eye-jumps', 'peripheral-pointing', 'laterality-ladder'],
+          exerciseMinutes: 25,
+          exerciseIds: ['eye-jumps', 'peripheral-pointing', 'laterality-ladder', 'gabor-contrast'],
           coachingCues: ['Record speed metrics', 'Peripheral count']
         },
         {
@@ -889,8 +889,8 @@ export const visionMasterProgram: VisionMasterProgram = {
           title: 'Integration Final',
           focus: 'Full skill demonstration',
           baselineMinutes: 5,
-          exerciseMinutes: 25,
-          exerciseIds: ['focus-pushups', 'eye-jumps', 'peripheral-pointing', 'snellen-layering-walks'],
+          exerciseMinutes: 28,
+          exerciseIds: ['focus-pushups', 'eye-jumps', 'peripheral-pointing', 'snellen-layering-walks', 'gabor-contrast'],
           coachingCues: ['Demonstrate all skills', 'Final recording']
         },
         {

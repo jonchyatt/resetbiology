@@ -777,7 +777,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     setHasInteracted(true);
                     setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }));
                   }}
-                  className="w-20 sm:w-24 bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
+                  className="flex-1 min-w-0 bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                 />
                 <select
                   aria-label="Dose unit"
@@ -803,7 +803,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       return { ...s, doseUnit: nextUnit, desiredDose: converted };
                     });
                   }}
-                  className="w-24 bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
+                  className="w-24 shrink-0 bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                 >
                   <option value="mcg" className="bg-gray-800 text-white">mcg</option>
                   <option value="mg" className="bg-gray-800 text-white">mg</option>

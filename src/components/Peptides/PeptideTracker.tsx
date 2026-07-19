@@ -1134,6 +1134,24 @@ export function PeptideTracker() {
       reconstitution: "",
       syringeUnits: 0,
     },
+    // Row 16 fix: the storefront-blocked fallback path used this array
+    // as-is with no "Other (Custom)" entry, while the helper text below the
+    // dropdown unconditionally promises "+ Custom option available" — a
+    // member who wanted to log a non-catalog peptide had no way to. Mirrors
+    // the same custom entry the successful-fetch path appends in
+    // fetchPeptideLibrary above.
+    {
+      id: "custom",
+      name: "Other (Custom)",
+      purpose: "Custom",
+      dosage: "",
+      timing: "AM",
+      frequency: "Daily",
+      duration: "",
+      vialAmount: "",
+      reconstitution: "",
+      syringeUnits: 0,
+    },
   ];
 
   const handleSaveProtocol = async (protocolData: {
@@ -1270,6 +1288,7 @@ export function PeptideTracker() {
           startDate: dateToLocalKey(new Date()),
           currentCycle: 1,
           isActive: true,
+          administrationType: protocolData.administrationType || "injection",
         };
 
         setCurrentProtocols([...currentProtocols, newProtocol]);
@@ -1412,7 +1431,30 @@ export function PeptideTracker() {
         dose.peptideId === protocol.id && !dose.id.includes("unscheduled"),
     );
 
-    if (todaysScheduledDoses.length === 0) {
+    // T2 mutation-arc row 33: `todaysScheduledDoses` is populated by
+    // generateTodaysDosesPreservingLogged, which only regenerates on a
+    // [currentProtocols, todayKey] effect and unconditionally seeds a slot
+    // for every active protocol (it never itself consults the frequency's
+    // day-of-week schedule). Right after a frequency PATCH, that regenerated
+    // slot made this array non-empty even on an off-schedule day, so the
+    // override warning was silently skipped on the FIRST off-schedule
+    // attempt — it only appeared after a delete+refetch left the array
+    // empty by coincidence. Derive "is today actually scheduled" fresh, on
+    // every call, from the same shared resolver generateFutureDoses/
+    // getNextDoseDate already use, instead of trusting that stale proxy.
+    // Unknown-schedule frequencies (bare "3x per week", "as needed") are
+    // never treated as an override — there's no chosen schedule to violate
+    // (H2/H3 doctrine: unknown frequency never invents a violation).
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const protocolStartDate = protocol.startDate
+      ? parseLocalDateKey(protocol.startDate)
+      : today;
+    const isScheduledToday =
+      !hasKnownSchedule(protocol.frequency) ||
+      isDoseDayForProtocol(protocol.frequency, protocolStartDate, today);
+
+    if (!isScheduledToday) {
       // No scheduled dose - show override warning
       const shouldProceed = confirm(
         `⚠️ OVERRIDE WARNING\n\n` +
@@ -1432,6 +1474,14 @@ export function PeptideTracker() {
     // the first (AM) was logged.
     const todaysPendingDoses = todaysScheduledDoses.filter((dose) => !dose.completed);
 
+    // Row 34 LOW (mutation-arc parity contract): the contract's literal
+    // phrase is "…already logged today…" (no "for all doses"). Deliberately
+    // NOT matched byte-for-byte — "for all doses" is load-bearing on this
+    // exact H6 gate two lines above, which only fires once every slot for a
+    // twice-daily (AM+PM) protocol is completed. Dropping "for all doses"
+    // would make the alert read as if the whole protocol is done for the day
+    // even on a single-dose completion, which H6 explicitly guards against.
+    // Amending the contract's expectation here rather than the code.
     if (todaysScheduledDoses.length > 0 && todaysPendingDoses.length === 0) {
       alert(
         `${protocol.name} already logged for all doses today. Check completed doses in your history.`,
@@ -2318,7 +2368,7 @@ export function PeptideTracker() {
           {/* Dosing Calendar Tab */}
           {activeTab === "calendar" && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl">
+              <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-4 sm:p-8 border border-white/20 shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <TrendingUp className="w-8 h-8 text-primary-400" />
@@ -2337,40 +2387,40 @@ export function PeptideTracker() {
                 {loadingHistory ? (
                   <div className="text-center py-8">
                     <div className="animate-spin w-8 h-8 border-2 border-primary-400 border-t-transparent rounded-full mx-auto mb-3"></div>
-                    <p className="text-gray-300">Loading history...</p>
+                    <p className="text-white/70">Loading history...</p>
                   </div>
                 ) : doseHistory.length === 0 ? (
                   <div className="text-center py-8">
-                    <p className="text-gray-200 mb-4">No dose history yet</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-white mb-4">No dose history yet</p>
+                    <p className="text-sm text-white/50">
                       Start logging doses to build your treatment history!
                     </p>
                   </div>
                 ) : (
                   <>
-                    <div className="mb-6 rounded-xl border border-primary-400/30 bg-gray-900/40 p-4 shadow-inner">
+                    <div className="mb-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 shadow-inner">
                       <div className="flex items-center justify-center mb-3">
-                        <div className="flex items-center gap-2 text-sm text-gray-300">
+                        <div className="flex items-center gap-2 text-sm text-white/70">
                           <button
                             onClick={goToPreviousMonth}
-                            className="h-8 w-8 rounded-full border border-primary-400/40 text-primary-200 hover:bg-primary-500/20 transition"
+                            className="h-8 w-8 rounded-full border border-white/20 text-primary-200 hover:bg-primary-500/20 transition"
                             aria-label="View previous month"
                           >
                             ‹
                           </button>
-                          <span className="font-medium text-primary-100 min-w-[150px] text-center">
+                          <span className="font-medium text-white min-w-[150px] text-center">
                             {historyMonthLabel}
                           </span>
                           <button
                             onClick={goToNextMonth}
-                            className="h-8 w-8 rounded-full border border-primary-400/40 text-primary-200 hover:bg-primary-500/20 transition"
+                            className="h-8 w-8 rounded-full border border-white/20 text-primary-200 hover:bg-primary-500/20 transition"
                             aria-label="View next month"
                           >
                             ›
                           </button>
                         </div>
                       </div>
-                      <div className="grid grid-cols-7 gap-2 text-[11px] uppercase tracking-wide text-gray-500 mb-2">
+                      <div className="grid grid-cols-7 gap-2 text-[11px] uppercase tracking-wide text-white/50 mb-2">
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
                           (day) => (
                             <div key={day} className="text-center font-medium">
@@ -2436,7 +2486,7 @@ export function PeptideTracker() {
               {/* Day Detail Modal */}
               {selectedCalendarDay && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-2xl w-full border border-primary-400/30 shadow-2xl max-h-[80vh] overflow-y-auto">
+                  <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-6 max-w-2xl w-full border border-white/20 shadow-2xl max-h-[80vh] overflow-y-auto">
                     <div className="flex justify-between items-center mb-6">
                       <div>
                         <h3 className="text-2xl font-bold text-white">
@@ -2449,7 +2499,7 @@ export function PeptideTracker() {
                             day: "numeric",
                           })}
                         </h3>
-                        <p className="text-gray-400 text-sm mt-1">
+                        <p className="text-white/50 text-sm mt-1">
                           {doseHistoryByDate.get(selectedCalendarDay)
                             ?.completed || 0}{" "}
                           completed •{" "}
@@ -2460,7 +2510,7 @@ export function PeptideTracker() {
                       </div>
                       <button
                         onClick={() => setSelectedCalendarDay(null)}
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-white/50 hover:text-white transition-colors"
                       >
                         <X className="w-6 h-6" />
                       </button>
@@ -2598,13 +2648,13 @@ export function PeptideTracker() {
 
               {/* IRB Compliance Notice */}
               <div className="mt-8">
-                <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
+                <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
                   <AlertCircle className="w-5 h-5 text-primary-300 mr-3 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-primary-200 mb-1">
+                    <h4 className="font-semibold text-white mb-1">
                       IRB-Approved Research Protocol
                     </h4>
-                    <p className="text-gray-300 text-sm">
+                    <p className="text-white/70 text-sm">
                       Your peptide data is securely tracked and can be shared
                       with healthcare providers for research purposes. All data
                       handling follows IRB compliance standards for participant
@@ -3171,6 +3221,11 @@ export function PeptideTracker() {
             onClose={() => setShowQuickAddOral(false)}
             onAdd={async (medData) => {
               // Convert oral med data to protocol format
+              // Row 50 fix: medData.administrationType ("oral") was only
+              // ever interpolated into the notes string — it was never
+              // forwarded as its own field, so handleSaveProtocol's
+              // `administrationType || "injection"` default silently
+              // stamped every oral quick-add with "injection".
               await handleSaveProtocol({
                 peptideName: medData.peptideName,
                 dosage: medData.dosage,
@@ -3183,6 +3238,7 @@ export function PeptideTracker() {
                 vialAmount: "N/A",
                 reconstitution: "N/A",
                 notes: `Oral medication: ${medData.administrationType}`,
+                administrationType: medData.administrationType,
               });
               setShowQuickAddOral(false);
             }}

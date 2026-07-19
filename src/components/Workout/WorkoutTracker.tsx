@@ -635,28 +635,55 @@ export function WorkoutTracker() {
                           </p>
                         )}
                       </div>
-                      <div className="flex gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSessionAction("complete-session", nextSession.id);
-                          }}
-                          disabled={sessionActionLoading}
-                          className="flex-1 rounded-lg bg-secondary-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-secondary-400 disabled:opacity-50"
-                        >
-                          Complete Session
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSessionAction("skip-session", nextSession.id);
-                          }}
-                          disabled={sessionActionLoading}
-                          className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white/80 transition hover:border-white/40 disabled:opacity-50"
-                        >
-                          Skip
-                        </button>
-                      </div>
+                      {readinessActuation.guidance.level === "recover" ? (
+                        // Low readiness: recovery becomes the primary (visually prominent) action,
+                        // training-as-prescribed stays one click away as secondary -- never gated.
+                        <div className="flex gap-3">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSessionAction("skip-session", nextSession.id);
+                            }}
+                            disabled={sessionActionLoading}
+                            className="flex-1 rounded-lg bg-secondary-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-secondary-400 disabled:opacity-50"
+                          >
+                            Take a Recovery Day
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSessionAction("complete-session", nextSession.id);
+                            }}
+                            disabled={sessionActionLoading}
+                            className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white/80 transition hover:border-white/40 disabled:opacity-50"
+                          >
+                            Train hard anyway
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-3">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSessionAction("complete-session", nextSession.id);
+                            }}
+                            disabled={sessionActionLoading}
+                            className="flex-1 rounded-lg bg-secondary-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-secondary-400 disabled:opacity-50"
+                          >
+                            Complete Session
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSessionAction("skip-session", nextSession.id);
+                            }}
+                            disabled={sessionActionLoading}
+                            className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white/80 transition hover:border-white/40 disabled:opacity-50"
+                          >
+                            Skip
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
