@@ -52,6 +52,16 @@ export default function SessionRemindersCard() {
           setEmailEnabled(pref.emailEnabled)
           setDailyReminderTime(pref.dailyReminderTime || DEFAULT_TIME)
           if (pref.timezone) setTimezone(pref.timezone)
+          // Saved pref says push on, but this browser blocks notifications —
+          // surface the unblock instructions immediately, not on interaction.
+          if (
+            pref.pushEnabled &&
+            typeof window !== 'undefined' &&
+            'Notification' in window &&
+            Notification.permission === 'denied'
+          ) {
+            setDeniedNote(true)
+          }
         }
       } catch (err) {
         console.warn('Failed to load vision reminder preference', err)
@@ -103,12 +113,12 @@ export default function SessionRemindersCard() {
       return
     }
 
-    if (pushPermission === 'granted') {
-      setPushEnabled(true)
-      await save({ pushEnabled: true })
-      return
-    }
-
+    // Always run the subscribe flow, even when permission is already
+    // granted — pushManager.subscribe is idempotent and this guarantees a
+    // live subscription actually exists for THIS browser before we save
+    // pushEnabled=true (verifier finding: pre-granted permission with a
+    // pruned/never-registered subscription would otherwise toggle on and
+    // silently never deliver).
     setSubscribing(true)
     try {
       await subscribeToPush()
