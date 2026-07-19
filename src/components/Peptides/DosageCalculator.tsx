@@ -173,21 +173,21 @@ const formatNumber = (n: number, digits = 2) =>
 const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number; instructions?: string }>
   = ({ peptideAmount, volume, instructions }) => {
     return (
-      <div className="space-y-3 bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
+      <div className="space-y-3 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
         <h3 className="text-lg font-bold text-white mb-1">Mixing Instructions</h3>
-        <ol className="space-y-1.5 text-gray-300 list-decimal list-inside text-sm leading-snug">
+        <ol className="space-y-1.5 text-white/70 list-decimal list-inside text-sm leading-snug">
           <li>Add {formatNumber(volume, 2)} ml of bacteriostatic water to {formatNumber(peptideAmount, 2)} mg vial</li>
           <li>Inject water slowly down the side of vial</li>
           <li>Gently swirl (do not shake) until dissolved</li>
           <li>Store in refrigerator after reconstitution</li>
         </ol>
         {instructions && (
-          <div className="text-sm text-gray-300 leading-snug">
-            <span className="font-semibold text-primary-400">Note: </span>{instructions}
+          <div className="text-sm text-white/70 leading-snug">
+            <span className="font-semibold text-primary-300">Note: </span>{instructions}
           </div>
         )}
-        <div className="bg-amber-600/20 border border-amber-400/30 rounded-lg p-2.5">
-          <p className="text-sm text-amber-300 leading-snug">⚠️ Use within 30 days after reconstitution</p>
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+          <p className="text-xs text-amber-300 leading-snug">⚠️ Use within 30 days after reconstitution</p>
         </div>
       </div>
     );
@@ -579,10 +579,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   }, [peptideLibrary]);
 
   return (
-    <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-6 border border-primary-400/30 shadow-2xl">
+    <div className="bg-gray-900/60 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20">
       {/* Alerts */}
       {hasInteracted && errors.length > 0 && (
-        <div className="mb-4 bg-red-500/10 border border-red-400/30 text-red-200 rounded-lg p-3 flex items-start gap-2" role="alert">
+        <div className="mb-4 bg-red-900/20 border border-red-500/30 text-red-200 rounded-2xl p-4 flex items-start gap-2" role="alert">
           <AlertCircle className="w-5 h-5 mt-0.5" />
           <div>
             <p className="font-semibold">Please correct the following:</p>
@@ -601,8 +601,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {/* Peptide selection */}
           {mode === 'addProtocol' && (
             peptideLibrary && peptideLibrary.length > 0 ? (
-              <div className="bg-gradient-to-br from-primary-600/20 to-primary-700/15 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40 space-y-3">
-                <label className="block text-sm text-amber-300 font-semibold">Select Peptide</label>
+              <div className="bg-primary-500/10 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
+                <label className="block text-sm text-white/80 font-semibold">Select Peptide</label>
                 <select
                   aria-label="Select peptide"
                   value={selectedPeptideId || peptideName}
@@ -610,7 +610,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     setHasInteracted(true);
                     loadPeptideFromLibrary(event.target.value);
                   }}
-                  className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                  className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2.5 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                 >
                   {/* H4: no item is auto-selected, so show an explicit
                       placeholder until the member picks a real peptide. */}
@@ -625,7 +625,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                         .replace(/\s+Package\s*$/i, '')
                         .trim();
                       return (
-                        <option key={optionValue} value={optionValue} className="bg-gray-800 text-amber-100">
+                        <option key={optionValue} value={optionValue} className="bg-gray-800 text-white">
                           {displayName}
                         </option>
                       );
@@ -652,21 +652,21 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 {/* Custom Peptide Name Input */}
                 {isCustomPeptide && (
                   <div className="space-y-2 animate-fade-in">
-                    <label className="block text-sm text-amber-300 font-medium">Custom Peptide/Supplement Name</label>
+                    <label className="block text-sm text-white/80 font-medium">Custom Peptide/Supplement Name</label>
                     <input
                       type="text"
                       value={customPeptideName}
                       onChange={(e) => setCustomPeptideName(e.target.value)}
                       placeholder="e.g., Vitamin D3, Magnesium, NAD+, Custom Blend"
-                      className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                      className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2.5 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                     />
-                    <p className="text-xs text-amber-200/70">
+                    <p className="text-xs text-white/50">
                       Enter any vitamin, mineral, or custom compound you want to track
                     </p>
                   </div>
                 )}
 
-                <p className="text-xs text-amber-300/70">
+                <p className="text-xs text-white/50">
                   {groupedPeptideLibrary.storefront.length} store product{groupedPeptideLibrary.storefront.length === 1 ? '' : 's'}
                   {groupedPeptideLibrary.library.length > 0 ? ` + ${groupedPeptideLibrary.library.length} peptide library cards` : ''} + Custom option available
                 </p>
@@ -676,7 +676,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 )}
               </div>
             ) : (
-              <div className="bg-gradient-to-br from-rose-900/20 to-rose-900/10 backdrop-blur-sm rounded-xl p-4 border border-rose-400/30 text-sm text-rose-200">
+              <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 text-sm text-red-200">
                 Peptide library unavailable. Please close and try again.
               </div>
             )
@@ -684,8 +684,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
           {/* Administration type */}
           {mode === 'addProtocol' && (
-            <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-2">
-              <label className="block text-sm text-amber-300 font-medium">Administration Type</label>
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 space-y-2">
+              <label className="block text-sm text-white/70 font-medium">Administration Type</label>
               <select
                 aria-label="Administration type"
                 value={administrationType}
@@ -694,24 +694,24 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   setAdminTypeAutoNote(null);
                   setAdministrationType(e.target.value as AdministrationType);
                 }}
-                className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2.5 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
               >
-                <option value="injection" className="bg-gray-800 text-amber-100">Injection</option>
-                <option value="oral" className="bg-gray-800 text-amber-100">Oral</option>
-                <option value="nasal" className="bg-gray-800 text-amber-100">Nasal</option>
-                <option value="topical" className="bg-gray-800 text-amber-100">Topical</option>
+                <option value="injection" className="bg-gray-800 text-white">Injection</option>
+                <option value="oral" className="bg-gray-800 text-white">Oral</option>
+                <option value="nasal" className="bg-gray-800 text-white">Nasal</option>
+                <option value="topical" className="bg-gray-800 text-white">Topical</option>
               </select>
               {adminTypeAutoNote && (
-                <p className="text-xs text-amber-300/70">Auto-detected from a cited route — change it if that's wrong.</p>
+                <p className="text-xs text-white/50">Auto-detected from a cited route — change it if that's wrong.</p>
               )}
             </div>
           )}
 
           {/* Volume & Vial size */}
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-amber-300 font-medium">Total volume (ml)</span>
+                <span className="text-sm text-white/70 font-medium">Total volume (ml)</span>
                 <select
                   aria-label="Total volume"
                   onChange={(e) => {
@@ -719,15 +719,15 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) }));
                   }}
                   value={inputs.totalVolume}
-                  className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all w-full"
+                  className="bg-black/20 border border-white/15 rounded-lg px-3 py-2.5 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all w-full"
                 >
                   {[1, 0.5, 1.5, 2, 2.5, 3].map((v) => (
-                    <option key={v} value={v} className="bg-gray-800 text-amber-100">{v} ml</option>
+                    <option key={v} value={v} className="bg-gray-800 text-white">{v} ml</option>
                   ))}
                 </select>
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-amber-300 font-medium">Peptide in vial (mg)</span>
+                <span className="text-sm text-white/70 font-medium">Peptide in vial (mg)</span>
                 <input
                   type="number"
                   aria-label="Peptide amount in vial"
@@ -739,7 +739,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   placeholder="e.g., 10, 50, 100"
                   min="0"
                   step="any"
-                  className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                  className="bg-black/20 border border-white/15 rounded-lg px-3 py-2.5 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                 />
               </label>
             </div>
@@ -749,17 +749,17 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 type="checkbox"
                 checked={!!inputs.insulinSyringeUnits}
                 onChange={(e) => setInputs((s) => ({ ...s, insulinSyringeUnits: e.target.checked }))}
-                className="h-4 w-4 rounded border-amber-400/40 bg-primary-600/25 text-amber-400 focus:ring-amber-400/30"
+                className="h-4 w-4 rounded border-white/20 bg-white/5 text-primary-500 focus:ring-primary-400/30"
               />
-              <label htmlFor="insulin-toggle" className="text-sm text-amber-300">Show insulin syringe units (100u = 1 ml)</label>
+              <label htmlFor="insulin-toggle" className="text-sm text-white/70">Show insulin syringe units (100u = 1 ml)</label>
             </div>
-            <div className="text-xs text-amber-300/70">Actual concentration: <span className="text-amber-100 font-medium">{displayConcentration} mcg/ml</span></div>
+            <div className="text-xs text-white/60">Actual concentration: <span className="text-white font-medium">{displayConcentration} mcg/ml</span></div>
           </div>
 
           {/* Dose + Unit */}
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 space-y-3">
             <label>
-              <span className="block mb-1 text-sm text-amber-300 font-medium">Desired dose</span>
+              <span className="block mb-1 text-sm text-white/70 font-medium">Desired dose</span>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -777,7 +777,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     setHasInteracted(true);
                     setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }));
                   }}
-                  className="w-20 sm:w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                  className="w-20 sm:w-24 bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                 />
                 <select
                   aria-label="Dose unit"
@@ -803,10 +803,10 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       return { ...s, doseUnit: nextUnit, desiredDose: converted };
                     });
                   }}
-                  className="w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
+                  className="w-24 bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                 >
-                  <option value="mcg" className="bg-gray-800 text-amber-100">mcg</option>
-                  <option value="mg" className="bg-gray-800 text-amber-100">mg</option>
+                  <option value="mcg" className="bg-gray-800 text-white">mcg</option>
+                  <option value="mg" className="bg-gray-800 text-white">mg</option>
                 </select>
               </div>
             </label>
@@ -821,9 +821,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 setHasInteracted(true);
                 setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) }));
               }}
-              className="w-full accent-amber-400"
+              className="w-full accent-primary-400"
             />
-            <div className="flex justify-between text-xs text-amber-300/70">
+            <div className="flex justify-between text-xs text-white/50">
               <span>{unitMinMax.min} {inputs.doseUnit}</span>
               <span>{unitMinMax.max} {inputs.doseUnit}</span>
             </div>
@@ -832,22 +832,22 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {/* Scheduling Section - Only in addProtocol mode */}
           {mode === 'addProtocol' && (
             <>
-              <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40 space-y-4">
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10 space-y-4">
                 {/* Frequency Selector */}
                 <div>
-                  <label className="block text-sm text-amber-300 font-medium mb-2">Dosing Frequency</label>
+                  <label className="block text-sm text-white/70 font-medium mb-2">Dosing Frequency</label>
                   <select
                     value={scheduleType}
                     onChange={(e) => setScheduleType(e.target.value)}
-                    className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                    className="w-full bg-black/20 text-white border border-white/15 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                   >
-                    <option value="daily" className="bg-gray-900 text-white">Daily (Every Day)</option>
-                    <option value="everyOtherDay" className="bg-gray-900 text-white">Every Other Day</option>
-                    <option value="monFri" className="bg-gray-900 text-white">Mon-Fri (5 days/week)</option>
-                    <option value="custom" className="bg-gray-900 text-white">Custom Days</option>
+                    <option value="daily" className="bg-gray-800 text-white">Daily (Every Day)</option>
+                    <option value="everyOtherDay" className="bg-gray-800 text-white">Every Other Day</option>
+                    <option value="monFri" className="bg-gray-800 text-white">Mon-Fri (5 days/week)</option>
+                    <option value="custom" className="bg-gray-800 text-white">Custom Days</option>
                   </select>
                   {scheduleType === 'everyOtherDay' && (
-                    <p className="text-xs text-amber-300/80 mt-2 bg-amber-500/10 border border-amber-400/30 rounded px-2 py-1.5">
+                    <p className="text-xs text-amber-300 mt-2 bg-amber-500/10 border border-amber-500/30 rounded-lg px-2 py-1.5">
                       <span className="font-semibold">Note:</span> Every other day alternates from your start date, so the day of week will shift. First dose starts today.
                     </p>
                   )}
@@ -856,7 +856,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 {/* Day Picker - Only show for custom schedule */}
                 {scheduleType === 'custom' && (
                   <div>
-                    <label className="block text-sm text-amber-300 font-medium mb-2">Select Days</label>
+                    <label className="block text-sm text-white/70 font-medium mb-2">Select Days</label>
                     <div className="flex flex-wrap items-center gap-1.5">
                       {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                         <button
@@ -865,8 +865,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                           onClick={() => toggleDay(day)}
                           className={`flex-shrink-0 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-md border transition-all whitespace-nowrap ${
                             selectedDays.includes(day)
-                              ? 'bg-amber-300/50 text-amber-50 border-amber-200/70 shadow-[0_0_18px_rgba(245,193,92,0.5)]'
-                              : 'bg-amber-300/15 text-amber-200 border-amber-200/40 hover:bg-amber-300/25'
+                              ? 'bg-primary-500 text-white border-primary-400/60'
+                              : 'bg-white/5 text-white/70 border-white/15 hover:bg-white/10'
                           }`}
                           aria-pressed={selectedDays.includes(day)}
                         >
@@ -879,20 +879,20 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
                 {/* Dose Times */}
                 <div>
-                  <label className="block text-sm text-amber-300 font-medium mb-2">Dose Times</label>
+                  <label className="block text-sm text-white/70 font-medium mb-2">Dose Times</label>
 
                   {/* Display selected times */}
                   <div className="flex flex-wrap gap-2 mb-3">
                     {selectedTimes.map((time) => (
                       <div
                         key={time}
-                        className="flex items-center gap-2 bg-amber-300/45 text-amber-50 border border-amber-200/70 shadow-[0_0_14px_rgba(245,193,92,0.45)] px-3 py-1.5 text-sm font-medium rounded-md"
+                        className="flex items-center gap-2 bg-primary-500/20 text-primary-100 border border-primary-400/40 px-3 py-1.5 text-sm font-medium rounded-md"
                       >
                         <span>{time}</span>
                         <button
                           type="button"
                           onClick={() => removeTime(time)}
-                          className="text-amber-200 hover:text-white transition-colors"
+                          className="text-primary-200 hover:text-white transition-colors"
                           aria-label={`Remove ${time}`}
                         >
                           ×
@@ -900,7 +900,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       </div>
                     ))}
                     {selectedTimes.length === 0 && (
-                      <p className="text-xs text-gray-400">No dose times selected</p>
+                      <p className="text-xs text-white/50">No dose times selected</p>
                     )}
                   </div>
 
@@ -910,26 +910,26 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                       type="time"
                       value={newTimeInput}
                       onChange={(e) => setNewTimeInput(e.target.value)}
-                      className="flex-1 bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                      className="flex-1 bg-black/20 text-white border border-white/15 rounded-lg px-4 py-2 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                     />
                     <button
                       type="button"
                       onClick={addTime}
-                      className="bg-amber-300/30 hover:bg-amber-300/45 text-amber-100 border border-amber-200/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                      className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-200 border border-primary-400/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
                     >
                       + Add Time
                     </button>
                   </div>
 
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-white/50 mt-2">
                     Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
                   </p>
                 </div>
 
                 {/* Schedule Summary */}
-                <div className="bg-gray-800/30 rounded-lg px-3 py-2 border border-gray-600/20">
-                  <p className="text-xs text-gray-400 leading-snug">
-                    <span className="font-medium text-gray-300">Schedule:</span>{' '}
+                <div className="bg-black/20 rounded-lg px-3 py-2 border border-white/10">
+                  <p className="text-xs text-white/60 leading-snug">
+                    <span className="font-medium text-white/80">Schedule:</span>{' '}
                     {formatScheduleString(
                       scheduleType,
                       scheduleType === 'custom' ? selectedDays : [],
@@ -952,9 +952,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           />
 
           {mode === 'addProtocol' && (
-            <div className="w-full bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
+            <div className="w-full bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
               <div className="flex flex-col gap-3">
-                <label className="text-sm text-gray-300 font-medium" htmlFor="protocol-duration">
+                <label className="text-sm text-white/70 font-medium" htmlFor="protocol-duration">
                   Protocol Duration
                 </label>
                 <input
@@ -963,9 +963,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   placeholder="e.g., 8 weeks, 12 weeks, 6 months"
-                  className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-sm"
+                  className="bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all text-sm"
                 />
-                <p className="text-xs text-gray-400 leading-snug">
+                <p className="text-xs text-white/50 leading-snug">
                   Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
                 </p>
               </div>
@@ -975,22 +975,22 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
         {/* Results & Instructions */}
         <div className="space-y-4">
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30" role="status" aria-live="polite">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10" role="status" aria-live="polite">
             <h3 className="text-lg font-semibold text-white mb-1">Results</h3>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm leading-snug">
-              <div className="text-gray-400">Peptide</div>
+              <div className="text-white/60">Peptide</div>
               <div className="text-white font-medium">
                 {isCustomPeptide ? (customPeptideName || 'Custom (not named)') : (peptideName || '—')}
               </div>
-              <div className="text-gray-400">Volume to draw</div>
+              <div className="text-white/60">Volume to draw</div>
               <div className="text-white font-medium">{formatNumber(results.volumeToDraw, results.volumeToDraw < 1 ? 3 : 2)} ml</div>
               {typeof results.insulinUnits === "number" && (
                 <>
-                  <div className="text-gray-400">Insulin units</div>
+                  <div className="text-white/60">Insulin units</div>
                   <div className="text-white font-medium">{results.insulinUnits} u</div>
                 </>
               )}
-              <div className="text-gray-400">Doses per vial</div>
+              <div className="text-white/60">Doses per vial</div>
               <div className="text-white font-medium">{results.dosesPerVial}</div>
             </div>
           </div>
@@ -1002,21 +1002,21 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           />
 
           {/* Notes */}
-          <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
-            <label className="block mb-2 text-sm text-gray-300">Notes (optional)</label>
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+            <label className="block mb-2 text-sm text-white/70">Notes (optional)</label>
             <textarea
               aria-label="Notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
+              className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
               placeholder="Timing, site, symptoms, etc."
             />
           </div>
 
           {/* Notification Preferences - Only show in addProtocol mode */}
           {mode === 'addProtocol' && (
-            <div className="bg-gradient-to-br from-primary-900/30 to-secondary-900/30 backdrop-blur-sm rounded-xl p-5 border border-primary-400/40">
+            <div className="bg-primary-500/10 backdrop-blur-sm rounded-xl p-5 border border-primary-400/20">
               <div className="flex items-center gap-2 mb-4">
                 <svg className="w-5 h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -1031,13 +1031,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     type="checkbox"
                     checked={pushEnabled}
                     onChange={(e) => setPushEnabled(e.target.checked)}
-                    className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-primary-500 focus:ring-primary-500 focus:ring-offset-gray-900"
+                    className="w-5 h-5 rounded border-white/20 bg-white/5 text-primary-500 focus:ring-primary-500 focus:ring-offset-gray-900"
                   />
                   <div className="flex-1">
                     <div className="text-white font-medium group-hover:text-primary-300 transition-colors">
                       Push notifications
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-white/50">
                       Get reminders even when the app is closed
                     </div>
                   </div>
@@ -1049,13 +1049,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     type="checkbox"
                     checked={emailEnabled}
                     onChange={(e) => setEmailEnabled(e.target.checked)}
-                    className="w-5 h-5 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
+                    className="w-5 h-5 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500 focus:ring-offset-gray-900"
                   />
                   <div className="flex-1">
                     <div className="text-white font-medium group-hover:text-blue-300 transition-colors">
                       Email reminders
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-white/50">
                       Backup reminders to your login email
                     </div>
                   </div>
@@ -1063,13 +1063,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
                 {/* Reminder Timing */}
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-white/70 mb-2">
                     Remind me before dose:
                   </label>
                   <select
                     value={reminderMinutes}
                     onChange={(e) => setReminderMinutes(Number(e.target.value))}
-                    className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none"
+                    className="w-full bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
                   >
                     <option value={5}>5 minutes</option>
                     <option value={15}>15 minutes</option>
@@ -1094,7 +1094,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 bg-red-500/20 hover:bg-red-500/35 text-red-200 font-bold py-3 px-6 rounded-lg transition-colors border border-red-400/40"
+                  className="flex-1 bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                 >
                   Cancel
                 </button>
@@ -1102,7 +1102,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   type="button"
                   onClick={handleProtocolSave}
                   disabled={!peptideName || isSaving || errors.length > 0 || selectedDays.length === 0 || selectedTimes.length === 0}
-                  className="flex-1 bg-amber-300/30 hover:bg-amber-300/50 disabled:bg-gray-600 disabled:text-gray-300 disabled:opacity-60 text-amber-100 font-bold py-3 px-6 rounded-lg border border-amber-200/40 backdrop-blur-sm transition-all shadow-[0_0_20px_rgba(245,193,92,0.35)]"
+                  className="flex-1 bg-primary-500 hover:bg-primary-600 active:bg-primary-700 disabled:bg-white/10 disabled:text-white/40 disabled:opacity-60 text-white font-semibold py-3 px-6 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
                 >
                   {isSaving ? "Adding Protocol..." : "Add Protocol"}
                 </button>
@@ -1120,7 +1120,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <button
                   type="button"
                   onClick={handleSavePreset}
-                  className="bg-gray-800/50 border border-gray-600/30 text-white font-medium py-2 px-4 rounded-lg transition-colors hover:border-primary-400"
+                  className="bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-colors"
                 >
                   Save Preset
                 </button>
@@ -1131,7 +1131,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       </div>
 
       {/* Footer disclaimer */}
-      <div className="mt-6 text-xs text-gray-500">
+      <div className="mt-6 text-xs text-white/40">
         This calculator is provided for informational purposes and should be used under clinician guidance. Always verify calculations.
       </div>
     </div>

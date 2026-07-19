@@ -2790,14 +2790,14 @@ export function PeptideTracker() {
         {/* Add Protocol Modal - Now using Enhanced DosageCalculator */}
         {showAddProtocolModal && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
-            <div className="bg-gradient-to-br from-primary-900/95 via-gray-900/95 to-secondary-900/95 rounded-3xl max-w-7xl w-full max-h-[92vh] overflow-hidden shadow-[0_0_100px_rgba(63,191,181,0.3)] border border-primary-400/40">
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-md border-b border-primary-400/30 px-8 py-6">
+            <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl max-w-7xl w-full max-h-[92vh] overflow-hidden shadow-2xl border border-white/20">
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-md border-b border-primary-400/30 px-5 sm:px-8 py-5 sm:py-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-300 to-secondary-300 bg-clip-text text-transparent">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white">
                       Add Research Protocol
                     </h2>
-                    <p className="text-primary-200 mt-1">
+                    <p className="text-sm text-white/70 mt-1">
                       Select a peptide and scheduling details for tracking
                     </p>
                   </div>
@@ -2812,7 +2812,7 @@ export function PeptideTracker() {
                   </button>
                 </div>
               </div>
-              <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
+              <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-4 sm:p-8">
                 <DosageCalculator
                   mode="addProtocol"
                   peptideLibrary={addProtocolPeptideLibrary}
@@ -2828,18 +2828,18 @@ export function PeptideTracker() {
           </div>
         )}
 
-        {/* Dosage Calculator Modal - Professional Medical-Grade Design */}
+        {/* Dosage Calculator Modal - calm teal/glass surface */}
         {showCalculatorModal && selectedProtocol && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-lg flex items-center justify-center z-50 p-4">
-            <div className="bg-gradient-to-br from-primary-900/95 via-gray-900/95 to-secondary-900/95 rounded-3xl max-w-7xl w-full max-h-[92vh] overflow-hidden shadow-[0_0_100px_rgba(63,191,181,0.3)] border border-primary-400/40">
-              {/* Premium Header Bar */}
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-md border-b border-primary-400/30 px-8 py-6">
+            <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl max-w-7xl w-full max-h-[92vh] overflow-hidden shadow-2xl border border-white/20">
+              {/* Header Bar */}
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-md border-b border-primary-400/30 px-5 sm:px-8 py-5 sm:py-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-300 to-secondary-300 bg-clip-text text-transparent">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white">
                       Dosage Calculator
                     </h2>
-                    <p className="text-primary-200 mt-1">
+                    <p className="text-sm text-white/70 mt-1">
                       {selectedProtocol.name} • {selectedProtocol.purpose}{" "}
                       Protocol
                     </p>
@@ -2853,8 +2853,8 @@ export function PeptideTracker() {
                 </div>
               </div>
 
-              {/* Calculator Content with Premium Styling */}
-              <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-8">
+              {/* Calculator Content */}
+              <div className="overflow-y-auto max-h-[calc(92vh-100px)] custom-scrollbar p-4 sm:p-8">
                 <DosageCalculator
                   importedPeptide={{
                     id: selectedProtocol.id || "temp",

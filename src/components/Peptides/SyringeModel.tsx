@@ -99,7 +99,7 @@ export const SyringeModel: React.FC<SyringeModelProps> = ({
 
   return (
     <div
-      className={`relative bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-2xl p-5 border border-primary-400/30 shadow-2xl w-full max-w-[260px] lg:max-w-[240px] mx-auto ${className}`}
+      className={`relative bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10 w-full max-w-[260px] lg:max-w-[240px] mx-auto ${className}`}
     >
       <div className="flex flex-col items-center">
         <svg viewBox="0 0 140 310" className="w-40 drop-shadow-xl" aria-label="Syringe fill visualization">
