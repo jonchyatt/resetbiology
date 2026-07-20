@@ -39,6 +39,16 @@ export function attackTimeForCurriculum(wave: number, encounterIndex: number): n
   return base + encounterIndex * stagger
 }
 
+export function villagerEntryX(
+  stageWidth: number,
+  spriteWidth: number,
+  attackBarWidth = 58,
+  safeInset = 18,
+): number {
+  const rightExtent = Math.max(spriteWidth, spriteWidth / 2 + attackBarWidth / 2)
+  return Math.max(0, stageWidth - rightExtent - safeInset)
+}
+
 export function deterministicPairNotes(
   pool: readonly string[],
   wave: number,

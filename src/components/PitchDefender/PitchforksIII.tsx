@@ -44,6 +44,7 @@ import {
   deterministicPairNotes,
   patientTineCountsForWave,
   replayLabelForStage,
+  villagerEntryX,
   waitForClearBeforeSpawn,
   type TineCount,
 } from './pitchforksCurriculum'
@@ -3754,10 +3755,11 @@ export default function PitchforksIII() {
     const lane = spawnIndex % 3
     const notes = pickVillagerNotes(totalTines, rt.wave, spawnIndex)
     const attackTimer = attackTimeForWave(rt.wave, spawnIndex)
+    const spriteWidth = (assetsRef.current.villagerMeta[totalTines] ?? defaultVillagerMeta).frame_w * SPRITE_SCALE
     const v: Villager = {
       id: ++nextIdRef.current,
       totalTines,
-      x: demoRef.current ? W - 150 : rt.wave === 1 ? W + 60 + spawnIndex * 70 : W + 42 + lane * 18,
+      x: demoRef.current ? W - 150 : villagerEntryX(W, spriteWidth),
       y: GROUND_Y - defaultVillagerMeta.frame_h * SPRITE_SCALE - lane * 6,
       speed: rt.plan.speed + lane * 1.8,
       notes,

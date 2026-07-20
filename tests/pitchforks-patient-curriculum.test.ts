@@ -8,6 +8,7 @@ import {
   deterministicPairNotes,
   patientTineCountsForWave,
   replayLabelForStage,
+  villagerEntryX,
   waitForClearBeforeSpawn,
 } from '../src/components/PitchDefender/pitchforksCurriculum'
 
@@ -48,6 +49,13 @@ assert.equal(attackTimeForCurriculum(6, 0), 12)
 assert.ok(attackTimeForCurriculum(1, 0) > attackTimeForCurriculum(6, 0))
 assert.equal(attackTimeForCurriculum(1, 1), 49)
 
+const entryX = villagerEntryX(720, 48)
+assert.equal(entryX, 649)
+assert.ok(entryX + 48 <= 720 - 18, 'sprite must begin inside the safe inset')
+assert.ok(entryX + 48 / 2 + 58 / 2 <= 720 - 18, 'attack bar must begin inside the safe inset')
+assert.equal(villagerEntryX(720, 96), 606)
+assert.equal(villagerEntryX(80, 96), 0)
+
 const pair = ['D4', 'E4', 'F4']
 assert.deepEqual(deterministicPairNotes(pair, 1, 0, 1, false), ['D4'])
 assert.deepEqual(deterministicPairNotes(pair, 1, 1, 1, false), ['E4'])
@@ -68,7 +76,9 @@ assert.match(source, /if \(!admissionAllowedForWave\(runtimeRef\.current\.wave, 
 assert.match(source, /if \(automaticCueForWave\(runtimeRef\.current\.wave, demoRef\.current\)\)/)
 assert.match(source, /const waitForClear = waitForClearBeforeSpawn\(rt\.wave, demoRef\.current\)/)
 assert.match(source, /pickVillagerNotes\(totalTines, rt\.wave, spawnIndex\)/)
+assert.match(source, /x: demoRef\.current \? W - 150 : villagerEntryX\(W, spriteWidth\)/)
+assert.doesNotMatch(source, /W \+ 60/)
 assert.match(source, /\{replayLabel\}/)
 assert.doesNotMatch(source, /while \(rt\.spawned < rt\.plan\.count\) spawnVillager\(\)/)
 
-console.log('pitchforks patient curriculum: 50/50 PASS')
+console.log('pitchforks patient curriculum: 57/57 PASS')
