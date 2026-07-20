@@ -5194,7 +5194,7 @@ export default function PitchforksIII() {
                   data-testid="pf3-range-stop-limit"
                   className="mt-3 min-h-11 w-full border border-amber-500/70 bg-amber-950/25 px-4 py-3 text-sm font-bold text-amber-100"
                 >
-                  STOP — {confirmedLimit ?? rangeAnchor} IS MY {direction.toUpperCase()} LIMIT
+                  NOT YET — KEEP {confirmedLimit ?? rangeAnchor} AS MY {direction.toUpperCase()} LIMIT
                 </button>
               )}
 
