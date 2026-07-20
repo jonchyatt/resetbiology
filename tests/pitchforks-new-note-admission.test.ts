@@ -40,8 +40,8 @@ check(() => assert.doesNotMatch(defer, /reviewNote|setHud|score|health|streak|se
 
 check(() => assert.match(source, /ceremonyRef\.current\.active \|\| matchingSuppressedNow\(\)/))
 check(() => assert.match(source, /if \(ceremonyRef\.current\.active\) \{[\s\S]*?lockHeldMsRef\.current = 0[\s\S]*?return/))
-check(() => assert.match(source, /admissionCuePlayed[\s\S]*?Math\.abs\(exactCents\(sourcePitch\.frequency, noteToFreq\(note\)\)\) <= MATCH_TOLERANCE_CENTS/))
-check(() => assert.match(source, /admissionHeldMsRef\.current >= HOLD_MS/))
+check(() => assert.match(source, /admissionCuePlayed[\s\S]*?exactPitchSampleState\(sourcePitch, noteToFreq\(note\), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS\)/))
+check(() => assert.match(source, /advanceExactPitchHold\([\s\S]*?admissionHeldMsRef\.current[\s\S]*?admissionMatched[\s\S]*?HOLD_MS/))
 check(() => assert.match(source, /data-testid="pf3-admission-hear"/))
 check(() => assert.match(source, /data-testid="pf3-admission-comfortable"/))
 check(() => assert.match(source, /data-testid="pf3-admission-not-yet"/))

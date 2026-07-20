@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
-import { exactCents, noteToFreq } from './pitchMath'
+import { advanceExactPitchHold, exactCents, exactPitchSampleState, noteToFreq } from './pitchMath'
 import {
   initAudio,
   loadPianoSamples,
@@ -3129,30 +3129,28 @@ export default function PitchforksIII() {
       candidate = heardNote
     }
 
-    const validMatch = !!candidate &&
+    const canEvaluate = !!candidate &&
       (rangeStep === 'anchor' || rangeCuePlayed) &&
-      !matchingSuppressedNow() &&
-      !!source?.isActive &&
-      source.confidence >= CONFIDENCE_FLOOR &&
-      source.frequency > 0 &&
-      Math.abs(exactCents(source.frequency, noteToFreq(candidate))) <= MATCH_TOLERANCE_CENTS
+      !matchingSuppressedNow()
 
-    if (!validMatch) {
-      rangeHeldMsRef.current = 0
-      rangeLastSampleAtRef.current = now
-      setRangeMatched(false)
-      setRangeMatchProgress(0)
-      return
-    }
+    const sampleState = canEvaluate && candidate
+      ? exactPitchSampleState(source, noteToFreq(candidate), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS)
+      : 'unavailable'
 
     const delta = rangeLastSampleAtRef.current > 0
       ? Math.min(100, now - rangeLastSampleAtRef.current)
       : 0
     rangeLastSampleAtRef.current = now
-    rangeHeldMsRef.current = Math.min(HOLD_MS, rangeHeldMsRef.current + delta)
-    setRangeMatchProgress(rangeHeldMsRef.current / HOLD_MS)
-    if (rangeHeldMsRef.current >= HOLD_MS) setRangeMatched(true)
-  }, [matchingSuppressedNow, phase, pitch, rangeCandidate, rangeCuePlayed, rangeStep, resetRangeMatch])
+    const next = advanceExactPitchHold(
+      { heldMs: rangeHeldMsRef.current, matched: rangeMatched },
+      sampleState,
+      delta,
+      HOLD_MS,
+    )
+    rangeHeldMsRef.current = next.heldMs
+    setRangeMatchProgress(next.heldMs / HOLD_MS)
+    setRangeMatched(next.matched)
+  }, [matchingSuppressedNow, phase, pitch, rangeCandidate, rangeCuePlayed, rangeMatched, rangeStep, resetRangeMatch])
 
   useEffect(() => {
     if (phase !== 'range_assessment' && phase !== 'range_manual') return
@@ -3419,31 +3417,29 @@ export default function PitchforksIII() {
     const note = ceremony.note
     const sourcePitch = pitch
     const now = performance.now()
-    const validMatch = ceremony.active &&
+    const canEvaluate = ceremony.active &&
       !!note &&
       admissionCuePlayed &&
-      !matchingSuppressedNow() &&
-      !!sourcePitch?.isActive &&
-      sourcePitch.confidence >= CONFIDENCE_FLOOR &&
-      sourcePitch.frequency > 0 &&
-      Math.abs(exactCents(sourcePitch.frequency, noteToFreq(note))) <= MATCH_TOLERANCE_CENTS
+      !matchingSuppressedNow()
 
-    if (!validMatch) {
-      admissionHeldMsRef.current = 0
-      admissionLastSampleAtRef.current = now
-      setAdmissionMatched(false)
-      setAdmissionMatchProgress(0)
-      return
-    }
+    const sampleState = canEvaluate && note
+      ? exactPitchSampleState(sourcePitch, noteToFreq(note), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS)
+      : 'unavailable'
 
     const delta = admissionLastSampleAtRef.current > 0
       ? Math.min(100, now - admissionLastSampleAtRef.current)
       : 0
     admissionLastSampleAtRef.current = now
-    admissionHeldMsRef.current = Math.min(HOLD_MS, admissionHeldMsRef.current + delta)
-    setAdmissionMatchProgress(admissionHeldMsRef.current / HOLD_MS)
-    if (admissionHeldMsRef.current >= HOLD_MS) setAdmissionMatched(true)
-  }, [admissionCuePlayed, ceremony.active, ceremony.note, matchingSuppressedNow, pitch])
+    const next = advanceExactPitchHold(
+      { heldMs: admissionHeldMsRef.current, matched: admissionMatched },
+      sampleState,
+      delta,
+      HOLD_MS,
+    )
+    admissionHeldMsRef.current = next.heldMs
+    setAdmissionMatchProgress(next.heldMs / HOLD_MS)
+    setAdmissionMatched(next.matched)
+  }, [admissionCuePlayed, admissionMatched, ceremony.active, ceremony.note, matchingSuppressedNow, pitch])
 
   const latencyForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
     if (activePromptKeyRef.current === target.key && promptStartedAtRef.current > 0) {

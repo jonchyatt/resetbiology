@@ -32,6 +32,45 @@ export function exactCents(detectedFreq: number, targetFreq: number): number {
   return 1200 * Math.log2(detectedFreq / targetFreq)
 }
 
+export type ExactPitchSampleState = 'unavailable' | 'match' | 'wrong'
+
+interface PitchSampleObservation {
+  frequency: number
+  confidence: number
+  isActive: boolean
+}
+
+export function exactPitchSampleState(
+  source: PitchSampleObservation | null | undefined,
+  targetFreq: number,
+  confidenceFloor: number,
+  toleranceCents: number,
+): ExactPitchSampleState {
+  if (!source?.isActive || source.confidence < confidenceFloor || source.frequency <= 0 || targetFreq <= 0) {
+    return 'unavailable'
+  }
+  return Math.abs(exactCents(source.frequency, targetFreq)) <= toleranceCents ? 'match' : 'wrong'
+}
+
+interface ExactPitchHoldState {
+  heldMs: number
+  matched: boolean
+}
+
+export function advanceExactPitchHold(
+  current: ExactPitchHoldState,
+  sampleState: ExactPitchSampleState,
+  deltaMs: number,
+  requiredHoldMs: number,
+): ExactPitchHoldState {
+  if (current.matched || sampleState === 'unavailable') return current
+  if (sampleState === 'wrong') return { heldMs: 0, matched: false }
+
+  const required = Math.max(0, requiredHoldMs)
+  const heldMs = Math.min(required, Math.max(0, current.heldMs) + Math.max(0, deltaMs))
+  return { heldMs, matched: heldMs >= required }
+}
+
 /**
  * Cents distance between two frequencies, folded into [-600, 600] so
  * octave-equivalent pitches read as 0. Returns negative if detected is
