@@ -91,6 +91,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   const detectorRef = useRef<PitchDetector<Float32Array> | null>(null)
   const stabilizerRef = useRef<ReturnType<typeof createPitchStabilizer> | null>(null)
   const pitchRef = useRef<PitchInfo | null>(null)
+  const signalDbRef = useRef(-200)
   const micSourceHealthRef = useRef<MicSourceHealthSnapshot>({ ...FAIL_CLOSED_MIC_SOURCE_HEALTH })
   const pitchGenerationRef = useRef(0)
   const sourceObserverCleanupRef = useRef<(() => void) | null>(null)
@@ -158,6 +159,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       smoothedFreqRef.current = 0
       consecutiveRef.current = { note: '', count: 0 }
       lastStableNoteRef.current = ''
+      signalDbRef.current = -200
       stabilizerRef.current?.reset()
 
       setState({ isListening: true, pitch: null, error: null })
@@ -171,6 +173,14 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
         pitchGenerationRef.current += 1
 
         analyserRef.current.getFloatTimeDomainData(buffer)
+
+        // Capture physical input level before generated-tone suppression so a
+        // consumer can assess its room without weakening the pitch lock gate.
+        let sumSq = 0
+        for (let i = 0; i < buffer.length; i++) sumSq += buffer[i] * buffer[i]
+        const rms = Math.sqrt(sumSq / buffer.length)
+        const dbFS = 20 * Math.log10(rms + 1e-10)
+        signalDbRef.current = dbFS
 
         // ─── ECHO SUPPRESSION ──────────────────────────────────────
         // Skip detection briefly after audioEngine plays a piano tone, so
@@ -194,11 +204,6 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
         }
 
         // ─── NOISE GATE: compute RMS, reject quiet signals ──────────
-        let sumSq = 0
-        for (let i = 0; i < buffer.length; i++) sumSq += buffer[i] * buffer[i]
-        const rms = Math.sqrt(sumSq / buffer.length)
-        const dbFS = 20 * Math.log10(rms + 1e-10)
-
         if (dbFS < noiseGateRef.current) {
           // Below noise floor — silence
           if (stabilizerRef.current) {
@@ -307,6 +312,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
     } catch (err) {
       clearSourceObservers()
       micSourceHealthRef.current = { ...FAIL_CLOSED_MIC_SOURCE_HEALTH }
+      signalDbRef.current = -200
       setState({
         isListening: false,
         pitch: null,
@@ -330,6 +336,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
     detectorRef.current = null
     stabilizerRef.current = null
     pitchRef.current = null
+    signalDbRef.current = -200
     smoothedFreqRef.current = 0
     consecutiveRef.current = { note: '', count: 0 }
     lastStableNoteRef.current = ''
@@ -345,12 +352,14 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop())
       if (audioCtxRef.current) audioCtxRef.current.close()
       micSourceHealthRef.current = { ...FAIL_CLOSED_MIC_SOURCE_HEALTH }
+      signalDbRef.current = -200
     }
   }, [clearSourceObservers])
 
   return {
     ...state,
     pitchRef,
+    signalDbRef,
     micSourceHealthRef,
     pitchGenerationRef,
     startListening,

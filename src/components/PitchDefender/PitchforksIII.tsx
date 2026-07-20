@@ -5,6 +5,14 @@ import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 import { PITCHFORKS_AUDIO_CONSTRAINTS, PITCHFORKS_PITCH_PROFILE } from './pitchDetectionSmoothing'
+import {
+  PITCHFORKS_ROOM_CHECK_MS,
+  assessPitchforksRoom,
+  coachPitchforksVoice,
+  pitchforksMicReadinessCopy,
+  type PitchforksMicReadiness,
+  type PitchforksRoomReadiness,
+} from './pitchforksMicReadiness'
 import { advanceExactPitchHold, exactCents, exactPitchSampleState, noteToFreq } from './pitchMath'
 import {
   initAudio,
@@ -121,6 +129,7 @@ const DUNGEON_TORCHES = [
 
 type LayoutMode = 'portrait' | 'stage'
 type PortraitDockPanel = 'staff' | 'settings' | null
+type MicCheckStep = 'room' | 'voice' | 'ready'
 
 function layoutModeForViewport(width: number, height: number): LayoutMode {
   return height > width && width <= 768 ? 'portrait' : 'stage'
@@ -2727,6 +2736,9 @@ export default function PitchforksIII() {
   const isListeningRef = useRef(false)
   const micErrorRef = useRef<string | null>(null)
   const heardYouRef = useRef(false)
+  const roomNoiseSamplesRef = useRef<number[]>([])
+  const roomCheckStartedAtRef = useRef(0)
+  const voiceCheckStartedAtRef = useRef(0)
   const pitchTrailRef = useRef<TrailPoint[]>([])
   const barDotDeviationRef = useRef<number | null>(null)
   const smoothDevRef = useRef(0)
@@ -2777,6 +2789,9 @@ export default function PitchforksIII() {
   const [admissionMatchProgress, setAdmissionMatchProgress] = useState(0)
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
   const [heardYou, setHeardYou] = useState(false)
+  const [micCheckStep, setMicCheckStep] = useState<MicCheckStep>('room')
+  const [roomReadiness, setRoomReadiness] = useState<PitchforksRoomReadiness>('checking-room')
+  const [micReadiness, setMicReadiness] = useState<PitchforksMicReadiness>('checking-room')
   const [canvasDisplaySize, setCanvasDisplaySize] = useState(() => ({ width: W, height: H }))
   const [portraitStaffDisplaySize, setPortraitStaffDisplaySize] = useState(() => ({ width: STAFF_PANEL_W, height: STAFF_PANEL_H }))
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('stage')
@@ -2790,7 +2805,7 @@ export default function PitchforksIII() {
     containerHeight: 0,
   }))
 
-  const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({
+  const { isListening, pitch, pitchRef, signalDbRef, startListening, stopListening, error: micError } = usePitchDetection({
     profile: PITCHFORKS_PITCH_PROFILE,
     audioConstraints: PITCHFORKS_AUDIO_CONSTRAINTS,
   })
@@ -2833,10 +2848,38 @@ export default function PitchforksIII() {
   }, [micError])
 
   useEffect(() => {
-    if (phase !== 'calibrating' || !pitch?.isActive || heardYouRef.current) return
+    if (phase !== 'calibrating' || !isListening) return
+    const now = performance.now()
+
+    if (micCheckStep === 'room') {
+      const sample = signalDbRef.current
+      if (Number.isFinite(sample)) roomNoiseSamplesRef.current.push(sample)
+      if (now - roomCheckStartedAtRef.current < PITCHFORKS_ROOM_CHECK_MS) return
+
+      const room = assessPitchforksRoom(
+        roomNoiseSamplesRef.current,
+        PITCHFORKS_PITCH_PROFILE.noiseGateDb,
+      )
+      if (room.status === 'checking-room') return
+      setRoomReadiness(room.status)
+      setMicReadiness(room.status)
+      voiceCheckStartedAtRef.current = now
+      setMicCheckStep('voice')
+      return
+    }
+
+    if (micCheckStep !== 'voice') return
+    const next = coachPitchforksVoice({
+      room: roomReadiness,
+      voiceHeard: !!pitch?.isActive,
+      elapsedMs: now - voiceCheckStartedAtRef.current,
+    })
+    setMicReadiness(next)
+    if (next !== 'ready' || heardYouRef.current) return
     heardYouRef.current = true
     setHeardYou(true)
-  }, [phase, pitch?.isActive])
+    setMicCheckStep('ready')
+  }, [isListening, micCheckStep, phase, pitch, roomReadiness, signalDbRef])
 
   useLayoutEffect(() => {
     if (phase !== 'playing') return
@@ -3676,6 +3719,8 @@ export default function PitchforksIII() {
     const simulateHeardYouForTest = () => {
       heardYouRef.current = true
       setHeardYou(true)
+      setMicCheckStep('ready')
+      setMicReadiness('ready')
       return { heardYou: true }
     }
     const forceMissForTest = () => {
@@ -4376,9 +4421,16 @@ export default function PitchforksIII() {
     }
     heardYouRef.current = false
     setHeardYou(false)
+    roomNoiseSamplesRef.current = []
+    roomCheckStartedAtRef.current = 0
+    voiceCheckStartedAtRef.current = 0
+    setMicCheckStep('room')
+    setRoomReadiness('checking-room')
+    setMicReadiness('checking-room')
     phaseRef.current = 'calibrating'
     setPhase('calibrating')
     await startListening()
+    roomCheckStartedAtRef.current = performance.now()
   }, [beginPlaying, startListening])
 
   const startGuidedRangeSetup = useCallback(() => {
@@ -4584,6 +4636,7 @@ export default function PitchforksIII() {
   const activeMicHud = micHudView[micHudState]
   const replayLabel = replayLabelForStage(curriculumStageForWave(hud.wave, demoMode))
   const calibrationReady = heardYou && !micError
+  const micReadinessView = pitchforksMicReadinessCopy(micReadiness)
   const calibrationHudLabel = micError
     ? activeMicHud.label
     : heardYou
@@ -4986,7 +5039,15 @@ export default function PitchforksIII() {
           </div>
 
           <h2 className="mb-3 text-xl font-black tracking-widest text-green-200">MIC CHECK</h2>
-          <p className="mb-5 text-sm text-gray-300">Hum or sing anything. We just need to hear your voice.</p>
+          <div
+            data-testid="pf3-mic-readiness"
+            role="status"
+            aria-live="polite"
+            className="mb-5 border border-cyan-800/70 bg-cyan-950/20 p-4 text-left"
+          >
+            <div className="mb-2 text-xs font-black tracking-widest text-cyan-100">{micReadinessView.label}</div>
+            <p className="text-sm leading-relaxed text-gray-300">{micReadinessView.guidance}</p>
+          </div>
 
           {micError && <div role="alert" className="mb-5 text-xs text-red-300">{micError}</div>}
 
