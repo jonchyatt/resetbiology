@@ -4583,13 +4583,17 @@ export default function PitchforksIII() {
     <>
       {ceremony.active && ceremony.note && (
         <div
-          className="absolute inset-0 z-30 flex items-center justify-center overflow-y-auto bg-black/85 px-4 py-6"
+          className="fixed inset-0 z-30 flex items-start justify-center overflow-y-auto bg-black/85 px-4"
+          style={{
+            paddingTop: 'max(env(safe-area-inset-top), 1.5rem)',
+            paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)',
+          }}
           data-testid="pf3-new-note-ceremony"
           role="dialog"
           aria-modal="true"
           aria-labelledby="pf3-new-note-title"
         >
-          <section className="w-full max-w-sm border border-cyan-300/70 bg-[#080d18] p-5 text-center shadow-[0_0_35px_rgba(34,211,238,0.18)]">
+          <section className="my-auto w-full max-w-sm border border-cyan-300/70 bg-[#080d18] p-5 text-center shadow-[0_0_35px_rgba(34,211,238,0.18)]">
             <div className="mb-2 text-xs font-black tracking-[0.25em] text-cyan-200">NEW NOTE DISCOVERED</div>
             <h2 id="pf3-new-note-title" className="mb-3 text-xl font-black tracking-widest text-white">
               Is {ceremony.note} comfortable today?
