@@ -36,6 +36,17 @@ import {
   starterPairForRange,
   type PitchforksRangeProfile,
 } from './pitchforksRange'
+import {
+  admissionAllowedForWave,
+  attackTimeForCurriculum,
+  automaticCueForWave,
+  curriculumStageForWave,
+  deterministicPairNotes,
+  patientTineCountsForWave,
+  replayLabelForStage,
+  waitForClearBeforeSpawn,
+  type TineCount,
+} from './pitchforksCurriculum'
 
 const W = 720
 const H = 405
@@ -167,7 +178,6 @@ type Phase = 'menu' | 'tutorial' | 'calibrating' | 'range_manual' | 'range_asses
 type RangeAssessmentStep = 'anchor' | 'lower' | 'higher' | 'summary'
 type RangeIntent = 'guided' | 'saved'
 type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
-type TineCount = 1 | 2 | 3 | 4
 type VillagerState = 'waiting' | 'walking' | 'ash'
 
 interface FrankMeta {
@@ -649,21 +659,11 @@ function ceremonyNoteStyle(note: string, memory: Readonly<Record<string, NoteMem
   }
 }
 
-// Hand-tuned onboarding — "levels within levels, slow advances." Level 1 is
-// four single notes then one 2-note; tine count climbs one wave at a time.
-const EARLY_WAVES: Record<number, TineCount[]> = {
-  1: [1, 1, 1, 1, 2],
-  2: [1, 1, 2, 2, 2],
-  3: [2, 2, 2, 2, 3],
-  4: [2, 2, 3, 3, 3],
-  5: [2, 3, 3, 3, 4],
-}
 function fixedWaveDirector(wave: number, demo: boolean): WavePlan {
   const speed = Math.min(56, 15 + (wave - 1) * 5)
-  const early = EARLY_WAVES[wave]
+  const early = patientTineCountsForWave(wave)
   if (early) {
-    // Spawn one villager at a time so a new player faces a single note, then the next.
-    return { wave, count: early.length, spawnInterval: demo ? 0.01 : Math.max(1.4, 3.2 - (wave - 1) * 0.3), speed, tineCounts: early }
+    return { wave, count: early.length, spawnInterval: demo ? 0.01 : Math.max(1.4, 3.2 - (wave - 1) * 0.3), speed, tineCounts: [...early] }
   }
   // Wave 6+: probabilistic, slowly harder; 4-tine stays rare.
   const count = Math.min(4 + Math.floor((wave - 5) / 2), 6)
@@ -678,9 +678,7 @@ function fixedWaveDirector(wave: number, demo: boolean): WavePlan {
 }
 
 function attackTimeForWave(wave: number, index: number): number {
-  const base = wave <= 1 ? 25 : wave <= 2 ? 18 : wave <= 4 ? 12 : 8
-  const stagger = wave <= 2 ? 6 : 4
-  return base + index * stagger
+  return attackTimeForCurriculum(wave, index)
 }
 
 function makeInitialRuntime(demo: boolean): Runtime {
@@ -3403,6 +3401,7 @@ export default function PitchforksIII() {
   }, [clearNewNoteCeremony])
 
   const maybeUnlockNextNote = useCallback((consecutive: number) => {
+    if (!admissionAllowedForWave(runtimeRef.current.wave, demoRef.current, fsrsDebugRef.current)) return
     const currentPool = unlockedNotesRef.current
     const currentPoolSize = currentPool.length
     const presentationOrder = presentationOrderRef.current
@@ -3482,9 +3481,7 @@ export default function PitchforksIII() {
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
     clearCueTimers()
-    if (mode === 'cue') {
-      for (const note of villager.notes) waveNotesHeardRef.current.add(note)
-    }
+    for (const note of villager.notes) waveNotesHeardRef.current.add(note)
     const liveNotes = villager.notes.slice(villager.burned)
     if (!liveNotes.length) return
 
@@ -3701,9 +3698,12 @@ export default function PitchforksIII() {
     }
   }, [clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, saveFsrs, saveMasteryProgress, showNoteMastered])
 
-  const pickVillagerNotes = useCallback((totalTines: TineCount) => {
+  const pickVillagerNotes = useCallback((totalTines: TineCount, wave: number, encounterIndex: number) => {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
     for (const note of pool) ensureNoteMemory(note)
+
+    const patientNotes = deterministicPairNotes(pool, wave, encounterIndex, totalTines, demoRef.current)
+    if (patientNotes) return patientNotes
 
     if (totalTines > 1) {
       const isMasteredNote = (note: string) => {
@@ -3752,7 +3752,7 @@ export default function PitchforksIII() {
     const spawnIndex = rt.spawned
     const totalTines = rt.plan.tineCounts[rt.spawned] ?? 2
     const lane = spawnIndex % 3
-    const notes = pickVillagerNotes(totalTines)
+    const notes = pickVillagerNotes(totalTines, rt.wave, spawnIndex)
     const attackTimer = attackTimeForWave(rt.wave, spawnIndex)
     const v: Villager = {
       id: ++nextIdRef.current,
@@ -3965,7 +3965,9 @@ export default function PitchforksIII() {
       setPromptText(`Sing: ${target.villager.notes[0]}`)
       if (!target.villager.sequenceCued) {
         target.villager.sequenceCued = true
-        playVillagerSequence(target.villager, 'cue')
+        if (automaticCueForWave(runtimeRef.current.wave, demoRef.current)) {
+          playVillagerSequence(target.villager, 'cue')
+        }
       }
     }
 
@@ -4045,22 +4047,19 @@ export default function PitchforksIII() {
     if (rt.bannerTimer > 0) {
       rt.bannerTimer = Math.max(0, rt.bannerTimer - dt)
       if (rt.bannerTimer === 0 && rt.spawned === 0) {
-        if (rt.wave === 1 && !demoRef.current) {
-          while (rt.spawned < rt.plan.count) spawnVillager()
-        } else {
-          spawnVillager()
-        }
+        spawnVillager()
       }
     } else {
-      if (rt.wave === 1 && rt.spawned === 0 && !demoRef.current) {
-        while (rt.spawned < rt.plan.count) spawnVillager()
-      } else {
+      const waitForClear = waitForClearBeforeSpawn(rt.wave, demoRef.current)
+      const encounterClear = !rt.villagers.some(v => v.state === 'walking')
+      if (!waitForClear || encounterClear) {
         rt.spawnClock += dt
-        const demoReady = !demoRef.current || !rt.villagers.some(v => v.state === 'walking')
-        if (demoReady && rt.spawned < rt.plan.count && rt.spawnClock >= rt.plan.spawnInterval) {
+        if (rt.spawned < rt.plan.count && rt.spawnClock >= rt.plan.spawnInterval) {
           rt.spawnClock = 0
           spawnVillager()
         }
+      } else {
+        rt.spawnClock = 0
       }
     }
 
@@ -4573,6 +4572,7 @@ export default function PitchforksIII() {
     },
   }
   const activeMicHud = micHudView[micHudState]
+  const replayLabel = replayLabelForStage(curriculumStageForWave(hud.wave, demoMode))
   const calibrationReady = heardYou && !micError
   const calibrationHudLabel = micError
     ? activeMicHud.label
@@ -4840,7 +4840,7 @@ export default function PitchforksIII() {
             <div className="text-2xl">🔊</div>
             <div>
               <div className="text-sm text-orange-300 font-bold">Replay anytime</div>
-              <div className="text-xs text-gray-400">Use REPLAY NOTES to hear the active villager again.</div>
+              <div className="text-xs text-gray-400">Use the dock&apos;s replay or Hint control to hear the active villager again.</div>
             </div>
           </div>
 
@@ -5218,7 +5218,7 @@ export default function PitchforksIII() {
             data-testid="pf3-replay-notes"
             className={`${layoutMode === 'portrait' ? 'min-h-12 flex-1 px-3' : 'min-h-[44px] w-full px-5'} py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50`}
           >
-            🔊 REPLAY NOTES
+            {replayLabel}
           </button>
           {layoutMode === 'portrait' && (
             <>
