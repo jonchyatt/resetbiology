@@ -1593,20 +1593,24 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
 
   if (v.active && view.noteNamesVisible) {
     const note = v.notes[Math.min(v.visualBurn, v.notes.length - 1)]
-    ctx.font = 'bold 14px monospace'
+    const canvasScale = ctx.canvas.clientWidth > 0 ? ctx.canvas.clientWidth / W : 1
+    const noteFontPx = Math.round(clamp(11 / canvasScale, 14, 26))
+    const badgePadX = Math.max(6, Math.round(noteFontPx * 0.38))
+    ctx.font = `bold ${noteFontPx}px monospace`
     ctx.textAlign = 'center'
     const lx = noteLabelAnchor.x
     const ly = noteLabelAnchor.y
-    const tw = ctx.measureText(note).width + 12
+    const badgeTop = ly - noteFontPx - 3
+    const tw = ctx.measureText(note).width + badgePadX * 2
     ctx.fillStyle = 'rgba(8, 10, 18, 0.86)'
     ctx.strokeStyle = view.charge.tint ?? 'rgba(130,210,255,0.62)'
     ctx.lineWidth = 1
     ctx.beginPath()
-    ctx.roundRect(lx - tw / 2, ly - 14, tw, 18, 5)
+    ctx.roundRect(lx - tw / 2, badgeTop, tw, noteFontPx + 7, 5)
     ctx.fill()
     ctx.stroke()
     ctx.fillStyle = '#f4f7fb'
-    ctx.fillText(note, lx, ly)
+    ctx.fillText(note, lx, ly + 1)
   }
 
   if (v.active) {
