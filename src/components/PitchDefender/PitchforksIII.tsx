@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { flushSync } from 'react-dom'
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
@@ -57,6 +58,10 @@ import {
   waitForClearBeforeSpawn,
   type TineCount,
 } from './pitchforksCurriculum'
+import {
+  pitchforksTunerFeedback,
+  type PitchforksTunerFeedback,
+} from './pitchforksTunerFeedback'
 
 const W = 720
 const H = 405
@@ -426,6 +431,7 @@ type TunerView = Readonly<{
   renderDeviation: number | null
   onTarget: boolean
   trail: ReadonlyArray<TrailPointView>
+  feedback: PitchforksTunerFeedback
 }>
 
 type ViewState = Readonly<{
@@ -1755,9 +1761,10 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
     // switched to the brand-orange highlight (matches the C5 UI-reskin palette) for
     // readability under duress, per the explicit suggested fix.
     ctx.fillStyle = '#fdba74'
-    ctx.font = '8px monospace'
+    const canvasScale = Math.max(0.45, ctx.canvas.clientWidth / W)
+    ctx.font = `bold ${clamp(10 / canvasScale, 10, 18)}px monospace`
     ctx.textAlign = 'center'
-    ctx.fillText(`target: ${tuner.targetNote}`, centerX, PITCH_BAR_Y + PITCH_BAR_H + 12)
+    ctx.fillText(tuner.feedback.compactLabel, centerX, PITCH_BAR_Y + PITCH_BAR_H + 13)
   }
 }
 
@@ -2742,6 +2749,9 @@ export default function PitchforksIII() {
   const pitchTrailRef = useRef<TrailPoint[]>([])
   const barDotDeviationRef = useRef<number | null>(null)
   const smoothDevRef = useRef(0)
+  const tunerTargetKeyRef = useRef('')
+  const tunerNeedsRebaseRef = useRef(false)
+  const tunerFeedbackKeyRef = useRef('')
   const barOnTargetRef = useRef(false)
   const barVisibleRef = useRef(false)
   const activeVillagerIdRef = useRef<number | null>(null)
@@ -2767,6 +2777,14 @@ export default function PitchforksIII() {
   const [geometryDebug, setGeometryDebug] = useState(false)
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
   const [rangeProfile, setRangeProfile] = useState<PitchforksRangeProfile | null>(null)
+  const [tunerFeedback, setTunerFeedback] = useState<PitchforksTunerFeedback>(() => pitchforksTunerFeedback({
+    targetNote: null,
+    sourceNote: null,
+    deviationSemis: null,
+    matchingSuppressed: false,
+    lockProgress: 0,
+    toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
+  }))
   const [rangeIntent, setRangeIntent] = useState<RangeIntent>('guided')
   const [rangeStep, setRangeStep] = useState<RangeAssessmentStep>('anchor')
   const [rangeCandidate, setRangeCandidate] = useState<string | null>(null)
@@ -3541,8 +3559,14 @@ export default function PitchforksIII() {
     const toneWindowMs = (liveNotes.length - 1) * TONE_SPACING_MS + TONE_MS
     const suppressMs = toneWindowMs + ECHO_TAIL_MS
     cuePlayingUntilRef.current = now + toneWindowMs
+    matchingSuppressedUntilRef.current = now + suppressMs
     timersPausedRef.current = true
     if (demoRef.current) demoStepRef.current = mode === 'replay' ? 'replay-cue' : 'auto-cue'
+
+    const firstIndex = villager.burned
+    setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${liveNotes[0]}`)
+    activePromptKeyRef.current = `${villager.id}:${firstIndex}`
+    promptStartedAtRef.current = now
 
     liveNotes.forEach((note, i) => {
       const index = villager.burned + i
@@ -3569,7 +3593,12 @@ export default function PitchforksIII() {
       cueTimeoutsRef.current.push(id)
     })
 
-    const doneId = setTimeout(() => {
+    const finishCue = () => {
+      if (matchingSuppressedNow()) {
+        const retryId = setTimeout(finishCue, 25)
+        cueTimeoutsRef.current.push(retryId)
+        return
+      }
       if (
         phaseRef.current === 'playing' &&
         activeVillagerIdRef.current === villager.id &&
@@ -3582,9 +3611,10 @@ export default function PitchforksIII() {
           setPromptText(villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
         }
       }
-    }, suppressMs)
+    }
+    const doneId = setTimeout(finishCue, suppressMs)
     cueTimeoutsRef.current.push(doneId)
-  }, [clearCueTimers, getActiveTarget, setPromptText])
+  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, setPromptText])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -4199,31 +4229,63 @@ export default function PitchforksIII() {
     const visible = phaseRef.current === 'playing'
     barVisibleRef.current = visible
     const now = performance.now()
-    pitchTrailRef.current = pitchTrailRef.current.filter(p => now - p.at <= TRAIL_MS)
+    const nextTargetKey = active?.key ?? ''
+    const targetChanged = tunerTargetKeyRef.current !== nextTargetKey
+    if (targetChanged) {
+      tunerTargetKeyRef.current = nextTargetKey
+      tunerNeedsRebaseRef.current = !!nextTargetKey
+      pitchTrailRef.current = []
+      barDotDeviationRef.current = null
+      barOnTargetRef.current = false
+    } else {
+      pitchTrailRef.current = pitchTrailRef.current.filter(p => now - p.at <= TRAIL_MS)
+    }
     const source = demoRef.current ? demoPitchRef.current : pitchRef.current
+    const matchingSuppressed = !!active && (cuePlayingNow() || matchingSuppressedNow())
     const canUseSource = !!active &&
-      !matchingSuppressedNow() &&
+      !matchingSuppressed &&
       !!source?.isActive &&
       source.confidence >= CONFIDENCE_FLOOR &&
       source.frequency > 0
 
     let sourceNote: string | null = null
     let renderDeviation: number | null = null
+    let deviationSemis: number | null = null
 
     if (canUseSource && active && source) {
       const deviation = pitchDeviationSemis(source, active.note)
+      deviationSemis = deviation
       const clampedDeviation = clamp(deviation, -6, 6)
       const onTarget = Math.abs(deviation) <= MATCH_TOLERANCE_CENTS / 100
       barDotDeviationRef.current = clampedDeviation
       barOnTargetRef.current = onTarget
       // Ease the readout toward the detected pitch so it glides instead of jittering frame-to-frame.
-      smoothDevRef.current += (clampedDeviation - smoothDevRef.current) * 0.28
+      smoothDevRef.current = tunerNeedsRebaseRef.current
+        ? clampedDeviation
+        : smoothDevRef.current + (clampedDeviation - smoothDevRef.current) * 0.28
+      tunerNeedsRebaseRef.current = false
       pitchTrailRef.current.push({ at: now, deviation: smoothDevRef.current, onTarget, note: source.note })
       sourceNote = source.note || ''
       renderDeviation = smoothDevRef.current
     } else {
       barDotDeviationRef.current = null
       barOnTargetRef.current = false
+    }
+
+    const feedback = pitchforksTunerFeedback({
+      targetNote: active?.note ?? null,
+      sourceNote,
+      deviationSemis,
+      matchingSuppressed,
+      lockProgress: lockProgressRef.current,
+      toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
+    })
+    const feedbackKey = `${feedback.kind}|${feedback.headline}|${feedback.detail}`
+    if (feedbackKey !== tunerFeedbackKeyRef.current) {
+      tunerFeedbackKeyRef.current = feedbackKey
+      // Canvas and DOM guidance must publish in the same animation frame; otherwise
+      // the ribbon can briefly describe the prior target while the canvas shows the next.
+      flushSync(() => setTunerFeedback(feedback))
     }
 
     return {
@@ -4236,8 +4298,9 @@ export default function PitchforksIII() {
       renderDeviation,
       onTarget: barOnTargetRef.current,
       trail: pitchTrailRef.current,
+      feedback,
     }
-  }, [matchingSuppressedNow, pitchRef])
+  }, [cuePlayingNow, matchingSuppressedNow, pitchRef])
 
   const loop = useCallback((ts: number) => {
     if (phaseRef.current !== 'playing') return
@@ -5273,6 +5336,25 @@ export default function PitchforksIII() {
           </div>
         )}
         {newNoteCeremonyBanner}
+      </div>
+
+      <div
+        data-testid="pf3-tuner-feedback"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className={`w-full shrink-0 border-y px-3 py-2 text-center ${
+          tunerFeedback.kind === 'on-target' || tunerFeedback.kind === 'locked'
+            ? 'border-emerald-500/70 bg-emerald-950/45 text-emerald-100'
+            : tunerFeedback.kind === 'octave-low' || tunerFeedback.kind === 'octave-high'
+              ? 'border-orange-400/70 bg-orange-950/45 text-orange-100'
+              : 'border-cyan-800/70 bg-[#071018] text-cyan-100'
+        }`}
+      >
+        <div className="mx-auto flex min-h-11 w-full max-w-[760px] flex-col items-center justify-center leading-tight sm:flex-row sm:gap-3">
+          <span className="text-[11px] font-bold tracking-wider sm:text-xs">{tunerFeedback.headline}</span>
+          <span className="mt-1 text-xs font-black tracking-widest sm:mt-0 sm:text-sm">{tunerFeedback.detail}</span>
+        </div>
       </div>
 
       <div
