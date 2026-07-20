@@ -123,7 +123,7 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
           </div>
           {module.requiredForDeposit && (
             <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
-              Required for Payout
+              Core module
             </div>
           )}
         </div>
@@ -218,7 +218,7 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
               {module.requiredForDeposit ? (
                 <div className="flex items-center">
                   <Award className="w-4 h-4 mr-2" />
-                  Secure Payout Progress
+                  Mark Core Module Complete
                 </div>
               ) : (
                 <div className="flex items-center">
@@ -236,7 +236,7 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
         <div className="mt-4 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
           <p className="text-yellow-800 text-sm">
             <strong>🎯 {Math.round(progressPercent)}% complete</strong> - Don't lose your progress! 
-            {module.requiredForDeposit && " This module counts toward your stake security."}
+            {module.requiredForDeposit && " This module is part of the core curriculum."}
           </p>
         </div>
       )}
