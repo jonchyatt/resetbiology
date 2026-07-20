@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, Suspense } from "react"
+import { useRef, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { NEPQQuiz, NEPQAnswers } from "@/components/Quiz"
 import { Loader2, CheckCircle, ArrowRight } from "lucide-react"
@@ -20,6 +20,7 @@ function GetStartedContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const submissionInFlight = useRef(false)
   const [submitResult, setSubmitResult] = useState<SubmissionResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [startTime] = useState(Date.now())
@@ -37,6 +38,9 @@ function GetStartedContent() {
       completedEnergySpin: boolean
     }
   ) => {
+    if (submissionInFlight.current) return
+
+    submissionInFlight.current = true
     setIsSubmitting(true)
     setError(null)
 
@@ -66,6 +70,7 @@ function GetStartedContent() {
       console.error("Quiz submission error:", err)
       setError("Something went wrong. Please try again.")
       setIsSubmitting(false)
+      submissionInFlight.current = false
     }
   }
 

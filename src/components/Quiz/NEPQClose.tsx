@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Check, ChevronLeft, Star, MessageCircle, Award, Brain, Wind, Apple, Dumbbell, Target, Syringe } from "lucide-react"
 import { nepqConfig, NEPQOffer, CategoryScores, Recommendation } from "@/config/nepqQuizConfig"
 import { NEPQAnswers } from "./NEPQQuiz"
@@ -46,6 +46,8 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
   const [stage, setStage] = useState<"commitment" | "softExit" | "offers">("commitment")
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null)
   const [otherRequest, setOtherRequest] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const submissionInFlight = useRef(false)
 
   const { closeQuestion, offers } = nepqConfig
 
@@ -90,6 +92,10 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
 
   // Handle final submission
   const handleSubmit = () => {
+    if (!selectedOffer || submissionInFlight.current) return
+
+    submissionInFlight.current = true
+    setIsSubmitting(true)
     onSelect(selectedOffer)
   }
 
@@ -484,9 +490,9 @@ export function NEPQClose({ answers, auditScore, categoryScores, recommendations
         <div className="text-center">
           <button
             onClick={handleSubmit}
-            disabled={!selectedOffer}
+            disabled={!selectedOffer || isSubmitting}
             className={`px-12 py-4 rounded-xl font-bold text-lg transition-all ${
-              selectedOffer
+              selectedOffer && !isSubmitting
                 ? "bg-gradient-to-r from-primary-500 to-secondary-500 text-white hover:shadow-lg hover:shadow-primary-500/30 hover:scale-105"
                 : "bg-gray-700 text-gray-500 cursor-not-allowed"
             }`}

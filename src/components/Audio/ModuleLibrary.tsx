@@ -245,8 +245,8 @@ export function ModuleLibrary() {
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Mental Mastery Library</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Transform your relationship with food, body, and medications through psychology-based audio coaching.
-          Complete modules to secure your partner stake and unlock advanced protocols.
+          Explore psychology-based audio coaching for food, body, and medication-related habits.
+          Complete available modules to track your learning progress.
         </p>
       </div>
 
@@ -340,7 +340,7 @@ export function ModuleLibrary() {
                         <div className="flex items-center text-xs text-gray-500">
                           {module.requiredForDeposit && module.available && (
                             <span className="ml-3 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                              Required for Payout
+                              Core module
                             </span>
                           )}
                         </div>
@@ -378,8 +378,8 @@ export function ModuleLibrary() {
       <div className="bg-gray-800 text-white rounded-lg p-6 text-center">
         <h3 className="text-lg font-bold mb-2">🎯 Your Mental Mastery Journey</h3>
         <p className="text-gray-300 mb-4">
-          Each module builds on the last, creating lasting change that works with or without medications.
-          Complete the required modules to secure your partner stake and unlock true metabolic freedom.
+          Each module builds on the last to support your ongoing learning, with or without medications.
+          Complete available modules to track your learning progress.
         </p>
         <div className="flex justify-center space-x-6 text-sm">
           <div>

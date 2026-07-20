@@ -239,7 +239,7 @@ export function BreathPage() {
                     No Protocols Added Yet
                   </h3>
                   <p className="text-gray-200 mb-8">
-                    Add breath protocols from our library for quick access. We recommend starting with the <strong>Autophagy/VO2-max Builder</strong> - our signature protocol.
+                    Add breath protocols from our library for quick access.
                   </p>
                   <button
                     onClick={() => setActiveTab("library")}

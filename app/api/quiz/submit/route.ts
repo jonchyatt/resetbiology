@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+const RECENT_DUPLICATE_WINDOW_MS = 60_000
+const inFlightQuizSubmissions = new Map<string, Promise<{ id: string }>>()
+
 /**
  * NEPQ Quiz Submission API
  *
@@ -62,7 +65,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Calculate time to complete
-    const startTime = startedAt ? new Date(startedAt).getTime() : Date.now() - 300000
+    const submittedStartTime = startedAt ? new Date(startedAt).getTime() : NaN
+    const startTime = Number.isNaN(submittedStartTime) ? Date.now() - 300000 : submittedStartTime
+    const submissionStartedAt = new Date(startTime)
     const timeToComplete = Math.round((Date.now() - startTime) / 1000)
 
     // Get IP and user agent from headers
@@ -70,9 +75,35 @@ export async function POST(req: NextRequest) {
     const ipAddress = forwardedFor?.split(",")[0]?.trim() || "unknown"
     const userAgent = req.headers.get("user-agent") || undefined
 
-    // Create submission
-    const submission = await prisma.nEPQSubmission.create({
-      data: {
+    const submissionKey = [email.toLowerCase(), name, submissionStartedAt.toISOString(), selectedOffer || ""].join(":")
+    const existingInFlightSubmission = inFlightQuizSubmissions.get(submissionKey)
+
+    if (existingInFlightSubmission) {
+      const submission = await existingInFlightSubmission
+      return NextResponse.json({
+        success: true,
+        submissionId: submission.id,
+        selectedOffer,
+        recommendedAction: getRecommendedAction(selectedOffer),
+      })
+    }
+
+    const submissionPromise = (async () => {
+      const recentDuplicate = await prisma.nEPQSubmission.findFirst({
+        where: {
+          email,
+          name,
+          startedAt: submissionStartedAt,
+          selectedOffer: selectedOffer || null,
+          completedAt: { gte: new Date(Date.now() - RECENT_DUPLICATE_WINDOW_MS) },
+        },
+        orderBy: { completedAt: "desc" },
+      })
+
+      if (recentDuplicate) return recentDuplicate
+
+      return prisma.nEPQSubmission.create({
+        data: {
         // Section 1: Contact
         name,
         email,
@@ -118,6 +149,7 @@ export async function POST(req: NextRequest) {
         otherOfferRequest: otherOfferRequest || null,
 
         // Analytics
+        startedAt: submissionStartedAt,
         completedAt: new Date(),
         timeToComplete,
         sectionsCompleted: 8,
@@ -132,8 +164,18 @@ export async function POST(req: NextRequest) {
         ipAddress,
 
         variant: "nepq-v2", // Updated version with challenges
-      },
-    })
+        },
+      })
+    })()
+
+    inFlightQuizSubmissions.set(submissionKey, submissionPromise)
+
+    let submission: { id: string }
+    try {
+      submission = await submissionPromise
+    } finally {
+      inFlightQuizSubmissions.delete(submissionKey)
+    }
 
     // Return success with submission ID
     return NextResponse.json({
