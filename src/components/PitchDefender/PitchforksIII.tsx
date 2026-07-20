@@ -107,6 +107,7 @@ const DUNGEON_TORCHES = [
 ] as const
 
 type LayoutMode = 'portrait' | 'stage'
+type PortraitDockPanel = 'staff' | 'settings' | null
 
 function layoutModeForViewport(width: number, height: number): LayoutMode {
   return height > width && width <= 768 ? 'portrait' : 'stage'
@@ -2775,6 +2776,7 @@ export default function PitchforksIII() {
   const [canvasDisplaySize, setCanvasDisplaySize] = useState(() => ({ width: W, height: H }))
   const [portraitStaffDisplaySize, setPortraitStaffDisplaySize] = useState(() => ({ width: STAFF_PANEL_W, height: STAFF_PANEL_H }))
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('stage')
+  const [portraitDockPanel, setPortraitDockPanel] = useState<PortraitDockPanel>(null)
   const [viewportGeometry, setViewportGeometry] = useState(() => ({
     width: 0,
     height: 0,
@@ -2875,8 +2877,7 @@ export default function PitchforksIII() {
       })
 
       if (nextLayoutMode === 'portrait') {
-        const lowerLetterboxHeight = Math.max(0, (containerHeight - nextSize.height) / 2 - 12)
-        const nextStaffWidth = Math.max(0, Math.min(containerWidth - 24, lowerLetterboxHeight * (STAFF_PANEL_W / STAFF_PANEL_H)))
+        const nextStaffWidth = Math.max(0, Math.min(containerWidth - 32, 360))
         const nextStaffSize = { width: nextStaffWidth, height: nextStaffWidth * (STAFF_PANEL_H / STAFF_PANEL_W) }
         setPortraitStaffDisplaySize((prev) => {
           if (Math.abs(prev.width - nextStaffSize.width) < 0.5 && Math.abs(prev.height - nextStaffSize.height) < 0.5) return prev
@@ -4300,6 +4301,7 @@ export default function PitchforksIII() {
     resetRangeMatch(null)
     setPendingRangeProfile(null)
     setRangeAssessmentError(null)
+    setPortraitDockPanel(null)
     runtimeRef.current = makeInitialRuntime(demoRef.current)
     viewStateRef.current = null
     lightningPhaseTraceRef.current = []
@@ -5181,25 +5183,6 @@ export default function PitchforksIII() {
           style={{ width: canvasDisplaySize.width, height: canvasDisplaySize.height, imageRendering: 'pixelated' }}
         />
 
-        {layoutMode === 'portrait' && staffNotationOn && portraitStaffDisplaySize.height >= 64 && (
-          <div
-            data-testid="pf3-portrait-staff-band"
-            className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 rounded-lg bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.12),rgba(7,9,20,0)_72%)] shadow-[0_0_28px_rgba(34,211,238,0.10)]"
-            style={{ width: portraitStaffDisplaySize.width, height: portraitStaffDisplaySize.height }}
-          >
-            <canvas
-              ref={staffCanvasRef}
-              width={STAFF_PANEL_W * STAFF_BAND_RENDER_SCALE}
-              height={STAFF_PANEL_H * STAFF_BAND_RENDER_SCALE}
-              className="block h-full w-full"
-              role="img"
-              aria-label="Staff notation for the active pitch sequence"
-            >
-              Staff notation for the active pitch sequence.
-            </canvas>
-          </div>
-        )}
-
         <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2 text-xs bg-black/60 border border-gray-800 px-3 py-2">
           <span>Score {hud.score}</span>
           <span>Wave {hud.wave}</span>
@@ -5222,41 +5205,106 @@ export default function PitchforksIII() {
       </div>
 
       <div
-        className="w-full shrink-0 bg-[#070914] border-t border-gray-800 flex flex-col items-center gap-2 px-3 pt-3"
+        data-testid="pf3-learning-dock"
+        className={`w-full shrink-0 bg-[#070914] border-t border-gray-800 flex flex-col items-center gap-2 px-3 ${layoutMode === 'portrait' ? 'pt-2' : 'pt-3'}`}
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)' }}
       >
-        <button
-          onClick={() => {
-            const active = getActiveTarget()
-            if (active) playVillagerSequence(active.villager, 'replay')
-          }}
-          data-testid="pf3-replay-notes"
-          className="min-h-[44px] w-full max-w-[360px] px-5 py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50"
-        >
-          🔊 REPLAY NOTES
-        </button>
-        <div className="flex w-full max-w-[760px] flex-wrap items-center justify-center gap-2">
-          <SettingsRow
-            noteNamesOn={noteNamesOn}
-            setNoteNamesOn={setNoteNamesOn}
-            audioCueOn={audioCueOn}
-            setAudioCueOn={setAudioCueOn}
-            staffNotationOn={staffNotationOn}
-            setStaffNotationOn={setStaffNotationOn}
-            synesthesiaOn={synesthesiaOn}
-            setSynesthesiaOn={setSynesthesiaOn}
-            reducedMotion={reducedMotion}
-            setReducedMotion={setReducedMotion}
-            cueVolume={cueVolume}
-            setCueVolume={setCueVolume}
-            sfxVolume={sfxVolume}
-            setSfxVolume={setSfxVolume}
-            compact
-          />
-          <button onClick={quitToMenu} className="min-h-8 text-xs text-gray-300 hover:text-gray-100 border border-gray-700 px-3 py-1">
-            Quit
+        <div className={`flex w-full items-stretch justify-center gap-2 ${layoutMode === 'portrait' ? 'max-w-[760px]' : 'max-w-[360px]'}`}>
+          <button
+            onClick={() => {
+              const active = getActiveTarget()
+              if (active) playVillagerSequence(active.villager, 'replay')
+            }}
+            data-testid="pf3-replay-notes"
+            className={`${layoutMode === 'portrait' ? 'min-h-12 flex-1 px-3' : 'min-h-[44px] w-full px-5'} py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50`}
+          >
+            🔊 REPLAY NOTES
           </button>
+          {layoutMode === 'portrait' && (
+            <>
+              <button
+                type="button"
+                data-testid="pf3-staff-drawer-toggle"
+                aria-expanded={portraitDockPanel === 'staff'}
+                aria-controls="pf3-portrait-staff-panel"
+                onClick={() => {
+                  if (!staffNotationOn) setStaffNotationOn(true)
+                  setPortraitDockPanel(current => current === 'staff' ? null : 'staff')
+                }}
+                className="min-h-12 min-w-[76px] border border-cyan-500/70 bg-cyan-950/30 px-2 text-xs font-black tracking-wider text-cyan-100"
+              >
+                STAFF
+              </button>
+              <button
+                type="button"
+                data-testid="pf3-options-drawer-toggle"
+                aria-expanded={portraitDockPanel === 'settings'}
+                aria-controls="pf3-portrait-options-panel"
+                onClick={() => setPortraitDockPanel(current => current === 'settings' ? null : 'settings')}
+                className="min-h-12 min-w-[76px] border border-gray-600 bg-black/35 px-2 text-xs font-black tracking-wider text-gray-100"
+              >
+                OPTIONS
+              </button>
+            </>
+          )}
         </div>
+
+        {layoutMode === 'portrait' && staffNotationOn && portraitDockPanel === 'staff' && portraitStaffDisplaySize.height >= 64 && (
+          <div
+            id="pf3-portrait-staff-panel"
+            data-testid="pf3-portrait-staff-band"
+            role="region"
+            aria-label="Staff notation drawer"
+            className="shrink-0 rounded-lg border border-cyan-900/50 bg-[radial-gradient(ellipse_at_center,rgba(34,211,238,0.12),rgba(7,9,20,0)_72%)] shadow-[0_0_28px_rgba(34,211,238,0.10)]"
+            style={{ width: portraitStaffDisplaySize.width, height: portraitStaffDisplaySize.height }}
+          >
+            <canvas
+              ref={staffCanvasRef}
+              width={STAFF_PANEL_W * STAFF_BAND_RENDER_SCALE}
+              height={STAFF_PANEL_H * STAFF_BAND_RENDER_SCALE}
+              className="block h-full w-full"
+              role="img"
+              aria-label="Staff notation for the active pitch sequence"
+            >
+              Staff notation for the active pitch sequence.
+            </canvas>
+          </div>
+        )}
+
+        {(layoutMode !== 'portrait' || portraitDockPanel === 'settings') && (
+          <div
+            id={layoutMode === 'portrait' ? 'pf3-portrait-options-panel' : undefined}
+            data-testid={layoutMode === 'portrait' ? 'pf3-portrait-options-panel' : undefined}
+            role={layoutMode === 'portrait' ? 'region' : undefined}
+            aria-label={layoutMode === 'portrait' ? 'Game options' : undefined}
+            className={`flex w-full max-w-[760px] flex-wrap items-center justify-center gap-2 ${layoutMode === 'portrait' ? 'max-h-[42svh] overflow-y-auto overscroll-contain py-1' : ''}`}
+          >
+            <SettingsRow
+              noteNamesOn={noteNamesOn}
+              setNoteNamesOn={setNoteNamesOn}
+              audioCueOn={audioCueOn}
+              setAudioCueOn={setAudioCueOn}
+              staffNotationOn={staffNotationOn}
+              setStaffNotationOn={(value) => {
+                setStaffNotationOn(value)
+                if (layoutMode === 'portrait' && value) setPortraitDockPanel('staff')
+              }}
+              synesthesiaOn={synesthesiaOn}
+              setSynesthesiaOn={setSynesthesiaOn}
+              reducedMotion={reducedMotion}
+              setReducedMotion={setReducedMotion}
+              cueVolume={cueVolume}
+              setCueVolume={setCueVolume}
+              sfxVolume={sfxVolume}
+              setSfxVolume={setSfxVolume}
+              compact
+              touchSized={layoutMode === 'portrait'}
+            />
+            <button onClick={quitToMenu} className={`${layoutMode === 'portrait' ? 'min-h-12' : 'min-h-8'} text-xs text-gray-300 hover:text-gray-100 border border-gray-700 px-3 py-1`}>
+              Quit
+            </button>
+          </div>
+        )}
       </div>
       {geometryDebug && (
         <div
@@ -5290,18 +5338,20 @@ function SettingsRow(props: {
   sfxVolume: number
   setSfxVolume: (value: number) => void
   compact?: boolean
+  touchSized?: boolean
 }) {
+  const controlSize = props.touchSized ? 'min-h-12' : ''
   return (
     <div className={`flex max-w-full flex-wrap items-center justify-center ${props.compact ? 'gap-2 text-[11px]' : 'gap-3 text-xs'}`}>
       <button
         onClick={() => props.setNoteNamesOn(!props.noteNamesOn)}
-        className={`px-2 py-1 border ${props.noteNamesOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`${controlSize} px-2 py-1 border ${props.noteNamesOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Note names {props.noteNamesOn ? 'ON' : 'OFF'}
       </button>
       <button
         onClick={() => props.setAudioCueOn(!props.audioCueOn)}
-        className={`px-2 py-1 border ${props.audioCueOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`${controlSize} px-2 py-1 border ${props.audioCueOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Audio cue {props.audioCueOn ? 'ON' : 'OFF'}
       </button>
@@ -5309,23 +5359,23 @@ function SettingsRow(props: {
         onClick={() => props.setStaffNotationOn(!props.staffNotationOn)}
         aria-pressed={props.staffNotationOn}
         data-testid="pf3-staff-notation-toggle"
-        className={`px-2 py-1 border ${props.staffNotationOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`${controlSize} px-2 py-1 border ${props.staffNotationOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Staff notation {props.staffNotationOn ? 'ON' : 'OFF'}
       </button>
       <button
         onClick={() => props.setSynesthesiaOn(!props.synesthesiaOn)}
-        className={`px-2 py-1 border ${props.synesthesiaOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`${controlSize} px-2 py-1 border ${props.synesthesiaOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Note colors {props.synesthesiaOn ? 'ON' : 'OFF'}
       </button>
       <button
         onClick={() => props.setReducedMotion(!props.reducedMotion)}
-        className={`px-2 py-1 border ${props.reducedMotion ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`${controlSize} px-2 py-1 border ${props.reducedMotion ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Reduced motion {props.reducedMotion ? 'ON' : 'OFF'}
       </button>
-      <label className="flex items-center gap-2 text-gray-300">
+      <label className={`${controlSize} flex items-center gap-2 text-gray-300`}>
         Cue
         <input
           type="range"
@@ -5336,7 +5386,7 @@ function SettingsRow(props: {
           className="w-24 accent-orange-300"
         />
       </label>
-      <label className="flex items-center gap-2 text-gray-300">
+      <label className={`${controlSize} flex items-center gap-2 text-gray-300`}>
         SFX
         <input
           type="range"
