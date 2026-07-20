@@ -4,6 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
+import { PITCHFORKS_AUDIO_CONSTRAINTS, PITCHFORKS_PITCH_PROFILE } from './pitchDetectionSmoothing'
 import { advanceExactPitchHold, exactCents, exactPitchSampleState, noteToFreq } from './pitchMath'
 import {
   initAudio,
@@ -2785,7 +2786,10 @@ export default function PitchforksIII() {
     containerHeight: 0,
   }))
 
-  const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({ noiseGateDb: -45 })
+  const { isListening, pitch, pitchRef, startListening, stopListening, error: micError } = usePitchDetection({
+    profile: PITCHFORKS_PITCH_PROFILE,
+    audioConstraints: PITCHFORKS_AUDIO_CONSTRAINTS,
+  })
 
   useEffect(() => {
     noteNamesRef.current = noteNamesOn

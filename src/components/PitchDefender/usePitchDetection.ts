@@ -5,6 +5,10 @@
 
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { PitchDetector } from 'pitchy'
+import {
+  createPitchStabilizer,
+  type PitchStabilizationProfile,
+} from './pitchDetectionSmoothing'
 
 // ─���─ Detection Constants ────────────────────────────────────────────────────
 // Noise gate: -40dB is good for most mics. Cheap mics / quiet children may need
@@ -61,12 +65,18 @@ const FAIL_CLOSED_MIC_SOURCE_HEALTH: MicSourceHealthSnapshot = {
 
 export interface PitchDetectionOptions {
   noiseGateDb?: number  // dBFS threshold (default -40; use -50 for cheap mics / quiet singers)
+  profile?: Readonly<PitchStabilizationProfile>
+  audioConstraints?: Readonly<MediaTrackConstraints>
 }
 
 export function usePitchDetection(options?: PitchDetectionOptions) {
   // Use ref so the analyze loop always reads the latest threshold even if options change
-  const noiseGateRef = useRef(options?.noiseGateDb ?? DEFAULT_NOISE_GATE_DB)
-  noiseGateRef.current = options?.noiseGateDb ?? DEFAULT_NOISE_GATE_DB
+  const noiseGateRef = useRef(options?.profile?.noiseGateDb ?? options?.noiseGateDb ?? DEFAULT_NOISE_GATE_DB)
+  noiseGateRef.current = options?.profile?.noiseGateDb ?? options?.noiseGateDb ?? DEFAULT_NOISE_GATE_DB
+  const stabilizationProfileRef = useRef(options?.profile)
+  stabilizationProfileRef.current = options?.profile
+  const audioConstraintsRef = useRef(options?.audioConstraints)
+  audioConstraintsRef.current = options?.audioConstraints
   const [state, setState] = useState<PitchDetectionState>({
     isListening: false,
     pitch: null,
@@ -79,6 +89,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   const streamRef = useRef<MediaStream | null>(null)
   const rafRef = useRef<number>(0)
   const detectorRef = useRef<PitchDetector<Float32Array> | null>(null)
+  const stabilizerRef = useRef<ReturnType<typeof createPitchStabilizer> | null>(null)
   const pitchRef = useRef<PitchInfo | null>(null)
   const micSourceHealthRef = useRef<MicSourceHealthSnapshot>({ ...FAIL_CLOSED_MIC_SOURCE_HEALTH })
   const pitchGenerationRef = useRef(0)
@@ -110,13 +121,15 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
+          ...audioConstraintsRef.current,
         }
       })
 
       const ctx = new AudioContext()
       const source = ctx.createMediaStreamSource(stream)
       const analyser = ctx.createAnalyser()
-      analyser.fftSize = 2048
+      const stabilizationProfile = stabilizationProfileRef.current
+      analyser.fftSize = stabilizationProfile?.fftSize ?? 2048
 
       source.connect(analyser)
 
@@ -124,6 +137,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       analyserRef.current = analyser
       streamRef.current = stream
       detectorRef.current = PitchDetector.forFloat32Array(analyser.fftSize)
+      stabilizerRef.current = stabilizationProfile ? createPitchStabilizer(stabilizationProfile) : null
 
       clearSourceObservers()
       const track = stream.getAudioTracks()[0]
@@ -144,6 +158,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       smoothedFreqRef.current = 0
       consecutiveRef.current = { note: '', count: 0 }
       lastStableNoteRef.current = ''
+      stabilizerRef.current?.reset()
 
       setState({ isListening: true, pitch: null, error: null })
 
@@ -186,8 +201,12 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
         if (dbFS < noiseGateRef.current) {
           // Below noise floor — silence
-          smoothedFreqRef.current = 0
-          consecutiveRef.current = { note: '', count: 0 }
+          if (stabilizerRef.current) {
+            stabilizerRef.current.push({ frequency: 0, clarity: 0, db: dbFS })
+          } else {
+            smoothedFreqRef.current = 0
+            consecutiveRef.current = { note: '', count: 0 }
+          }
           const info: PitchInfo = {
             note: lastStableNoteRef.current,
             frequency: 0,
@@ -203,6 +222,27 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
         // ─── PITCH DETECTION ────────────────────────────────────────
         const [rawFrequency, clarity] = detectorRef.current.findPitch(buffer, ctx.sampleRate)
+
+        if (stabilizerRef.current) {
+          const inRange = rawFrequency > MIN_FREQ && rawFrequency < MAX_FREQ
+          const stabilized = stabilizerRef.current.push({
+            frequency: inRange ? rawFrequency : 0,
+            clarity,
+            db: dbFS,
+          })
+          if (stabilized.active) lastStableNoteRef.current = stabilized.note
+          const info: PitchInfo = {
+            note: stabilized.active ? stabilized.note : (lastStableNoteRef.current || stabilized.note),
+            frequency: stabilized.frequency,
+            cents: stabilized.cents,
+            confidence: clarity,
+            isActive: stabilized.active,
+          }
+          pitchRef.current = info
+          setState(prev => ({ ...prev, pitch: info }))
+          rafRef.current = requestAnimationFrame(analyze)
+          return
+        }
 
         if (clarity > MIN_CONFIDENCE && rawFrequency > MIN_FREQ && rawFrequency < MAX_FREQ) {
           // ─── EMA SMOOTHING ──────────────────────────────────────
@@ -288,6 +328,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
     }
     analyserRef.current = null
     detectorRef.current = null
+    stabilizerRef.current = null
     pitchRef.current = null
     smoothedFreqRef.current = 0
     consecutiveRef.current = { note: '', count: 0 }
