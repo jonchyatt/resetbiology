@@ -85,6 +85,13 @@ import {
   type PitchforksTunerFeedback,
 } from './pitchforksTunerFeedback'
 import {
+  PITCHFORKS_SPARK_MAX_AUTO_PULSES,
+  advancePitchforksSparkGuide,
+  createPitchforksSparkGuideState,
+  pausePitchforksSparkGuide,
+  type PitchforksSparkGuideStatus,
+} from './pitchforksSparkGuide'
+import {
   PITCHFORKS_INPUT_MODE_KEY,
   createPitchforksButtonTrial,
   decidePitchforksButtonAnswer,
@@ -242,6 +249,17 @@ type ButtonFeedbackKind = 'listen' | 'question' | 'correct' | 'wrong'
 type ButtonFeedback = Readonly<{ kind: ButtonFeedbackKind; text: string }>
 type ActiveCueContext = Readonly<{ support: CueSupportLevel; noteCount: number }>
 type FirstMinuteCoachState = Readonly<{ beat: FirstMinuteBeat; note: string | null }>
+type SparkGuideEvent = Readonly<{
+  atMs: number
+  kind: 'target' | 'armed' | 'cancelled' | 'fired' | 'capped' | 'disabled' | 'activation-pulse'
+  reason: string
+  targetKey: string | null
+  targetNote: string | null
+  generation: number
+  autoPulseCount: number
+  suppressionStartMs: number | null
+  suppressionEndMs: number | null
+}>
 type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
 type VillagerState = 'waiting' | 'walking' | 'ash'
 
@@ -585,6 +603,10 @@ interface Pf3DebugState {
   activeSequence: string[]
   activeCueSupport: CueSupportLevel
   cueSupportProfile: CueSupportProfile
+  sparkGuideStatus: PitchforksSparkGuideStatus
+  sparkGuideGeneration: number
+  sparkGuideAutoPulseCount: number
+  sparkGuideEvents: SparkGuideEvent[]
   firstMinuteBeat: FirstMinuteBeat
   fsrsDebug: boolean
   fsrsStoreKey: string
@@ -2839,6 +2861,9 @@ export default function PitchforksIII() {
   const viewStateRef = useRef<ViewState | null>(null)
   const lightningPhaseTraceRef = useRef<LightningPhaseTransition[]>([])
   const activeCueContextRef = useRef<ActiveCueContext>({ support: 'guided', noteCount: 1 })
+  const sparkGuideRef = useRef(createPitchforksSparkGuideState())
+  const sparkGuideStatusRef = useRef<PitchforksSparkGuideStatus>('idle')
+  const sparkGuideEventsRef = useRef<SparkGuideEvent[]>([])
   const firstMinuteCoachRef = useRef<FirstMinuteCoachState>({ beat: 'threat', note: null })
   const firstMinuteBeatStartedAtRef = useRef(0)
   const rangeHeadingRef = useRef<HTMLHeadingElement>(null)
@@ -2881,6 +2906,7 @@ export default function PitchforksIII() {
     toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
   }))
   const [activeCueContext, setActiveCueContext] = useState<ActiveCueContext>({ support: 'guided', noteCount: 1 })
+  const [sparkGuideStatus, setSparkGuideStatus] = useState<PitchforksSparkGuideStatus>('idle')
   const [firstMinuteCoach, setFirstMinuteCoach] = useState<FirstMinuteCoachState>({ beat: 'threat', note: null })
   const [rangeIntent, setRangeIntent] = useState<RangeIntent>('guided')
   const [rangeStep, setRangeStep] = useState<RangeAssessmentStep>('anchor')
@@ -3529,6 +3555,155 @@ export default function PitchforksIII() {
     return performance.now() < matchingSuppressedUntilRef.current || isWithinToneSuppressionWindow()
   }, [])
 
+  const syncSparkGuideStatus = useCallback((status: PitchforksSparkGuideStatus) => {
+    if (sparkGuideStatusRef.current === status) return
+    sparkGuideStatusRef.current = status
+    setSparkGuideStatus(status)
+  }, [])
+
+  const recordSparkGuideEvent = useCallback((
+    kind: SparkGuideEvent['kind'],
+    reason: string,
+    suppressionStartMs: number | null = null,
+    suppressionEndMs: number | null = null,
+    targetOverride: Readonly<{ key: string; note: string }> | null = null,
+  ) => {
+    const state = sparkGuideRef.current
+    sparkGuideEventsRef.current = [...sparkGuideEventsRef.current, {
+      atMs: performance.now(),
+      kind,
+      reason,
+      targetKey: targetOverride?.key ?? state.targetKey,
+      targetNote: targetOverride?.note ?? state.targetNote,
+      generation: state.generation,
+      autoPulseCount: state.autoPulseCount,
+      suppressionStartMs,
+      suppressionEndMs,
+    }].slice(-80)
+  }, [])
+
+  const pauseSparkGuide = useCallback((reason: string) => {
+    const current = sparkGuideRef.current
+    const hadPendingWork = current.quietSinceMs !== null || current.wrongSinceMs !== null || current.status === 'pulse'
+    const next = pausePitchforksSparkGuide(current)
+    sparkGuideRef.current = next
+    syncSparkGuideStatus(next.status)
+    if (hadPendingWork) recordSparkGuideEvent('cancelled', reason)
+  }, [recordSparkGuideEvent, syncSparkGuideStatus])
+
+  const resetSparkGuide = useCallback((reason: string) => {
+    const current = sparkGuideRef.current
+    if (!current.targetKey && current.quietSinceMs === null && current.wrongSinceMs === null && current.status === 'idle') return
+    if (current.targetKey || current.quietSinceMs !== null || current.wrongSinceMs !== null || current.status === 'pulse') {
+      recordSparkGuideEvent('cancelled', reason)
+    }
+    const next = createPitchforksSparkGuideState(current.generation + 1)
+    sparkGuideRef.current = next
+    syncSparkGuideStatus(next.status)
+  }, [recordSparkGuideEvent, syncSparkGuideStatus])
+
+  const updateSparkGuide = useCallback((
+    target: NonNullable<ReturnType<typeof getActiveTarget>>,
+    source: PitchInfo | null,
+    now: number,
+  ) => {
+    const cuePlaying = cuePlayingNow()
+    const suppressed = cuePlaying || matchingSuppressedNow()
+    const usable = !!source?.isActive && source.confidence >= CONFIDENCE_FLOOR && source.frequency > 0
+    const inWindow = usable && Math.abs(exactCents(source.frequency, noteToFreq(target.note))) <= MATCH_TOLERANCE_CENTS
+    const eligible = phaseRef.current === 'playing' &&
+      inputModeRef.current === 'voice' &&
+      activeCueContextRef.current.support === 'guided' &&
+      activeCueContextRef.current.noteCount === 1 &&
+      audioCueRef.current &&
+      cueVolumeRef.current > 0 &&
+      pianoSamplesReadyRef.current &&
+      !ceremonyRef.current.active &&
+      (typeof document === 'undefined' || document.visibilityState === 'visible')
+    const sample = suppressed
+      ? 'suppressed' as const
+      : !usable
+        ? 'silence' as const
+        : inWindow
+          ? 'progress' as const
+          : 'confident-wrong' as const
+    const before = sparkGuideRef.current
+    const decision = advancePitchforksSparkGuide(before, {
+      nowMs: now,
+      targetKey: target.key,
+      targetNote: target.note,
+      eligible,
+      sample,
+      pulseWindowMs: TONE_SUPPRESS_MS,
+    })
+
+    if (!decision.fire) {
+      sparkGuideRef.current = decision.state
+      syncSparkGuideStatus(decision.state.status)
+      if (before.status === 'pulse' && decision.state.status !== 'pulse') {
+        activePromptKeyRef.current = target.key
+        promptStartedAtRef.current = now
+        setPromptText(target.villager.burned === 0 ? `Sing: ${target.note}` : `Now: ${target.note}`)
+        if (
+          target.villager.id === runtimeRef.current.firstVillagerId &&
+          firstMinuteCoachRef.current.beat !== 'complete'
+        ) {
+          setFirstMinuteCoachSnapshot('sing', target.note)
+        }
+      }
+      for (const transition of decision.transitions) {
+        recordSparkGuideEvent(transition.kind, transition.reason)
+      }
+      return
+    }
+
+    // Revalidate at the last possible moment. The scheduler never owns target truth.
+    const liveTarget = getActiveTarget()
+    const stillEligible = !!liveTarget &&
+      liveTarget.key === decision.fire.targetKey &&
+      liveTarget.note === decision.fire.targetNote &&
+      before.generation === decision.fire.generation &&
+      phaseRef.current === 'playing' &&
+      inputModeRef.current === 'voice' &&
+      activeCueContextRef.current.support === 'guided' &&
+      activeCueContextRef.current.noteCount === 1 &&
+      audioCueRef.current &&
+      cueVolumeRef.current > 0 &&
+      !cuePlayingNow() &&
+      !matchingSuppressedNow()
+    if (!stillEligible) {
+      sparkGuideRef.current = pausePitchforksSparkGuide(before)
+      syncSparkGuideStatus(sparkGuideRef.current.status)
+      recordSparkGuideEvent('cancelled', 'fire-revalidation')
+      return
+    }
+
+    sparkGuideRef.current = decision.state
+    syncSparkGuideStatus(decision.state.status)
+    const suppressionStartMs = performance.now()
+    const suppressionEndMs = suppressionStartMs + TONE_SUPPRESS_MS
+    waveNotesHeardRef.current.add(liveTarget.note)
+    setPianoVolume(cueVolumeRef.current)
+    playPianoNote(liveTarget.note, { exact: true })
+    cuePlayingUntilRef.current = suppressionStartMs + TONE_MS
+    matchingSuppressedUntilRef.current = suppressionEndMs
+    timersPausedRef.current = true
+    activePromptKeyRef.current = liveTarget.key
+    promptStartedAtRef.current = suppressionStartMs
+    setPromptText(`Listen: ${liveTarget.note}`)
+    if (
+      liveTarget.villager.id === runtimeRef.current.firstVillagerId &&
+      firstMinuteCoachRef.current.beat !== 'complete'
+    ) {
+      setFirstMinuteCoachSnapshot('listen', liveTarget.note)
+    }
+    markToneEmitted(TONE_SUPPRESS_MS)
+    recordSparkGuideEvent('fired', decision.fire.reason, suppressionStartMs, suppressionEndMs)
+    if (decision.state.autoPulseCount >= PITCHFORKS_SPARK_MAX_AUTO_PULSES) {
+      recordSparkGuideEvent('capped', 'automatic-limit-after-pulse')
+    }
+  }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText, syncSparkGuideStatus])
+
   const resetRangeMatch = useCallback((candidate: string | null = null) => {
     rangeHeldMsRef.current = 0
     rangeLastSampleAtRef.current = 0
@@ -3988,6 +4163,12 @@ export default function PitchforksIII() {
     cuePlayingUntilRef.current = now + toneWindowMs
     matchingSuppressedUntilRef.current = now + suppressMs
     timersPausedRef.current = true
+    if (!buttonLane && mode === 'cue' && activeCueContextRef.current.support === 'guided' && liveNotes.length === 1 && activeTarget) {
+      recordSparkGuideEvent('activation-pulse', 'existing-guided-cue', now, now + suppressMs, {
+        key: activeTarget.key,
+        note: liveNotes[0],
+      })
+    }
     if (demoRef.current) demoStepRef.current = mode === 'replay' ? 'replay-cue' : 'auto-cue'
 
     const firstIndex = villager.burned
@@ -4047,7 +4228,7 @@ export default function PitchforksIII() {
     }
     const doneId = setTimeout(finishCue, suppressMs)
     cueTimeoutsRef.current.push(doneId)
-  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, setFirstMinuteCoachSnapshot, setPromptText])
+  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -4130,6 +4311,10 @@ export default function PitchforksIII() {
             Object.entries(cueSupportProfileRef.current.notes).map(([note, evidence]) => [note, { ...evidence }]),
           ),
         },
+        sparkGuideStatus: sparkGuideRef.current.status,
+        sparkGuideGeneration: sparkGuideRef.current.generation,
+        sparkGuideAutoPulseCount: sparkGuideRef.current.autoPulseCount,
+        sparkGuideEvents: sparkGuideEventsRef.current.map(event => ({ ...event })),
         firstMinuteBeat: firstMinuteCoachRef.current.beat,
         fsrsDebug: demoRef.current || fsrsDebugRef.current,
         fsrsStoreKey: fsrsStorageKey(),
@@ -4529,6 +4714,7 @@ export default function PitchforksIII() {
 
   const processLock = useCallback((dt: number) => {
     if (ceremonyRef.current.active) {
+      pauseSparkGuide('ceremony')
       activeKeyRef.current = ''
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
@@ -4537,6 +4723,7 @@ export default function PitchforksIII() {
     }
     const target = getActiveTarget()
     if (!target) {
+      resetSparkGuide('no-target')
       activeKeyRef.current = ''
       activeVillagerIdRef.current = null
       lockHeldMsRef.current = 0
@@ -4594,16 +4781,15 @@ export default function PitchforksIII() {
       return
     }
 
-    if (matchingSuppressedNow()) {
-      return
-    }
-
     const now = performance.now()
-    if (demoRef.current) {
+    if (demoRef.current && !matchingSuppressedNow()) {
       demoPitchRef.current = demoPitchForTarget(target, now)
     }
 
     const source = demoRef.current ? demoPitchRef.current : pitchRef.current
+    updateSparkGuide(target, source, now)
+    if (matchingSuppressedNow()) return
+
     if (!source?.isActive || source.confidence < CONFIDENCE_FLOOR || source.frequency <= 0) {
       if (demoRef.current && lockProgressRef.current > 0) {
         silenceFreezeObservedRef.current = true
@@ -4652,10 +4838,13 @@ export default function PitchforksIII() {
     matchingSuppressedNow,
     pitchRef,
     playVillagerSequence,
+    pauseSparkGuide,
+    resetSparkGuide,
     setActiveCueContextSnapshot,
     setFirstMinuteCoachSnapshot,
     setPromptText,
     strikeActiveTine,
+    updateSparkGuide,
   ])
 
   const updateGame = useCallback((dt: number) => {
@@ -4746,6 +4935,7 @@ export default function PitchforksIII() {
         setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
         if (rt.health <= 0) {
           rt.gameOver = true
+          resetSparkGuide('game-over')
           phaseRef.current = 'game_over'
           setPhase('game_over')
           return
@@ -4764,7 +4954,7 @@ export default function PitchforksIII() {
         startWave(runtimeRef.current.wave + 1)
       }, WAVE_RECEIPT_MS)
     }
-  }, [getActiveTarget, processLock, reviewTargetNote, setPromptText, showWaveReceipt, snapshotWaveReceipt, spawnVillager, startWave, timersPausedNow])
+  }, [getActiveTarget, processLock, resetSparkGuide, reviewTargetNote, setPromptText, showWaveReceipt, snapshotWaveReceipt, spawnVillager, startWave, timersPausedNow])
 
   const updatePitchBarState = useCallback((active: ActiveTarget | null): TunerView => {
     const visible = phaseRef.current === 'playing' && inputModeRef.current === 'voice'
@@ -5006,6 +5196,9 @@ export default function PitchforksIII() {
     }
     resumeCueAudioFromGesture()
     clearCueTimers()
+    sparkGuideEventsRef.current = []
+    sparkGuideRef.current = createPitchforksSparkGuideState(sparkGuideRef.current.generation + 1)
+    syncSparkGuideStatus('idle')
     clearFirstMinuteTimer()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
@@ -5077,7 +5270,7 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureActiveNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture, stopListening])
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureActiveNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture, stopListening, syncSparkGuideStatus])
 
   const startGame = useCallback(() => {
     beginPlaying()
@@ -5253,6 +5446,7 @@ export default function PitchforksIII() {
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
+    resetSparkGuide('quit')
     clearFirstMinuteTimer()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
@@ -5266,7 +5460,7 @@ export default function PitchforksIII() {
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
     setPhase('menu')
-  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, resetRangeMatch, stopListening])
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, resetRangeMatch, resetSparkGuide, stopListening])
 
   const restartNoteJourney = useCallback(() => {
     const profile = rangeProfileRef.current
@@ -5303,12 +5497,17 @@ export default function PitchforksIII() {
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
+    const spark = sparkGuideRef.current
+    if (spark.quietSinceMs !== null || spark.wrongSinceMs !== null || spark.status === 'pulse') {
+      recordSparkGuideEvent('cancelled', 'unmount')
+    }
+    sparkGuideRef.current = createPitchforksSparkGuideState(spark.generation + 1)
     clearFirstMinuteTimer()
     clearCeremonyTimers()
     clearNoteMasteredTimer()
     clearWaveReceiptTimer()
     stopListening()
-  }, [clearCeremonyTimers, clearCueTimers, clearFirstMinuteTimer, clearNoteMasteredTimer, clearWaveReceiptTimer, stopListening])
+  }, [clearCeremonyTimers, clearCueTimers, clearFirstMinuteTimer, clearNoteMasteredTimer, clearWaveReceiptTimer, recordSparkGuideEvent, stopListening])
 
   const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
     demo: {
@@ -6166,6 +6365,7 @@ export default function PitchforksIII() {
       <div
         data-testid="pf3-tuner-feedback"
         data-feedback-kind={tunerFeedback.kind}
+        data-spark-guide-status={sparkGuideStatus}
         data-input-mode={inputMode}
         role="status"
         aria-live="polite"
@@ -6189,7 +6389,9 @@ export default function PitchforksIII() {
             <span className="text-xs font-black tracking-widest sm:text-sm">{buttonFeedback.text}</span>
           ) : (
             <>
-              <span className="text-[11px] font-bold tracking-wider sm:text-xs">{tunerFeedback.headline}</span>
+              <span className="text-[11px] font-bold tracking-wider sm:text-xs">
+                {sparkGuideStatus === 'pulse' ? `PULSED GUIDE · ${tunerFeedback.headline}` : tunerFeedback.headline}
+              </span>
               <span className="mt-1 text-xs font-black tracking-widest sm:mt-0 sm:text-sm">{tunerFeedback.detail}</span>
             </>
           )}
@@ -6241,7 +6443,10 @@ export default function PitchforksIII() {
             disabled={cuePlaybackActive}
             onClick={() => {
               const active = getActiveTarget()
-              if (active) playVillagerSequence(active.villager, 'replay')
+              if (active) {
+                pauseSparkGuide('replay')
+                playVillagerSequence(active.villager, 'replay')
+              }
             }}
             data-testid="pf3-replay-notes"
             className={`${layoutMode === 'portrait' ? 'min-h-12 flex-1 px-3' : 'min-h-[44px] w-full px-5'} py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50 disabled:cursor-wait disabled:opacity-75`}
