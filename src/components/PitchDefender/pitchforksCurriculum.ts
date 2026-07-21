@@ -15,12 +15,65 @@ export interface CueSupportProfile {
   notes: Record<string, CueSupportEvidence>
 }
 
+export const PITCHFORKS_PRESENTATION_JOURNEY_KEY = 'pitchforks3_presentation_journey_v1'
+
+export interface PitchforksPresentationJourney {
+  version: 1
+  rangeAssessedAt: string
+  startedAt: string
+  unlockedNotes: string[]
+  guidedNotes: string[]
+}
+
 type CueMemory = Readonly<{
   phase: 'new' | 'learning' | 'review'
   lastReview: number
 }>
 
 export const EMPTY_CUE_SUPPORT_PROFILE: CueSupportProfile = { version: 1, notes: {} }
+
+export function createPitchforksPresentationJourney(input: {
+  rangeAssessedAt: string
+  unlockedNotes: readonly string[]
+  guidedNotes?: readonly string[]
+  startedAt?: string
+}): PitchforksPresentationJourney {
+  return {
+    version: 1,
+    rangeAssessedAt: input.rangeAssessedAt,
+    startedAt: input.startedAt ?? new Date().toISOString(),
+    unlockedNotes: [...input.unlockedNotes],
+    guidedNotes: [...(input.guidedNotes ?? [])],
+  }
+}
+
+export function parsePitchforksPresentationJourney(
+  raw: string | null,
+  rangeAssessedAt: string,
+  presentationOrder: readonly string[],
+): PitchforksPresentationJourney | null {
+  if (!raw || presentationOrder.length < 2) return null
+  try {
+    const parsed = JSON.parse(raw) as Partial<PitchforksPresentationJourney>
+    if (parsed.version !== 1 || parsed.rangeAssessedAt !== rangeAssessedAt) return null
+    if (typeof parsed.startedAt !== 'string' || !Number.isFinite(Date.parse(parsed.startedAt))) return null
+    if (!Array.isArray(parsed.unlockedNotes) || parsed.unlockedNotes.length < 2) return null
+    if (parsed.unlockedNotes.length > presentationOrder.length) return null
+    if (parsed.unlockedNotes.some((note, index) => note !== presentationOrder[index])) return null
+    if (!Array.isArray(parsed.guidedNotes)) return null
+    if (new Set(parsed.guidedNotes).size !== parsed.guidedNotes.length) return null
+    if (parsed.guidedNotes.some(note => typeof note !== 'string' || !parsed.unlockedNotes!.includes(note))) return null
+    return {
+      version: 1,
+      rangeAssessedAt,
+      startedAt: parsed.startedAt,
+      unlockedNotes: [...parsed.unlockedNotes],
+      guidedNotes: [...parsed.guidedNotes],
+    }
+  } catch {
+    return null
+  }
+}
 
 const PATIENT_WAVES: Readonly<Record<number, readonly TineCount[]>> = {
   1: [1, 1, 1, 1, 1, 1],

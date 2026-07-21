@@ -48,12 +48,15 @@ import {
 } from './pitchforksRange'
 import {
   EMPTY_CUE_SUPPORT_PROFILE,
+  PITCHFORKS_PRESENTATION_JOURNEY_KEY,
   admissionAllowedForWave,
   attackTimeForCurriculum,
+  createPitchforksPresentationJourney,
   cueSupportForNote,
   deterministicPairNotes,
   firstMinuteCoachCopy,
   parseCueSupportProfile,
+  parsePitchforksPresentationJourney,
   patientTineCountsForWave,
   recordCueSupportOutcome,
   replayLabelForCueSupport,
@@ -62,6 +65,7 @@ import {
   type CueSupportLevel,
   type CueSupportProfile,
   type FirstMinuteBeat,
+  type PitchforksPresentationJourney,
   type TineCount,
 } from './pitchforksCurriculum'
 import {
@@ -2685,6 +2689,7 @@ export default function PitchforksIII() {
   const fsrsRef = useRef<Record<string, NoteMemory>>({})
   const masteryProgressRef = useRef<MasteryProgress>({})
   const cueSupportProfileRef = useRef<CueSupportProfile>(EMPTY_CUE_SUPPORT_PROFILE)
+  const presentationJourneyRef = useRef<PitchforksPresentationJourney | null>(null)
   const cueSupportByTargetRef = useRef<Map<string, CueSupportLevel>>(new Map())
   const hintedTargetKeysRef = useRef<Set<string>>(new Set())
   const waveNotesHeardRef = useRef<Set<string>>(new Set())
@@ -2780,6 +2785,10 @@ export default function PitchforksIII() {
   const firstMinuteCoachRef = useRef<FirstMinuteCoachState>({ beat: 'threat', note: null })
   const firstMinuteBeatStartedAtRef = useRef(0)
   const rangeHeadingRef = useRef<HTMLHeadingElement>(null)
+  const journeyResetDialogRef = useRef<HTMLDialogElement>(null)
+  const journeyResetButtonRef = useRef<HTMLButtonElement>(null)
+  const journeyResetCancelRef = useRef<HTMLButtonElement>(null)
+  const journeyResetStatusRef = useRef<HTMLDivElement>(null)
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [assetsReady, setAssetsReady] = useState(false)
@@ -2820,6 +2829,8 @@ export default function PitchforksIII() {
   const [pendingRangeProfile, setPendingRangeProfile] = useState<PitchforksRangeProfile | null>(null)
   const [manualLowNote, setManualLowNote] = useState('C4')
   const [manualHighNote, setManualHighNote] = useState('G4')
+  const [journeyResetConfirm, setJourneyResetConfirm] = useState(false)
+  const [journeyResetStatus, setJourneyResetStatus] = useState<string | null>(null)
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
   const [noteMastered, setNoteMastered] = useState<string | null>(null)
   const [, setWaveReceipt] = useState<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
@@ -3021,6 +3032,43 @@ export default function PitchforksIII() {
     } catch {}
   }, [cueSupportStorageKey])
 
+  const savePresentationJourney = useCallback((journey = presentationJourneyRef.current) => {
+    if (!journey || demoRef.current || fsrsDebugRef.current) return
+    try {
+      localStorage.setItem(PITCHFORKS_PRESENTATION_JOURNEY_KEY, JSON.stringify(journey))
+    } catch {}
+  }, [])
+
+  const beginPresentationJourney = useCallback((
+    profile: PitchforksRangeProfile,
+    notes: readonly string[],
+    guidedNotes: readonly string[] = notes,
+  ) => {
+    const journey = createPitchforksPresentationJourney({
+      rangeAssessedAt: profile.assessedAt,
+      unlockedNotes: notes,
+      guidedNotes,
+    })
+    presentationJourneyRef.current = journey
+    savePresentationJourney(journey)
+  }, [savePresentationJourney])
+
+  const savePresentationJourneyNotes = useCallback((notes: readonly string[]) => {
+    const current = presentationJourneyRef.current
+    if (!current) return
+    const next = { ...current, unlockedNotes: [...notes] }
+    presentationJourneyRef.current = next
+    savePresentationJourney(next)
+  }, [savePresentationJourney])
+
+  const completeJourneyGuidanceForNote = useCallback((note: string) => {
+    const current = presentationJourneyRef.current
+    if (!current?.guidedNotes.includes(note)) return
+    const next = { ...current, guidedNotes: current.guidedNotes.filter(candidate => candidate !== note) }
+    presentationJourneyRef.current = next
+    savePresentationJourney(next)
+  }, [savePresentationJourney])
+
   const getMasterySessionId = useCallback(() => {
     if (!masterySessionIdRef.current) {
       masterySessionIdRef.current = typeof crypto !== 'undefined' && crypto.randomUUID
@@ -3047,7 +3095,10 @@ export default function PitchforksIII() {
     try {
       localStorage.setItem(PITCHFORKS_RANGE_PROFILE_KEY, JSON.stringify(profile))
     } catch {}
-  }, [ensureNoteMemory])
+    cueSupportProfileRef.current = { version: 1, notes: {} }
+    saveCueSupport()
+    beginPresentationJourney(profile, starterNotes)
+  }, [beginPresentationJourney, ensureNoteMemory, saveCueSupport])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -3093,18 +3144,52 @@ export default function PitchforksIII() {
       setRangeProfile(storedRangeProfile)
     }
 
-    // Preserve shared FSRS history while restoring only the assessed presentation
-    // journey. A saved range always begins with two eligible adjacent notes.
-    const reviewed = new Set(
-      Object.entries(fsrsRef.current)
-        .filter(([, m]) => m.lastReview > 0)
-        .map(([k]) => k)
-    )
     const order = storedRangeProfile ? presentationOrderRef.current : [...INTRO_ORDER]
-    const restored: string[] = storedRangeProfile ? order.slice(0, 2) : []
-    for (const note of storedRangeProfile ? order.slice(2) : order) {
-      if (reviewed.has(note)) restored.push(note)
-      else break // stop at first unreviewed — no gaps
+    let restored: string[] = []
+    if (storedRangeProfile) {
+      let storedJourneyRaw: string | null = null
+      try {
+        storedJourneyRaw = localStorage.getItem(PITCHFORKS_PRESENTATION_JOURNEY_KEY)
+      } catch { /* storage unavailable: migrate this session without persistence */ }
+      const storedJourney = parsePitchforksPresentationJourney(
+        storedJourneyRaw,
+        storedRangeProfile.assessedAt,
+        order,
+      )
+      if (storedJourney) {
+        presentationJourneyRef.current = storedJourney
+        restored = [...storedJourney.unlockedNotes]
+      } else {
+        // One-time migration for players whose presentation unlocks were previously
+        // reconstructed from FSRS. New resets persist independently from mastery.
+        const reviewed = new Set(
+          Object.entries(fsrsRef.current)
+            .filter(([, memory]) => memory.lastReview > 0)
+            .map(([note]) => note),
+        )
+        restored = order.slice(0, 2)
+        for (const note of order.slice(2)) {
+          if (reviewed.has(note)) restored.push(note)
+          else break
+        }
+        const migratedJourney = createPitchforksPresentationJourney({
+          rangeAssessedAt: storedRangeProfile.assessedAt,
+          unlockedNotes: restored,
+          guidedNotes: [],
+        })
+        presentationJourneyRef.current = migratedJourney
+        savePresentationJourney(migratedJourney)
+      }
+    } else {
+      const reviewed = new Set(
+        Object.entries(fsrsRef.current)
+          .filter(([, memory]) => memory.lastReview > 0)
+          .map(([note]) => note),
+      )
+      for (const note of order) {
+        if (reviewed.has(note)) restored.push(note)
+        else break
+      }
     }
     if (restored.length >= 2) {
       setUnlockedNotes(restored)
@@ -3112,7 +3197,7 @@ export default function PitchforksIII() {
     }
 
     for (const note of unlockedNotesRef.current) ensureNoteMemory(note)
-  }, [ensureNoteMemory, getMasterySessionId])
+  }, [ensureNoteMemory, getMasterySessionId, savePresentationJourney])
 
   useEffect(() => {
     let cancelled = false
@@ -3224,7 +3309,7 @@ export default function PitchforksIII() {
     const perNote = liveNotes.map(note => cueSupportForNote(
       fsrsRef.current[note],
       cueSupportProfileRef.current.notes[note],
-      firstEncounter,
+      firstEncounter || !!presentationJourneyRef.current?.guidedNotes.includes(note),
       demoRef.current,
     ))
     // A sequence is only Recall when every unresolved note has earned Recall.
@@ -3537,13 +3622,14 @@ export default function PitchforksIII() {
     const newPool = [...currentPool, note]
     unlockedNotesRef.current = newPool
     setUnlockedNotes(newPool)
+    savePresentationJourneyNotes(newPool)
     ensureNoteMemory(note)
     saveFsrs()
     deferredAdmissionNotesRef.current.delete(note)
     clearNewNoteCeremony()
     setNewNoteUnlocked(note)
     newNoteTimerRef.current = setTimeout(() => setNewNoteUnlocked(null), NEW_NOTE_CEREMONY_MS)
-  }, [admissionMatched, clearNewNoteCeremony, ensureNoteMemory, saveFsrs])
+  }, [admissionMatched, clearNewNoteCeremony, ensureNoteMemory, saveFsrs, savePresentationJourneyNotes])
 
   const deferNewNoteAdmission = useCallback(() => {
     const note = ceremonyRef.current.note
@@ -3635,7 +3721,10 @@ export default function PitchforksIII() {
     saveCueSupport()
     cueSupportByTargetRef.current.delete(target.key)
     hintedTargetKeysRef.current.delete(target.key)
-    if (correct) recordMasteryProgressForReview(target.note)
+    if (correct) {
+      completeJourneyGuidanceForNote(target.note)
+      recordMasteryProgressForReview(target.note)
+    }
 
     if (correct) {
       waveNotesSungRef.current.add(target.note)
@@ -3646,7 +3735,7 @@ export default function PitchforksIII() {
       consecutiveCorrectRef.current = 0
     }
     return true
-  }, [ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveCueSupport, saveFsrs])
+  }, [completeJourneyGuidanceForNote, ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveCueSupport, saveFsrs])
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
@@ -4836,6 +4925,35 @@ export default function PitchforksIII() {
     setPhase('menu')
   }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, resetRangeMatch, stopListening])
 
+  const restartNoteJourney = useCallback(() => {
+    const profile = rangeProfileRef.current
+    if (!profile) return
+    const starterNotes = starterPairForRange(profile)
+    unlockedNotesRef.current = [...starterNotes]
+    setUnlockedNotes([...starterNotes])
+    deferredAdmissionNotesRef.current = new Set()
+    consecutiveCorrectRef.current = 0
+    clearNewNoteCeremony()
+    setNewNoteUnlocked(null)
+    for (const note of starterNotes) ensureNoteMemory(note)
+    cueSupportProfileRef.current = { version: 1, notes: {} }
+    saveCueSupport()
+    beginPresentationJourney(profile, starterNotes)
+    setJourneyResetConfirm(false)
+    setJourneyResetStatus(`Journey restarted with ${starterNotes.join(' and ')}. Your range and mastery are safe.`)
+  }, [beginPresentationJourney, clearNewNoteCeremony, ensureNoteMemory, saveCueSupport])
+
+  useEffect(() => {
+    const dialog = journeyResetDialogRef.current
+    if (!dialog) return
+    if (journeyResetConfirm && !dialog.open) {
+      dialog.showModal()
+      requestAnimationFrame(() => journeyResetCancelRef.current?.focus())
+    } else if (!journeyResetConfirm && dialog.open) {
+      dialog.close()
+    }
+  }, [journeyResetConfirm])
+
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
@@ -4983,8 +5101,9 @@ export default function PitchforksIII() {
   )
 
   if (phase === 'menu') {
+    const canRestartJourney = !!rangeProfile && unlockedNotes.length > starterPairForRange(rangeProfile).length
     return (
-      <div className="fixed inset-0 bg-[#070914] text-gray-100 flex items-center justify-center px-4" style={{ fontFamily: 'monospace' }}>
+      <div data-testid="pf3-menu" className="fixed inset-0 overflow-y-auto bg-[#070914] text-gray-100 flex items-start justify-center px-4 py-4 sm:items-center" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
         {newNoteCeremonyBanner}
         {demoMode && (
           <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-orange-200 border border-orange-500/50 px-2 py-1">
@@ -5078,6 +5197,83 @@ export default function PitchforksIII() {
               </div>
             )}
           </div>
+          {canRestartJourney && !demoMode && (
+            <section className="mb-4" aria-label="Journey controls">
+              <button
+                ref={journeyResetButtonRef}
+                type="button"
+                data-testid="pf3-restart-journey"
+                onClick={() => {
+                  setJourneyResetStatus(null)
+                  setJourneyResetConfirm(true)
+                }}
+                className="min-h-12 w-full border border-cyan-700/70 bg-cyan-950/20 px-3 py-3 text-left text-cyan-100"
+              >
+                <span className="block text-xs font-black tracking-widest">RESTART LEARNING JOURNEY</span>
+                <span className="mt-1 block text-xs font-normal leading-relaxed tracking-normal text-gray-300">
+                  Go back to your first two notes and Guided cues. Your comfortable range, note memory, and mastery stay safe.
+                </span>
+              </button>
+            </section>
+          )}
+          {journeyResetStatus && (
+            <div
+              ref={journeyResetStatusRef}
+              role="status"
+              aria-live="polite"
+              tabIndex={-1}
+              className="mb-4 border border-green-700/70 bg-green-950/25 px-3 py-2 text-xs font-bold leading-relaxed text-green-100 outline-none"
+            >
+              {journeyResetStatus}
+            </div>
+          )}
+          <dialog
+            ref={journeyResetDialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="pf3-restart-dialog-title"
+            aria-describedby="pf3-restart-dialog-description"
+            className="m-auto w-[calc(100%_-_2rem)] max-w-md border border-cyan-700 bg-[#070914] p-0 text-gray-100 backdrop:bg-black/80"
+            onCancel={(event) => {
+              event.preventDefault()
+              setJourneyResetConfirm(false)
+            }}
+            onClose={() => {
+              setJourneyResetConfirm(false)
+              requestAnimationFrame(() => {
+                if (journeyResetStatus) journeyResetStatusRef.current?.focus()
+                else journeyResetButtonRef.current?.focus()
+              })
+            }}
+          >
+            <div className="p-5" style={{ fontFamily: 'monospace' }}>
+              <h2 id="pf3-restart-dialog-title" className="text-lg font-black tracking-widest text-cyan-100">
+                RESTART THE JOURNEY?
+              </h2>
+              <p id="pf3-restart-dialog-description" className="mt-3 text-sm leading-relaxed text-gray-300">
+                Return to your first two notes and Guided cues? Your comfortable range, learned-note memory, and long-term practice history stay saved.
+              </p>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <button
+                  ref={journeyResetCancelRef}
+                  type="button"
+                  data-testid="pf3-restart-journey-cancel"
+                  onClick={() => setJourneyResetConfirm(false)}
+                  className="min-h-12 flex-1 border border-gray-500 bg-black/30 px-4 py-3 text-sm font-black tracking-widest text-gray-100"
+                >
+                  KEEP MY PLACE
+                </button>
+                <button
+                  type="button"
+                  data-testid="pf3-restart-journey-confirm"
+                  onClick={restartNoteJourney}
+                  className="min-h-12 flex-1 border border-cyan-300 bg-cyan-200 px-4 py-3 text-sm font-black tracking-widest text-[#071018]"
+                >
+                  RESTART JOURNEY
+                </button>
+              </div>
+            </div>
+          </dialog>
           {assetError && <div className="text-sm text-red-300 mb-4">{assetError}</div>}
           {micError && !demoMode && <div className="text-xs text-red-300 mb-4">{micError}</div>}
           <SettingsRow
