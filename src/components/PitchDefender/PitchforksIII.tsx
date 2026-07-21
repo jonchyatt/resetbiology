@@ -555,6 +555,7 @@ interface Pf3DebugState {
   cuePlaying: boolean
   matchingSuppressed: boolean
   timersPaused: boolean
+  firstLockGrace: boolean
   timerBarVisible: boolean
   activeAttackTimerPct: number | null
   lockWhileSuppressed: boolean
@@ -3009,6 +3010,18 @@ export default function PitchforksIII() {
   }, [isListening, micCheckStep, phase, pitch, roomReadiness, signalDbRef])
 
   useLayoutEffect(() => {
+    const syncLayoutMode = () => {
+      const nextLayoutMode = layoutModeForViewport(window.innerWidth, window.innerHeight)
+      layoutModeRef.current = nextLayoutMode
+      setLayoutMode(nextLayoutMode)
+    }
+
+    syncLayoutMode()
+    window.addEventListener('resize', syncLayoutMode)
+    return () => window.removeEventListener('resize', syncLayoutMode)
+  }, [])
+
+  useLayoutEffect(() => {
     if (phase !== 'playing') return
     const container = canvasContainerRef.current
     if (!container) return
@@ -3036,10 +3049,6 @@ export default function PitchforksIII() {
       ) ? prev : nextViewportGeometry)
 
       const nextLayoutMode = layoutModeForViewport(window.innerWidth, window.innerHeight)
-      if (layoutModeRef.current !== nextLayoutMode) {
-        layoutModeRef.current = nextLayoutMode
-        setLayoutMode(nextLayoutMode)
-      }
 
       const availableWidth = Math.min(containerWidth, MAX_CANVAS_DISPLAY_W)
       const availableHeight = Math.min(containerHeight, MAX_CANVAS_DISPLAY_H)
@@ -4041,6 +4050,7 @@ export default function PitchforksIII() {
         cuePlaying: cuePlayingNow(),
         matchingSuppressed: matchingSuppressedNow(),
         timersPaused: timersPausedRef.current,
+        firstLockGrace: firstLockGraceRef.current,
         timerBarVisible: phaseRef.current === 'playing' && !!active,
         activeAttackTimerPct: active
           ? clamp(active.villager.attackTimer / Math.max(0.001, active.villager.attackTimerMax), 0, 1)

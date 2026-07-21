@@ -84,10 +84,13 @@ check(() => assert.match(componentSource, /data-testid="pf3-reference-audio-togg
 check(() => assert.match(componentSource, /\(!userRequested && !audioCueRef\.current\)/))
 check(() => assert.match(componentSource, /inputMode === 'buttons' \? false : noteNamesRef\.current/))
 check(() => assert.match(componentSource, /cueContext\.support === 'guided' && audioCueRef\.current/))
+check(() => assert.match(componentSource, /const syncLayoutMode = \(\) => \{[\s\S]*?window\.addEventListener\('resize', syncLayoutMode\)/))
+check(() => assert.match(componentSource, /firstLockGrace: firstLockGraceRef\.current/))
 const sequenceStart = componentSource.indexOf('const playVillagerSequence')
 const sequenceEnd = componentSource.indexOf('const answerWithButton', sequenceStart)
 const sequenceSource = componentSource.slice(sequenceStart, sequenceEnd)
 check(() => assert.match(sequenceSource, /if \(!emitsTone\) \{[\s\S]*?return/))
 check(() => assert.doesNotMatch(sequenceSource, /else \{\s*matchingSuppressedUntilRef\.current = performance\.now\(\) \+ TONE_SUPPRESS_MS/))
+check(() => assert.ok(sequenceSource.indexOf('return') < sequenceSource.indexOf('timersPausedRef.current = true')))
 
 console.log(`pitchforks settings: ${checks}/${checks} PASS`)
