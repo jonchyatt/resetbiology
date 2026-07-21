@@ -1292,8 +1292,8 @@ const WORKOUT_PROTOCOLS = [
   // ============================================
   {
     slug: 'rehit-sprint-protocol',
-    name: 'REHIT Sprint Protocol (Reduced-Exertion High-Intensity Interval Training)',
-    summary: 'Two brief all-out sprints inside one 10-minute low-intensity cycling session, 3x/week for 6 weeks -- the minimal-dose interval protocol studied by Metcalfe et al. (2012) and replicated in type 2 diabetes patients by Ruffino et al. (2017).',
+    name: 'REHIT Sprint Protocol',
+    summary: 'Reduced-Exertion High-Intensity Interval Training: two brief all-out sprints inside one 10-minute low-intensity cycling session, 3x/week for 6 weeks -- the minimal-dose interval protocol studied by Metcalfe et al. (2012) and replicated in type 2 diabetes patients by Ruffino et al. (2017).',
     goal: 'Improve VO2 max and insulin sensitivity with the smallest studied time commitment',
     level: 'intermediate',
     durationWeeks: 6,
