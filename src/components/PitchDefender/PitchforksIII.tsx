@@ -78,7 +78,10 @@ import {
   type TineCount,
 } from './pitchforksCurriculum'
 import {
+  pitchforksApproaching,
+  pitchforksMicUnreliable,
   pitchforksTunerFeedback,
+  pitchforksVoiceBreak,
   type PitchforksTunerFeedback,
 } from './pitchforksTunerFeedback'
 import {
@@ -335,6 +338,7 @@ interface TrailPoint {
   deviation: number
   onTarget: boolean
   note: string
+  generation: number
 }
 
 interface WavePlan {
@@ -2823,6 +2827,10 @@ export default function PitchforksIII() {
   const tunerTargetKeyRef = useRef('')
   const tunerNeedsRebaseRef = useRef(false)
   const tunerFeedbackKeyRef = useRef('')
+  const tunerDropoutFramesRef = useRef(0)
+  const tunerPitchGenerationRef = useRef(0)
+  const tunerPitchGenerationAtRef = useRef(0)
+  const tunerPitchGenerationObservedRef = useRef(false)
   const barOnTargetRef = useRef(false)
   const barVisibleRef = useRef(false)
   const activeVillagerIdRef = useRef<number | null>(null)
@@ -2914,7 +2922,17 @@ export default function PitchforksIII() {
     containerHeight: 0,
   }))
 
-  const { isListening, pitch, pitchRef, signalDbRef, startListening, stopListening, error: micError } = usePitchDetection({
+  const {
+    isListening,
+    pitch,
+    pitchRef,
+    signalDbRef,
+    micSourceHealthRef,
+    pitchGenerationRef,
+    startListening,
+    stopListening,
+    error: micError,
+  } = usePitchDetection({
     profile: PITCHFORKS_PITCH_PROFILE,
     audioConstraints: PITCHFORKS_AUDIO_CONSTRAINTS,
     observationGainPct: microphoneGain,
@@ -4757,6 +4775,7 @@ export default function PitchforksIII() {
     if (targetChanged) {
       tunerTargetKeyRef.current = nextTargetKey
       tunerNeedsRebaseRef.current = !!nextTargetKey
+      tunerDropoutFramesRef.current = 0
       pitchTrailRef.current = []
       barDotDeviationRef.current = null
       barOnTargetRef.current = false
@@ -4765,11 +4784,39 @@ export default function PitchforksIII() {
     }
     const source = demoRef.current ? demoPitchRef.current : pitchRef.current
     const matchingSuppressed = !!active && (cuePlayingNow() || matchingSuppressedNow())
+    const pitchGeneration = pitchGenerationRef.current
+    const hasNewPitchGeneration = pitchGeneration !== tunerPitchGenerationRef.current
+    if (hasNewPitchGeneration) {
+      tunerPitchGenerationRef.current = pitchGeneration
+      tunerPitchGenerationAtRef.current = now
+      tunerPitchGenerationObservedRef.current = true
+    }
+    const micHealth = micSourceHealthRef.current
+    const micUnreliable = !demoRef.current && pitchforksMicUnreliable({
+      hasTarget: !!active,
+      isListening,
+      micError,
+      audioContextState: micHealth.audioContextState,
+      trackReadyState: micHealth.trackReadyState,
+      trackMuted: micHealth.trackMuted,
+      matchingSuppressed,
+      pageVisible: typeof document === 'undefined' || document.visibilityState === 'visible',
+      generationObserved: tunerPitchGenerationObservedRef.current,
+      generationAgeMs: tunerPitchGenerationObservedRef.current ? now - tunerPitchGenerationAtRef.current : Number.POSITIVE_INFINITY,
+      staleAfterMs: TRAIL_MS,
+    })
     const canUseSource = !!active &&
       !matchingSuppressed &&
+      !micUnreliable &&
       !!source?.isActive &&
       source.confidence >= CONFIDENCE_FLOOR &&
       source.frequency > 0
+
+    if (hasNewPitchGeneration) {
+      tunerDropoutFramesRef.current = !active || matchingSuppressed || micUnreliable || canUseSource
+        ? 0
+        : tunerDropoutFramesRef.current + 1
+    }
 
     let sourceNote: string | null = null
     let renderDeviation: number | null = null
@@ -4787,7 +4834,13 @@ export default function PitchforksIII() {
         ? clampedDeviation
         : smoothDevRef.current + (clampedDeviation - smoothDevRef.current) * 0.28
       tunerNeedsRebaseRef.current = false
-      pitchTrailRef.current.push({ at: now, deviation: smoothDevRef.current, onTarget, note: source.note })
+      pitchTrailRef.current.push({
+        at: now,
+        deviation: smoothDevRef.current,
+        onTarget,
+        note: source.note,
+        generation: pitchGeneration,
+      })
       sourceNote = source.note || ''
       renderDeviation = smoothDevRef.current
     } else {
@@ -4795,11 +4848,28 @@ export default function PitchforksIII() {
       barOnTargetRef.current = false
     }
 
+    const lastUsablePoint = pitchTrailRef.current[pitchTrailRef.current.length - 1]
+    const voiceBreak = pitchforksVoiceBreak({
+      hasTarget: !!active,
+      matchingSuppressed,
+      micUnreliable,
+      dropoutFrames: tunerDropoutFramesRef.current,
+      dropoutResetFrames: PITCHFORKS_PITCH_PROFILE.dropoutResetFrames,
+      lastUsableAgeMs: lastUsablePoint ? now - lastUsablePoint.at : null,
+      trailMs: TRAIL_MS,
+    })
+    const approaching = canUseSource && pitchforksApproaching(
+      pitchTrailRef.current,
+      MATCH_TOLERANCE_CENTS / 100,
+    )
     const feedback = pitchforksTunerFeedback({
       targetNote: active?.note ?? null,
       sourceNote,
       deviationSemis,
       matchingSuppressed,
+      micUnreliable,
+      voiceBreak,
+      approaching,
       lockProgress: lockProgressRef.current,
       toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
     })
@@ -4823,7 +4893,7 @@ export default function PitchforksIII() {
       trail: pitchTrailRef.current,
       feedback,
     }
-  }, [cuePlayingNow, matchingSuppressedNow, pitchRef])
+  }, [cuePlayingNow, isListening, matchingSuppressedNow, micError, micSourceHealthRef, pitchGenerationRef, pitchRef])
 
   const loop = useCallback((ts: number) => {
     if (phaseRef.current !== 'playing') return
@@ -6095,6 +6165,7 @@ export default function PitchforksIII() {
 
       <div
         data-testid="pf3-tuner-feedback"
+        data-feedback-kind={tunerFeedback.kind}
         data-input-mode={inputMode}
         role="status"
         aria-live="polite"
@@ -6106,9 +6177,11 @@ export default function PitchforksIII() {
               ? 'border-amber-400/70 bg-amber-950/45 text-amber-100'
               : tunerFeedback.kind === 'on-target' || tunerFeedback.kind === 'locked'
             ? 'border-emerald-500/70 bg-emerald-950/45 text-emerald-100'
-            : tunerFeedback.kind === 'octave-low' || tunerFeedback.kind === 'octave-high'
-              ? 'border-orange-400/70 bg-orange-950/45 text-orange-100'
-              : 'border-cyan-800/70 bg-[#071018] text-cyan-100'
+              : tunerFeedback.kind === 'octave-low' || tunerFeedback.kind === 'octave-high'
+                ? 'border-orange-400/70 bg-orange-950/45 text-orange-100'
+                : tunerFeedback.kind === 'voice-break' || tunerFeedback.kind === 'mic-unreliable'
+                  ? 'border-amber-400/70 bg-amber-950/45 text-amber-100'
+                : 'border-cyan-800/70 bg-[#071018] text-cyan-100'
         }`}
       >
         <div className="mx-auto flex min-h-11 w-full max-w-[760px] flex-col items-center justify-center leading-tight sm:flex-row sm:gap-3">
