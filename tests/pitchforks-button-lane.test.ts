@@ -54,6 +54,11 @@ check(() => assert.equal(directCorrect.shouldGrade, true))
 check(() => assert.equal(directCorrect.shouldStrike, true))
 
 const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8')
+const numericConstant = (name: string) => {
+  const match = source.match(new RegExp(`const ${name} = ([\\d.]+)`))
+  assert.ok(match, `missing numeric constant ${name}`)
+  return Number(match[1])
+}
 check(() => assert.match(source, /FSRS_EAR_KEY/))
 check(() => assert.match(source, /gradeEar/))
 check(() => assert.match(source, /data-testid="pf3-button-answer-row"/))
@@ -62,6 +67,13 @@ check(() => assert.match(source, /LISTEN, THEN CHOOSE THE NOTE/))
 check(() => assert.match(source, /inputMode === 'buttons' \? false : noteNamesRef\.current/))
 check(() => assert.match(source, /inputMode === 'buttons' \? false : staffNotationRef\.current/))
 check(() => assert.doesNotMatch(source, /aria-pressed=.*pf3-button-answer/))
+const boltLifeSeconds = numericConstant('BOLT_LIFE_S')
+const strikeReceiptEnd = numericConstant('STRIKE_RECEIPT_END')
+const strikeImpactStart = numericConstant('STRIKE_IMPACT_START')
+check(() => assert.ok(boltLifeSeconds >= 1.4, 'lightning circuit is too brief to read'))
+check(() => assert.ok(strikeReceiptEnd < strikeImpactStart))
+check(() => assert.ok(boltLifeSeconds * (1 - strikeReceiptEnd) >= 1, 'outgoing Frank-to-fork leg needs a one-second visual receipt'))
+check(() => assert.ok(boltLifeSeconds * (1 - strikeImpactStart) >= 0.85, 'complete cloud-to-Frank-to-fork circuit needs a stable receipt'))
 
 const storage = new Map<string, string>()
 Object.defineProperty(globalThis, 'localStorage', {

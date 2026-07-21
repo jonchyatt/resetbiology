@@ -134,10 +134,13 @@ const NOTE_MASTERED_CEREMONY_MS = 2400
 const WAVE_RECEIPT_MS = 1900
 const SHAKE_PEAK_PX = 4
 const SHAKE_MS = 200
-const BOLT_LIFE_S = 0.72
-const STRIKE_LEADER_END = 0.24
-const STRIKE_RECEIPT_END = 0.48
-const STRIKE_IMPACT_START = 0.74
+// The full cloud -> Frank -> fork circuit must remain readable at a glance on
+// both 60 Hz phones and sampled proof video. Keep the outgoing leg visible for
+// at least one full second; this is a teaching receipt, not a muzzle flash.
+const BOLT_LIFE_S = 1.5
+const STRIKE_LEADER_END = 0.12
+const STRIKE_RECEIPT_END = 0.22
+const STRIKE_IMPACT_START = 0.42
 const CHARGE_LEADER_START = 0.18
 const CHARGE_DISCHARGE_START = 0.42
 const CHARGE_PRELOCK_REVEAL_MAX = 0.86
@@ -1205,8 +1208,8 @@ function drawBoltView(ctx: CanvasRenderingContext2D, b: BoltView, reducedMotion:
   const receiptProgress = clamp((age - STRIKE_LEADER_END) / (STRIKE_RECEIPT_END - STRIKE_LEADER_END), 0, 1)
   const dischargeReveal = reducedMotion ? 1 : clamp((age - STRIKE_RECEIPT_END) / (STRIKE_IMPACT_START - STRIKE_RECEIPT_END), 0, 1)
   const impactProgress = clamp((age - STRIKE_IMPACT_START) / (1 - STRIKE_IMPACT_START), 0, 1)
-  const incomingAlpha = phase === 'strike-leader' ? 0.95 : phase === 'strike-receipt' ? 0.62 : 0.2 * fade
-  const outgoingAlpha = phase === 'strike-impact' ? 0.42 * fade : 0.98
+  const incomingAlpha = phase === 'strike-leader' ? 0.95 : phase === 'strike-receipt' ? 0.7 : 0.42 * Math.max(0.55, fade)
+  const outgoingAlpha = phase === 'strike-impact' ? 0.72 * Math.max(0.55, fade) : 0.98
 
   ctx.save()
   drawCircuitLeg(ctx, b.fromX, b.fromY, b.pivotX, b.pivotY, leaderReveal, b.seed, bucket, incomingAlpha, false, false, reducedMotion)
