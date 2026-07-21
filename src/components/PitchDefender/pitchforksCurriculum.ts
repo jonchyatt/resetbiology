@@ -165,6 +165,37 @@ export function admissionAllowedForWave(wave: number, demo: boolean, debug: bool
   return demo || debug || wave >= 3
 }
 
+/**
+ * A correct streak may open the admission ceremony, but it cannot prove that
+ * the current arsenal is independently recallable. Normal voice progression
+ * requires one unsupported recall for every unlocked note and fails closed
+ * while any note still needs guided recovery.
+ */
+export function admissionRecallReady(
+  unlockedNotes: readonly unknown[],
+  profile: CueSupportProfile | null | undefined,
+): boolean {
+  if (!Array.isArray(unlockedNotes) || unlockedNotes.length === 0) return false
+  if (!profile || profile.version !== 1 || !profile.notes || typeof profile.notes !== 'object') return false
+
+  const notes = new Set<string>()
+  for (const candidate of unlockedNotes) {
+    if (typeof candidate !== 'string' || !/^[A-G]#?\d+$/.test(candidate) || notes.has(candidate)) return false
+    notes.add(candidate)
+  }
+
+  for (const note of notes) {
+    const evidence = profile.notes[note]
+    if (
+      !evidence ||
+      !Number.isInteger(evidence.independentRecalls) ||
+      evidence.independentRecalls < 1 ||
+      evidence.needsGuidedRecovery !== false
+    ) return false
+  }
+  return true
+}
+
 export function attackTimeForCurriculum(wave: number, encounterIndex: number): number {
   const base = wave <= 1 ? 45 : wave === 2 ? 40 : wave === 3 ? 32 : wave === 4 ? 24 : wave === 5 ? 18 : 12
   const stagger = wave <= 3 ? 4 : 3

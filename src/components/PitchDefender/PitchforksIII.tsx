@@ -59,6 +59,7 @@ import {
   EMPTY_CUE_SUPPORT_PROFILE,
   PITCHFORKS_PRESENTATION_JOURNEY_KEY,
   admissionAllowedForWave,
+  admissionRecallReady,
   attackTimeForCurriculum,
   createPitchforksPresentationJourney,
   cueSupportForNote,
@@ -2867,6 +2868,9 @@ export default function PitchforksIII() {
   const firstMinuteCoachRef = useRef<FirstMinuteCoachState>({ beat: 'threat', note: null })
   const firstMinuteBeatStartedAtRef = useRef(0)
   const rangeHeadingRef = useRef<HTMLHeadingElement>(null)
+  const admissionDialogRef = useRef<HTMLDialogElement>(null)
+  const admissionDialogPanelRef = useRef<HTMLElement>(null)
+  const admissionReturnFocusRef = useRef<HTMLElement | null>(null)
   const journeyResetDialogRef = useRef<HTMLDialogElement>(null)
   const journeyResetButtonRef = useRef<HTMLButtonElement>(null)
   const journeyResetCancelRef = useRef<HTMLButtonElement>(null)
@@ -4011,8 +4015,14 @@ export default function PitchforksIII() {
   }, [clearNewNoteCeremony])
 
   const maybeUnlockNextNote = useCallback((consecutive: number) => {
+    const bypassEvidence = demoRef.current || fsrsDebugRef.current
     if (!admissionAllowedForWave(runtimeRef.current.wave, demoRef.current, fsrsDebugRef.current)) return
     const currentPool = unlockedNotesRef.current
+    if (
+      inputModeRef.current === 'voice' &&
+      !bypassEvidence &&
+      !admissionRecallReady(currentPool, cueSupportProfileRef.current)
+    ) return
     const currentPoolSize = currentPool.length
     const presentationOrder = presentationOrderRef.current
     const threshold = UNLOCK_THRESHOLDS[currentPoolSize]
@@ -4022,6 +4032,31 @@ export default function PitchforksIII() {
       requestNewNoteAdmission(nextNote)
     }
   }, [requestNewNoteAdmission])
+
+  useEffect(() => {
+    const dialog = admissionDialogRef.current
+    if (!dialog) return
+
+    if (ceremony.active && ceremony.note) {
+      if (!dialog.open) {
+        admissionReturnFocusRef.current = document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null
+        try { dialog.showModal() } catch { return }
+      }
+      admissionDialogPanelRef.current?.focus()
+      // Admission is itself an exact-note assessment, so its opening presentation
+      // is mandatory even when ordinary gameplay cues are disabled. The shared
+      // tone-suppression window still prevents speaker playback from earning credit.
+      scheduleCeremonyTone(ceremony.note, true)
+      return
+    }
+
+    if (dialog.open) dialog.close()
+    const returnTarget = admissionReturnFocusRef.current
+    admissionReturnFocusRef.current = null
+    if (returnTarget?.isConnected) returnTarget.focus()
+  }, [ceremony.active, ceremony.note, scheduleCeremonyTone])
 
   useEffect(() => {
     const note = ceremony.note
@@ -5496,6 +5531,10 @@ export default function PitchforksIII() {
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    if (admissionDialogRef.current?.open) admissionDialogRef.current.close()
+    const admissionReturnTarget = admissionReturnFocusRef.current
+    admissionReturnFocusRef.current = null
+    if (admissionReturnTarget?.isConnected) admissionReturnTarget.focus()
     clearCueTimers()
     const spark = sparkGuideRef.current
     if (spark.quietSinceMs !== null || spark.wrongSinceMs !== null || spark.status === 'pulse') {
@@ -5571,19 +5610,30 @@ export default function PitchforksIII() {
         : activeMicHud.label
   const newNoteCeremonyBanner = (
     <>
-      {ceremony.active && ceremony.note && (
-        <div
-          className="fixed inset-0 z-30 flex items-start justify-center overflow-y-auto bg-black/85 px-4"
-          style={{
-            paddingTop: 'max(env(safe-area-inset-top), 1.5rem)',
-            paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)',
-          }}
-          data-testid="pf3-new-note-ceremony"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="pf3-new-note-title"
-        >
-          <section className="my-auto w-full max-w-sm border border-cyan-300/70 bg-[#080d18] p-5 text-center shadow-[0_0_35px_rgba(34,211,238,0.18)]">
+      <dialog
+        ref={admissionDialogRef}
+        className="fixed inset-0 z-30 m-0 h-full max-h-none w-full max-w-none border-0 bg-transparent p-0 text-gray-100 backdrop:bg-black/85"
+        style={{ fontFamily: 'monospace' }}
+        data-testid="pf3-new-note-ceremony"
+        aria-labelledby="pf3-new-note-title"
+        onCancel={event => {
+          event.preventDefault()
+          deferNewNoteAdmission()
+        }}
+      >
+        {ceremony.active && ceremony.note && (
+          <div
+            className="flex min-h-full items-start justify-center overflow-y-auto px-4"
+            style={{
+              paddingTop: 'max(env(safe-area-inset-top), 1.5rem)',
+              paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)',
+            }}
+          >
+          <section
+            ref={admissionDialogPanelRef}
+            tabIndex={-1}
+            className="my-auto w-full max-w-sm border border-cyan-300/70 bg-[#080d18] p-5 text-center outline-none shadow-[0_0_35px_rgba(34,211,238,0.18)]"
+          >
             <div className="mb-2 text-xs font-black tracking-[0.25em] text-cyan-200">NEW NOTE DISCOVERED</div>
             <h2 id="pf3-new-note-title" className="mb-3 text-xl font-black tracking-widest text-white">
               Is {ceremony.note} comfortable today?
@@ -5611,15 +5661,14 @@ export default function PitchforksIII() {
                   ? matchingSuppressedNow()
                     ? 'Listen… then sing after the cue.'
                     : `Sing ${ceremony.note} and hold it gently.`
-                  : 'Tap HEAR NOTE when you are ready.'}
+                  : 'Preparing the exact note…'}
             </div>
             <button
               type="button"
               onClick={() => replayNewNoteCeremonyTone(ceremony.note!)}
               data-testid="pf3-admission-hear"
-              className="min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 disabled:opacity-50"
+              className="min-h-12 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 disabled:opacity-50"
               disabled={matchingSuppressedNow()}
-              autoFocus
             >
               <span className="inline-flex items-center justify-center gap-2">
                 <RotateCcw size={16} strokeWidth={3} aria-hidden="true" /> HEAR {ceremony.note}
@@ -5630,7 +5679,7 @@ export default function PitchforksIII() {
               onClick={acceptNewNoteAdmission}
               data-testid="pf3-admission-comfortable"
               disabled={!admissionMatched}
-              className="mt-3 min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
+              className="mt-3 min-h-12 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
             >
               YES, THIS FEELS COMFORTABLE
             </button>
@@ -5638,7 +5687,7 @@ export default function PitchforksIII() {
               type="button"
               onClick={deferNewNoteAdmission}
               data-testid="pf3-admission-not-yet"
-              className="mt-3 min-h-11 w-full border border-amber-500/70 bg-amber-950/25 px-4 py-3 text-sm font-black tracking-widest text-amber-100"
+              className="mt-3 min-h-12 w-full border border-amber-500/70 bg-amber-950/25 px-4 py-3 text-sm font-black tracking-widest text-amber-100"
             >
               NOT YET
             </button>
@@ -5646,8 +5695,9 @@ export default function PitchforksIII() {
               No penalty. We will keep practicing the notes already in your comfortable arsenal.
             </p>
           </section>
-        </div>
-      )}
+          </div>
+        )}
+      </dialog>
       {newNoteUnlocked && !ceremony.active && (
         <div
           className="absolute top-16 left-1/2 z-20 flex min-h-11 -translate-x-1/2 items-center gap-3 border px-4 py-2 text-sm font-black tracking-widest text-gray-100"
@@ -6021,7 +6071,7 @@ export default function PitchforksIII() {
             <button
               type="button"
               onClick={startSavedRangeSetup}
-              className="min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
+              className="min-h-12 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
             >
               USE SAVED RANGE {rangeProfile.lowNote}–{rangeProfile.highNote}
             </button>
@@ -6031,7 +6081,7 @@ export default function PitchforksIII() {
               type="button"
               onClick={startGuidedRangeSetup}
               data-testid="pf3-range-check"
-              className="min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 active:scale-[0.99]"
+              className="min-h-12 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 active:scale-[0.99]"
             >
               CHECK MY RANGE
             </button>
@@ -6040,7 +6090,7 @@ export default function PitchforksIII() {
             type="button"
             onClick={openManualRangeSetup}
             data-testid="pf3-range-manual"
-            className="min-h-11 w-full border border-gray-600 px-4 py-3 text-sm font-bold text-gray-200 active:scale-[0.99]"
+            className="min-h-12 w-full border border-gray-600 px-4 py-3 text-sm font-bold text-gray-200 active:scale-[0.99]"
           >
             CHOOSE MANUALLY
           </button>
@@ -6048,9 +6098,9 @@ export default function PitchforksIII() {
             type="button"
             onClick={quitToMenu}
             data-testid="pf3-range-not-now"
-            className="min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400 hover:text-gray-200"
+            className="min-h-12 w-full px-4 py-3 text-sm font-bold text-gray-400 hover:text-gray-200"
           >
-            NOT NOW
+            NOT NOW — RETURN TO MENU
           </button>
         </div>
       </div>
@@ -6074,7 +6124,7 @@ export default function PitchforksIII() {
               <select
                 value={manualLowNote}
                 onChange={event => setManualLowNote(event.target.value)}
-                className="mt-2 min-h-11 w-full border border-gray-600 bg-[#111827] px-3 text-base text-white"
+                className="mt-2 min-h-12 w-full border border-gray-600 bg-[#111827] px-3 text-base text-white"
               >
                 {PITCHFORKS_RANGE_NOTES.map(note => <option key={note} value={note}>{note}</option>)}
               </select>
@@ -6084,7 +6134,7 @@ export default function PitchforksIII() {
               <select
                 value={manualHighNote}
                 onChange={event => setManualHighNote(event.target.value)}
-                className="mt-2 min-h-11 w-full border border-gray-600 bg-[#111827] px-3 text-base text-white"
+                className="mt-2 min-h-12 w-full border border-gray-600 bg-[#111827] px-3 text-base text-white"
               >
                 {PITCHFORKS_RANGE_NOTES.map(note => <option key={note} value={note}>{note}</option>)}
               </select>
@@ -6096,7 +6146,7 @@ export default function PitchforksIII() {
           <button
             type="button"
             onClick={saveManualRangeAndCheckMic}
-            className="mt-6 min-h-11 w-full border-2 border-cyan-200 bg-cyan-200 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
+            className="mt-6 min-h-12 w-full border-2 border-cyan-200 bg-cyan-200 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
           >
             {inputMode === 'buttons' ? 'SAVE RANGE & START' : 'SAVE RANGE & CHECK MIC'}
           </button>
@@ -6106,7 +6156,7 @@ export default function PitchforksIII() {
               phaseRef.current = 'tutorial'
               setPhase('tutorial')
             }}
-            className="mt-3 min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400"
+            className="mt-3 min-h-12 w-full px-4 py-3 text-sm font-bold text-gray-400"
           >
             BACK TO SETUP
           </button>
@@ -6142,7 +6192,7 @@ export default function PitchforksIII() {
             type="button"
             onClick={rangeIntent === 'guided' ? startRangeAssessment : beginPlaying}
             disabled={!calibrationReady}
-            className="min-h-11 w-full py-3 text-sm font-black tracking-widest border border-green-200 bg-green-300 text-[#071018] transition active:scale-[0.99] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
+            className="min-h-12 w-full py-3 text-sm font-black tracking-widest border border-green-200 bg-green-300 text-[#071018] transition active:scale-[0.99] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
           >
             {rangeIntent === 'guided' ? 'Begin comfortable range check' : 'Enter the Village'}
           </button>
@@ -6150,7 +6200,7 @@ export default function PitchforksIII() {
           <button
             type="button"
             onClick={quitToMenu}
-            className="mt-3 min-h-11 w-full px-4 py-3 text-xs text-gray-500 transition-colors hover:text-gray-300"
+            className="mt-3 min-h-12 w-full px-4 py-3 text-xs text-gray-500 transition-colors hover:text-gray-300"
           >
             Back to menu
           </button>
@@ -6191,7 +6241,7 @@ export default function PitchforksIII() {
                 <div className="mb-2 text-xs font-bold tracking-widest text-green-200">STARTER PAIR</div>
                 <div className="flex justify-center gap-3">
                   {starterNotes.map(note => (
-                    <span key={note} className="inline-flex min-h-11 min-w-16 items-center justify-center border border-green-300 bg-green-950/50 px-3 text-xl font-black text-green-100">
+                    <span key={note} className="inline-flex min-h-12 min-w-16 items-center justify-center border border-green-300 bg-green-950/50 px-3 text-xl font-black text-green-100">
                       {note}
                     </span>
                   ))}
@@ -6203,21 +6253,21 @@ export default function PitchforksIII() {
               <button
                 type="button"
                 onClick={acceptPendingRange}
-                className="min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
+                className="min-h-12 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
               >
                 USE THIS RANGE
               </button>
               <button
                 type="button"
                 onClick={startRangeAssessment}
-                className="mt-3 min-h-11 w-full border border-gray-600 px-4 py-3 text-sm font-bold text-gray-200"
+                className="mt-3 min-h-12 w-full border border-gray-600 px-4 py-3 text-sm font-bold text-gray-200"
               >
                 CHECK AGAIN
               </button>
               <button
                 type="button"
                 onClick={openManualRangeSetup}
-                className="mt-3 min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400"
+                className="mt-3 min-h-12 w-full px-4 py-3 text-sm font-bold text-gray-400"
               >
                 CHOOSE MANUALLY
               </button>
@@ -6257,7 +6307,7 @@ export default function PitchforksIII() {
                   type="button"
                   onClick={playRangeCandidateTone}
                   disabled={!rangeCandidate || matchingSuppressedNow()}
-                  className="mb-3 min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 disabled:opacity-50"
+                  className="mb-3 min-h-12 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 disabled:opacity-50"
                   aria-label={`Hear exact note ${rangeCandidate ?? ''}`}
                 >
                   🔊 HEAR {rangeCandidate ?? 'NOTE'}
@@ -6269,7 +6319,7 @@ export default function PitchforksIII() {
                 onClick={confirmRangeComfortable}
                 disabled={!rangeMatched}
                 data-testid="pf3-range-comfortable"
-                className="min-h-11 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
+                className="min-h-12 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
               >
                 YES, THIS FEELS COMFORTABLE
               </button>
@@ -6279,7 +6329,7 @@ export default function PitchforksIII() {
                   type="button"
                   onClick={stopAtRangeLimit}
                   data-testid="pf3-range-stop-limit"
-                  className="mt-3 min-h-11 w-full border border-amber-500/70 bg-amber-950/25 px-4 py-3 text-sm font-bold text-amber-100"
+                  className="mt-3 min-h-12 w-full border border-amber-500/70 bg-amber-950/25 px-4 py-3 text-sm font-bold text-amber-100"
                 >
                   NOT YET — KEEP {confirmedLimit ?? rangeAnchor} AS MY {direction.toUpperCase()} LIMIT
                 </button>
@@ -6289,7 +6339,7 @@ export default function PitchforksIII() {
               <button
                 type="button"
                 onClick={quitToMenu}
-                className="mt-4 min-h-11 w-full px-4 py-3 text-sm font-bold text-gray-400"
+                className="mt-4 min-h-12 w-full px-4 py-3 text-sm font-bold text-gray-400"
               >
                 EXIT SETUP
               </button>

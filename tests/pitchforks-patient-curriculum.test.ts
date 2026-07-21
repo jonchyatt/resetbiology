@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
   admissionAllowedForWave,
+  admissionRecallReady,
   attackTimeForCurriculum,
   cueSupportForNote,
   curriculumStageForWave,
@@ -41,6 +42,36 @@ assert.equal(admissionAllowedForWave(2, false, false), false)
 assert.equal(admissionAllowedForWave(3, false, false), true)
 assert.equal(admissionAllowedForWave(1, true, false), true)
 assert.equal(admissionAllowedForWave(1, false, true), true)
+
+const independentlyRecalled = {
+  version: 1 as const,
+  notes: {
+    D4: { guidedSuccesses: 2, independentRecalls: 1, needsGuidedRecovery: false },
+    E4: { guidedSuccesses: 0, independentRecalls: 2, needsGuidedRecovery: false },
+  },
+}
+assert.equal(admissionRecallReady(['D4', 'E4'], independentlyRecalled), true)
+assert.equal(admissionRecallReady(['D4', 'E4'], {
+  version: 1,
+  notes: { D4: independentlyRecalled.notes.D4 },
+}), false)
+assert.equal(admissionRecallReady(['D4'], {
+  version: 1,
+  notes: { D4: { guidedSuccesses: 2, independentRecalls: 0, needsGuidedRecovery: false } },
+}), false)
+assert.equal(admissionRecallReady(['D4'], {
+  version: 1,
+  notes: { D4: { guidedSuccesses: 2, independentRecalls: 1, needsGuidedRecovery: true } },
+}), false)
+assert.equal(admissionRecallReady([], independentlyRecalled), false)
+assert.equal(admissionRecallReady([''], independentlyRecalled), false)
+assert.equal(admissionRecallReady(['D4', 'D4'], independentlyRecalled), false)
+assert.equal(admissionRecallReady(['D4', 4], independentlyRecalled), false)
+assert.equal(admissionRecallReady(['D4'], null), false)
+assert.equal(admissionRecallReady(['D4'], {
+  version: 1,
+  notes: { D4: { guidedSuccesses: 0, independentRecalls: Number.NaN, needsGuidedRecovery: false } },
+}), false)
 
 assert.equal(attackTimeForCurriculum(1, 0), 45)
 assert.equal(attackTimeForCurriculum(2, 0), 40)
@@ -82,4 +113,4 @@ assert.doesNotMatch(source, /W \+ 60/)
 assert.match(source, /\{replayLabel\}/)
 assert.doesNotMatch(source, /while \(rt\.spawned < rt\.plan\.count\) spawnVillager\(\)/)
 
-console.log('pitchforks patient curriculum: 57/57 PASS')
+console.log('pitchforks patient curriculum: 67/67 PASS')
