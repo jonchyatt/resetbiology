@@ -4,6 +4,8 @@ export interface PitchforksSettingsSnapshot {
   readonly version: 1
   readonly noteNames: boolean
   readonly referenceAudio: boolean
+  readonly referenceGainPct: number
+  readonly microphoneGainPct: number
 }
 
 export interface PitchforksSettingsStorage {
@@ -15,7 +17,15 @@ export const DEFAULT_PITCHFORKS_SETTINGS: PitchforksSettingsSnapshot = Object.fr
   version: 1,
   noteNames: true,
   referenceAudio: true,
+  referenceGainPct: 100,
+  microphoneGainPct: 100,
 })
+
+function normalizeGainPercent(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? Math.max(0, Math.min(200, Math.round(value)))
+    : 100
+}
 
 export function normalizePitchforksSettings(value: unknown): PitchforksSettingsSnapshot {
   const candidate = value && typeof value === 'object'
@@ -30,6 +40,8 @@ export function normalizePitchforksSettings(value: unknown): PitchforksSettingsS
     referenceAudio: typeof candidate.referenceAudio === 'boolean'
       ? candidate.referenceAudio
       : DEFAULT_PITCHFORKS_SETTINGS.referenceAudio,
+    referenceGainPct: normalizeGainPercent(candidate.referenceGainPct),
+    microphoneGainPct: normalizeGainPercent(candidate.microphoneGainPct),
   })
 }
 

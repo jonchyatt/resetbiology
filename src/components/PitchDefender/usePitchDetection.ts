@@ -67,6 +67,13 @@ export interface PitchDetectionOptions {
   noiseGateDb?: number  // dBFS threshold (default -40; use -50 for cheap mics / quiet singers)
   profile?: Readonly<PitchStabilizationProfile>
   audioConstraints?: Readonly<MediaTrackConstraints>
+  observationGainPct?: number // analysis-only gain, 0-200; never routed to speakers
+}
+
+export function normalizeObservationGain(value: number | undefined): number {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? Math.max(0, Math.min(2, value / 100))
+    : 1
 }
 
 export function usePitchDetection(options?: PitchDetectionOptions) {
@@ -77,6 +84,8 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   stabilizationProfileRef.current = options?.profile
   const audioConstraintsRef = useRef(options?.audioConstraints)
   audioConstraintsRef.current = options?.audioConstraints
+  const observationGainPctRef = useRef(options?.observationGainPct)
+  observationGainPctRef.current = options?.observationGainPct
   const [state, setState] = useState<PitchDetectionState>({
     isListening: false,
     pitch: null,
@@ -86,6 +95,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   // Audio pipeline refs
   const audioCtxRef = useRef<AudioContext | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
+  const observationGainNodeRef = useRef<GainNode | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const rafRef = useRef<number>(0)
   const detectorRef = useRef<PitchDetector<Float32Array> | null>(null)
@@ -95,6 +105,12 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   const micSourceHealthRef = useRef<MicSourceHealthSnapshot>({ ...FAIL_CLOSED_MIC_SOURCE_HEALTH })
   const pitchGenerationRef = useRef(0)
   const sourceObserverCleanupRef = useRef<(() => void) | null>(null)
+
+  useEffect(() => {
+    const gain = observationGainNodeRef.current
+    const ctx = audioCtxRef.current
+    if (gain && ctx) gain.gain.setValueAtTime(normalizeObservationGain(observationGainPctRef.current), ctx.currentTime)
+  }, [options?.observationGainPct])
 
   // Smoothing & hysteresis state
   const smoothedFreqRef = useRef(0)
@@ -128,13 +144,17 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
       const ctx = new AudioContext()
       const source = ctx.createMediaStreamSource(stream)
+      const observationGain = ctx.createGain()
       const analyser = ctx.createAnalyser()
       const stabilizationProfile = stabilizationProfileRef.current
       analyser.fftSize = stabilizationProfile?.fftSize ?? 2048
 
-      source.connect(analyser)
+      observationGain.gain.value = normalizeObservationGain(observationGainPctRef.current)
+      source.connect(observationGain)
+      observationGain.connect(analyser)
 
       audioCtxRef.current = ctx
+      observationGainNodeRef.current = observationGain
       analyserRef.current = analyser
       streamRef.current = stream
       detectorRef.current = PitchDetector.forFloat32Array(analyser.fftSize)
@@ -333,6 +353,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       audioCtxRef.current = null
     }
     analyserRef.current = null
+    observationGainNodeRef.current = null
     detectorRef.current = null
     stabilizerRef.current = null
     pitchRef.current = null
@@ -351,6 +372,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
       if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop())
       if (audioCtxRef.current) audioCtxRef.current.close()
+      observationGainNodeRef.current = null
       micSourceHealthRef.current = { ...FAIL_CLOSED_MIC_SOURCE_HEALTH }
       signalDbRef.current = -200
     }

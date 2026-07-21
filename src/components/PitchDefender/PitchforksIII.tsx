@@ -2792,6 +2792,7 @@ export default function PitchforksIII() {
   const fullSequenceCompleteRef = useRef(false)
   const phaseRef = useRef<Phase>('menu')
   const cueVolumeRef = useRef(100)
+  const microphoneGainRef = useRef(100)
   const sfxVolumeRef = useRef(100)
   const noteNamesRef = useRef(true)
   const audioCueRef = useRef(true)
@@ -2848,6 +2849,7 @@ export default function PitchforksIII() {
   const [synesthesiaOn, setSynesthesiaOn] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [cueVolume, setCueVolume] = useState(100)
+  const [microphoneGain, setMicrophoneGain] = useState(100)
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
@@ -2915,6 +2917,7 @@ export default function PitchforksIII() {
   const { isListening, pitch, pitchRef, signalDbRef, startListening, stopListening, error: micError } = usePitchDetection({
     profile: PITCHFORKS_PITCH_PROFILE,
     audioConstraints: PITCHFORKS_AUDIO_CONSTRAINTS,
+    observationGainPct: microphoneGain,
   })
 
   useEffect(() => {
@@ -2929,12 +2932,18 @@ export default function PitchforksIII() {
     const settings = normalizePitchforksSettings({
       noteNames: noteNamesRef.current,
       referenceAudio: audioCueRef.current,
+      referenceGainPct: cueVolumeRef.current,
+      microphoneGainPct: microphoneGainRef.current,
       ...patch,
     })
     noteNamesRef.current = settings.noteNames
     audioCueRef.current = settings.referenceAudio
+    cueVolumeRef.current = settings.referenceGainPct
+    microphoneGainRef.current = settings.microphoneGainPct
     setNoteNamesOnState(settings.noteNames)
     setAudioCueOnState(settings.referenceAudio)
+    setCueVolume(settings.referenceGainPct)
+    setMicrophoneGain(settings.microphoneGainPct)
     savePitchforksSettings(localStorage, settings)
   }, [])
 
@@ -2944,6 +2953,14 @@ export default function PitchforksIII() {
 
   const setReferenceAudioPreference = useCallback((value: boolean) => {
     updatePitchforksSettings({ referenceAudio: value })
+  }, [updatePitchforksSettings])
+
+  const setReferenceGainPreference = useCallback((value: number) => {
+    updatePitchforksSettings({ referenceGainPct: value })
+  }, [updatePitchforksSettings])
+
+  const setMicrophoneGainPreference = useCallback((value: number) => {
+    updatePitchforksSettings({ microphoneGainPct: value })
   }, [updatePitchforksSettings])
 
   useEffect(() => {
@@ -2962,6 +2979,10 @@ export default function PitchforksIII() {
     cueVolumeRef.current = cueVolume
     setPianoVolume(cueVolume)
   }, [cueVolume])
+
+  useEffect(() => {
+    microphoneGainRef.current = microphoneGain
+  }, [microphoneGain])
 
   useEffect(() => {
     sfxVolumeRef.current = sfxVolume
@@ -3228,11 +3249,15 @@ export default function PitchforksIII() {
     inputModeRef.current = restoredInput
     noteNamesRef.current = storedSettings.noteNames
     audioCueRef.current = storedSettings.referenceAudio
+    cueVolumeRef.current = storedSettings.referenceGainPct
+    microphoneGainRef.current = storedSettings.microphoneGainPct
     setDemoMode(isDemo)
     setFsrsDebugMode(isFsrsDebug)
     setInputMode(restoredInput)
     setNoteNamesOnState(storedSettings.noteNames)
     setAudioCueOnState(storedSettings.referenceAudio)
+    setCueVolume(storedSettings.referenceGainPct)
+    setMicrophoneGain(storedSettings.microphoneGainPct)
     setGeometryDebug(params.get('geom') === '1')
     getMasterySessionId()
 
@@ -3910,7 +3935,7 @@ export default function PitchforksIII() {
       buttonTrialRef.current = replayPitchforksButtonTrial(buttonTrial)
       setButtonFeedback({ kind: 'listen', text: 'LISTEN AGAIN...' })
     }
-    const emitsTone = buttonLane || mode === 'replay' || audioCueRef.current
+    const emitsTone = (buttonLane || mode === 'replay' || audioCueRef.current) && cueVolumeRef.current > 0
     if (!emitsTone) {
       if (
         villager.id === runtimeRef.current.firstVillagerId &&
@@ -4030,6 +4055,8 @@ export default function PitchforksIII() {
         settings: normalizePitchforksSettings({
           noteNames: noteNamesRef.current,
           referenceAudio: audioCueRef.current,
+          referenceGainPct: cueVolumeRef.current,
+          microphoneGainPct: microphoneGainRef.current,
         }),
         chargeProgress: lockProgressRef.current,
         chargeLevel,
@@ -5056,7 +5083,7 @@ export default function PitchforksIII() {
 
   const playRangeCandidateTone = useCallback(() => {
     const candidate = rangeCandidate
-    if (!candidate || matchingSuppressedNow()) return
+    if (!candidate || cueVolumeRef.current <= 0 || matchingSuppressedNow()) return
     resetRangeMatch(candidate)
     setRangeCuePlayed(true)
     try {
@@ -5614,7 +5641,9 @@ export default function PitchforksIII() {
             reducedMotion={reducedMotion}
             setReducedMotion={setReducedMotion}
             cueVolume={cueVolume}
-            setCueVolume={setCueVolume}
+            setCueVolume={setReferenceGainPreference}
+            microphoneGain={microphoneGain}
+            setMicrophoneGain={setMicrophoneGainPreference}
             sfxVolume={sfxVolume}
             setSfxVolume={setSfxVolume}
             touchSized={layoutMode === 'portrait'}
@@ -6222,7 +6251,9 @@ export default function PitchforksIII() {
               reducedMotion={reducedMotion}
               setReducedMotion={setReducedMotion}
               cueVolume={cueVolume}
-              setCueVolume={setCueVolume}
+              setCueVolume={setReferenceGainPreference}
+              microphoneGain={microphoneGain}
+              setMicrophoneGain={setMicrophoneGainPreference}
               sfxVolume={sfxVolume}
               setSfxVolume={setSfxVolume}
               compact
@@ -6263,6 +6294,8 @@ function SettingsRow(props: {
   setReducedMotion: (value: boolean) => void
   cueVolume: number
   setCueVolume: (value: number) => void
+  microphoneGain: number
+  setMicrophoneGain: (value: number) => void
   sfxVolume: number
   setSfxVolume: (value: number) => void
   compact?: boolean
@@ -6310,14 +6343,31 @@ function SettingsRow(props: {
         Reduced motion {props.reducedMotion ? 'ON' : 'OFF'}
       </button>
       <label className={`${controlSize} flex items-center gap-2 text-gray-300`}>
-        Cue
+        Reference audio {props.cueVolume}%
         <input
+          data-testid="pf3-reference-gain"
+          aria-label="Reference audio volume"
+          aria-valuetext={`${props.cueVolume}%`}
           type="range"
           min={0}
           max={200}
           value={props.cueVolume}
           onChange={e => props.setCueVolume(Number(e.target.value))}
           className="w-24 accent-orange-300"
+        />
+      </label>
+      <label className={`${controlSize} flex items-center gap-2 text-gray-300`} title="Changes what the detector observes; your microphone is never played through speakers.">
+        Mic sensitivity {props.microphoneGain}%
+        <input
+          data-testid="pf3-microphone-gain"
+          aria-label="Microphone observation sensitivity"
+          aria-valuetext={`${props.microphoneGain}%`}
+          type="range"
+          min={0}
+          max={200}
+          value={props.microphoneGain}
+          onChange={e => props.setMicrophoneGain(Number(e.target.value))}
+          className="w-24 accent-cyan-300"
         />
       </label>
       <label className={`${controlSize} flex items-center gap-2 text-gray-300`}>
