@@ -5315,7 +5315,7 @@ export default function PitchforksIII() {
   if (phase === 'menu') {
     const canRestartJourney = !!rangeProfile && unlockedNotes.length > starterPairForRange(rangeProfile).length
     return (
-      <div data-testid="pf3-menu" className="fixed inset-0 overflow-y-auto bg-[#070914] text-gray-100 flex items-start justify-center px-4 py-4 sm:items-center" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
+      <div data-testid="pf3-menu" className={`fixed inset-0 overflow-y-auto bg-[#070914] text-gray-100 flex items-start justify-center px-4 py-4 ${composerSeedProofEnabled ? '' : 'sm:items-center'}`} style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
         {newNoteCeremonyBanner}
         {demoMode && (
           <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-orange-200 border border-orange-500/50 px-2 py-1">
