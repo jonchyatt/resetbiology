@@ -33,6 +33,15 @@ import {
   reviewNote,
   type NoteMemory,
 } from '@/lib/fsrs'
+import {
+  FSRS_EAR_DEBUG_KEY,
+  FSRS_EAR_KEY,
+  FSRS_VOICE_KEY,
+  gradeEar,
+  gradeVoice,
+  loadStore,
+  saveStore,
+} from '@/lib/fsrsFamily'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { WORLD_REGISTRY, isWorldUnlocked } from './pitchforks3WorldRegistry'
 import {
@@ -72,6 +81,15 @@ import {
   pitchforksTunerFeedback,
   type PitchforksTunerFeedback,
 } from './pitchforksTunerFeedback'
+import {
+  PITCHFORKS_INPUT_MODE_KEY,
+  createPitchforksButtonTrial,
+  decidePitchforksButtonAnswer,
+  parsePitchforksInputMode,
+  replayPitchforksButtonTrial,
+  type PitchforksButtonTrial,
+  type PitchforksInputMode,
+} from './pitchforksInputLane'
 
 const W = 720
 const H = 405
@@ -89,7 +107,6 @@ const SPRITE_SCALE = 3
 const FRANK_SPRITE_SCALE = SPRITE_SCALE / 3
 const ASSET_BASE = '/images/pitchforks'
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
-const FSRS_KEY = 'pitch_fsrs_memory'
 const FSRS_DEBUG_KEY = 'pitch_fsrs_debug'
 const MASTERY_PROGRESS_KEY = 'pitchforks3_mastery_progress'
 const MASTERY_PROGRESS_DEBUG_KEY = 'pitchforks3_mastery_progress_debug'
@@ -205,6 +222,8 @@ let frankSparkJitterBucket = -1
 type Phase = 'menu' | 'tutorial' | 'calibrating' | 'range_manual' | 'range_assessment' | 'playing' | 'game_over'
 type RangeAssessmentStep = 'anchor' | 'lower' | 'higher' | 'summary'
 type RangeIntent = 'guided' | 'saved'
+type ButtonFeedbackKind = 'listen' | 'question' | 'correct' | 'wrong'
+type ButtonFeedback = Readonly<{ kind: ButtonFeedbackKind; text: string }>
 type ActiveCueContext = Readonly<{ support: CueSupportLevel; noteCount: number }>
 type FirstMinuteCoachState = Readonly<{ beat: FirstMinuteBeat; note: string | null }>
 type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
@@ -450,6 +469,7 @@ type TunerView = Readonly<{
 
 type ViewState = Readonly<{
   phase: Phase
+  inputMode: PitchforksInputMode
   animClock: number
   gameOver: boolean
   villagers: ReadonlyArray<VillagerView>
@@ -501,6 +521,7 @@ interface NoteHealthDebug {
 
 interface Pf3DebugState {
   demoStep: string
+  inputMode: PitchforksInputMode
   chargeProgress: number
   chargeLevel: number
   silenceFreezeObserved: boolean
@@ -548,6 +569,8 @@ interface Pf3DebugState {
   firstMinuteBeat: FirstMinuteBeat
   fsrsDebug: boolean
   fsrsStoreKey: string
+  earFsrsStoreKey: string
+  buttonTrial: PitchforksButtonTrial | null
   newNoteUnlocked: string | null
   layoutMode: LayoutMode
   lightningPhase: LightningPhase
@@ -804,6 +827,7 @@ function pitchDeviationSemis(source: PitchInfo, targetNote: string): number {
 type BuildViewStateArgs = Readonly<{
   runtime: Runtime
   phase: Phase
+  inputMode: PitchforksInputMode
   active: ActiveTarget | null
   activeVillagerId: number | null
   activeKey: string
@@ -829,6 +853,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
   const {
     runtime,
     phase,
+    inputMode,
     active,
     activeVillagerId,
     activeKey,
@@ -889,6 +914,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
 
   return {
     phase,
+    inputMode,
     animClock: runtime.animClock,
     gameOver: runtime.gameOver,
     villagers: runtime.villagers.map(v => {
@@ -1662,6 +1688,7 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
 }
 
 function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
+  if (!tuner.visible) return
   // ported from Pitchforks.tsx:602-658, with a 1s convergence trail.
   const centerX = PITCH_BAR_X + PITCH_BAR_W / 2
   const centerY = PITCH_BAR_Y + PITCH_BAR_H / 2
@@ -2360,6 +2387,7 @@ function drawWaveReceipt(
   noteNamesVisible: boolean,
   animClock: number,
   reducedMotion: boolean,
+  inputMode: PitchforksInputMode,
 ) {
   if (!receipt.visible) return
 
@@ -2404,12 +2432,13 @@ function drawWaveReceipt(
 
   ctx.fillStyle = 'rgba(211, 222, 238, 0.72)'
   ctx.font = 'bold 11px monospace'
-  const summary = `${receipt.heard.length} heard | ${receipt.sung.length} sung${receipt.mastered.length > 0 ? ` | ${receipt.mastered.length} mastered` : ''}`
+  const answerVerb = inputMode === 'buttons' ? 'answered' : 'sung'
+  const summary = `${receipt.heard.length} heard | ${receipt.sung.length} ${answerVerb}${receipt.mastered.length > 0 ? ` | ${receipt.mastered.length} mastered` : ''}`
   ctx.fillText(summary, W / 2, cardY + 50)
 
   let rowY = cardY + 66
   rowY = drawWaveReceiptRow(ctx, receipt, 'HEARD', receipt.heard, rowY, noteNamesVisible, false)
-  rowY = drawWaveReceiptRow(ctx, receipt, 'SUNG', receipt.sung, rowY, noteNamesVisible, false)
+  rowY = drawWaveReceiptRow(ctx, receipt, inputMode === 'buttons' ? 'ANSWERED' : 'SUNG', receipt.sung, rowY, noteNamesVisible, false)
 
   if (receipt.mastered.length > 0) {
     const glowY = rowY + 19
@@ -2524,7 +2553,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   }
 
   if (view.waveReceipt.visible) {
-    drawWaveReceipt(ctx, view.waveReceipt, view.noteNamesVisible, view.animClock, view.reducedMotion)
+    drawWaveReceipt(ctx, view.waveReceipt, view.inputMode === 'buttons' ? true : view.noteNamesVisible, view.animClock, view.reducedMotion, view.inputMode)
   }
 
   if (view.waveBanner.visible) {
@@ -2687,6 +2716,7 @@ export default function PitchforksIII() {
   const assetsRef = useRef<Assets>(emptyAssets())
   const nextIdRef = useRef(0)
   const fsrsRef = useRef<Record<string, NoteMemory>>({})
+  const earFsrsRef = useRef<Record<string, NoteMemory>>({})
   const masteryProgressRef = useRef<MasteryProgress>({})
   const cueSupportProfileRef = useRef<CueSupportProfile>(EMPTY_CUE_SUPPORT_PROFILE)
   const presentationJourneyRef = useRef<PitchforksPresentationJourney | null>(null)
@@ -2762,6 +2792,9 @@ export default function PitchforksIII() {
   const matchingSuppressedUntilRef = useRef(0)
   const timersPausedRef = useRef(false)
   const firstLockGraceRef = useRef(false)
+  const inputModeRef = useRef<PitchforksInputMode>('voice')
+  const buttonTrialRef = useRef<PitchforksButtonTrial | null>(null)
+  const buttonAnswerPendingRef = useRef(false)
   const isListeningRef = useRef(false)
   const micErrorRef = useRef<string | null>(null)
   const heardYouRef = useRef(false)
@@ -2804,6 +2837,11 @@ export default function PitchforksIII() {
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
   const [geometryDebug, setGeometryDebug] = useState(false)
+  const [inputMode, setInputMode] = useState<PitchforksInputMode>('voice')
+  const [buttonFeedback, setButtonFeedback] = useState<ButtonFeedback>({
+    kind: 'listen',
+    text: 'LISTEN, THEN CHOOSE THE NOTE',
+  })
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
   const [rangeProfile, setRangeProfile] = useState<PitchforksRangeProfile | null>(null)
   const [tunerFeedback, setTunerFeedback] = useState<PitchforksTunerFeedback>(() => pitchforksTunerFeedback({
@@ -3003,7 +3041,11 @@ export default function PitchforksIII() {
   }, [phase])
 
   const fsrsStorageKey = useCallback(() => {
-    return demoRef.current || fsrsDebugRef.current ? FSRS_DEBUG_KEY : FSRS_KEY
+    return demoRef.current || fsrsDebugRef.current ? FSRS_DEBUG_KEY : FSRS_VOICE_KEY
+  }, [])
+
+  const earFsrsStorageKey = useCallback(() => {
+    return demoRef.current || fsrsDebugRef.current ? FSRS_EAR_DEBUG_KEY : FSRS_EAR_KEY
   }, [])
 
   const masteryStorageKey = useCallback(() => {
@@ -3014,11 +3056,17 @@ export default function PitchforksIII() {
     return demoRef.current || fsrsDebugRef.current ? CUE_SUPPORT_DEBUG_KEY : CUE_SUPPORT_KEY
   }, [])
 
-  const saveFsrs = useCallback(() => {
-    try {
-      localStorage.setItem(fsrsStorageKey(), JSON.stringify(fsrsRef.current))
-    } catch {}
-  }, [fsrsStorageKey])
+  const saveFsrs = useCallback((lane: PitchforksInputMode = 'voice') => {
+    const key = lane === 'buttons' ? earFsrsStorageKey() : fsrsStorageKey()
+    const store = lane === 'buttons' ? earFsrsRef.current : fsrsRef.current
+    saveStore(key, store)
+  }, [earFsrsStorageKey, fsrsStorageKey])
+
+  const chooseInputMode = useCallback((mode: PitchforksInputMode) => {
+    inputModeRef.current = mode
+    setInputMode(mode)
+    try { localStorage.setItem(PITCHFORKS_INPUT_MODE_KEY, mode) } catch {}
+  }, [])
 
   const saveMasteryProgress = useCallback(() => {
     try {
@@ -3083,6 +3131,19 @@ export default function PitchforksIII() {
     return fsrsRef.current[note]
   }, [])
 
+  const ensureEarNoteMemory = useCallback((note: string) => {
+    if (!earFsrsRef.current[note]) earFsrsRef.current[note] = createNote(note)
+    return earFsrsRef.current[note]
+  }, [])
+
+  const activeFsrsStore = useCallback(() => (
+    inputModeRef.current === 'buttons' ? earFsrsRef.current : fsrsRef.current
+  ), [])
+
+  const ensureActiveNoteMemory = useCallback((note: string) => (
+    inputModeRef.current === 'buttons' ? ensureEarNoteMemory(note) : ensureNoteMemory(note)
+  ), [ensureEarNoteMemory, ensureNoteMemory])
+
   const applyRangeProfile = useCallback((profile: PitchforksRangeProfile) => {
     const order = presentationOrderForRange(profile)
     const starterNotes = starterPairForRange(profile)
@@ -3091,30 +3152,40 @@ export default function PitchforksIII() {
     unlockedNotesRef.current = [...starterNotes]
     setRangeProfile(profile)
     setUnlockedNotes([...starterNotes])
-    for (const note of starterNotes) ensureNoteMemory(note)
+    for (const note of starterNotes) {
+      ensureNoteMemory(note)
+      ensureEarNoteMemory(note)
+    }
     try {
       localStorage.setItem(PITCHFORKS_RANGE_PROFILE_KEY, JSON.stringify(profile))
     } catch {}
     cueSupportProfileRef.current = { version: 1, notes: {} }
     saveCueSupport()
     beginPresentationJourney(profile, starterNotes)
-  }, [beginPresentationJourney, ensureNoteMemory, saveCueSupport])
+  }, [beginPresentationJourney, ensureEarNoteMemory, ensureNoteMemory, saveCueSupport])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const isDemo = params.get('demo') === '1'
     const isFsrsDebug = params.get('fsrsDebug') === '1'
+    const requestedInput = params.get('input')
+    const storedInput = (() => {
+      try { return localStorage.getItem(PITCHFORKS_INPUT_MODE_KEY) } catch { return null }
+    })()
+    const restoredInput = requestedInput === 'buttons' || requestedInput === 'voice'
+      ? requestedInput
+      : parsePitchforksInputMode(storedInput)
     demoRef.current = isDemo
     fsrsDebugRef.current = isFsrsDebug
+    inputModeRef.current = restoredInput
     setDemoMode(isDemo)
     setFsrsDebugMode(isFsrsDebug)
+    setInputMode(restoredInput)
     setGeometryDebug(params.get('geom') === '1')
     getMasterySessionId()
 
-    try {
-      const raw = localStorage.getItem(isDemo || isFsrsDebug ? FSRS_DEBUG_KEY : FSRS_KEY)
-      if (raw) fsrsRef.current = JSON.parse(raw)
-    } catch { /* fresh start */ }
+    fsrsRef.current = loadStore(isDemo || isFsrsDebug ? FSRS_DEBUG_KEY : FSRS_VOICE_KEY)
+    earFsrsRef.current = loadStore(isDemo || isFsrsDebug ? FSRS_EAR_DEBUG_KEY : FSRS_EAR_KEY)
 
     try {
       const rawMastery = localStorage.getItem(isDemo || isFsrsDebug ? MASTERY_PROGRESS_DEBUG_KEY : MASTERY_PROGRESS_KEY)
@@ -3196,8 +3267,11 @@ export default function PitchforksIII() {
       unlockedNotesRef.current = restored
     }
 
-    for (const note of unlockedNotesRef.current) ensureNoteMemory(note)
-  }, [ensureNoteMemory, getMasterySessionId, savePresentationJourney])
+    for (const note of unlockedNotesRef.current) {
+      ensureNoteMemory(note)
+      ensureEarNoteMemory(note)
+    }
+  }, [ensureEarNoteMemory, ensureNoteMemory, getMasterySessionId, savePresentationJourney])
 
   useEffect(() => {
     let cancelled = false
@@ -3306,6 +3380,14 @@ export default function PitchforksIII() {
   const cueContextForVillager = useCallback((villager: Villager): ActiveCueContext => {
     const firstEncounter = villager.id === runtimeRef.current.firstVillagerId
     const liveNotes = villager.notes.slice(villager.burned)
+    if (inputModeRef.current === 'buttons') {
+      const next = { support: 'guided' as const, noteCount: Math.max(1, liveNotes.length) }
+      liveNotes.forEach((_, offset) => {
+        cueSupportByTargetRef.current.set(`${villager.id}:${villager.burned + offset}`, 'guided')
+      })
+      setActiveCueContextSnapshot(next)
+      return next
+    }
     const perNote = liveNotes.map(note => cueSupportForNote(
       fsrsRef.current[note],
       cueSupportProfileRef.current.notes[note],
@@ -3422,11 +3504,15 @@ export default function PitchforksIII() {
 
   const timersPausedNow = useCallback(() => {
     const active = getActiveTarget()
-    const micUnavailable = !demoRef.current && (!isListeningRef.current || !!micErrorRef.current)
+    const micUnavailable = inputModeRef.current === 'voice' && !demoRef.current && (!isListeningRef.current || !!micErrorRef.current)
+    const awaitingButtonReplay = inputModeRef.current === 'buttons' &&
+      !!active &&
+      buttonTrialRef.current?.targetKey === active.key &&
+      buttonTrialRef.current.requiresReplay
     const firstLockGrace = firstLockGraceRef.current &&
       !!active &&
       active.villager.id === runtimeRef.current.firstVillagerId
-    const paused = ceremonyRef.current.active || matchingSuppressedNow() || micUnavailable || firstLockGrace
+    const paused = ceremonyRef.current.active || matchingSuppressedNow() || micUnavailable || firstLockGrace || awaitingButtonReplay
     timersPausedRef.current = paused
     return paused
   }, [getActiveTarget, matchingSuppressedNow])
@@ -3689,20 +3775,27 @@ export default function PitchforksIII() {
   const reviewTargetNote = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
     correct: boolean,
+    lane: PitchforksInputMode = inputModeRef.current,
   ) => {
     if (!target.note) return false
     if (matchingSuppressedNow()) return false
-    if (!demoRef.current && !isListeningRef.current) return false
+    if (lane === 'voice' && !demoRef.current && !isListeningRef.current) return false
 
     if (!correct) {
       if (failureGradedKeysRef.current.has(target.key)) return false
       failureGradedKeysRef.current.add(target.key)
     }
 
-    const mem = ensureNoteMemory(target.note)
-    const grade = autoGrade(correct, latencyForTarget(target))
-    fsrsRef.current[target.note] = reviewNote(mem, grade)
-    saveFsrs()
+    const latencyMs = latencyForTarget(target)
+    if (lane === 'buttons') {
+      gradeEar(earFsrsRef.current, target.note, correct, latencyMs)
+      saveFsrs('buttons')
+      if (correct) waveNotesSungRef.current.add(target.note)
+      return true
+    }
+
+    gradeVoice(fsrsRef.current, target.note, correct, latencyMs)
+    saveFsrs('voice')
     const support = cueSupportByTargetRef.current.get(target.key) ?? 'guided'
     const outcome = !correct
       ? 'miss'
@@ -3735,14 +3828,21 @@ export default function PitchforksIII() {
       consecutiveCorrectRef.current = 0
     }
     return true
-  }, [completeJourneyGuidanceForNote, ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveCueSupport, saveFsrs])
+  }, [completeJourneyGuidanceForNote, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveCueSupport, saveFsrs])
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
     clearCueTimers()
     const liveNotes = villager.notes.slice(villager.burned)
     if (!liveNotes.length) return
-    const emitsTone = mode === 'replay' || audioCueRef.current
+    const buttonLane = inputModeRef.current === 'buttons'
+    const activeTarget = getActiveTarget()
+    const buttonTrial = buttonTrialRef.current
+    if (buttonLane && mode === 'replay' && buttonTrial && buttonTrial.targetKey === activeTarget?.key) {
+      buttonTrialRef.current = replayPitchforksButtonTrial(buttonTrial)
+      setButtonFeedback({ kind: 'listen', text: 'LISTEN AGAIN...' })
+    }
+    const emitsTone = buttonLane || mode === 'replay' || audioCueRef.current
     if (emitsTone) {
       for (const note of liveNotes) waveNotesHeardRef.current.add(note)
     }
@@ -3769,7 +3869,9 @@ export default function PitchforksIII() {
     if (demoRef.current) demoStepRef.current = mode === 'replay' ? 'replay-cue' : 'auto-cue'
 
     const firstIndex = villager.burned
-    setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${liveNotes[0]}`)
+    if (buttonLane) setPromptText('Listen...')
+    else setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${liveNotes[0]}`)
+    if (buttonLane) setButtonFeedback({ kind: 'listen', text: 'LISTEN, THEN CHOOSE THE NOTE' })
     activePromptKeyRef.current = `${villager.id}:${firstIndex}`
     promptStartedAtRef.current = now
 
@@ -3778,7 +3880,7 @@ export default function PitchforksIII() {
       const id = setTimeout(() => {
         const promptOwnerKey = `${villager.id}:${index}`
         if (phaseRef.current === 'playing' && getActiveTarget()?.key === promptOwnerKey) {
-          setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${note}`)
+          setPromptText(buttonLane ? 'Listen…' : `${mode === 'replay' ? 'Replay' : 'Listen'}: ${note}`)
           activePromptKeyRef.current = `${villager.id}:${index}`
           promptStartedAtRef.current = performance.now()
         }
@@ -3813,7 +3915,8 @@ export default function PitchforksIII() {
         if (note) {
           activePromptKeyRef.current = `${villager.id}:${villager.burned}`
           promptStartedAtRef.current = performance.now()
-          setPromptText(villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
+          setPromptText(buttonLane ? 'Which note did you hear?' : villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
+          if (buttonLane) setButtonFeedback({ kind: 'question', text: 'WHICH NOTE DID YOU HEAR?' })
           if (
             villager.id === runtimeRef.current.firstVillagerId &&
             firstMinuteCoachRef.current.beat !== 'strike' &&
@@ -3849,6 +3952,7 @@ export default function PitchforksIII() {
 
       return Object.freeze({
         demoStep: demoStepRef.current,
+        inputMode: inputModeRef.current,
         chargeProgress: lockProgressRef.current,
         chargeLevel,
         silenceFreezeObserved: silenceFreezeObservedRef.current,
@@ -3883,8 +3987,8 @@ export default function PitchforksIII() {
         roarFiredCount: roarFiredCountRef.current,
         unlockedCount: unlockedNotesRef.current.length,
         unlockedNotes: [...unlockedNotesRef.current],
-        noteR: noteRSnapshot(unlockedNotesRef.current, fsrsRef.current),
-        noteHealth: noteHealthSnapshot(unlockedNotesRef.current, fsrsRef.current),
+        noteR: noteRSnapshot(unlockedNotesRef.current, activeFsrsStore()),
+        noteHealth: noteHealthSnapshot(unlockedNotesRef.current, activeFsrsStore()),
         ceremonyActive: ceremonyRef.current.active,
         ceremonyNote: ceremonyRef.current.note,
         ceremonyToneFired: ceremonyRef.current.toneFired,
@@ -3905,6 +4009,8 @@ export default function PitchforksIII() {
         firstMinuteBeat: firstMinuteCoachRef.current.beat,
         fsrsDebug: demoRef.current || fsrsDebugRef.current,
         fsrsStoreKey: fsrsStorageKey(),
+        earFsrsStoreKey: earFsrsStorageKey(),
+        buttonTrial: buttonTrialRef.current ? { ...buttonTrialRef.current } : null,
         newNoteUnlocked,
         layoutMode: layoutModeRef.current,
         lightningPhase: lightningPhaseFor(lockProgressRef.current, newestBolt),
@@ -3944,13 +4050,18 @@ export default function PitchforksIII() {
       clearNewNoteCeremony()
       clearNoteMasteredCeremony()
       fsrsRef.current = {}
+      earFsrsRef.current = {}
       masteryProgressRef.current = {}
       cueSupportProfileRef.current = { version: 1, notes: {} }
       unlockedNotesRef.current = [...STARTING_NOTES]
       setUnlockedNotes([...STARTING_NOTES])
       consecutiveCorrectRef.current = 0
-      for (const n of unlockedNotesRef.current) ensureNoteMemory(n)
-      saveFsrs()
+      for (const n of unlockedNotesRef.current) {
+        ensureNoteMemory(n)
+        ensureEarNoteMemory(n)
+      }
+      saveFsrs('voice')
+      saveFsrs('buttons')
       saveMasteryProgress()
       saveCueSupport()
       return { unlockedCount: unlockedNotesRef.current.length, notes: [...unlockedNotesRef.current] }
@@ -4003,17 +4114,19 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, saveCueSupport, saveFsrs, saveMasteryProgress, showNoteMastered])
+  }, [activeFsrsStore, clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, earFsrsStorageKey, ensureEarNoteMemory, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, saveCueSupport, saveFsrs, saveMasteryProgress, showNoteMastered])
 
   const pickVillagerNotes = useCallback((totalTines: TineCount, wave: number, encounterIndex: number) => {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
-    for (const note of pool) ensureNoteMemory(note)
+    const fsrsStore = activeFsrsStore()
+    for (const note of pool) ensureActiveNoteMemory(note)
 
     const patientNotes = deterministicPairNotes(pool, wave, encounterIndex, totalTines, demoRef.current)
     if (patientNotes) return patientNotes
 
     if (totalTines > 1) {
       const isMasteredNote = (note: string) => {
+        if (inputModeRef.current === 'buttons') return fsrsStore[note]?.phase === 'review'
         const masteredAt = masteryProgressRef.current[note]?.masteredAt
         return masteredAt !== null && masteredAt !== undefined
       }
@@ -4025,15 +4138,15 @@ export default function PitchforksIII() {
         let exclude: string | null = null
 
         if (weakPool.length > 0) {
-          const weakNote = pickNextNote(weakPool, fsrsRef.current, exclude)
-          ensureNoteMemory(weakNote)
+          const weakNote = pickNextNote(weakPool, fsrsStore, exclude)
+          ensureActiveNoteMemory(weakNote)
           notes.push(weakNote)
           exclude = weakNote
         }
 
         while (notes.length < totalTines) {
-          const masteredNote = pickNextNote(masteredPool, fsrsRef.current, exclude)
-          ensureNoteMemory(masteredNote)
+          const masteredNote = pickNextNote(masteredPool, fsrsStore, exclude)
+          ensureActiveNoteMemory(masteredNote)
           notes.push(masteredNote)
           exclude = masteredNote
         }
@@ -4045,13 +4158,13 @@ export default function PitchforksIII() {
     const notes: string[] = []
     let exclude: string | null = null
     for (let i = 0; i < totalTines; i++) {
-      const nextNote = pickNextNote(pool, fsrsRef.current, exclude)
-      ensureNoteMemory(nextNote)
+      const nextNote = pickNextNote(pool, fsrsStore, exclude)
+      ensureActiveNoteMemory(nextNote)
       notes.push(nextNote)
       exclude = nextNote
     }
     return notes
-  }, [ensureNoteMemory])
+  }, [activeFsrsStore, ensureActiveNoteMemory])
 
   const spawnVillager = useCallback(() => {
     const rt = runtimeRef.current
@@ -4152,12 +4265,15 @@ export default function PitchforksIII() {
     })
   }, [])
 
-  const strikeActiveTine = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
+  const strikeActiveTine = useCallback((
+    target: NonNullable<ReturnType<typeof getActiveTarget>>,
+    gradeReview = true,
+  ) => {
     const rt = runtimeRef.current
     const { villager, tineIndex } = target
     const strikeNote = target.note ?? villager.notes[villager.burned]
     const strikeHue = hueForNote(strikeNote)
-    reviewTargetNote(target, true)
+    if (gradeReview) reviewTargetNote(target, true)
     lastStrikeNoteRef.current = strikeNote ?? null
     lastStrikeHueRef.current = strikeHue
     addBolt(villager, tineIndex, strikeHue, strikeNote)
@@ -4219,6 +4335,34 @@ export default function PitchforksIII() {
     if (firstLockGraceRef.current) firstLockGraceRef.current = false
   }, [addBolt, addBurst, clearFirstMinuteTimer, matchingSuppressedNow, reviewTargetNote, setFirstMinuteCoachSnapshot, setPromptText])
 
+  const answerWithButton = useCallback((answeredNote: string) => {
+    if (phaseRef.current !== 'playing' || inputModeRef.current !== 'buttons') return
+    if (buttonAnswerPendingRef.current || cuePlayingNow() || matchingSuppressedNow()) return
+    if (typeof document !== 'undefined' && (document.visibilityState !== 'visible' || !document.hasFocus())) return
+
+    const target = getActiveTarget()
+    if (!target) return
+    const current = buttonTrialRef.current?.targetKey === target.key
+      ? buttonTrialRef.current
+      : createPitchforksButtonTrial(target.key)
+    const decision = decidePitchforksButtonAnswer(current, answeredNote, target.note)
+    if (!decision.accepted) return
+
+    buttonAnswerPendingRef.current = true
+    buttonTrialRef.current = decision.next
+    if (decision.shouldGrade) reviewTargetNote(target, decision.correct, 'buttons')
+
+    if (decision.shouldStrike) {
+      setButtonFeedback({ kind: 'correct', text: `${target.note} · LIGHTNING RELEASED` })
+      strikeActiveTine(target, false)
+    } else {
+      setButtonFeedback({ kind: 'wrong', text: 'NOT THAT NOTE · REPLAY AND TRY AGAIN' })
+      setPromptText('Replay the note, then try again.')
+    }
+
+    requestAnimationFrame(() => { buttonAnswerPendingRef.current = false })
+  }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, reviewTargetNote, setPromptText, strikeActiveTine])
+
   const demoPitchForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>, now: number): PitchInfo | null => {
     if (demoTargetRef.current !== target.key) {
       demoTargetRef.current = target.key
@@ -4276,6 +4420,9 @@ export default function PitchforksIII() {
       tintRef.current = null
       setPromptText('')
       setActiveCueContextSnapshot({ support: 'guided', noteCount: 1 })
+      if (buttonTrialRef.current) {
+        buttonTrialRef.current = null
+      }
       if (demoRef.current) demoStepRef.current = 'idle'
       return
     }
@@ -4286,11 +4433,11 @@ export default function PitchforksIII() {
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
-      setPromptText(`Sing: ${target.villager.notes[0]}`)
+      setPromptText(inputModeRef.current === 'buttons' ? 'Listen…' : `Sing: ${target.villager.notes[0]}`)
       const cueContext = cueContextForVillager(target.villager)
       if (!target.villager.sequenceCued) {
         target.villager.sequenceCued = true
-        if (cueContext.support === 'guided') {
+        if (inputModeRef.current === 'buttons' || cueContext.support === 'guided') {
           playVillagerSequence(target.villager, 'cue')
         } else if (
           target.villager.id === runtimeRef.current.firstVillagerId &&
@@ -4306,10 +4453,21 @@ export default function PitchforksIII() {
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
+      if (inputModeRef.current === 'buttons') {
+        buttonTrialRef.current = createPitchforksButtonTrial(target.key)
+        setButtonFeedback({ kind: cuePlayingNow() ? 'listen' : 'question', text: cuePlayingNow() ? 'LISTEN, THEN CHOOSE THE NOTE' : 'WHICH NOTE DID YOU HEAR?' })
+      }
       cueContextForVillager(target.villager)
       if (!cuePlayingNow()) {
-        setPromptText(target.villager.burned === 0 ? `Sing: ${target.note}` : `Now: ${target.note}`)
+        setPromptText(inputModeRef.current === 'buttons' ? 'Which note did you hear?' : target.villager.burned === 0 ? `Sing: ${target.note}` : `Now: ${target.note}`)
       }
+    }
+
+    if (inputModeRef.current === 'buttons') {
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      return
     }
 
     if (matchingSuppressedNow()) {
@@ -4445,6 +4603,9 @@ export default function PitchforksIII() {
       v.attackTimer = Math.max(0, v.attackTimer - dt)
       if (v.attackTimer <= 0) {
         reviewTargetNote(active, false)
+        if (inputModeRef.current === 'buttons') {
+          setButtonFeedback({ kind: 'wrong', text: `TIME EXPIRED · THE NOTE WAS ${active.note}` })
+        }
         frankReactionKindRef.current = 'miss'
         frankReactionStartedAtRef.current = performance.now()
         v.state = 'ash'
@@ -4482,7 +4643,7 @@ export default function PitchforksIII() {
   }, [getActiveTarget, processLock, reviewTargetNote, setPromptText, showWaveReceipt, snapshotWaveReceipt, spawnVillager, startWave, timersPausedNow])
 
   const updatePitchBarState = useCallback((active: ActiveTarget | null): TunerView => {
-    const visible = phaseRef.current === 'playing'
+    const visible = phaseRef.current === 'playing' && inputModeRef.current === 'voice'
     barVisibleRef.current = visible
     const now = performance.now()
     const nextTargetKey = active?.key ?? ''
@@ -4595,13 +4756,14 @@ export default function PitchforksIII() {
     const view = freezeViewStateForDebug(buildViewState({
       runtime: runtimeRef.current,
       phase: phaseRef.current,
+      inputMode,
       active,
       activeVillagerId: activeVillagerIdRef.current,
       activeKey: activeKeyRef.current,
       chargeProgress: lockProgressRef.current,
       tint: tintRef.current,
-      noteNamesVisible: noteNamesRef.current,
-      staffNotationVisible: staffNotationRef.current && layoutModeRef.current !== 'portrait',
+      noteNamesVisible: inputMode === 'buttons' ? false : noteNamesRef.current,
+      staffNotationVisible: inputMode === 'buttons' ? false : staffNotationRef.current && layoutModeRef.current !== 'portrait',
       synesthesiaOn: synesthesiaRef.current,
       reducedMotion: reducedMotionRef.current,
       timersPaused: timersPausedRef.current,
@@ -4622,7 +4784,7 @@ export default function PitchforksIII() {
         : waveReceiptRef.current,
       frankReaction,
       shake,
-      fsrsMemory: fsrsRef.current,
+      fsrsMemory: inputMode === 'buttons' ? earFsrsRef.current : fsrsRef.current,
     }), demoRef.current || fsrsDebugRef.current)
     viewStateRef.current = view
     renderView(ctx, view, assetsRef.current)
@@ -4633,7 +4795,7 @@ export default function PitchforksIII() {
       if (staffCtx) {
         staffCtx.setTransform(1, 0, 0, 1, 0, 0)
         staffCtx.clearRect(0, 0, staffCanvas.width, staffCanvas.height)
-        if (layoutModeRef.current === 'portrait' && staffNotationRef.current && view.tuner.visible) {
+        if (layoutModeRef.current === 'portrait' && view.staffNotationVisible && view.tuner.visible) {
           staffCtx.setTransform(
             STAFF_BAND_RENDER_SCALE,
             0,
@@ -4658,7 +4820,7 @@ export default function PitchforksIII() {
       promptMismatchWarnedRef.current = ''
     }
     if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(loop)
-  }, [getActiveTarget, syncMicHudState, updateGame, updatePitchBarState])
+  }, [getActiveTarget, inputMode, syncMicHudState, updateGame, updatePitchBarState])
 
   const beginPlaying = useCallback(() => {
     if (!demoRef.current && !rangeProfileRef.current) {
@@ -4696,8 +4858,11 @@ export default function PitchforksIII() {
     activePromptKeyRef.current = ''
     promptStartedAtRef.current = 0
     failureGradedKeysRef.current = new Set()
+    buttonTrialRef.current = null
+    buttonAnswerPendingRef.current = false
+    setButtonFeedback({ kind: 'listen', text: 'LISTEN, THEN CHOOSE THE NOTE' })
     consecutiveCorrectRef.current = 0
-    for (const note of unlockedNotesRef.current) ensureNoteMemory(note)
+    for (const note of unlockedNotesRef.current) ensureActiveNoteMemory(note)
     demoTargetRef.current = ''
     demoLockCountRef.current = 0
     demoStepRef.current = 'idle'
@@ -4730,12 +4895,13 @@ export default function PitchforksIII() {
     micHudStateRef.current = demoRef.current ? 'demo' : 'waiting'
     setMicHudState(micHudStateRef.current)
     setHud({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
+    if (inputModeRef.current === 'buttons') stopListening()
     setPhase('playing')
     phaseRef.current = 'playing'
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture])
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureActiveNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture, stopListening])
 
   const startGame = useCallback(() => {
     beginPlaying()
@@ -4793,8 +4959,9 @@ export default function PitchforksIII() {
     applyRangeProfile(profile)
     setRangeIntent('saved')
     setRangeAssessmentError(null)
-    void beginCalibration()
-  }, [applyRangeProfile, beginCalibration, manualHighNote, manualLowNote])
+    if (inputModeRef.current === 'buttons') beginPlaying()
+    else void beginCalibration()
+  }, [applyRangeProfile, beginCalibration, beginPlaying, manualHighNote, manualLowNote])
 
   const startRangeAssessment = useCallback(() => {
     setRangeStep('anchor')
@@ -4935,13 +5102,16 @@ export default function PitchforksIII() {
     consecutiveCorrectRef.current = 0
     clearNewNoteCeremony()
     setNewNoteUnlocked(null)
-    for (const note of starterNotes) ensureNoteMemory(note)
+    for (const note of starterNotes) {
+      ensureNoteMemory(note)
+      ensureEarNoteMemory(note)
+    }
     cueSupportProfileRef.current = { version: 1, notes: {} }
     saveCueSupport()
     beginPresentationJourney(profile, starterNotes)
     setJourneyResetConfirm(false)
     setJourneyResetStatus(`Journey restarted with ${starterNotes.join(' and ')}. Your range and mastery are safe.`)
-  }, [beginPresentationJourney, clearNewNoteCeremony, ensureNoteMemory, saveCueSupport])
+  }, [beginPresentationJourney, clearNewNoteCeremony, ensureEarNoteMemory, ensureNoteMemory, saveCueSupport])
 
   useEffect(() => {
     const dialog = journeyResetDialogRef.current
@@ -4992,13 +5162,29 @@ export default function PitchforksIII() {
     },
   }
   const activeMicHud = micHudView[micHudState]
+  const activeInputHud = inputMode === 'buttons'
+    ? {
+        label: cuePlayingNow() ? 'Playing note' : 'Listen & tap',
+        className: 'border-cyan-500/60 text-cyan-100 bg-cyan-950/45',
+        dotClassName: cuePlayingNow() ? 'bg-cyan-300 animate-pulse' : 'bg-cyan-400',
+      }
+    : activeMicHud
   const cuePlaybackActive = cuePlayingNow()
-  const replayLabel = replayLabelForCueSupport(
-    activeCueContext.support,
-    activeCueContext.noteCount,
-    cuePlaybackActive,
-  )
-  const firstMinuteCopy = firstMinuteCoachCopy(firstMinuteCoach.beat, firstMinuteCoach.note)
+  const replayLabel = inputMode === 'buttons'
+    ? activeCueContext.noteCount > 1 ? '🔊 REPLAY NOTE CHAIN' : '🔊 REPLAY NOTE'
+    : replayLabelForCueSupport(activeCueContext.support, activeCueContext.noteCount, cuePlaybackActive)
+  const firstMinuteCopy = inputMode === 'buttons'
+    ? firstMinuteCoach.beat === 'threat'
+      ? 'THE MOB IS COMING · LISTEN FOR THE FORK NOTE'
+      : null
+    : firstMinuteCoachCopy(firstMinuteCoach.beat, firstMinuteCoach.note)
+  const activeButtonTarget = inputMode === 'buttons' ? getActiveTarget() : null
+  const buttonAnswerOpen = !!activeButtonTarget &&
+    !cuePlaybackActive &&
+    !matchingSuppressedNow() &&
+    buttonTrialRef.current?.targetKey === activeButtonTarget.key &&
+    !buttonTrialRef.current.requiresReplay &&
+    !buttonTrialRef.current.resolved
   const calibrationReady = heardYou && !micError
   const micReadinessView = pitchforksMicReadinessCopy(micReadiness)
   const calibrationHudLabel = micError
@@ -5197,6 +5383,39 @@ export default function PitchforksIII() {
               </div>
             )}
           </div>
+          {!demoMode && (
+            <section className="mb-4 border border-cyan-900/70 bg-cyan-950/15 p-3" aria-labelledby="pf3-input-mode-heading">
+              <h2 id="pf3-input-mode-heading" className="text-xs font-black tracking-widest text-cyan-100">HOW YOU DEFEND</h2>
+              <p className="mt-1 text-xs leading-relaxed text-gray-300">
+                Start by recognizing the note, then move into singing. Both lanes use this same storm and keep recognition separate from voice practice.
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  data-testid="pf3-input-buttons"
+                  aria-pressed={inputMode === 'buttons'}
+                  onClick={() => chooseInputMode('buttons')}
+                  className={`min-h-12 border px-3 py-2 text-left ${inputMode === 'buttons' ? 'border-cyan-200 bg-cyan-200 text-[#071018]' : 'border-gray-600 bg-black/25 text-gray-200'}`}
+                >
+                  <span className="block text-xs font-black tracking-widest">LISTEN &amp; TAP</span>
+                  <span className="mt-1 block text-[11px] leading-tight">Hear the fork, choose its note. No mic.</span>
+                </button>
+                <button
+                  type="button"
+                  data-testid="pf3-input-voice"
+                  aria-pressed={inputMode === 'voice'}
+                  onClick={() => chooseInputMode('voice')}
+                  className={`min-h-12 border px-3 py-2 text-left ${inputMode === 'voice' ? 'border-green-200 bg-green-300 text-[#071018]' : 'border-gray-600 bg-black/25 text-gray-200'}`}
+                >
+                  <span className="block text-xs font-black tracking-widest">VOICE LIGHTNING</span>
+                  <span className="mt-1 block text-[11px] leading-tight">Hear, sing, then recall the exact octave.</span>
+                </button>
+              </div>
+              <div className="mt-3 text-[10px] font-bold leading-relaxed tracking-wide text-gray-400">
+                LEARNING PATH · LISTEN &amp; TAP → HEAR THEN SING → SING FROM NAME → BLIND
+              </div>
+            </section>
+          )}
           {canRestartJourney && !demoMode && (
             <section className="mb-4" aria-label="Journey controls">
               <button
@@ -5329,7 +5548,9 @@ export default function PitchforksIII() {
             <div className="text-2xl">🧟</div>
             <div>
               <div className="text-sm text-green-300 font-bold">You are the monster</div>
-              <div className="text-xs text-gray-400">Defend yourself by singing the notes carried by the villagers.</div>
+              <div className="text-xs text-gray-400">
+                {inputMode === 'buttons' ? 'Defend yourself by hearing and choosing the notes carried by the villagers.' : 'Defend yourself by singing the notes carried by the villagers.'}
+              </div>
             </div>
           </div>
 
@@ -5337,7 +5558,7 @@ export default function PitchforksIII() {
             <div className="text-2xl">🔱</div>
             <div>
               <div className="text-sm text-yellow-300 font-bold">Forks and tines</div>
-              <div className="text-xs text-gray-400">Each tine is one note. Multi-tine forks are sung in order.</div>
+              <div className="text-xs text-gray-400">Each tine is one note. Multi-tine forks are {inputMode === 'buttons' ? 'answered' : 'sung'} in order.</div>
             </div>
           </div>
 
@@ -5352,8 +5573,10 @@ export default function PitchforksIII() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">📊</div>
             <div>
-              <div className="text-sm text-purple-300 font-bold">Watch the pitch bar</div>
-              <div className="text-xs text-gray-400">Dot left is too low, dot right is too high, green is on target.</div>
+              <div className="text-sm text-purple-300 font-bold">{inputMode === 'buttons' ? 'Listen before choosing' : 'Watch the pitch bar'}</div>
+              <div className="text-xs text-gray-400">
+                {inputMode === 'buttons' ? 'The answer buttons stay locked while the fork sounds. A wrong answer calmly asks you to Replay.' : 'Dot left is too low, dot right is too high, green is on target.'}
+              </div>
             </div>
           </div>
 
@@ -5367,14 +5590,28 @@ export default function PitchforksIII() {
         </div>
 
         <section className="mb-4 w-full max-w-md border border-cyan-900/70 bg-cyan-950/20 p-4" aria-labelledby="pf3-private-setup-heading">
-          <h3 id="pf3-private-setup-heading" className="mb-2 text-sm font-black tracking-widest text-cyan-100">PRIVATE VOICE SETUP</h3>
+          <h3 id="pf3-private-setup-heading" className="mb-2 text-sm font-black tracking-widest text-cyan-100">
+            {inputMode === 'buttons' ? 'LISTEN & TAP SETUP' : 'PRIVATE VOICE SETUP'}
+          </h3>
           <p className="text-xs leading-relaxed text-gray-300">
-            Pitch is analyzed on this device. We don't record or upload your voice; only your comfortable note range is saved.
+            {inputMode === 'buttons'
+              ? 'No microphone is needed. Recognition answers train the EAR side of your note memory and never write to voice practice.'
+              : "Pitch is analyzed on this device. We don't record or upload your voice; only your comfortable note range is saved."}
           </p>
         </section>
 
         <div className="w-full max-w-md space-y-3">
-          {rangeProfile && (
+          {rangeProfile && inputMode === 'buttons' && (
+            <button
+              type="button"
+              onClick={beginPlaying}
+              data-testid="pf3-start-buttons"
+              className="min-h-12 w-full border-2 border-cyan-200 bg-cyan-200 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
+            >
+              START LISTEN &amp; TAP · {rangeProfile.lowNote}–{rangeProfile.highNote}
+            </button>
+          )}
+          {rangeProfile && inputMode === 'voice' && (
             <button
               type="button"
               onClick={startSavedRangeSetup}
@@ -5383,14 +5620,16 @@ export default function PitchforksIII() {
               USE SAVED RANGE {rangeProfile.lowNote}–{rangeProfile.highNote}
             </button>
           )}
-          <button
-            type="button"
-            onClick={startGuidedRangeSetup}
-            data-testid="pf3-range-check"
-            className="min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 active:scale-[0.99]"
-          >
-            CHECK MY RANGE
-          </button>
+          {inputMode === 'voice' && (
+            <button
+              type="button"
+              onClick={startGuidedRangeSetup}
+              data-testid="pf3-range-check"
+              className="min-h-11 w-full border border-cyan-300 bg-cyan-950/45 px-4 py-3 text-sm font-black tracking-widest text-cyan-100 active:scale-[0.99]"
+            >
+              CHECK MY RANGE
+            </button>
+          )}
           <button
             type="button"
             onClick={openManualRangeSetup}
@@ -5453,7 +5692,7 @@ export default function PitchforksIII() {
             onClick={saveManualRangeAndCheckMic}
             className="mt-6 min-h-11 w-full border-2 border-cyan-200 bg-cyan-200 px-4 py-3 text-sm font-black tracking-widest text-[#071018] active:scale-[0.99]"
           >
-            SAVE RANGE &amp; CHECK MIC
+            {inputMode === 'buttons' ? 'SAVE RANGE & START' : 'SAVE RANGE & CHECK MIC'}
           </button>
           <button
             type="button"
@@ -5701,11 +5940,11 @@ export default function PitchforksIII() {
           <span>Wave {hud.wave}</span>
           {hud.streak >= 3 && <span>Combo {hud.streak}x</span>}
           <span
-            className={`inline-flex min-h-7 items-center gap-2 border px-2 py-1 font-bold ${activeMicHud.className}`}
-            title={activeMicHud.label}
+            className={`inline-flex min-h-7 items-center gap-2 border px-2 py-1 font-bold ${activeInputHud.className}`}
+            title={activeInputHud.label}
           >
-            <span className={`h-2.5 w-2.5 rounded-full ${activeMicHud.dotClassName}`} />
-            {activeMicHud.label}
+            <span className={`h-2.5 w-2.5 rounded-full ${activeInputHud.dotClassName}`} />
+            {activeInputHud.label}
           </span>
         </div>
 
@@ -5719,11 +5958,16 @@ export default function PitchforksIII() {
 
       <div
         data-testid="pf3-tuner-feedback"
+        data-input-mode={inputMode}
         role="status"
         aria-live="polite"
         aria-atomic="true"
         className={`w-full shrink-0 border-y px-3 py-2 text-center ${
-          tunerFeedback.kind === 'on-target' || tunerFeedback.kind === 'locked'
+          inputMode === 'buttons' && buttonFeedback.kind === 'correct'
+            ? 'border-emerald-500/70 bg-emerald-950/45 text-emerald-100'
+            : inputMode === 'buttons' && buttonFeedback.kind === 'wrong'
+              ? 'border-amber-400/70 bg-amber-950/45 text-amber-100'
+              : tunerFeedback.kind === 'on-target' || tunerFeedback.kind === 'locked'
             ? 'border-emerald-500/70 bg-emerald-950/45 text-emerald-100'
             : tunerFeedback.kind === 'octave-low' || tunerFeedback.kind === 'octave-high'
               ? 'border-orange-400/70 bg-orange-950/45 text-orange-100'
@@ -5731,8 +5975,14 @@ export default function PitchforksIII() {
         }`}
       >
         <div className="mx-auto flex min-h-11 w-full max-w-[760px] flex-col items-center justify-center leading-tight sm:flex-row sm:gap-3">
-          <span className="text-[11px] font-bold tracking-wider sm:text-xs">{tunerFeedback.headline}</span>
-          <span className="mt-1 text-xs font-black tracking-widest sm:mt-0 sm:text-sm">{tunerFeedback.detail}</span>
+          {inputMode === 'buttons' ? (
+            <span className="text-xs font-black tracking-widest sm:text-sm">{buttonFeedback.text}</span>
+          ) : (
+            <>
+              <span className="text-[11px] font-bold tracking-wider sm:text-xs">{tunerFeedback.headline}</span>
+              <span className="mt-1 text-xs font-black tracking-widest sm:mt-0 sm:text-sm">{tunerFeedback.detail}</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -5741,6 +5991,28 @@ export default function PitchforksIII() {
         className={`w-full shrink-0 bg-[#070914] border-t border-gray-800 flex flex-col items-center gap-2 px-3 ${layoutMode === 'portrait' ? 'pt-2' : 'pt-3'}`}
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)' }}
       >
+        {inputMode === 'buttons' && (
+          <div
+            data-testid="pf3-button-answer-row"
+            aria-label="Choose the note you heard"
+            className="flex min-h-12 w-full max-w-[760px] flex-wrap items-stretch justify-center gap-2"
+          >
+            {unlockedNotes.map(note => (
+              <button
+                key={note}
+                type="button"
+                data-testid={`pf3-button-answer-${note}`}
+                aria-label={`Choose ${note}`}
+                disabled={!buttonAnswerOpen}
+                onClick={() => answerWithButton(note)}
+                className="min-h-12 min-w-16 flex-1 touch-manipulation border px-3 py-2 text-sm font-black tracking-widest active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:max-w-32"
+                style={noteChipStyle(note, earFsrsRef.current)}
+              >
+                {note}
+              </button>
+            ))}
+          </div>
+        )}
         {firstMinuteCopy && (
           <div
             data-testid="pf3-first-minute-coach"
@@ -5770,6 +6042,8 @@ export default function PitchforksIII() {
             <>
               <button
                 type="button"
+                disabled={inputMode === 'buttons'}
+                title={inputMode === 'buttons' ? 'Staff returns in Voice Lightning so the listening answer stays hidden.' : undefined}
                 data-testid="pf3-staff-drawer-toggle"
                 aria-expanded={portraitDockPanel === 'staff'}
                 aria-controls="pf3-portrait-staff-panel"
@@ -5777,7 +6051,7 @@ export default function PitchforksIII() {
                   if (!staffNotationOn) setStaffNotationOn(true)
                   setPortraitDockPanel(current => current === 'staff' ? null : 'staff')
                 }}
-                className="min-h-12 min-w-[76px] border border-cyan-500/70 bg-cyan-950/30 px-2 text-xs font-black tracking-wider text-cyan-100"
+                className="min-h-12 min-w-[76px] border border-cyan-500/70 bg-cyan-950/30 px-2 text-xs font-black tracking-wider text-cyan-100 disabled:cursor-not-allowed disabled:opacity-45"
               >
                 STAFF
               </button>
