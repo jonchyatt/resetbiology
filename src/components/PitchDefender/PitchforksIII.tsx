@@ -5063,14 +5063,6 @@ export default function PitchforksIII() {
       lockProgress: lockProgressRef.current,
       toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
     })
-    const feedbackKey = `${feedback.kind}|${feedback.headline}|${feedback.detail}`
-    if (feedbackKey !== tunerFeedbackKeyRef.current) {
-      tunerFeedbackKeyRef.current = feedbackKey
-      // Canvas and DOM guidance must publish in the same animation frame; otherwise
-      // the ribbon can briefly describe the prior target while the canvas shows the next.
-      flushSync(() => setTunerFeedback(feedback))
-    }
-
     return {
       visible,
       now,
@@ -5173,6 +5165,14 @@ export default function PitchforksIII() {
           drawStaffNotationView(staffCtx, view)
         }
       }
+    }
+
+    const feedbackKey = `${tuner.feedback.kind}|${tuner.feedback.headline}|${tuner.feedback.detail}`
+    if (feedbackKey !== tunerFeedbackKeyRef.current) {
+      tunerFeedbackKeyRef.current = feedbackKey
+      // Paint both canvases first, then publish the DOM ribbon and any queued coach/status
+      // updates in this same task. Publishing React first can expose a one-frame split state.
+      flushSync(() => setTunerFeedback(tuner.feedback))
     }
 
     const actionPrompt = /^(?:Sing|Now):\s+(.+)$/.exec(currentPromptRef.current)

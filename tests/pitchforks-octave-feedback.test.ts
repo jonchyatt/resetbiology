@@ -44,6 +44,10 @@ assert.match(source, /aria-live="polite"/)
 assert.match(source, /matchingSuppressedUntilRef\.current = now \+ suppressMs/)
 assert.match(source, /setPromptText\(`\$\{mode === 'replay' \? 'Replay' : 'Listen'\}: \$\{liveNotes\[0\]\}`\)/)
 assert.match(source, /const finishCue = \(\) => \{[\s\S]*?if \(matchingSuppressedNow\(\)\)[\s\S]*?setTimeout\(finishCue, 25\)/)
-assert.match(source, /flushSync\(\(\) => setTunerFeedback\(feedback\)\)/)
+assert.match(source, /flushSync\(\(\) => setTunerFeedback\(tuner\.feedback\)\)/)
+assert.ok(
+  source.indexOf('renderView(ctx, view, assetsRef.current)') < source.indexOf('flushSync(() => setTunerFeedback(tuner.feedback))'),
+  'canvas must paint before the DOM feedback transaction publishes',
+)
 
-console.log('pitchforks octave feedback: 21/21 PASS')
+console.log('pitchforks octave feedback: 22/22 PASS')
