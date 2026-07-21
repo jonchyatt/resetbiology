@@ -94,6 +94,12 @@ import {
   loadHashedComposedSongs,
   type HashedSongOption,
 } from './pitchforks3SongSequence'
+import {
+  loadPitchforksSettings,
+  normalizePitchforksSettings,
+  savePitchforksSettings,
+  type PitchforksSettingsSnapshot,
+} from './pitchforksSettings'
 
 const W = 720
 const H = 405
@@ -529,6 +535,7 @@ interface NoteHealthDebug {
 interface Pf3DebugState {
   demoStep: string
   inputMode: PitchforksInputMode
+  settings: PitchforksSettingsSnapshot
   chargeProgress: number
   chargeLevel: number
   silenceFreezeObserved: boolean
@@ -2834,8 +2841,8 @@ export default function PitchforksIII() {
   const [assetsReady, setAssetsReady] = useState(false)
   const [assetError, setAssetError] = useState<string | null>(null)
   const [hud, setHud] = useState<HudState>({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
-  const [noteNamesOn, setNoteNamesOn] = useState(true)
-  const [audioCueOn, setAudioCueOn] = useState(true)
+  const [noteNamesOn, setNoteNamesOnState] = useState(true)
+  const [audioCueOn, setAudioCueOnState] = useState(true)
   const [staffNotationOn, setStaffNotationOn] = useState(false)
   const [synesthesiaOn, setSynesthesiaOn] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
@@ -2916,6 +2923,27 @@ export default function PitchforksIII() {
   useEffect(() => {
     audioCueRef.current = audioCueOn
   }, [audioCueOn])
+
+  const updatePitchforksSettings = useCallback((patch: Partial<PitchforksSettingsSnapshot>) => {
+    const settings = normalizePitchforksSettings({
+      noteNames: noteNamesRef.current,
+      referenceAudio: audioCueRef.current,
+      ...patch,
+    })
+    noteNamesRef.current = settings.noteNames
+    audioCueRef.current = settings.referenceAudio
+    setNoteNamesOnState(settings.noteNames)
+    setAudioCueOnState(settings.referenceAudio)
+    savePitchforksSettings(localStorage, settings)
+  }, [])
+
+  const setNoteNamesPreference = useCallback((value: boolean) => {
+    updatePitchforksSettings({ noteNames: value })
+  }, [updatePitchforksSettings])
+
+  const setReferenceAudioPreference = useCallback((value: boolean) => {
+    updatePitchforksSettings({ referenceAudio: value })
+  }, [updatePitchforksSettings])
 
   useEffect(() => {
     staffNotationRef.current = staffNotationOn
@@ -3182,15 +3210,20 @@ export default function PitchforksIII() {
     const storedInput = (() => {
       try { return localStorage.getItem(PITCHFORKS_INPUT_MODE_KEY) } catch { return null }
     })()
+    const storedSettings = loadPitchforksSettings(localStorage)
     const restoredInput = requestedInput === 'buttons' || requestedInput === 'voice'
       ? requestedInput
       : parsePitchforksInputMode(storedInput)
     demoRef.current = isDemo
     fsrsDebugRef.current = isFsrsDebug
     inputModeRef.current = restoredInput
+    noteNamesRef.current = storedSettings.noteNames
+    audioCueRef.current = storedSettings.referenceAudio
     setDemoMode(isDemo)
     setFsrsDebugMode(isFsrsDebug)
     setInputMode(restoredInput)
+    setNoteNamesOnState(storedSettings.noteNames)
+    setAudioCueOnState(storedSettings.referenceAudio)
     setGeometryDebug(params.get('geom') === '1')
     getMasterySessionId()
 
@@ -3869,6 +3902,17 @@ export default function PitchforksIII() {
       setButtonFeedback({ kind: 'listen', text: 'LISTEN AGAIN...' })
     }
     const emitsTone = buttonLane || mode === 'replay' || audioCueRef.current
+    if (!emitsTone) {
+      if (
+        villager.id === runtimeRef.current.firstVillagerId &&
+        firstMinuteCoachRef.current.beat !== 'strike' &&
+        firstMinuteCoachRef.current.beat !== 'victory' &&
+        firstMinuteCoachRef.current.beat !== 'complete'
+      ) {
+        setFirstMinuteCoachSnapshot('sing', liveNotes[0])
+      }
+      return
+    }
     if (emitsTone) {
       for (const note of liveNotes) waveNotesHeardRef.current.add(note)
     }
@@ -3910,15 +3954,10 @@ export default function PitchforksIII() {
           activePromptKeyRef.current = `${villager.id}:${index}`
           promptStartedAtRef.current = performance.now()
         }
-        if (emitsTone) {
-          setPianoVolume(cueVolumeRef.current)
-          try {
-            playPianoNote(note, { exact: true })
-          } finally {
-            matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
-            markToneEmitted(TONE_SUPPRESS_MS)
-          }
-        } else {
+        setPianoVolume(cueVolumeRef.current)
+        try {
+          playPianoNote(note, { exact: true })
+        } finally {
           matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
           markToneEmitted(TONE_SUPPRESS_MS)
         }
@@ -3979,6 +4018,10 @@ export default function PitchforksIII() {
       return Object.freeze({
         demoStep: demoStepRef.current,
         inputMode: inputModeRef.current,
+        settings: normalizePitchforksSettings({
+          noteNames: noteNamesRef.current,
+          referenceAudio: audioCueRef.current,
+        }),
         chargeProgress: lockProgressRef.current,
         chargeLevel,
         silenceFreezeObserved: silenceFreezeObservedRef.current,
@@ -4463,7 +4506,7 @@ export default function PitchforksIII() {
       const cueContext = cueContextForVillager(target.villager)
       if (!target.villager.sequenceCued) {
         target.villager.sequenceCued = true
-        if (inputModeRef.current === 'buttons' || cueContext.support === 'guided') {
+        if (inputModeRef.current === 'buttons' || (cueContext.support === 'guided' && audioCueRef.current)) {
           playVillagerSequence(target.villager, 'cue')
         } else if (
           target.villager.id === runtimeRef.current.firstVillagerId &&
@@ -5551,9 +5594,9 @@ export default function PitchforksIII() {
           {micError && !demoMode && <div className="text-xs text-red-300 mb-4">{micError}</div>}
           <SettingsRow
             noteNamesOn={noteNamesOn}
-            setNoteNamesOn={setNoteNamesOn}
+            setNoteNamesOn={setNoteNamesPreference}
             audioCueOn={audioCueOn}
-            setAudioCueOn={setAudioCueOn}
+            setAudioCueOn={setReferenceAudioPreference}
             staffNotationOn={staffNotationOn}
             setStaffNotationOn={setStaffNotationOn}
             synesthesiaOn={synesthesiaOn}
@@ -5564,6 +5607,7 @@ export default function PitchforksIII() {
             setCueVolume={setCueVolume}
             sfxVolume={sfxVolume}
             setSfxVolume={setSfxVolume}
+            touchSized={layoutMode === 'portrait'}
           />
           <button
             onClick={() => {
@@ -6155,9 +6199,9 @@ export default function PitchforksIII() {
           >
             <SettingsRow
               noteNamesOn={noteNamesOn}
-              setNoteNamesOn={setNoteNamesOn}
+              setNoteNamesOn={setNoteNamesPreference}
               audioCueOn={audioCueOn}
-              setAudioCueOn={setAudioCueOn}
+              setAudioCueOn={setReferenceAudioPreference}
               staffNotationOn={staffNotationOn}
               setStaffNotationOn={(value) => {
                 setStaffNotationOn(value)
@@ -6218,14 +6262,20 @@ function SettingsRow(props: {
   return (
     <div className={`flex max-w-full flex-wrap items-center justify-center ${props.compact ? 'gap-2 text-[11px]' : 'gap-3 text-xs'}`}>
       <button
+        type="button"
+        data-testid="pf3-note-names-toggle"
+        aria-pressed={props.noteNamesOn}
         onClick={() => props.setNoteNamesOn(!props.noteNamesOn)}
-        className={`${controlSize} px-2 py-1 border ${props.noteNamesOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`${controlSize} px-2 py-1 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${props.noteNamesOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Note names {props.noteNamesOn ? 'ON' : 'OFF'}
       </button>
       <button
+        type="button"
+        data-testid="pf3-reference-audio-toggle"
+        aria-pressed={props.audioCueOn}
         onClick={() => props.setAudioCueOn(!props.audioCueOn)}
-        className={`${controlSize} px-2 py-1 border ${props.audioCueOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
+        className={`${controlSize} px-2 py-1 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${props.audioCueOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-400'}`}
       >
         Audio cue {props.audioCueOn ? 'ON' : 'OFF'}
       </button>
