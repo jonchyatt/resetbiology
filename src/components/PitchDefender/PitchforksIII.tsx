@@ -47,15 +47,21 @@ import {
   type PitchforksRangeProfile,
 } from './pitchforksRange'
 import {
+  EMPTY_CUE_SUPPORT_PROFILE,
   admissionAllowedForWave,
   attackTimeForCurriculum,
-  automaticCueForWave,
-  curriculumStageForWave,
+  cueSupportForNote,
   deterministicPairNotes,
+  firstMinuteCoachCopy,
+  parseCueSupportProfile,
   patientTineCountsForWave,
-  replayLabelForStage,
+  recordCueSupportOutcome,
+  replayLabelForCueSupport,
   villagerEntryX,
   waitForClearBeforeSpawn,
+  type CueSupportLevel,
+  type CueSupportProfile,
+  type FirstMinuteBeat,
   type TineCount,
 } from './pitchforksCurriculum'
 import {
@@ -83,6 +89,8 @@ const FSRS_KEY = 'pitch_fsrs_memory'
 const FSRS_DEBUG_KEY = 'pitch_fsrs_debug'
 const MASTERY_PROGRESS_KEY = 'pitchforks3_mastery_progress'
 const MASTERY_PROGRESS_DEBUG_KEY = 'pitchforks3_mastery_progress_debug'
+const CUE_SUPPORT_KEY = 'pitchforks3_cue_support_v1'
+const CUE_SUPPORT_DEBUG_KEY = 'pitchforks3_cue_support_debug_v1'
 const STARTING_NOTES = [INTRO_ORDER[0], INTRO_ORDER[1]]
 
 // ported from Pitchforks.tsx:430-432
@@ -193,6 +201,8 @@ let frankSparkJitterBucket = -1
 type Phase = 'menu' | 'tutorial' | 'calibrating' | 'range_manual' | 'range_assessment' | 'playing' | 'game_over'
 type RangeAssessmentStep = 'anchor' | 'lower' | 'higher' | 'summary'
 type RangeIntent = 'guided' | 'saved'
+type ActiveCueContext = Readonly<{ support: CueSupportLevel; noteCount: number }>
+type FirstMinuteCoachState = Readonly<{ beat: FirstMinuteBeat; note: string | null }>
 type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
 type VillagerState = 'waiting' | 'walking' | 'ash'
 
@@ -529,6 +539,9 @@ interface Pf3DebugState {
   selectedNotes: string[]
   activeNote: string | null
   activeSequence: string[]
+  activeCueSupport: CueSupportLevel
+  cueSupportProfile: CueSupportProfile
+  firstMinuteBeat: FirstMinuteBeat
   fsrsDebug: boolean
   fsrsStoreKey: string
   newNoteUnlocked: string | null
@@ -2671,6 +2684,9 @@ export default function PitchforksIII() {
   const nextIdRef = useRef(0)
   const fsrsRef = useRef<Record<string, NoteMemory>>({})
   const masteryProgressRef = useRef<MasteryProgress>({})
+  const cueSupportProfileRef = useRef<CueSupportProfile>(EMPTY_CUE_SUPPORT_PROFILE)
+  const cueSupportByTargetRef = useRef<Map<string, CueSupportLevel>>(new Map())
+  const hintedTargetKeysRef = useRef<Set<string>>(new Set())
   const waveNotesHeardRef = useRef<Set<string>>(new Set())
   const waveNotesSungRef = useRef<Set<string>>(new Set())
   const waveStartedAtRef = useRef<number>(0)
@@ -2736,6 +2752,7 @@ export default function PitchforksIII() {
   const promptMismatchWarnedRef = useRef('')
   const layoutModeRef = useRef<LayoutMode>('stage')
   const cueTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const firstMinuteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const cuePlayingUntilRef = useRef(0)
   const matchingSuppressedUntilRef = useRef(0)
   const timersPausedRef = useRef(false)
@@ -2759,6 +2776,9 @@ export default function PitchforksIII() {
   const micHudStateRef = useRef<MicHudState>('waiting')
   const viewStateRef = useRef<ViewState | null>(null)
   const lightningPhaseTraceRef = useRef<LightningPhaseTransition[]>([])
+  const activeCueContextRef = useRef<ActiveCueContext>({ support: 'guided', noteCount: 1 })
+  const firstMinuteCoachRef = useRef<FirstMinuteCoachState>({ beat: 'threat', note: null })
+  const firstMinuteBeatStartedAtRef = useRef(0)
   const rangeHeadingRef = useRef<HTMLHeadingElement>(null)
 
   const [phase, setPhase] = useState<Phase>('menu')
@@ -2785,6 +2805,8 @@ export default function PitchforksIII() {
     lockProgress: 0,
     toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
   }))
+  const [activeCueContext, setActiveCueContext] = useState<ActiveCueContext>({ support: 'guided', noteCount: 1 })
+  const [firstMinuteCoach, setFirstMinuteCoach] = useState<FirstMinuteCoachState>({ beat: 'threat', note: null })
   const [rangeIntent, setRangeIntent] = useState<RangeIntent>('guided')
   const [rangeStep, setRangeStep] = useState<RangeAssessmentStep>('anchor')
   const [rangeCandidate, setRangeCandidate] = useState<string | null>(null)
@@ -2977,6 +2999,10 @@ export default function PitchforksIII() {
     return demoRef.current || fsrsDebugRef.current ? MASTERY_PROGRESS_DEBUG_KEY : MASTERY_PROGRESS_KEY
   }, [])
 
+  const cueSupportStorageKey = useCallback(() => {
+    return demoRef.current || fsrsDebugRef.current ? CUE_SUPPORT_DEBUG_KEY : CUE_SUPPORT_KEY
+  }, [])
+
   const saveFsrs = useCallback(() => {
     try {
       localStorage.setItem(fsrsStorageKey(), JSON.stringify(fsrsRef.current))
@@ -2988,6 +3014,12 @@ export default function PitchforksIII() {
       localStorage.setItem(masteryStorageKey(), JSON.stringify(masteryProgressRef.current))
     } catch {}
   }, [masteryStorageKey])
+
+  const saveCueSupport = useCallback(() => {
+    try {
+      localStorage.setItem(cueSupportStorageKey(), JSON.stringify(cueSupportProfileRef.current))
+    } catch {}
+  }, [cueSupportStorageKey])
 
   const getMasterySessionId = useCallback(() => {
     if (!masterySessionIdRef.current) {
@@ -3040,6 +3072,14 @@ export default function PitchforksIII() {
         if (parsed && typeof parsed === 'object') masteryProgressRef.current = parsed as MasteryProgress
       }
     } catch { /* fresh mastery progress */ }
+
+    try {
+      cueSupportProfileRef.current = parseCueSupportProfile(
+        localStorage.getItem(isDemo || isFsrsDebug ? CUE_SUPPORT_DEBUG_KEY : CUE_SUPPORT_KEY),
+      )
+    } catch {
+      cueSupportProfileRef.current = { version: 1, notes: {} }
+    }
 
     let storedRangeProfile: PitchforksRangeProfile | null = null
     if (!isDemo && !isFsrsDebug) {
@@ -3155,6 +3195,48 @@ export default function PitchforksIII() {
   const setPromptText = useCallback((text: string) => {
     currentPromptRef.current = text
   }, [])
+
+  const setActiveCueContextSnapshot = useCallback((next: ActiveCueContext) => {
+    const current = activeCueContextRef.current
+    if (current.support === next.support && current.noteCount === next.noteCount) return
+    activeCueContextRef.current = next
+    setActiveCueContext(next)
+  }, [])
+
+  const setFirstMinuteCoachSnapshot = useCallback((beat: FirstMinuteBeat, note: string | null = null) => {
+    const current = firstMinuteCoachRef.current
+    if (current.beat === beat && current.note === note) return
+    const next = { beat, note }
+    firstMinuteCoachRef.current = next
+    firstMinuteBeatStartedAtRef.current = performance.now()
+    setFirstMinuteCoach(next)
+  }, [])
+
+  const clearFirstMinuteTimer = useCallback(() => {
+    if (!firstMinuteTimerRef.current) return
+    clearTimeout(firstMinuteTimerRef.current)
+    firstMinuteTimerRef.current = null
+  }, [])
+
+  const cueContextForVillager = useCallback((villager: Villager): ActiveCueContext => {
+    const firstEncounter = villager.id === runtimeRef.current.firstVillagerId
+    const liveNotes = villager.notes.slice(villager.burned)
+    const perNote = liveNotes.map(note => cueSupportForNote(
+      fsrsRef.current[note],
+      cueSupportProfileRef.current.notes[note],
+      firstEncounter,
+      demoRef.current,
+    ))
+    // A sequence is only Recall when every unresolved note has earned Recall.
+    // If any note needs support, the whole audible chain is honestly Guided.
+    const support: CueSupportLevel = perNote.every(level => level === 'recall') ? 'recall' : 'guided'
+    const next = { support, noteCount: Math.max(1, liveNotes.length) }
+    liveNotes.forEach((_, offset) => {
+      cueSupportByTargetRef.current.set(`${villager.id}:${villager.burned + offset}`, support)
+    })
+    setActiveCueContextSnapshot(next)
+    return next
+  }, [setActiveCueContextSnapshot])
 
   const clearCueTimers = useCallback(() => {
     for (const id of cueTimeoutsRef.current) clearTimeout(id)
@@ -3535,6 +3617,24 @@ export default function PitchforksIII() {
     const grade = autoGrade(correct, latencyForTarget(target))
     fsrsRef.current[target.note] = reviewNote(mem, grade)
     saveFsrs()
+    const support = cueSupportByTargetRef.current.get(target.key) ?? 'guided'
+    const outcome = !correct
+      ? 'miss'
+      : support === 'guided'
+        ? 'guided-success'
+        : hintedTargetKeysRef.current.has(target.key)
+          ? 'hinted-success'
+          : 'recall-success'
+    cueSupportProfileRef.current = {
+      version: 1,
+      notes: {
+        ...cueSupportProfileRef.current.notes,
+        [target.note]: recordCueSupportOutcome(cueSupportProfileRef.current.notes[target.note], outcome),
+      },
+    }
+    saveCueSupport()
+    cueSupportByTargetRef.current.delete(target.key)
+    hintedTargetKeysRef.current.delete(target.key)
     if (correct) recordMasteryProgressForReview(target.note)
 
     if (correct) {
@@ -3546,14 +3646,30 @@ export default function PitchforksIII() {
       consecutiveCorrectRef.current = 0
     }
     return true
-  }, [ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveFsrs])
+  }, [ensureNoteMemory, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveCueSupport, saveFsrs])
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
     clearCueTimers()
-    for (const note of villager.notes) waveNotesHeardRef.current.add(note)
     const liveNotes = villager.notes.slice(villager.burned)
     if (!liveNotes.length) return
+    const emitsTone = mode === 'replay' || audioCueRef.current
+    if (emitsTone) {
+      for (const note of liveNotes) waveNotesHeardRef.current.add(note)
+    }
+    if (mode === 'replay' && activeCueContextRef.current.support === 'recall') {
+      liveNotes.forEach((_, offset) => {
+        hintedTargetKeysRef.current.add(`${villager.id}:${villager.burned + offset}`)
+      })
+    }
+    if (
+      villager.id === runtimeRef.current.firstVillagerId &&
+      firstMinuteCoachRef.current.beat !== 'strike' &&
+      firstMinuteCoachRef.current.beat !== 'victory' &&
+      firstMinuteCoachRef.current.beat !== 'complete'
+    ) {
+      setFirstMinuteCoachSnapshot('listen', liveNotes[0])
+    }
 
     const now = performance.now()
     const toneWindowMs = (liveNotes.length - 1) * TONE_SPACING_MS + TONE_MS
@@ -3577,7 +3693,7 @@ export default function PitchforksIII() {
           activePromptKeyRef.current = `${villager.id}:${index}`
           promptStartedAtRef.current = performance.now()
         }
-        if (mode === 'replay' || audioCueRef.current) {
+        if (emitsTone) {
           setPianoVolume(cueVolumeRef.current)
           try {
             playPianoNote(note, { exact: true })
@@ -3609,12 +3725,20 @@ export default function PitchforksIII() {
           activePromptKeyRef.current = `${villager.id}:${villager.burned}`
           promptStartedAtRef.current = performance.now()
           setPromptText(villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
+          if (
+            villager.id === runtimeRef.current.firstVillagerId &&
+            firstMinuteCoachRef.current.beat !== 'strike' &&
+            firstMinuteCoachRef.current.beat !== 'victory' &&
+            firstMinuteCoachRef.current.beat !== 'complete'
+          ) {
+            setFirstMinuteCoachSnapshot('sing', note)
+          }
         }
       }
     }
     const doneId = setTimeout(finishCue, suppressMs)
     cueTimeoutsRef.current.push(doneId)
-  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, setPromptText])
+  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, setFirstMinuteCoachSnapshot, setPromptText])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -3682,6 +3806,14 @@ export default function PitchforksIII() {
         selectedNotes: rt.villagers.flatMap(v => v.notes),
         activeNote: active?.note ?? null,
         activeSequence: active ? [...active.villager.notes] : [],
+        activeCueSupport: activeCueContextRef.current.support,
+        cueSupportProfile: {
+          version: 1 as const,
+          notes: Object.fromEntries(
+            Object.entries(cueSupportProfileRef.current.notes).map(([note, evidence]) => [note, { ...evidence }]),
+          ),
+        },
+        firstMinuteBeat: firstMinuteCoachRef.current.beat,
         fsrsDebug: demoRef.current || fsrsDebugRef.current,
         fsrsStoreKey: fsrsStorageKey(),
         newNoteUnlocked,
@@ -3724,12 +3856,14 @@ export default function PitchforksIII() {
       clearNoteMasteredCeremony()
       fsrsRef.current = {}
       masteryProgressRef.current = {}
+      cueSupportProfileRef.current = { version: 1, notes: {} }
       unlockedNotesRef.current = [...STARTING_NOTES]
       setUnlockedNotes([...STARTING_NOTES])
       consecutiveCorrectRef.current = 0
       for (const n of unlockedNotesRef.current) ensureNoteMemory(n)
       saveFsrs()
       saveMasteryProgress()
+      saveCueSupport()
       return { unlockedCount: unlockedNotesRef.current.length, notes: [...unlockedNotesRef.current] }
     }
     const showMasteryCeremony = (note: string) => {
@@ -3780,7 +3914,7 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, saveFsrs, saveMasteryProgress, showNoteMastered])
+  }, [clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, saveCueSupport, saveFsrs, saveMasteryProgress, showNoteMastered])
 
   const pickVillagerNotes = useCallback((totalTines: TineCount, wave: number, encounterIndex: number) => {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
@@ -3939,6 +4073,21 @@ export default function PitchforksIII() {
     lastStrikeHueRef.current = strikeHue
     addBolt(villager, tineIndex, strikeHue, strikeNote)
     addBurst(villager, strikeHue, 'strike')
+    if (villager.id === rt.firstVillagerId && villager.burned === 0) {
+      clearFirstMinuteTimer()
+      setFirstMinuteCoachSnapshot('strike', strikeNote)
+      firstMinuteTimerRef.current = setTimeout(() => {
+        if (phaseRef.current !== 'playing') {
+          firstMinuteTimerRef.current = null
+          return
+        }
+        setFirstMinuteCoachSnapshot('victory', strikeNote)
+        firstMinuteTimerRef.current = setTimeout(() => {
+          if (phaseRef.current === 'playing') setFirstMinuteCoachSnapshot('complete', null)
+          firstMinuteTimerRef.current = null
+        }, 1700)
+      }, 700)
+    }
     villager.burned += 1
     burnedTinesRef.current += 1
     lockHeldMsRef.current = 0
@@ -3979,7 +4128,7 @@ export default function PitchforksIII() {
       }
     }
     if (firstLockGraceRef.current) firstLockGraceRef.current = false
-  }, [addBolt, addBurst, matchingSuppressedNow, reviewTargetNote, setPromptText])
+  }, [addBolt, addBurst, clearFirstMinuteTimer, matchingSuppressedNow, reviewTargetNote, setFirstMinuteCoachSnapshot, setPromptText])
 
   const demoPitchForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>, now: number): PitchInfo | null => {
     if (demoTargetRef.current !== target.key) {
@@ -4037,6 +4186,7 @@ export default function PitchforksIII() {
       lockProgressRef.current = 0
       tintRef.current = null
       setPromptText('')
+      setActiveCueContextSnapshot({ support: 'guided', noteCount: 1 })
       if (demoRef.current) demoStepRef.current = 'idle'
       return
     }
@@ -4048,10 +4198,16 @@ export default function PitchforksIII() {
       lockProgressRef.current = 0
       tintRef.current = null
       setPromptText(`Sing: ${target.villager.notes[0]}`)
+      const cueContext = cueContextForVillager(target.villager)
       if (!target.villager.sequenceCued) {
         target.villager.sequenceCued = true
-        if (automaticCueForWave(runtimeRef.current.wave, demoRef.current)) {
+        if (cueContext.support === 'guided') {
           playVillagerSequence(target.villager, 'cue')
+        } else if (
+          target.villager.id === runtimeRef.current.firstVillagerId &&
+          firstMinuteCoachRef.current.beat !== 'complete'
+        ) {
+          setFirstMinuteCoachSnapshot('sing', target.note)
         }
       }
     }
@@ -4061,6 +4217,7 @@ export default function PitchforksIII() {
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
+      cueContextForVillager(target.villager)
       if (!cuePlayingNow()) {
         setPromptText(target.villager.burned === 0 ? `Sing: ${target.note}` : `Now: ${target.note}`)
       }
@@ -4090,6 +4247,13 @@ export default function PitchforksIII() {
     tintRef.current = colorForCents(absCents)
 
     if (absCents <= MATCH_TOLERANCE_CENTS) {
+      if (
+        target.villager.id === runtimeRef.current.firstVillagerId &&
+        firstMinuteCoachRef.current.beat === 'sing' &&
+        performance.now() - firstMinuteBeatStartedAtRef.current >= 120
+      ) {
+        setFirstMinuteCoachSnapshot('charge', target.note)
+      }
       lockHeldMsRef.current = Math.min(HOLD_MS, lockHeldMsRef.current + dt * 1000)
       lockProgressRef.current = Math.min(1, lockHeldMsRef.current / HOLD_MS)
       if (lockProgressRef.current >= 1) {
@@ -4110,12 +4274,15 @@ export default function PitchforksIII() {
       }
     }
   }, [
+    cueContextForVillager,
     cuePlayingNow,
     demoPitchForTarget,
     getActiveTarget,
     matchingSuppressedNow,
     pitchRef,
     playVillagerSequence,
+    setActiveCueContextSnapshot,
+    setFirstMinuteCoachSnapshot,
     setPromptText,
     strikeActiveTine,
   ])
@@ -4412,6 +4579,7 @@ export default function PitchforksIII() {
     }
     resumeCueAudioFromGesture()
     clearCueTimers()
+    clearFirstMinuteTimer()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
     clearWaveReceipt()
@@ -4423,6 +4591,13 @@ export default function PitchforksIII() {
     viewStateRef.current = null
     lightningPhaseTraceRef.current = []
     deferredAdmissionNotesRef.current = new Set()
+    cueSupportByTargetRef.current = new Map()
+    hintedTargetKeysRef.current = new Set()
+    activeCueContextRef.current = { support: 'guided', noteCount: 1 }
+    setActiveCueContext({ support: 'guided', noteCount: 1 })
+    firstMinuteCoachRef.current = { beat: 'threat', note: null }
+    firstMinuteBeatStartedAtRef.current = performance.now()
+    setFirstMinuteCoach({ beat: 'threat', note: null })
     nextIdRef.current = 0
     waveNotesHeardRef.current = new Set()
     waveNotesSungRef.current = new Set()
@@ -4471,7 +4646,7 @@ export default function PitchforksIII() {
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture])
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture])
 
   const startGame = useCallback(() => {
     beginPlaying()
@@ -4646,6 +4821,7 @@ export default function PitchforksIII() {
   const quitToMenu = useCallback(() => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
+    clearFirstMinuteTimer()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
     clearWaveReceipt()
@@ -4658,16 +4834,17 @@ export default function PitchforksIII() {
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
     setPhase('menu')
-  }, [clearCueTimers, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, resetRangeMatch, stopListening])
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, resetRangeMatch, stopListening])
 
   useEffect(() => () => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
+    clearFirstMinuteTimer()
     clearCeremonyTimers()
     clearNoteMasteredTimer()
     clearWaveReceiptTimer()
     stopListening()
-  }, [clearCeremonyTimers, clearCueTimers, clearNoteMasteredTimer, clearWaveReceiptTimer, stopListening])
+  }, [clearCeremonyTimers, clearCueTimers, clearFirstMinuteTimer, clearNoteMasteredTimer, clearWaveReceiptTimer, stopListening])
 
   const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
     demo: {
@@ -4697,7 +4874,13 @@ export default function PitchforksIII() {
     },
   }
   const activeMicHud = micHudView[micHudState]
-  const replayLabel = replayLabelForStage(curriculumStageForWave(hud.wave, demoMode))
+  const cuePlaybackActive = cuePlayingNow()
+  const replayLabel = replayLabelForCueSupport(
+    activeCueContext.support,
+    activeCueContext.noteCount,
+    cuePlaybackActive,
+  )
+  const firstMinuteCopy = firstMinuteCoachCopy(firstMinuteCoach.beat, firstMinuteCoach.note)
   const calibrationReady = heardYou && !micError
   const micReadinessView = pitchforksMicReadinessCopy(micReadiness)
   const calibrationHudLabel = micError
@@ -5362,14 +5545,28 @@ export default function PitchforksIII() {
         className={`w-full shrink-0 bg-[#070914] border-t border-gray-800 flex flex-col items-center gap-2 px-3 ${layoutMode === 'portrait' ? 'pt-2' : 'pt-3'}`}
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)' }}
       >
+        {firstMinuteCopy && (
+          <div
+            data-testid="pf3-first-minute-coach"
+            data-beat={firstMinuteCoach.beat}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="flex min-h-10 w-full max-w-[760px] items-center justify-center border border-cyan-700/60 bg-cyan-950/25 px-3 py-2 text-center text-[11px] font-black tracking-wider text-cyan-100 sm:text-xs"
+          >
+            <span className="sr-only">First storm: </span>{firstMinuteCopy}
+          </div>
+        )}
         <div className={`flex w-full items-stretch justify-center gap-2 ${layoutMode === 'portrait' ? 'max-w-[760px]' : 'max-w-[360px]'}`}>
           <button
+            type="button"
+            disabled={cuePlaybackActive}
             onClick={() => {
               const active = getActiveTarget()
               if (active) playVillagerSequence(active.villager, 'replay')
             }}
             data-testid="pf3-replay-notes"
-            className={`${layoutMode === 'portrait' ? 'min-h-12 flex-1 px-3' : 'min-h-[44px] w-full px-5'} py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50`}
+            className={`${layoutMode === 'portrait' ? 'min-h-12 flex-1 px-3' : 'min-h-[44px] w-full px-5'} py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50 disabled:cursor-wait disabled:opacity-75`}
           >
             {replayLabel}
           </button>

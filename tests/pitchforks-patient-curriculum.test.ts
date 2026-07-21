@@ -3,11 +3,11 @@ import { readFileSync } from 'node:fs'
 import {
   admissionAllowedForWave,
   attackTimeForCurriculum,
-  automaticCueForWave,
+  cueSupportForNote,
   curriculumStageForWave,
   deterministicPairNotes,
   patientTineCountsForWave,
-  replayLabelForStage,
+  replayLabelForCueSupport,
   villagerEntryX,
   waitForClearBeforeSpawn,
 } from '../src/components/PitchDefender/pitchforksCurriculum'
@@ -25,10 +25,10 @@ assert.deepEqual(patientTineCountsForWave(4), [2, 2, 2, 2, 3])
 assert.deepEqual(patientTineCountsForWave(5), [2, 2, 3, 3, 3])
 assert.equal(patientTineCountsForWave(6), null)
 
-assert.equal(automaticCueForWave(1, false), true)
-assert.equal(automaticCueForWave(2, false), false)
-assert.equal(automaticCueForWave(3, false), false)
-assert.equal(automaticCueForWave(8, true), true)
+assert.equal(cueSupportForNote({ phase: 'new', lastReview: 0 }, undefined, false, false), 'guided')
+assert.equal(cueSupportForNote({ phase: 'review', lastReview: 1 }, undefined, false, false), 'recall')
+assert.equal(cueSupportForNote({ phase: 'review', lastReview: 1 }, undefined, true, false), 'guided')
+assert.equal(cueSupportForNote({ phase: 'review', lastReview: 1 }, undefined, false, true), 'guided')
 
 assert.equal(waitForClearBeforeSpawn(1, false), true)
 assert.equal(waitForClearBeforeSpawn(2, false), true)
@@ -67,13 +67,14 @@ assert.equal(deterministicPairNotes(pair, 4, 0, 2, false), null)
 assert.equal(deterministicPairNotes(pair, 1, 0, 1, true), null)
 assert.equal(deterministicPairNotes(['D4'], 1, 0, 1, false), null)
 
-assert.equal(replayLabelForStage('guided-pair'), '🔊 REPLAY NOTES')
-assert.equal(replayLabelForStage('recall-pair'), '💡 HINT · HEAR NOTE')
-assert.equal(replayLabelForStage('step-chain'), '💡 HINT · HEAR CHAIN')
+assert.equal(replayLabelForCueSupport('guided', 2), '🔊 REPLAY NOTES')
+assert.equal(replayLabelForCueSupport('recall', 1), '💡 HINT · HEAR NOTE')
+assert.equal(replayLabelForCueSupport('recall', 2), '💡 HINT · HEAR CHAIN')
 
 const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8')
 assert.match(source, /if \(!admissionAllowedForWave\(runtimeRef\.current\.wave, demoRef\.current, fsrsDebugRef\.current\)\) return/)
-assert.match(source, /if \(automaticCueForWave\(runtimeRef\.current\.wave, demoRef\.current\)\)/)
+assert.match(source, /cueSupportForNote\(/)
+assert.doesNotMatch(source, /automaticCueForWave\(/)
 assert.match(source, /const waitForClear = waitForClearBeforeSpawn\(rt\.wave, demoRef\.current\)/)
 assert.match(source, /pickVillagerNotes\(totalTines, rt\.wave, spawnIndex\)/)
 assert.match(source, /x: demoRef\.current \? W - 150 : villagerEntryX\(W, spriteWidth\)/)
