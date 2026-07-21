@@ -643,7 +643,7 @@ AUTH0_CLIENT_ID=YDXQaFLWq8e5FuW5GMRBJ4wceomdAdzt
 AUTH0_CLIENT_SECRET=3sZkNiaeXNQC-rrHfQrYIxu6mev0WDM-_vF-HpZT0ICZZMkycFQeUK9KPb4Mu5sd
 
 # MongoDB Atlas
-DATABASE_URL="mongodb+srv://resetbiology-app:_DN8QDEm.XK.J8P@cluster0.weld7bm.mongodb.net/resetbiology?retryWrites=true&w=majority&appName=Cluster0"
+DATABASE_URL="mongodb+srv://..." # rotated 2026-07-21; get current value from Vercel env vars or Bitwarden, never commit it here
 ```
 
 ---
