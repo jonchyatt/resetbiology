@@ -1,0 +1,14 @@
+{
+  "title": "Frank's First Storm",
+  "tempo": 96,
+  "measures": [
+    {
+      "notes": [
+        { "keys": ["e/4"], "duration": "q" },
+        { "keys": ["f/4"], "duration": "q" },
+        { "keys": ["g/4"], "duration": "q" },
+        { "keys": ["e/4"], "duration": "q" }
+      ]
+    }
+  ]
+}

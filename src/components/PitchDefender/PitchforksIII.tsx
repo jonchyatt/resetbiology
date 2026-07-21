@@ -90,6 +90,10 @@ import {
   type PitchforksButtonTrial,
   type PitchforksInputMode,
 } from './pitchforksInputLane'
+import {
+  loadHashedComposedSongs,
+  type HashedSongOption,
+} from './pitchforks3SongSequence'
 
 const W = 720
 const H = 405
@@ -2840,6 +2844,9 @@ export default function PitchforksIII() {
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
   const [geometryDebug, setGeometryDebug] = useState(false)
+  const [composerSeedProofEnabled, setComposerSeedProofEnabled] = useState(false)
+  const [composerSeedProofStatus, setComposerSeedProofStatus] = useState<'idle' | 'loading' | 'ready' | 'empty'>('idle')
+  const [composerSeedProof, setComposerSeedProof] = useState<HashedSongOption | null>(null)
   const [inputMode, setInputMode] = useState<PitchforksInputMode>('voice')
   const [buttonFeedback, setButtonFeedback] = useState<ButtonFeedback>({
     kind: 'listen',
@@ -3275,6 +3282,22 @@ export default function PitchforksIII() {
       ensureEarNoteMemory(note)
     }
   }, [ensureEarNoteMemory, ensureNoteMemory, getMasterySessionId, savePresentationJourney])
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('composerSeedProof') !== '1') return
+
+    let cancelled = false
+    setComposerSeedProofEnabled(true)
+    setComposerSeedProofStatus('loading')
+    void loadHashedComposedSongs().then(songs => {
+      if (cancelled) return
+      const firstSong = songs[0] ?? null
+      setComposerSeedProof(firstSong)
+      setComposerSeedProofStatus(firstSong ? 'ready' : 'empty')
+    })
+
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -5310,6 +5333,34 @@ export default function PitchforksIII() {
           </div>
           <h1 className="text-3xl font-black tracking-widest text-orange-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
+          {composerSeedProofEnabled && (
+            <section
+              data-testid="pf3-composer-seed-proof"
+              className="mb-5 overflow-hidden border border-cyan-500/60 bg-cyan-950/20 p-3 text-[12px] leading-relaxed text-cyan-50"
+              aria-labelledby="pf3-composer-seed-proof-heading"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              <h2 id="pf3-composer-seed-proof-heading" className="font-black tracking-widest text-cyan-100">
+                READ-ONLY COMPOSER CHECK
+              </h2>
+              <p className="mt-1 text-gray-300">Proof only — this score does not control this run.</p>
+              {composerSeedProofStatus === 'loading' && (
+                <p className="mt-2 text-cyan-200">Reading Composer score…</p>
+              )}
+              {composerSeedProofStatus === 'empty' && (
+                <p className="mt-2 text-amber-200">No playable pd_composed_* score found.</p>
+              )}
+              {composerSeedProofStatus === 'ready' && composerSeedProof && (
+                <div className="mt-2 space-y-1">
+                  <p><span className="font-black text-cyan-100">Source:</span> {composerSeedProof.title}</p>
+                  <p><span className="font-black text-cyan-100">Extracted notes:</span> {composerSeedProof.notes.map(note => note.pitchName).join(' → ')}</p>
+                  <p><span className="font-black text-cyan-100">Playable notes:</span> {composerSeedProof.notes.length}</p>
+                  <p className="break-all"><span className="font-black text-cyan-100">SHA-256:</span> {composerSeedProof.sourceSha256}</p>
+                </div>
+              )}
+            </section>
+          )}
           <div className="mb-5 grid grid-cols-2 sm:grid-cols-4 gap-1.5" aria-label="World Map">
             {WORLD_REGISTRY.map(world => {
               const unlocked = isWorldUnlocked(world.id)

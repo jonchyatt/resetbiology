@@ -6,6 +6,17 @@ export interface SongOption {
   notes: ExtractedNote[]
 }
 
+export interface HashedSongOption extends SongOption {
+  /** SHA-256 of the exact UTF-8 bytes read from localStorage. */
+  sourceSha256: string
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const bytes = new TextEncoder().encode(value)
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes)
+  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
+}
+
 export function loadComposedSongs(): SongOption[] {
   try {
     const out: SongOption[] = []
@@ -24,6 +35,36 @@ export function loadComposedSongs(): SongOption[] {
       } catch {}
     }
     return out
+  } catch {
+    return []
+  }
+}
+
+/**
+ * Read-side evidence loader for Pitchforks III. It hashes the same exact raw
+ * source bytes it parses and intentionally exposes no storage write path.
+ */
+export async function loadHashedComposedSongs(): Promise<HashedSongOption[]> {
+  try {
+    const out: HashedSongOption[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key || !key.startsWith('pd_composed_')) continue
+      try {
+        const raw = localStorage.getItem(key)
+        if (!raw) continue
+        const comp = JSON.parse(raw)
+        const extracted = extractMelodyFromComposition(comp, { skipRests: true })
+        if (extracted.length === 0) continue
+        out.push({
+          key,
+          title: comp.title || 'Untitled',
+          notes: extracted,
+          sourceSha256: await sha256Hex(raw),
+        })
+      } catch {}
+    }
+    return out.sort((a, b) => a.key.localeCompare(b.key))
   } catch {
     return []
   }
