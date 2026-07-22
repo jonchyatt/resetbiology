@@ -601,6 +601,126 @@ export function buildGaborEasyPreview(seed: string | number): readonly GaborThre
   return orderWithOneSelectionDrawPerTrial(trials, `${String(seed)}:preview-order`)
 }
 
+export interface GaborEasyPreviewCounters {
+  readonly trials: number
+  readonly correctResponses: number
+  readonly catchTrials: number
+  readonly catchFalseAlarms: number
+  readonly lapses: number
+}
+
+export interface GaborEasyPreviewPending {
+  readonly exposureIndex: number
+  readonly presentation: GaborResolvedPresentation
+}
+
+export interface GaborEasyPreviewTerminal {
+  readonly trials: 12
+  readonly accuracyPct: number
+  readonly catchFalseAlarms: number
+  readonly lapses: number
+}
+
+/**
+ * A deliberately separate, non-therapeutic state machine for Quick Practice.
+ * It has no localization, measurement, threshold, prior, persistence, points,
+ * or hard-session fields, so the preview cannot accidentally cross that seam.
+ */
+export interface GaborEasyPreviewCoordinator {
+  readonly mode: 'easy-preview'
+  readonly trials: readonly GaborThresholdTrial[]
+  readonly nextOffset: number
+  readonly pending: GaborEasyPreviewPending | null
+  readonly responseLocked: boolean
+  readonly counters: GaborEasyPreviewCounters
+  readonly lastResponse: GaborClassifiedResponse | null
+  readonly terminal: GaborEasyPreviewTerminal | null
+}
+
+export function createGaborEasyPreviewCoordinator(seed: string | number): GaborEasyPreviewCoordinator {
+  return {
+    mode: 'easy-preview',
+    trials: buildGaborEasyPreview(seed),
+    nextOffset: 0,
+    pending: null,
+    responseLocked: true,
+    counters: {
+      trials: 0,
+      correctResponses: 0,
+      catchTrials: 0,
+      catchFalseAlarms: 0,
+      lapses: 0,
+    },
+    lastResponse: null,
+    terminal: null,
+  }
+}
+
+/** Present one of exactly twelve fixed easy-preview exposures. */
+export function presentNextGaborEasyPreview(
+  coordinator: GaborEasyPreviewCoordinator,
+): GaborEasyPreviewCoordinator {
+  if (coordinator.terminal || coordinator.pending) return coordinator
+  const trial = coordinator.trials[coordinator.nextOffset]
+  if (!trial) return terminalizeGaborEasyPreview(coordinator)
+  return {
+    ...coordinator,
+    nextOffset: coordinator.nextOffset + 1,
+    pending: {
+      exposureIndex: coordinator.nextOffset,
+      presentation: resolveGaborPresentation(trial, 60),
+    },
+    responseLocked: false,
+    counters: {
+      ...coordinator.counters,
+      catchTrials: coordinator.counters.catchTrials + Number(trial.kind === 'catch'),
+    },
+    lastResponse: null,
+  }
+}
+
+/** Classify one preview response. Duplicate and post-completion calls are exact no-ops. */
+export function applyGaborEasyPreviewResponse(
+  coordinator: GaborEasyPreviewCoordinator,
+  response: GaborPresentationResponse,
+): GaborEasyPreviewCoordinator {
+  if (coordinator.terminal || !coordinator.pending || coordinator.responseLocked) return coordinator
+  const classified = classifyGaborResponse(coordinator.pending.presentation, response)
+  const responded: GaborEasyPreviewCoordinator = {
+    ...coordinator,
+    pending: null,
+    responseLocked: true,
+    counters: {
+      ...coordinator.counters,
+      trials: coordinator.counters.trials + 1,
+      correctResponses: coordinator.counters.correctResponses + Number(classified.correct),
+      catchFalseAlarms: coordinator.counters.catchFalseAlarms + Number(classified.falseAlarm),
+      lapses: coordinator.counters.lapses + Number(classified.lapse),
+    },
+    lastResponse: classified,
+  }
+  return responded.counters.trials === 12
+    ? terminalizeGaborEasyPreview(responded)
+    : responded
+}
+
+function terminalizeGaborEasyPreview(
+  coordinator: GaborEasyPreviewCoordinator,
+): GaborEasyPreviewCoordinator {
+  if (coordinator.terminal) return coordinator
+  return {
+    ...coordinator,
+    pending: null,
+    responseLocked: true,
+    terminal: {
+      trials: 12,
+      accuracyPct: percentage(coordinator.counters.correctResponses, coordinator.counters.trials),
+      catchFalseAlarms: coordinator.counters.catchFalseAlarms,
+      lapses: coordinator.counters.lapses,
+    },
+  }
+}
+
 export interface GaborResolvedPresentation {
   readonly trial: GaborThresholdTrial
   readonly stimulusPresent: boolean

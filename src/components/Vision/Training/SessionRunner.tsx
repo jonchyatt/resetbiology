@@ -107,9 +107,28 @@ function encouragementFor(score: number, index: number): string {
   return pool[index % pool.length]
 }
 
+function isGaborResult(result: EngineResult): boolean {
+  return result.exerciseId === 'gabor-contrast'
+}
+
+function isValidGaborResult(result: EngineResult): boolean {
+  return isGaborResult(result)
+    && result.metrics.thresholdValid === 1
+    && Number.isFinite(result.metrics.contrastThresholdPct)
+}
+
+function isInvalidGaborResult(result: EngineResult): boolean {
+  return isGaborResult(result) && !isValidGaborResult(result)
+}
+
 /** Pick the single most interesting metric to headline on the report row. */
 function headlineMetric(result: EngineResult): string | null {
   const m = result.metrics
+  if (isGaborResult(result)) {
+    return isValidGaborResult(result)
+      ? `Contrast threshold: ${m.contrastThresholdPct.toFixed(1)}%`
+      : 'No reliable threshold this time'
+  }
   if (m.accuracyPct !== undefined) return `${Math.round(m.accuracyPct)}% accuracy`
   if (m.peakBpm !== undefined) return `peaked at ${Math.round(m.peakBpm)} bpm`
   if (m.smoothnessScore !== undefined) return `smoothness ${Math.round(m.smoothnessScore)}`
@@ -255,8 +274,12 @@ export default function SessionRunner({
   const handleEngineComplete = useCallback((index: number) => (result: EngineResult) => {
     resultsRef.current = [...resultsRef.current, result]
     setResults(resultsRef.current)
-    writeLastMetric(result.exerciseId, result.score)
-    speak(encouragementFor(result.score, index))
+    if (!isInvalidGaborResult(result)) {
+      writeLastMetric(result.exerciseId, result.score)
+      speak(encouragementFor(result.score, index))
+    } else {
+      speak('Threshold task logged. No reliable threshold was produced this time.')
+    }
     advanceFrom(index)
   }, [advanceFrom, speak])
 
@@ -495,7 +518,7 @@ export default function SessionRunner({
                   <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Up next</div>
                   <div className="text-white font-bold text-lg">{next.title}</div>
                   <p className="text-gray-400 text-sm mt-1">{next.summary}</p>
-                  {lastMetrics[next.id] && (
+                  {next.id !== 'gabor-contrast' && lastMetrics[next.id] && (
                     <p className="text-secondary-300/90 text-xs mt-2">
                       Last time: {lastMetrics[next.id].score} — see if you can edge it.
                     </p>
@@ -539,7 +562,7 @@ export default function SessionRunner({
 
         {stage.kind === 'report' && (() => {
           // Identity first, then ONE meaningful signal, then the promise (consult 2 #5)
-          const best = results.reduce<EngineResult | null>(
+          const best = results.filter(result => !isInvalidGaborResult(result)).reduce<EngineResult | null>(
             (acc, r) => (acc === null || r.score > acc.score ? r : acc), null)
           const bestExercise = best ? visionExerciseMap[best.exerciseId] : null
           const isPersonalBest = best !== null &&
@@ -575,14 +598,17 @@ export default function SessionRunner({
                 const result = results.find(r => r.exerciseId === ex.id)
                 const wasSkipped = skipped.includes(ex.id)
                 const metric = result ? headlineMetric(result) : null
+                const invalidGabor = result ? isInvalidGaborResult(result) : false
                 return (
                   <div
                     key={ex.id}
                     className="flex items-center justify-between bg-gray-800/50 backdrop-blur-sm rounded-xl px-4 py-3 border border-gray-700/40"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      {result ? (
+                      {result && !invalidGabor ? (
                         <CheckCircle className="w-5 h-5 text-secondary-400 flex-shrink-0" />
+                      ) : invalidGabor ? (
+                        <Target className="w-5 h-5 text-gray-400 flex-shrink-0" />
                       ) : (
                         <SkipForward className="w-5 h-5 text-gray-600 flex-shrink-0" />
                       )}
@@ -592,7 +618,7 @@ export default function SessionRunner({
                         {wasSkipped && <div className="text-gray-600 text-xs">skipped</div>}
                       </div>
                     </div>
-                    {result && (
+                    {result && !isGaborResult(result) && (
                       <span className={`text-lg font-bold ${result.score >= 80 ? 'text-secondary-400' : result.score >= 50 ? 'text-primary-300' : 'text-gray-400'}`}>
                         {result.score}
                       </span>

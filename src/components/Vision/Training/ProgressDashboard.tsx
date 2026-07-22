@@ -55,6 +55,7 @@ interface MetricTrendsResponse {
 const PHASE_GATE_WEEKS = [2, 4, 6, 8, 10, 12]
 
 const KNOWN_METRICS: Record<string, { label: string; unit: string; direction: 'higher' | 'lower' }> = {
+  contrastThresholdPct: { label: 'Contrast Threshold', unit: '%', direction: 'lower' },
   accuracyPct: { label: 'Accuracy', unit: '%', direction: 'higher' },
   npcCm: { label: 'Near Point of Convergence', unit: 'cm', direction: 'lower' },
   peakBpm: { label: 'Peak Tempo Reached', unit: 'bpm', direction: 'higher' },
@@ -76,6 +77,35 @@ const KNOWN_METRICS: Record<string, { label: string; unit: string; direction: 'h
   expectedCycles: { label: 'Target Cycles', unit: '', direction: 'higher' },
   stagesCompleted: { label: 'Stages Completed', unit: '', direction: 'higher' },
 }
+
+// These fields prove the guided controller is behaving correctly, but they
+// are protocol internals rather than member-facing progress. Preserve points
+// from every other exercise when a shared metric such as accuracy is present.
+const GABOR_INTERNAL_METRICS = new Set([
+  'trials',
+  'accuracyPct',
+  'measurementAccuracyPct',
+  'totalExposures',
+  'localizationExposures',
+  'scheduledExposures',
+  'measurementResponses',
+  'adaptiveTrials',
+  'reversals',
+  'thresholdValid',
+  'easyTrials',
+  'transferTrials',
+  'flankerTrials',
+  'catchTrials',
+  'catchFalseAlarms',
+  'lapses',
+  'warmStarted',
+  'protocolVersion',
+  'anchorSpatialFrequencyCyclesPerPatch',
+  'stopValid',
+  'stopMeasurementCap',
+  'stopExposureCap',
+  'stopTimeCap',
+])
 
 function metricMeta(key: string): { label: string; unit: string; direction: 'higher' | 'lower' } {
   if (KNOWN_METRICS[key]) return KNOWN_METRICS[key]
@@ -323,13 +353,14 @@ export default function ProgressDashboard() {
   const farProgress = progress.find(p => p.visionType === 'far')
 
   const metricEntries: [string, MetricPoint[]][] = metricTrends
-    ? Object.entries(metricTrends).filter(
-        (entry): entry is [string, MetricPoint[]] =>
-          entry[0] !== 'snellenTrend' &&
-          entry[0] !== 'sessionScores' &&
-          Array.isArray(entry[1]) &&
-          entry[1].length > 0
-      )
+    ? Object.entries(metricTrends).flatMap(([key, value]) => {
+        if (key === 'snellenTrend' || key === 'sessionScores' || !Array.isArray(value)) return []
+        const points = value as MetricPoint[]
+        const publicPoints = GABOR_INTERNAL_METRICS.has(key)
+          ? points.filter(point => point.exerciseId !== 'gabor-contrast')
+          : points
+        return publicPoints.length > 0 ? [[key, publicPoints] as [string, MetricPoint[]]] : []
+      })
     : []
   const sessionScorePoints = metricTrends?.sessionScores ?? []
   const nearSnellenTrend = metricTrends?.snellenTrend?.near ?? []

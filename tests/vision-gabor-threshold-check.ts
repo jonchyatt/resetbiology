@@ -9,8 +9,10 @@ import {
   buildGaborLocalizationTrial,
   buildGaborEasyPreview,
   buildGaborThresholdBlock,
+  applyGaborEasyPreviewResponse,
   applyGaborProductionResponse,
   classifyGaborResponse,
+  createGaborEasyPreviewCoordinator,
   createGaborProductionCoordinator,
   createGaborLocalizationState,
   createGaborThresholdState,
@@ -19,6 +21,7 @@ import {
   prepareGaborThresholdSession,
   gaborStopFlags,
   getGaborProductionProgress,
+  presentNextGaborEasyPreview,
   presentNextGaborExposure,
   resolveGaborPresentation,
   resolveGaborStopReason,
@@ -26,6 +29,7 @@ import {
   updateGaborLocalization,
   updateGaborThreshold,
   type GaborThresholdPrior,
+  type GaborEasyPreviewCoordinator,
   type GaborPresentationResponse,
   type GaborProductionCoordinator,
   type GaborThresholdState,
@@ -527,6 +531,53 @@ assert.deepEqual(GABOR_EASY_PREVIEW_POLICY, {
   consumesHardSession: false,
   adaptive: false,
 }, 'Quick Practice neither persists a threshold nor consumes the hard-session allowance')
+
+function correctEasyPreviewResponse(state: GaborEasyPreviewCoordinator): GaborPresentationResponse {
+  const presentation = state.pending!.presentation
+  return presentation.stimulusPresent
+    ? { type: 'orientation', orientationDegrees: presentation.orientationDegrees! }
+    : { type: 'no-pattern' }
+}
+
+let easyPreview = createGaborEasyPreviewCoordinator('preview-coordinator-proof')
+for (const forbidden of [
+  'localization', 'measurement', 'threshold', 'prior', 'persistence', 'points', 'hardSession',
+] as const) {
+  assert.equal(forbidden in easyPreview, false, `easy preview has no ${forbidden} authority`)
+}
+const presentedPreviewKinds: string[] = []
+const presentedPreviewFrequencies: number[] = []
+while (!easyPreview.terminal) {
+  const presented = presentNextGaborEasyPreview(easyPreview)
+  assert.ok(presented.pending, 'each unfinished preview step presents one exposure')
+  assert.equal(presentNextGaborEasyPreview(presented), presented, 'pending preview presentation is an exact no-op')
+  assert.equal(presented.pending!.presentation.contrastPct, presented.pending!.presentation.stimulusPresent ? 60 : 0)
+  presentedPreviewKinds.push(presented.pending!.presentation.trial.kind)
+  if (presented.pending!.presentation.trial.kind === 'transfer') {
+    presentedPreviewFrequencies.push(presented.pending!.presentation.spatialFrequencyCyclesPerPatch!)
+  }
+  const response = correctEasyPreviewResponse(presented)
+  const responded = applyGaborEasyPreviewResponse(presented, response)
+  assert.equal(
+    applyGaborEasyPreviewResponse(responded, response),
+    responded,
+    'duplicate preview response preserves exact coordinator identity',
+  )
+  easyPreview = responded
+}
+assert.equal(easyPreview.counters.trials, 12)
+assert.equal(easyPreview.terminal?.trials, 12)
+assert.deepEqual(Object.fromEntries(count(presentedPreviewKinds)), { anchor: 8, transfer: 2, catch: 2 })
+assert.deepEqual([...presentedPreviewFrequencies].sort((a, b) => a - b), [4, 11])
+assert.equal(easyPreview.counters.catchTrials, 2)
+assert.equal(easyPreview.counters.catchFalseAlarms, 0)
+assert.equal(easyPreview.terminal?.accuracyPct, 100)
+assert.equal(presentNextGaborEasyPreview(easyPreview), easyPreview, 'post-completion presentation is an exact no-op')
+assert.equal(
+  applyGaborEasyPreviewResponse(easyPreview, { type: 'no-pattern' }),
+  easyPreview,
+  'post-completion response is an exact no-op',
+)
 
 // Independent observer simulation. This is a four-alternative logistic
 // psychometric model in log10 contrast: guessing floor 0.25, lapse ceiling
@@ -1084,15 +1135,24 @@ assert.deepEqual(simulateWarmRun(10, 2, 17, -0.15), simulateWarmRun(10, 2, 17, -
 
 const coreSource = readFileSync('src/lib/vision/gaborThreshold.ts', 'utf8')
 const engineSource = readFileSync('src/components/Vision/Engines/GaborAcuityEngine.tsx', 'utf8')
+const quickPracticeSource = readFileSync('src/components/Vision/Training/QuickPractice.tsx', 'utf8')
+const sessionRunnerSource = readFileSync('src/components/Vision/Training/SessionRunner.tsx', 'utf8')
+const progressDashboardSource = readFileSync('src/components/Vision/Training/ProgressDashboard.tsx', 'utf8')
 assert.doesNotMatch(engineSource, /Math\.max\(50,.*\* 2|Math\.max\(30,.*\* 1\.5/, 'React cannot duplicate live contrast formulas')
 assert.doesNotMatch(engineSource, /tierForWeek|TIER_FREQUENCY|applyStaircase|2-down-1-up/)
-assert.match(engineSource, /presentNextGaborExposure\(coordinatorRef\.current/)
-assert.match(engineSource, /applyGaborProductionResponse\(coordinatorRef\.current/)
-assert.match(engineSource, /completed: terminal\.resultCompleted/)
-assert.match(engineSource, /score: terminal\.resultCompleted \? clampScore\(terminal\.scorePct\) : 0/)
+assert.match(engineSource, /presentNextGaborExposure\(active\.state/)
+assert.match(engineSource, /applyGaborProductionResponse\(active\.state/)
+assert.match(engineSource, /completed: guided\.resultCompleted/)
+assert.match(engineSource, /score: guided\.resultCompleted \? clampScore\(guided\.scorePct\) : 0/)
 assert.match(engineSource, /if \(completedRef\.current\) return/)
 assert.match(engineSource, /completedRef\.current = true/)
-assert.match(engineSource, /onComplete\(result\)/)
+assert.match(engineSource, /onComplete\(resultRef\.current\)/)
+assert.match(engineSource, /Contrast threshold: \{thresholdPct\.toFixed\(1\)\}%/)
+assert.match(engineSource, /Lower is better — this is the faintest contrast reliably identified in today&apos;s task\./)
+assert.match(engineSource, /No reliable threshold this time/)
+assert.match(engineSource, /Practice complete\. This easy preview did not change your saved threshold or today&apos;s hard-session status\./)
+assert.match(engineSource, /Back to Vision Library/)
+assert.match(engineSource, /!preview && \(/, 'the three-minute progress bar is guided-only')
 assert.doesNotMatch(engineSource, /classifyGaborResponse|updateGaborThreshold|resolveGaborStopReason|getGaborThresholdEstimate/)
 for (const metric of [
   'trials', 'accuracyPct', 'measurementAccuracyPct', 'totalExposures', 'localizationExposures',
@@ -1106,6 +1166,14 @@ for (const metric of [
 assert.match(engineSource, /CATCH_WINDOW_MS = 1_500/)
 assert.match(engineSource, /flex h-7 items-center/, 'feedback owns fixed external space')
 assert.match(engineSource, /aria-label="No pattern visible"/)
+assert.doesNotMatch(quickPracticeSource, /GaborTraining/, 'Quick Practice cannot reach the legacy Gabor runner')
+assert.match(quickPracticeSource, /<button[\s\S]*Easy Gabor Preview · 12 trials/, 'the preview entry is a native button card')
+assert.equal(quickPracticeSource.match(/Easy Gabor Preview · 12 trials/g)?.length, 1, 'Quick Practice exposes exactly one easy Gabor preview card')
+assert.match(quickPracticeSource, /does not measure or save a threshold/)
+assert.match(sessionRunnerSource, /Contrast threshold: \$\{m\.contrastThresholdPct\.toFixed\(1\)\}%/)
+assert.match(sessionRunnerSource, /results\.filter\(result => !isInvalidGaborResult\(result\)\)/)
+assert.match(progressDashboardSource, /contrastThresholdPct: \{ label: 'Contrast Threshold', unit: '%', direction: 'lower' \}/)
+assert.match(progressDashboardSource, /point\.exerciseId !== 'gabor-contrast'/)
 
 console.log('GABOR_THRESHOLD_V1 checks passed.')
 console.log('Observer: four-choice log10-logistic; guess=25%, lapse=2%, slope=8/decade; p(true threshold)=79.3700526%.')
