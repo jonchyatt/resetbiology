@@ -1,346 +1,105 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { Camera, Upload, X, Loader2 } from 'lucide-react'
+import { useEffect, useRef, type KeyboardEvent } from 'react'
+import { Camera, Search, X } from 'lucide-react'
 
 interface CameraUploadProps {
-  onAnalysisComplete: (result: any) => void
   onClose: () => void
-  mealType?: string
+  onUseSearch: () => void
 }
 
-const VAULT_REQUIRED_MESSAGE =
-  "Your photos aren't stored anywhere unless you connect your own Drive vault — you're in charge of what's yours. Connect your vault and every photo you take lands in YOUR Google Drive, under your control, not ours."
+const PHOTO_ANALYSIS_UNAVAILABLE =
+  'Photo analysis is temporarily unavailable. Use Search to log your meal manually.'
 
-export function CameraUpload({ onAnalysisComplete, onClose, mealType = 'snack' }: CameraUploadProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [analyzing, setAnalyzing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  // Vault-required notice: analysis + logging still proceed without a photo
-  // (D2 fail-closed) — this just tells the user why the photo didn't attach,
-  // and holds the analyzed result until they choose to continue.
-  const [vaultNotice, setVaultNotice] = useState<string | null>(null)
-  // Durable-retry notice: upload failed for a reason OTHER than vault_required
-  // (network blip, 500, expired session) after retries. The photo is only
-  // ever dropped by explicit user choice, never silently.
-  const [photoSaveFailed, setPhotoSaveFailed] = useState(false)
-  const [savingPhoto, setSavingPhoto] = useState(false)
-  const [pendingResult, setPendingResult] = useState<any>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+export function CameraUpload({ onClose, onUseSearch }: CameraUploadProps) {
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const primaryActionRef = useRef<HTMLButtonElement>(null)
 
-  const RETRY_DELAYS_MS = [500, 1500] // 2 extra attempts, short backoff
+  useEffect(() => {
+    primaryActionRef.current?.focus()
+  }, [])
 
-  const attachPhotoOnce = async (
-    file: File
-  ): Promise<{ status: 'ok'; url: string } | { status: 'vault_required'; notice: string } | { status: 'error' }> => {
-    try {
-      const uploadForm = new FormData()
-      uploadForm.append('image', file)
-      const res = await fetch('/api/upload/image', { method: 'POST', body: uploadForm })
-      const data = await res.json()
-
-      if (res.ok && data.success) {
-        return { status: 'ok', url: data.url }
-      }
-      if (res.status === 409 && data.error === 'vault_required') {
-        return { status: 'vault_required', notice: data.message || VAULT_REQUIRED_MESSAGE }
-      }
-      return { status: 'error' }
-    } catch {
-      return { status: 'error' }
-    }
-  }
-
-  // Client-owned durable retry: vault_required (409) is a permanent state
-  // (no point retrying) and returns immediately. Any other failure (network
-  // blip, 500, expired session) gets 2 automatic retries with short backoff
-  // before giving up and handing back 'error' for the caller to hold pending.
-  const attachPhoto = async (
-    file: File
-  ): Promise<{ status: 'ok'; url: string } | { status: 'vault_required'; notice: string } | { status: 'error' }> => {
-    for (let attempt = 0; ; attempt++) {
-      const result = await attachPhotoOnce(file)
-      if (result.status !== 'error') return result
-      if (attempt >= RETRY_DELAYS_MS.length) return result
-      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS_MS[attempt]))
-    }
-  }
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please select an image file')
-      return
-    }
-
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
-      setError('Image must be less than 10MB')
-      return
-    }
-
-    setSelectedFile(file)
-    setError(null)
-
-    // Create preview URL
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handleAnalyze = async () => {
-    if (!selectedFile || !previewUrl) return
-
-    try {
-      setAnalyzing(true)
-      setError(null)
-
-      // Convert image to base64 (remove data:image/...;base64, prefix)
-      const base64 = previewUrl.split(',')[1]
-
-      // Call AI analysis API
-      const response = await fetch('/api/foods/analyze-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageBase64: base64,
-          mealType
-        })
-      })
-
-      const data = await response.json()
-
-      if (!response.ok || !data.ok) {
-        throw new Error(data.message || data.error || 'Analysis failed')
-      }
-
-      // Attach the original photo to the client's vault (durable retry —
-      // see attachPhoto).
-      const attachResult = await attachPhoto(selectedFile)
-      const resultWithPhoto = {
-        ...data,
-        photoUrl: attachResult.status === 'ok' ? attachResult.url : null,
-      }
-
-      if (attachResult.status === 'vault_required') {
-        // Vault not connected: hold the analyzed result and show the
-        // notice instead of auto-closing — the log still proceeds fine
-        // without a photo once the user continues.
-        setPendingResult(resultWithPhoto)
-        setVaultNotice(attachResult.notice)
-        return
-      }
-
-      if (attachResult.status === 'error') {
-        // Retries exhausted: hold the photo/result pending and let the
-        // user explicitly retry or abandon it — never drop it silently.
-        setPendingResult(resultWithPhoto)
-        setPhotoSaveFailed(true)
-        return
-      }
-
-      // Pass result to parent component
-      onAnalysisComplete(resultWithPhoto)
-      onClose()
-
-    } catch (err: any) {
-      console.error('Analysis error:', err)
-      setError(err.message || 'Failed to analyze image. Please try again.')
-    } finally {
-      setAnalyzing(false)
-    }
-  }
-
-  // User-triggered retry after the automatic retries in attachPhoto were
-  // exhausted. On success, proceeds with the log flow using the new URL.
-  const handleRetryPhotoSave = async () => {
-    if (!selectedFile || !pendingResult) return
-
-    setSavingPhoto(true)
-    const attachResult = await attachPhoto(selectedFile)
-    setSavingPhoto(false)
-
-    if (attachResult.status === 'ok') {
-      onAnalysisComplete({ ...pendingResult, photoUrl: attachResult.url })
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
       onClose()
       return
     }
-    if (attachResult.status === 'vault_required') {
-      setPhotoSaveFailed(false)
-      setVaultNotice(attachResult.notice)
-      return
+
+    if (event.key !== 'Tab') return
+
+    const focusable = Array.from(
+      dialogRef.current?.querySelectorAll<HTMLButtonElement>('button:not([disabled])') ?? [],
+    )
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last?.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first?.focus()
     }
-    // Still failing — stay in the photoSaveFailed state for another retry.
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-lg w-full border border-primary-400/30 shadow-2xl">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-white flex items-center gap-2">
-            <Camera className="w-5 h-5 text-primary-400" />
-            Snap Your Meal
-          </h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="photo-analysis-title"
+        aria-describedby="photo-analysis-description"
+        onKeyDown={handleKeyDown}
+        className="w-full max-w-lg rounded-xl border border-blue-400/30 bg-gradient-to-br from-gray-800 to-gray-900 p-5 shadow-2xl sm:p-6"
+      >
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="rounded-lg border border-blue-400/30 bg-blue-500/10 p-2 text-blue-200">
+              <Camera className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <h3 id="photo-analysis-title" className="text-xl font-bold text-white">
+                Photo logging is resting
+              </h3>
+              <p className="mt-1 text-sm text-gray-400">Search and manual logging still work normally.</p>
+            </div>
+          </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-            disabled={analyzing}
+            aria-label="Close photo logging notice"
+            className="shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
 
-        {/* Error message */}
-        {error && (
-          <div className="mb-4 p-3 bg-rose-500/20 border border-rose-400/30 rounded-lg text-rose-300 text-sm">
-            {error}
-          </div>
-        )}
-
-        {/* Vault-required notice — photo wasn't stored, but the log still works */}
-        {vaultNotice && (
-          <div className="mb-4 p-3 bg-blue-500/10 border border-blue-400/20 rounded-lg text-blue-200 text-sm space-y-2">
-            <p>{vaultNotice}</p>
-            <div className="flex gap-3">
-              <a
-                href="/connect-drive"
-                className="text-primary-400 hover:text-primary-300 font-medium underline"
-              >
-                Connect your vault
-              </a>
-              <button
-                type="button"
-                onClick={() => {
-                  onAnalysisComplete(pendingResult)
-                  onClose()
-                }}
-                className="text-gray-300 hover:text-white font-medium underline"
-              >
-                Continue without photo
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Photo-save-failed notice — retries exhausted, photo held pending
-            until the user explicitly retries or continues without it. */}
-        {photoSaveFailed && (
-          <div className="mb-4 p-3 bg-amber-500/10 border border-amber-400/20 rounded-lg text-amber-200 text-sm space-y-2">
-            <p>Your photo isn&apos;t saved yet.</p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={handleRetryPhotoSave}
-                disabled={savingPhoto}
-                className="text-primary-400 hover:text-primary-300 font-medium underline disabled:opacity-50"
-              >
-                {savingPhoto ? 'Retrying...' : 'Retry saving photo'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onAnalysisComplete(pendingResult)
-                  onClose()
-                }}
-                disabled={savingPhoto}
-                className="text-gray-300 hover:text-white font-medium underline disabled:opacity-50"
-              >
-                Continue without photo
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Image preview */}
-        {previewUrl ? (
-          <div className="mb-6">
-            <img
-              src={previewUrl}
-              alt="Food preview"
-              className="w-full h-64 object-contain rounded-lg bg-gray-700/50"
-            />
-            <button
-              onClick={() => {
-                setSelectedFile(null)
-                setPreviewUrl(null)
-                setError(null)
-              }}
-              className="mt-3 text-sm text-gray-400 hover:text-white transition-colors"
-              disabled={analyzing}
-            >
-              Choose different image
-            </button>
-          </div>
-        ) : (
-          <div className="mb-6">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment" // Prefer back camera on mobile
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full p-8 border-2 border-dashed border-primary-400/30 rounded-lg hover:border-primary-400/60 hover:bg-primary-500/5 transition-all"
-            >
-              <div className="flex flex-col items-center gap-3">
-                <Upload className="w-12 h-12 text-primary-400" />
-                <div>
-                  <p className="text-white font-semibold">
-                    Take Photo or Upload
-                  </p>
-                  <p className="text-sm text-gray-400 mt-1">
-                    Max 10MB • JPG, PNG, HEIC
-                  </p>
-                </div>
-              </div>
-            </button>
-          </div>
-        )}
-
-        {/* AI Info */}
-        <div className="mb-6 p-4 bg-blue-500/10 border border-blue-400/20 rounded-lg">
-          <p className="text-xs text-blue-300">
-            AI will analyze your food photo and estimate calories, protein, carbs, and fats.
-            You can edit the results before saving.
+        {/* ponytail: Phase 1 contains paid photo inference here; Phase 2c upgrades
+            this surface to the validated free, database-grounded lane. */}
+        <div className="rounded-xl border border-amber-400/25 bg-amber-500/10 p-4 text-amber-100">
+          <p id="photo-analysis-description" role="status" aria-live="polite" className="text-sm leading-6">
+            {PHOTO_ANALYSIS_UNAVAILABLE}
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-3">
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
           <button
+            type="button"
             onClick={onClose}
-            disabled={analyzing}
-            className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 rounded-lg bg-gray-700 px-4 py-3 font-medium text-white transition-colors hover:bg-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
           >
             Cancel
           </button>
           <button
-            onClick={handleAnalyze}
-            disabled={!selectedFile || analyzing}
-            className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            ref={primaryActionRef}
+            type="button"
+            onClick={onUseSearch}
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-3 font-medium text-white transition-colors hover:bg-primary-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
           >
-            {analyzing ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Camera className="w-4 h-4" />
-                Analyze Food
-              </>
-            )}
+            <Search className="h-4 w-4" aria-hidden="true" />
+            Use Search instead
           </button>
         </div>
       </div>

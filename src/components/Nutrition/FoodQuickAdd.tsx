@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Loader2, CheckCircle2, PlusCircle, Star, Camera } from "lucide-react";
 import type { CachedFoodResult, Nutrients } from "@/lib/nutrition/types";
 import { localDayKey } from "@/lib/localDay";
@@ -79,6 +79,8 @@ export function FoodQuickAdd({
 
   // Camera upload state
   const [showCameraModal, setShowCameraModal] = useState(false);
+  const cameraButtonRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const favoritesLoading = false; // favorites are parent-owned; no local fetch state
 
@@ -258,27 +260,15 @@ export function FoodQuickAdd({
     }
   };
 
-  // Camera analysis is NOT auto-logged. It lands in the same confirm panel search uses,
-  // pre-filled with the AI estimate, so the member reviews/edits before tapping Log.
-  const handleCameraAnalysis = (result: any) => {
-    const { foodEntry } = result;
+  const closeCameraModal = () => {
+    setShowCameraModal(false);
+    window.requestAnimationFrame(() => cameraButtonRef.current?.focus());
+  };
+
+  const useSearchFromCamera = () => {
+    setShowCameraModal(false);
     setActiveTab('search');
-    setResults([]);
-    setTerm("");
-    setStatus("idle");
-    setError(null);
-    if (foodEntry?.mealType) setMealType(foodEntry.mealType as MealOption);
-    // The AI nutrients are totals for the pictured portion → per-serving, 1 serving = the estimate.
-    setSelected({
-      source: 'ai_vision',
-      sourceId: `ai-${Date.now()}`,
-      description: foodEntry.itemName,
-      brand: foodEntry.brand ?? null,
-      servingGram: foodEntry.gramWeight ?? null,
-      nutrients: foodEntry.nutrients,
-      per: 'serving',
-    } as unknown as Result);
-    setServings(1);
+    window.requestAnimationFrame(() => searchInputRef.current?.focus());
   };
 
   return (
@@ -288,9 +278,12 @@ export function FoodQuickAdd({
           <h2 className="text-xl font-bold text-white">Log Nutrition</h2>
           {/* Camera Button */}
           <button
+            ref={cameraButtonRef}
+            type="button"
             onClick={() => setShowCameraModal(true)}
-            className="px-4 py-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 border border-primary-400/40 transition-colors hover:border-primary-400/60"
-            title="Snap food photo with AI"
+            aria-label="Open photo logging"
+            className="px-4 py-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 border border-primary-400/40 transition-colors hover:border-primary-400/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
+            title="Photo logging"
           >
             <Camera className="w-5 h-5 text-primary-300" />
           </button>
@@ -327,6 +320,7 @@ export function FoodQuickAdd({
         <div className="relative mt-5">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <input
+            ref={searchInputRef}
             value={term}
             onChange={(event) => setTerm(event.target.value)}
             placeholder="Search foods or brands"
@@ -561,9 +555,8 @@ export function FoodQuickAdd({
       {/* Camera Upload Modal */}
       {showCameraModal && (
         <CameraUpload
-          onAnalysisComplete={handleCameraAnalysis}
-          onClose={() => setShowCameraModal(false)}
-          mealType={mealType}
+          onClose={closeCameraModal}
+          onUseSearch={useSearchFromCamera}
         />
       )}
     </section>
