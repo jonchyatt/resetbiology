@@ -6,7 +6,8 @@ foreman: gpt-5.6-sol at xhigh
 conduit_session: fe2b7091
 branch: vision-interactive-overhaul
 baseline: da65ec56
-candidate_head: 105a60f4
+initial_scaffold_commit: d3ed8030
+candidate_binding: current clean HEAD; exact corrective SHA is recorded after commit in the Jarvis foreman ledger to avoid an impossible self-referential commit hash
 
 ## Current verdict
 
@@ -19,6 +20,7 @@ candidate_head: 105a60f4
 - `localDayKey` is shared across eleven modules and has a CRITICAL dependency radius. Phase P0-A should call the existing contract without changing it unless a separately reviewed change is unavoidable.
 - `fitCanvasToElement` has a HIGH dependency radius across eight vision rendering paths. Phase P0-C requires deterministic DPR checks and visual regression proof across affected engines.
 - Current product branch is clean and one preserved probe-scripts commit ahead of `origin/master` after rebase.
+- Phase 8 persona identity is a recorded non-Phase-0 blocker: direct user text says inverse-Gil, while the separately saved rail copy says Inverse Yale. Do not build or blend either until Jon resolves it.
 
 ## Next gate
 

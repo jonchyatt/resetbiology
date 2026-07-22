@@ -34,4 +34,6 @@ Reset Biology trains the visual brain to process low-contrast, blurred, and crow
 
 ## Foreman harness
 
-Sol GPT-5.6 xhigh plans, classifies, routes, and accepts or rejects. The conduit runs tools and serves as Eye 1. Workers receive exact seven-section tickets and write sets. Blind verification starts from a committed clean tree. Argus Gemini 3.1 Pro High is Eye 2 for temporal truth on the same commit-bound recording.
+Sol GPT-5.6 xhigh plans, classifies, routes, and accepts or rejects. Jon designated the conduit/Eye-1 role as Claude; in this Codex runtime, Codex root executes that same conduit/Eye-1 role transparently rather than pretending to be a different model. Workers receive exact seven-section tickets and write sets. Blind verification starts from a committed clean tree. Argus Gemini 3.1 Pro High is Eye 2 for temporal truth on the same commit-bound recording.
+
+Every deploy follows this exact sequence: fetch `origin/master`, rebase the vision branch onto it, complete the clean candidate gates, push `vision-interactive-overhaul:master`, and retest production. Vercel CLI is never used.
