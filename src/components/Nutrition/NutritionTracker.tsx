@@ -680,7 +680,7 @@ export function NutritionTracker() {
               )}
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
               {/* Column 1 - Add Nutrition */}
               <div className="space-y-6">
                 <FoodQuickAdd
