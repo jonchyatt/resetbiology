@@ -6,7 +6,7 @@
  * binds responses, and reports the locked result.
  */
 
-import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { Pause, Play, ShieldAlert, Volume2, VolumeX, X } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
@@ -117,6 +117,7 @@ export default function GaborAcuityEngine({
   const [feedback, setFeedback] = useState<Feedback>(null)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
   const [statsDisplay, setStatsDisplay] = useState({ exposures: 0, accuracyPct: 0 })
+  const [guidedHeightPx, setGuidedHeightPx] = useState<number | null>(null)
 
   const setPhase = useCallback((next: Phase) => {
     phaseRef.current = next
@@ -491,6 +492,71 @@ export default function GaborAcuityEngine({
     }
   }, [preview, handleAbort])
 
+  // Guided mode sits in normal flow inside SessionRunner's flex stack, but that
+  // stack assigns height via percentage/flex-grow through an auto-height
+  // ancestor, which never resolves to a definite size (the root collapses to
+  // its own intrinsic content instead of filling the remaining space). Prefer
+  // the immediate parent's own assigned height when it actually reaches the
+  // scrolling runner viewport; otherwise fall back to the gap between the
+  // parent/root top and that viewport's bottom edge. No window-derived
+  // fallback: if the runner viewport can't be found, leave whatever layout
+  // is already in place (the h-full class) and retry on the next observed
+  // or phase-driven layout pass.
+  useLayoutEffect(() => {
+    if (preview || typeof window === 'undefined') return
+    const root = previewRootRef.current
+    if (!root) return
+    const parent = root.parentElement
+    const findScrollViewport = (from: HTMLElement): HTMLElement | null => {
+      let node = from.parentElement
+      while (node) {
+        const overflowY = window.getComputedStyle(node).overflowY
+        if (overflowY === 'auto' || overflowY === 'scroll') return node
+        node = node.parentElement
+      }
+      return null
+    }
+    const viewport = findScrollViewport(root)
+
+    const recalc = () => {
+      if (!viewport) return
+      const viewportBottom = viewport.getBoundingClientRect().bottom
+      const parentRect = parent?.getBoundingClientRect() ?? null
+      let height: number | null = null
+      if (parentRect && parentRect.height > 0 && parentRect.bottom >= viewportBottom - 1) {
+        height = parentRect.height
+      } else {
+        const top = (parentRect ?? root.getBoundingClientRect()).top
+        height = viewportBottom - top
+      }
+      if (Number.isFinite(height) && height > 0) {
+        setGuidedHeightPx(Math.round(height))
+      }
+    }
+    recalc()
+
+    window.addEventListener('resize', recalc)
+    window.addEventListener('orientationchange', recalc)
+    let parentObserver: ResizeObserver | undefined
+    let viewportObserver: ResizeObserver | undefined
+    if (typeof ResizeObserver !== 'undefined') {
+      if (parent) {
+        parentObserver = new ResizeObserver(recalc)
+        parentObserver.observe(parent)
+      }
+      if (viewport) {
+        viewportObserver = new ResizeObserver(recalc)
+        viewportObserver.observe(viewport)
+      }
+    }
+    return () => {
+      window.removeEventListener('resize', recalc)
+      window.removeEventListener('orientationchange', recalc)
+      parentObserver?.disconnect()
+      viewportObserver?.disconnect()
+    }
+  }, [preview, phase])
+
   useEffect(() => {
     drawPresentation(coordinatorRef.current.state.pending?.presentation ?? null)
     const canvas = canvasRef.current
@@ -536,6 +602,7 @@ export default function GaborAcuityEngine({
     <div
       className={rootClassName}
       ref={previewRootRef}
+      style={!preview && guidedHeightPx !== null ? { height: guidedHeightPx } : undefined}
       tabIndex={preview ? -1 : undefined}
       role={preview ? 'dialog' : undefined}
       aria-modal={preview ? true : undefined}
