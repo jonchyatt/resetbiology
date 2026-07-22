@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Muscle-Preservation Engine
-status: planning
-last_updated: "2026-07-22T00:18:22.925Z"
-last_activity: 2026-07-22
+status: control_plan_revision
+last_updated: "2026-07-21T19:00:18.5538069-06:00"
+last_activity: 2026-07-21
 progress:
-  total_phases: 0
+  total_phases: 8
   completed_phases: 0
-  total_plans: 0
+  total_plans: 1
   completed_plans: 0
   percent: 0
 ---
@@ -17,25 +17,27 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-18)
+See: .planning/PROJECT.md (updated 2026-07-21)
 
-**Core value:** Every protocol and recommendation must be justified by real peer-reviewed research
-**Current focus:** MILESTONE v1.0 COMPLETE — all 5 phases, 16 plans, 54 requirements satisfied.
+**Core value:** Members can act on an honest, evidence-cited daily plan without a marketer, paywall, or opaque score standing between them and their own data.
+**Current focus:** Phase 6 — reconcile production protocol truth and freeze the identities, contracts, and reviewed metadata required by the v2.0 engine.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-07-22 — Milestone v2.0 started
+Phase: 6 of 13 — Production Reconciliation & Contract Foundation
+Plan: 06-01 control-plane establishment; runtime plans remain held
+Status: Blind plan-check revision in progress; no FND requirement credit
+Last activity: 2026-07-21 — roadmap mapped 105/105; 06-01 returned for executor and verification hardening
+
+Progress: [----------] 0%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 11
-- Average duration: ~4.3 min
-- Total execution time: ~0.75 hours
+- v1.0 plans completed: 17
+- Average v1.0 plan duration: ~5.4 min
+- Total recorded v1.0 execution time: ~1.53 hours
 
 **By Phase:**
 
@@ -61,6 +63,12 @@ Last activity: 2026-07-22 — Milestone v2.0 started
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- [v2 Roadmap]: Continue numbering at Phases 6-13 and preserve every v1 phase directory and archive.
+- [v2 Roadmap]: Map all 105 v2 requirement IDs exactly once: FND→6, LOG→7, RUN→8, RDY→9, SWAP→10, EVD/HAB→11, COACH→12, and UIA/TEL/SEC/OPS→13.
+- [v2 Roadmap]: Phase 9 may modify reviewed dose only; readiness-driven exercise replacement remains unavailable until the Phase 10 swap graph is approved.
+- [v2 Roadmap]: Production event replay remains disabled until the live member-plus-event uniqueness rule is inspected and race-proven through the isolated relay.
+- [v2 Roadmap]: Phase 13 owns final proof of the cross-cutting operational requirements, while each implementation phase must still produce its required clean-tree, commit-bound, cleanup-safe receipts.
+- [v2 Roadmap]: No `.planning/config.json` exists; standard granularity was applied to the eight user-defined delivery boundaries without changing them.
 - [Roadmap]: Grouped breath/exercise/nutrition as Phase 1 due to deep metabolic interconnections (VO2 max, mitochondria, recovery)
 - [Roadmap]: Cognitive domains (N-Back, ear, vision, mental mastery) grouped as Phase 2 sharing neuroplasticity thread
 - [Roadmap]: Peptides in Phase 3 so exercise/nutrition context exists for synergy cross-references
@@ -123,42 +131,29 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- Complete the revised 06-01 control-plane check, then plan Phase 6 runtime slices from all FND-01 through FND-12 acceptance cases after ownership release.
+- Keep runtime source held until the workout-content, nutrition-scorecard, security, and Hawkeye ownership boundaries are transferred or serialized.
 
 ### Blockers/Concerns
 
-- Duplicate route structure (app/ vs src/app/) -- always edit in app/ directory
+- No blocker to phase planning.
+- Runtime implementation is held by the milestone operating boundary until named ownership transfers are complete.
+- Live production protocol shapes, Atlas indexes, transaction support, and deployment commit identity remain execution-time evidence gates; repository declarations are not proof.
+- Phase 8 REHIT content, Phase 10 movement taxonomy, Phase 11 strength formula and nutrition contract, and Phase 12-13 provider/privacy decisions require the named reviews identified in research.
+- Duplicate route structure remains live: use `app/workout` and `src/components/Workout`; never edit the dead `src/app/workout` shadow.
 
-## Autonomous Mode
+## Milestone Operating Boundary
 
-**ACTIVE: Run `/gsd:autonomous` after `/clear` to continue.**
+Roadmap creation is complete. Runtime implementation, production writes, credentials, browser state, external services, seeds, and clinical content remain untouched.
 
-This milestone is approved for fully autonomous execution:
-
-- Plan each phase → execute each plan → commit → advance to next phase
-- Sequential, full opus quality with cross-domain awareness
-- All 5 phases, 16 plans, 54 requirements
-- Push to GitHub after each phase (auto-deploys to production)
-- No user approval needed between phases — keep going until all 5 complete
-
-**Critical research rules:**
-
-- ALL PubMed IDs must be REAL — verify every citation exists
-- Web search for actual studies, do NOT fabricate PMIDs
-- Cross-domain connections are essential (breath↔exercise↔nutrition↔peptides↔cognition)
-- Edit `app/education/page.tsx` (NOT `src/app/education/page.tsx` — Next.js serves app/ over src/app/)
-- Test on production (resetbiology.com) not localhost
-- User's key insights to weave throughout:
-  - Keith Baar tendon/ligament protocol (gelatin + vitamin C)
-  - REHIT for VO2 max, mitochondrial biogenesis
-  - Wim Hof style breathing → autophagy AND VO2 max
-  - Dr. Boz insulin ratio, FGF21 pathway, fructose as metabolic medicine
-  - Low calorie diets KILL BMR (anti-starvation-diet evidence)
-  - The chain: sharp mind → neuromuscular control → muscle → bone → longevity
-  - Raising metabolism builds mitochondria, not caloric restriction
+- Preserve all v1 phase directories and history.
+- Plan and execute v2.0 sequentially from Phase 6 through Phase 13 unless an explicit dependency decision changes the order.
+- Use additive, reversible rollout and keep every new writer off until its production integrity gate passes.
+- Push only with `git push origin master`; never run the Vercel CLI from this repository.
+- Treat production proof and exact cleanup as part of delivery, not as a later documentation task.
 
 ## Session Continuity
 
-Last session: 2026-03-19T15:57:37Z
-Stopped at: Completed 05-02-PLAN.md — Milestone v1.0 COMPLETE. All 54 requirements across 5 phases satisfied. Ready for production push (git push auto-deploys to Vercel).
-Resume file: None
+Last session: 2026-07-21T19:00:18.5538069-06:00
+Stopped at: v2.0 roadmap complete; 105/105 requirements mapped exactly once across Phases 6-13; ready to plan Phase 6.
+Resume file: .planning/ROADMAP.md
