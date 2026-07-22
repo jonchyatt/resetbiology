@@ -179,7 +179,7 @@ class FakeFs implements FileSystemPort {
   }
 }
 
-type CreateMode = 'normal' | 'wrong-target' | 'unexpected' | 'lost-response';
+type CreateMode = 'normal' | 'missing-target' | 'wrong-target' | 'unexpected' | 'lost-response' | 'two-successes';
 
 class FakeDb implements AtlasDatabasePort {
   collectionNames: string[] = [RELAY_COLLECTION_NAME];
@@ -198,13 +198,21 @@ class FakeDb implements AtlasDatabasePort {
   replaceBeforeDelete = false;
   failIndexAfterCreate = false;
   driftFinalIndex = false;
+  driftContentionIndex = false;
+  driftChangedDigestIndex = false;
   holdContentionCollisions = false;
   allUsersExist = false;
   pretendCandidateExists = false;
+  materializeRejectedCandidate = false;
+  materializeChangedDigestCandidate = false;
+  mutateWinnerOnChangedDigest: ((winner: WorkoutEventRecordSnapshot) => WorkoutEventRecordSnapshot) | null = null;
   createMode: CreateMode = 'normal';
   lostResponseFired = false;
   contentionStarts = 0;
   contentionPeakBeforeRelease = 0;
+  private contentionIndexDriftServed = false;
+  private changedDigestIndexDriftServed = false;
+  private successfulContentionCreates = 0;
   private releaseContention: (() => void) | null = null;
   private contentionGate: Promise<void> | null = null;
   private releaseHeldCollisionGate: () => void = () => undefined;
@@ -238,6 +246,22 @@ class FakeDb implements AtlasDatabasePort {
   }
   async listWorkoutEventIndexes(): Promise<readonly IndexDescription[]> {
     this.calls.push('listIndexes');
+    if (
+      this.driftContentionIndex &&
+      !this.contentionIndexDriftServed &&
+      this.createInputs.some((input) => (input.payload as { role?: string }).role === 'contention')
+    ) {
+      this.contentionIndexDriftServed = true;
+      return Object.freeze([idIndex, goodIndex('replacement-unique-index')]);
+    }
+    if (
+      this.driftChangedDigestIndex &&
+      !this.changedDigestIndexDriftServed &&
+      this.createInputs.some((input) => (input.payload as { role?: string }).role === 'changedDigest')
+    ) {
+      this.changedDigestIndexDriftServed = true;
+      return Object.freeze([idIndex, goodIndex('replacement-unique-index')]);
+    }
     if (this.driftFinalIndex && this.createInputs.length > 0) {
       return Object.freeze([idIndex, goodIndex('replacement-unique-index')]);
     }
@@ -268,8 +292,12 @@ class FakeDb implements AtlasDatabasePort {
         id,
         userId: 'f'.repeat(24),
         eventId: 'foreign-event',
+        schemaVersion: 'foreign-schema',
         digest: 'foreign-digest',
+        type: 'foreign-type',
+        occurredAt: '2026-07-22T14:59:59.000Z',
         payload: Object.freeze({ runMarker: 'foreign-run' }),
+        compensatesEventId: null,
         acceptedAt: '2026-07-22T15:00:00.000Z',
       });
     }
@@ -298,23 +326,55 @@ class FakeDb implements AtlasDatabasePort {
     if (this.rows.has(input.id)) throw new WorkoutEventDuplicateKeyError(Object.freeze(['id']));
     const pair = this.pairKey(input.userId, input.eventId);
     const pairExists = [...this.rows.values()].some((row) => this.pairKey(row.userId, row.eventId) === pair);
-    if (pairExists) {
+    const allowSecondContentionSuccess =
+      payload.role === 'contention' && this.createMode === 'two-successes' && this.successfulContentionCreates < 2;
+    if (pairExists && !allowSecondContentionSuccess) {
       if (this.holdContentionCollisions && payload.role === 'contention') {
         this.signalHeldCollision();
         await this.heldCollisionGate;
       }
-      const target = this.createMode === 'wrong-target' ? ['id'] : ['userId', 'eventId'];
+      if (
+        (this.materializeRejectedCandidate && payload.role === 'contention') ||
+        (this.materializeChangedDigestCandidate && payload.role === 'changedDigest')
+      ) {
+        this.rows.set(
+          input.id,
+          Object.freeze({
+            id: input.id,
+            userId: input.userId,
+            eventId: input.eventId,
+            schemaVersion: input.schemaVersion,
+            digest: input.digest,
+            type: input.type,
+            occurredAt: input.occurredAt,
+            payload: input.payload,
+            compensatesEventId: null,
+            acceptedAt: '2026-07-22T15:00:00.000Z',
+          }),
+        );
+      }
+      if (this.mutateWinnerOnChangedDigest !== null && payload.role === 'changedDigest') {
+        const winner = [...this.rows.values()].find((row) => row.id !== input.id && this.pairKey(row.userId, row.eventId) === pair);
+        if (winner !== undefined) this.rows.set(winner.id, Object.freeze(this.mutateWinnerOnChangedDigest(winner)));
+      }
+      const target =
+        this.createMode === 'missing-target' ? [] : this.createMode === 'wrong-target' ? ['id'] : ['userId', 'eventId'];
       throw new WorkoutEventDuplicateKeyError(Object.freeze(target));
     }
     const snapshot: WorkoutEventRecordSnapshot = Object.freeze({
       id: input.id,
       userId: input.userId,
       eventId: input.eventId,
+      schemaVersion: input.schemaVersion,
       digest: input.digest,
+      type: input.type,
+      occurredAt: input.occurredAt,
       payload: input.payload,
+      compensatesEventId: null,
       acceptedAt: '2026-07-22T15:00:00.000Z',
     });
     this.rows.set(input.id, snapshot);
+    if (payload.role === 'contention') this.successfulContentionCreates += 1;
     if (this.createMode === 'lost-response' && !this.lostResponseFired && payload.role === 'contention') {
       this.lostResponseFired = true;
       throw new Error('SECRET_LOST_RESPONSE_AFTER_COMMIT');
@@ -885,7 +945,7 @@ addCase('17 index creation is read back before any probe insert', async () => {
   assert.ok(createdAt >= 0 && readbackAt > createdAt && firstInsertAt > readbackAt);
 });
 
-addCase('18 thirty-two simultaneous creates yield one winner and thirty-one exact collisions', async () => {
+addCase('18 thirty-two simultaneous creates reconcile one winner and thirty-one P2002 candidates', async () => {
   const c = makeContext();
   const result = await runApplyFromCensus(c);
   assert.equal(result.result, 'PASS');
@@ -897,6 +957,13 @@ addCase('18 thirty-two simultaneous creates yield one winner and thirty-one exac
   assert.equal(receipt.contentionCollisionCount, 31);
   assert.equal(receipt.deletedCount, 2);
   assert.equal(c.db.rows.size, 0);
+  for (const mode of ['missing-target', 'wrong-target'] as const) {
+    const reconciled = makeContext();
+    reconciled.db.createMode = mode;
+    const reconciledResult = await runApplyFromCensus(reconciled);
+    assert.equal(reconciledResult.result, 'PASS');
+    assert.equal(reconciled.db.rows.size, 0);
+  }
   {
     const immediate = makeContext();
     immediate.db.holdContentionCollisions = true;
@@ -914,14 +981,34 @@ addCase('18 thirty-two simultaneous creates yield one winner and thirty-one exac
   }
 });
 
-addCase('19 wrong duplicate target and unknown create failures fail closed and clean up', async () => {
-  for (const mode of ['wrong-target', 'unexpected'] as const) {
-    const c = makeContext();
-    c.db.createMode = mode;
-    const result = await runApplyFromCensus(c);
+addCase('19 state-reconciliation failures and non-P2002 errors fail closed and clean up', async () => {
+  const assertHostileCleanup = (c: TestContext, result: Awaited<ReturnType<typeof runApply>>): void => {
     assert.equal(result.holdCode, 'HOLD_CONTENTION_UNEXPECTED');
     assert.equal(c.db.rows.size, 0);
     assert.equal(c.fs.files.has(RUN_STATE_PATH), false);
+    const receipt = JSON.parse(c.fs.files.get(result.finalReceiptPath!)!) as Record<string, unknown>;
+    assert.equal(receipt.baselineRestored, true);
+    assert.equal(receipt.cleanupResult, 'PASS');
+  };
+  for (const configure of [
+    (c: TestContext) => {
+      c.db.materializeRejectedCandidate = true;
+      c.db.createMode = 'missing-target';
+    },
+    (c: TestContext) => {
+      c.db.driftContentionIndex = true;
+    },
+    (c: TestContext) => {
+      c.db.createMode = 'unexpected';
+    },
+    (c: TestContext) => {
+      c.db.createMode = 'two-successes';
+    },
+  ]) {
+    const c = makeContext();
+    configure(c);
+    const result = await runApplyFromCensus(c);
+    assertHostileCleanup(c, result);
   }
   class FakeKnownRequestError extends Error {
     readonly code = 'P2002';
@@ -970,7 +1057,7 @@ addCase('20 same event key is accepted for a distinct synthetic user', async () 
   assert.equal(receipt.crossUserProven, true);
 });
 
-addCase('21 changed digest cannot replace the first accepted event', async () => {
+addCase('21 changed digest uses the same state reconciliation and cannot alter the winner', async () => {
   const c = makeContext();
   const result = await runApplyFromCensus(c);
   assert.equal(result.result, 'PASS');
@@ -981,6 +1068,63 @@ addCase('21 changed digest cannot replace the first accepted event', async () =>
   assert.notEqual(changed.digest, contention.digest);
   const receipt = JSON.parse(c.fs.files.get(result.finalReceiptPath!)!) as Record<string, unknown>;
   assert.equal(receipt.immutabilityProven, true);
+  for (const configure of [
+    (hostile: TestContext) => {
+      hostile.db.materializeChangedDigestCandidate = true;
+    },
+    (hostile: TestContext) => {
+      hostile.db.driftChangedDigestIndex = true;
+    },
+  ]) {
+    const hostile = makeContext();
+    configure(hostile);
+    const stopped = await runApplyFromCensus(hostile);
+    assert.equal(stopped.holdCode, 'HOLD_CONTENTION_UNEXPECTED');
+    assert.equal(hostile.db.rows.size, 0);
+    assert.equal(hostile.fs.files.has(RUN_STATE_PATH), false);
+    const hostileReceipt = JSON.parse(hostile.fs.files.get(stopped.finalReceiptPath!)!) as Record<string, unknown>;
+    assert.equal(hostileReceipt.baselineRestored, true);
+    assert.equal(hostileReceipt.cleanupResult, 'PASS');
+  }
+  for (const { mutateWinner, expectedHold, expectedRows, expectedRunState } of [
+    {
+      mutateWinner: (winner: WorkoutEventRecordSnapshot) => ({ ...winner, digest: 'f'.repeat(64) }),
+      expectedHold: 'HOLD_CLEANUP',
+      expectedRows: 2,
+      expectedRunState: true,
+    },
+    {
+      mutateWinner: (winner: WorkoutEventRecordSnapshot) => ({ ...winner, schemaVersion: 'mutated-schema' }),
+      expectedHold: 'HOLD_CONTENTION_UNEXPECTED',
+      expectedRows: 0,
+      expectedRunState: false,
+    },
+    {
+      mutateWinner: (winner: WorkoutEventRecordSnapshot) => ({ ...winner, type: 'mutated-type' }),
+      expectedHold: 'HOLD_CONTENTION_UNEXPECTED',
+      expectedRows: 0,
+      expectedRunState: false,
+    },
+    {
+      mutateWinner: (winner: WorkoutEventRecordSnapshot) => ({ ...winner, occurredAt: '2026-07-22T16:00:00.000Z' }),
+      expectedHold: 'HOLD_CONTENTION_UNEXPECTED',
+      expectedRows: 0,
+      expectedRunState: false,
+    },
+    {
+      mutateWinner: (winner: WorkoutEventRecordSnapshot) => ({ ...winner, compensatesEventId: 'mutated-event-id' }),
+      expectedHold: 'HOLD_CONTENTION_UNEXPECTED',
+      expectedRows: 0,
+      expectedRunState: false,
+    },
+  ]) {
+    const immutable = makeContext();
+    immutable.db.mutateWinnerOnChangedDigest = mutateWinner;
+    const stopped = await runApplyFromCensus(immutable);
+    assert.equal(stopped.holdCode, expectedHold);
+    assert.equal(immutable.db.rows.size, expectedRows);
+    assert.equal(immutable.fs.files.has(RUN_STATE_PATH), expectedRunState);
+  }
 });
 
 addCase('22 all candidate ids are durably allowlisted before writes and cleanup stays inside that list', async () => {
@@ -1103,8 +1247,12 @@ addCase('24 cleanup retries transient failures but preserves recovery state on i
       id: candidate.candidateId,
       userId: '9'.repeat(24),
       eventId: candidate.eventId,
+      schemaVersion: 'atlas-relay/1',
       digest: candidate.digest,
+      type: 'relay.synthetic.probe',
+      occurredAt: c.clock.now().toISOString(),
       payload: payloadFor(state, candidate),
+      compensatesEventId: null,
       acceptedAt: c.clock.now().toISOString(),
     }));
     const result = await runCleanup({ db: c.db, fs: c.fs, out: c.out }, RUN_STATE_PATH, COMMIT, identity);
@@ -1122,8 +1270,12 @@ addCase('24 cleanup retries transient failures but preserves recovery state on i
       id: candidate.candidateId,
       userId: candidate.userId,
       eventId: candidate.eventId,
+      schemaVersion: 'atlas-relay/1',
       digest: candidate.digest,
+      type: 'relay.synthetic.probe',
+      occurredAt: c.clock.now().toISOString(),
       payload: payloadFor(state, candidate),
+      compensatesEventId: null,
       acceptedAt: c.clock.now().toISOString(),
     }));
     c.db.failFindCount = 1;

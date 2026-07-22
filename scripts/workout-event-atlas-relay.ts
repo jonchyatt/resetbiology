@@ -83,8 +83,12 @@ export type WorkoutEventRecordSnapshot = Readonly<{
   id: string;
   userId: string;
   eventId: string;
+  schemaVersion: string;
   digest: string;
+  type: string;
+  occurredAt: string;
   payload: unknown;
+  compensatesEventId: string | null;
   acceptedAt: string;
 }>;
 
@@ -741,8 +745,41 @@ export type ContentionOutcome = Readonly<{
   immutabilityProven: boolean;
 }>;
 
-const isExactOrderedTarget = (target: readonly string[]): boolean =>
-  target.length === 2 && target[0] === 'userId' && target[1] === 'eventId';
+const snapshotsMatchExactly = (
+  actual: WorkoutEventRecordSnapshot,
+  expected: WorkoutEventRecordSnapshot,
+): boolean =>
+  actual.id === expected.id &&
+  actual.userId === expected.userId &&
+  actual.eventId === expected.eventId &&
+  actual.schemaVersion === expected.schemaVersion &&
+  actual.digest === expected.digest &&
+  actual.type === expected.type &&
+  actual.occurredAt === expected.occurredAt &&
+  actual.compensatesEventId === expected.compensatesEventId &&
+  actual.acceptedAt === expected.acceptedAt &&
+  canonicalStringify(actual.payload) === canonicalStringify(expected.payload);
+
+const reconcileContentionIndexState = async (
+  db: AtlasDatabasePort,
+  expectedIndexSetFingerprintSha256: string,
+): Promise<void> => {
+  const indexes = await db.listWorkoutEventIndexes();
+  const classification = classifyWorkoutEventIndexes(indexes, true);
+  if (
+    classification.holdCode !== null ||
+    classification.acceptableIndexName === null ||
+    computeIndexSetFingerprintSha256(indexes) !== expectedIndexSetFingerprintSha256
+  ) {
+    throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
+  }
+};
+
+const requireCandidateAbsent = async (db: AtlasDatabasePort, candidateId: string): Promise<void> => {
+  if ((await db.findWorkoutEventById(candidateId)) !== null) {
+    throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
+  }
+};
 
 export type ContentionProofControls = Readonly<{
   censusReceiptSha256: string;
@@ -876,6 +913,7 @@ export const runContentionAndImmutabilityProof = async (
   let collisionCount = 0;
   let winnerId: string | null = null;
   let winnerSnapshot: WorkoutEventRecordSnapshot | null = null;
+  const rejectedSlots: ContentionSlot[] = [];
 
   for (let i = 0; i < attempts.length; i += 1) {
     const outcome = attempts[i];
@@ -885,10 +923,9 @@ export const runContentionAndImmutabilityProof = async (
       winnerId = outcome.value.id;
       winnerSnapshot = outcome.value;
     } else if (outcome.reason instanceof WorkoutEventDuplicateKeyError) {
-      if (!isExactOrderedTarget(outcome.reason.target)) {
-        throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
-      }
+      // A Prisma P2002 is a candidate signal; the authoritative proof is reconciled below.
       collisionCount += 1;
+      rejectedSlots.push(slot);
     } else {
       throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
     }
@@ -900,6 +937,15 @@ export const runContentionAndImmutabilityProof = async (
     winnerId === null ||
     winnerSnapshot === null
   ) {
+    throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
+  }
+
+  await reconcileContentionIndexState(db, confirmedIndexSetFingerprintSha256);
+  for (const slot of rejectedSlots) {
+    await requireCandidateAbsent(db, slot.candidateId);
+  }
+  const rereadWinnerAfterContention = await db.findWorkoutEventById(winnerId);
+  if (rereadWinnerAfterContention === null || !snapshotsMatchExactly(rereadWinnerAfterContention, winnerSnapshot)) {
     throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
   }
 
@@ -918,25 +964,21 @@ export const runContentionAndImmutabilityProof = async (
   try {
     await runTrackedCreate(changedDigestSlot);
   } catch (caught) {
-    if (caught instanceof WorkoutEventDuplicateKeyError && isExactOrderedTarget(caught.target)) {
+    if (caught instanceof WorkoutEventDuplicateKeyError) {
       changedDigestRejected = true;
     } else {
       throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
     }
   }
   if (!changedDigestRejected) {
-    throw new RelayHoldError('HOLD_IMMUTABILITY_VIOLATION');
+    throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
   }
 
+  await requireCandidateAbsent(db, changedDigestSlot.candidateId);
+  await reconcileContentionIndexState(db, confirmedIndexSetFingerprintSha256);
   const rereadWinner = await db.findWorkoutEventById(winnerId);
-  if (
-    rereadWinner === null ||
-    rereadWinner.id !== winnerSnapshot.id ||
-    rereadWinner.digest !== winnerSnapshot.digest ||
-    rereadWinner.acceptedAt !== winnerSnapshot.acceptedAt ||
-    canonicalStringify(rereadWinner.payload) !== canonicalStringify(winnerSnapshot.payload)
-  ) {
-    throw new RelayHoldError('HOLD_IMMUTABILITY_VIOLATION');
+  if (rereadWinner === null || !snapshotsMatchExactly(rereadWinner, winnerSnapshot)) {
+    throw new RelayHoldError('HOLD_CONTENTION_UNEXPECTED');
   }
   const immutabilityProven = true;
 
@@ -1827,8 +1869,12 @@ export const buildPrismaDatabasePort = (
         id: record.id,
         userId: record.userId,
         eventId: record.eventId,
+        schemaVersion: record.schemaVersion,
         digest: record.digest,
+        type: record.type,
+        occurredAt: record.occurredAt,
         payload: record.payload,
+        compensatesEventId: record.compensatesEventId,
         acceptedAt: record.acceptedAt.toISOString(),
       });
     },
@@ -1856,8 +1902,12 @@ export const buildPrismaDatabasePort = (
           id: created.id,
           userId: created.userId,
           eventId: created.eventId,
+          schemaVersion: created.schemaVersion,
           digest: created.digest,
+          type: created.type,
+          occurredAt: created.occurredAt,
           payload: created.payload,
+          compensatesEventId: created.compensatesEventId,
           acceptedAt: created.acceptedAt.toISOString(),
         });
       } catch (caught) {
