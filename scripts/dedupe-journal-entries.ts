@@ -1,109 +1,112 @@
-// One-off cleanup for the duplicate JournalEntry rows NEW-2 accumulated:
-// app/api/nback/sessions/route.ts used to unconditionally `create` a new
-// row per >=80%-accuracy session instead of merging into the day's
-// existing entry (fixed in the same ratchet step as this script — see
+// Report-only inspection of the duplicate JournalEntry rows NEW-2
+// accumulated: app/api/nback/sessions/route.ts used to unconditionally
+// `create` a new row per >=80%-accuracy session instead of merging into the
+// day's existing entry (fixed in the same ratchet step as this script — see
 // app/api/nback/sessions/route.ts). Existing duplicate rows from before
-// that fix still need a one-time cleanup.
+// that fix can be inspected here.
 //
-// DRY RUN BY DEFAULT. Pass --apply to actually write.
-// PER TICKET INSTRUCTIONS: this script is written but NEVER RUN in this
-// session, dry or --apply.
+// This script NEVER writes to the database. It has no --apply, no merge,
+// and no delete path — see [[journalWeightTruth]] (src/lib/journalWeightTruth.ts)
+// for why: picking a "canonical" row by createdAt desc silently discarded
+// conflicting weight/mood readings instead of surfacing the conflict.
+//
+// Day provenance is member-local and can ONLY come from the writer-captured
+// `localDate` field inside the JSON blob. Rows without a valid explicit
+// localDate are never assigned a fabricated day (no UTC/server-local/
+// derived-from-`date` fallback) — they are reported individually as
+// unknown_day candidates instead.
 //
 // Usage:
-//   npx tsx scripts/dedupe-journal-entries.ts          (dry run — reports only)
-//   npx tsx scripts/dedupe-journal-entries.ts --apply   (merges + deletes)
-//
-// Idempotent by inspection: --apply reduces every duplicate group to
-// exactly one row (merge fields into the canonical survivor, delete the
-// rest). A subsequent run — dry or --apply — finds zero groups with more
-// than one row, so it merges and deletes nothing. There is no group the
-// script would ever re-touch.
+//   npx tsx scripts/dedupe-journal-entries.ts   (reports resolver classifications only)
 
-import { prisma } from '../src/lib/prisma'
-import { localDayKey } from '../src/lib/localDay'
+import { resolveJournalWeight, type JournalWeightCandidate } from '../src/lib/journalWeightTruth'
+import { isValidDayKey } from '../src/lib/localDay'
 
-const APPLY = process.argv.includes('--apply')
+if (process.argv.includes('--apply')) {
+  console.error('--apply is permanently removed from this script. It only reports classifications and never writes.')
+  process.exit(1)
+}
 
-function dayKeyForEntry(entry: { date: Date; entry: string | null }): string {
-  // Same precedence the reader uses (app/api/journal/history/route.ts):
-  // prefer the writer-captured localDate inside the JSON blob, else fall
-  // back to the row's own local calendar-component reading of `date`.
+function dayKeyForEntry(entry: { entry: string | null }): string | null {
   try {
     const parsed = entry.entry ? JSON.parse(entry.entry) : {}
-    if (typeof parsed?.localDate === 'string' && parsed.localDate) return parsed.localDate
+    if (isValidDayKey(parsed?.localDate)) {
+      return parsed.localDate
+    }
   } catch {
-    // fall through to date-based key
+    // fall through to null — malformed JSON is unknown provenance, not a reason to guess
   }
-  return localDayKey(new Date(entry.date))
+  return null
+}
+
+function unitForEntry(entry: { entry: string | null }): 'lb' | 'kg' | null {
+  try {
+    const parsed = entry.entry ? JSON.parse(entry.entry) : {}
+    return parsed?.weightUnit === 'lb' || parsed?.weightUnit === 'kg' ? parsed.weightUnit : null
+  } catch {
+    return null
+  }
 }
 
 async function main() {
+  const { prisma } = await import('../src/lib/prisma')
+
   const allEntries = await prisma.journalEntry.findMany({
     orderBy: { createdAt: 'asc' },
   })
 
-  const groups = new Map<string, typeof allEntries>()
+  type Entry = (typeof allEntries)[number]
+
+  const knownDayGroups = new Map<string, Entry[]>()
+  const unknownDayRows: Entry[] = []
+
   for (const entry of allEntries) {
-    const key = `${entry.userId}::${dayKeyForEntry(entry)}`
-    const bucket = groups.get(key) ?? []
+    const dayKey = dayKeyForEntry(entry)
+    if (dayKey === null) {
+      unknownDayRows.push(entry)
+      continue
+    }
+    const key = `${entry.userId}::${dayKey}`
+    const bucket = knownDayGroups.get(key) ?? []
     bucket.push(entry)
-    groups.set(key, bucket)
+    knownDayGroups.set(key, bucket)
   }
 
-  const duplicateGroups = [...groups.entries()].filter(([, rows]) => rows.length > 1)
+  const duplicateGroups = [...knownDayGroups.entries()].filter(([, rows]) => rows.length > 1)
 
-  console.log(`Scanned ${allEntries.length} journal entries across ${groups.size} user-days.`)
-  console.log(`Found ${duplicateGroups.length} user-days with duplicate rows.`)
+  console.log(`Scanned ${allEntries.length} journal entries across ${knownDayGroups.size} known user-days.`)
+  console.log(`Found ${duplicateGroups.length} user-days with duplicate rows and ${unknownDayRows.length} unknown-day row(s).`)
+
+  function toCandidate(entry: Entry): JournalWeightCandidate {
+    return {
+      id: entry.id,
+      createdAt: entry.createdAt,
+      dayKey: dayKeyForEntry(entry),
+      weight: entry.weight ?? null,
+      unit: unitForEntry(entry),
+      mood: entry.mood ?? null,
+    }
+  }
+
+  function report(label: string, rows: Entry[]) {
+    const resolution = resolveJournalWeight(rows.map(toCandidate))
+    console.log(
+      `\n[${label}] ${rows.length} row(s) -> status: ${resolution.status}, sourceIds: ${resolution.sourceIds.join(', ')}` +
+        (resolution.normalizedKg !== null ? `, normalizedKg: ${resolution.normalizedKg}` : '')
+    )
+  }
 
   for (const [key, rows] of duplicateGroups) {
-    // Same merge-target policy as journal/entry POST's
-    // `orderBy: { createdAt: 'desc' }` — the most recently created row is
-    // what future merges attach to, so it's the canonical survivor. Older
-    // rows fill in ONLY fields the canonical row is missing, so a more
-    // recent user edit is never clobbered by an older duplicate.
-    const sorted = [...rows].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    const [canonical, ...stale] = sorted
-
-    let canonicalJson: Record<string, unknown> = {}
-    try {
-      canonicalJson = canonical.entry ? JSON.parse(canonical.entry) : {}
-    } catch {
-      canonicalJson = {}
-    }
-
-    const mergedJson: Record<string, unknown> = { ...canonicalJson }
-    for (const staleRow of [...stale].reverse()) { // oldest-first so a more recent stale row wins ties
-      let staleJson: Record<string, unknown> = {}
-      try {
-        staleJson = staleRow.entry ? JSON.parse(staleRow.entry) : {}
-      } catch {
-        staleJson = {}
-      }
-      for (const [field, value] of Object.entries(staleJson)) {
-        if (mergedJson[field] === undefined || mergedJson[field] === '') {
-          mergedJson[field] = value
-        }
-      }
-    }
-
-    console.log(`\n[${key}] ${rows.length} rows -> keeping ${canonical.id}, deleting ${stale.map((r) => r.id).join(', ')}`)
-
-    if (APPLY) {
-      await prisma.journalEntry.update({
-        where: { id: canonical.id },
-        data: { entry: JSON.stringify(mergedJson) },
-      })
-      await prisma.journalEntry.deleteMany({
-        where: { id: { in: stale.map((r) => r.id) } },
-      })
-    }
+    report(key, rows)
   }
 
-  if (!APPLY) {
-    console.log('\nDry run only — no writes made. Re-run with --apply to merge + delete.')
-  } else {
-    console.log(`\nMerged and deleted duplicates for ${duplicateGroups.length} user-days.`)
+  // Each unknown-day row is its own candidate — never lumped with other
+  // unknown-day rows just because they share a userId.
+  for (const entry of unknownDayRows) {
+    report(`${entry.userId}::unknown_day::${entry.id}`, [entry])
   }
+
+  console.log('\nReport only — this script never writes and has no --apply path.')
 
   await prisma.$disconnect()
 }
