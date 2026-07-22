@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, Loader2, CheckCircle2, PlusCircle, Star, Camera } from "lucide-react";
 import type { CachedFoodResult, Nutrients } from "@/lib/nutrition/types";
+import { localDayKey } from "@/lib/localDay";
 import { CameraUpload } from "./CameraUpload";
 
 type Result = CachedFoodResult & { nutrients: Nutrients | null };
@@ -191,11 +192,7 @@ export function FoodQuickAdd({
     try {
       setStatus("logging");
       setError(null);
-      // Get user's local date components
       const now = new Date()
-      const year = now.getFullYear()
-      const month = String(now.getMonth() + 1).padStart(2, '0')
-      const day = String(now.getDate()).padStart(2, '0')
       const hours = String(now.getHours()).padStart(2, '0')
       const minutes = String(now.getMinutes()).padStart(2, '0')
       const seconds = String(now.getSeconds()).padStart(2, '0')
@@ -212,7 +209,7 @@ export function FoodQuickAdd({
         mealType,
         // Send both ISO timestamp and local date string for bucketing
         loggedAt: now.toISOString(),
-        localDate: `${year}-${month}-${day}`,
+        localDate: localDayKey(now),
         localTime: `${hours}:${minutes}:${seconds}`,
       };
 
