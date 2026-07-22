@@ -25,6 +25,6 @@ P0-A and P0-B serialize because both own `app/api/vision/program/route.ts`. Prod
 ## Current Phase 0 status
 
 - P0-A: `VERIFIED + DEPLOYED + LIVE_PASS` at `add9dc29`.
-- P0-B: accepted for one serialized five-file DailyAward implementation ticket.
-- P0-C: queued behind P0-B acceptance.
+- P0-B: `DEPLOYED + LIVE_ACCEPTED_WITH_EVIDENCE_DEVIATION` at `5c22bfe7`; functional and aggregate receipts passed, while direct database collection enumeration remains unavailable and non-blocking by Sol ruling.
+- P0-C: authorized for the next Sol-classified HiDPI integrity ticket.
 - P0-D: `ACCEPT_OUTCOME_WITH_PROCESS_DEVIATION`; exact 12-row outcome achieved from historical snapshot plus post-clean proof, but the immediate pre-delete snapshot control was skipped. No audit-only tool will be built after the target rows are gone.

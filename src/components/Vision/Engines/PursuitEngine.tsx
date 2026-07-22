@@ -190,7 +190,14 @@ export default function PursuitEngine({ exercise, prescription, onProgress, onCo
       }
 
       drawGlow(ctx, pos.x, pos.y, patchSize * 0.9, 0.18)
-      drawGaborPatch(ctx, pos.x, pos.y, { size: patchSize, orientation: angle, frequency: 5, contrast: 0.95, phase: elapsedSec * 90 })
+      drawGaborPatch(ctx, pos.x, pos.y, {
+        size: patchSize,
+        orientation: angle,
+        frequency: 5,
+        contrast: 0.95,
+        phase: elapsedSec * 90,
+        phaseQuantizationDegrees: 20,
+      })
 
       return { tracingNow }
     },
