@@ -66,7 +66,8 @@ export interface DosageCalculatorProps {
   importedPeptide?: {
     id: string;
     name: string;
-    vialSize: number;
+    vialSize?: number;
+    totalVolume?: number;
     recommendedDose?: number;
   };
   onSaveToLog?: (data: {
@@ -140,32 +141,87 @@ const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, 
 const formatNumber = (n: number, digits = 2) =>
   Number.isFinite(n) ? Number(n.toFixed(digits)) : 0;
 
-type PreparationState = "absent" | "complete" | "invalid";
+export type PreparationState = "absent" | "complete" | "invalid";
 
-// Add Protocol treats vial amount and total volume as one member-confirmed
-// preparation. Catalog packaging is deliberately not preparation input.
-export const getPreparationState = (vialAmount: string, totalVolume: string): PreparationState => {
-  const vial = vialAmount.trim();
-  const volume = totalVolume.trim();
-  if (!vial && !volume) return "absent";
+export interface NormalizedPreparation {
+  state: PreparationState;
+  peptideAmount: number;
+  totalVolume: number;
+  peptideAmountText: string;
+  totalVolumeText: string;
+}
 
-  const parsedVial = Number(vial);
-  const parsedVolume = Number(volume);
-  return Number.isFinite(parsedVial) && parsedVial > 0 && Number.isFinite(parsedVolume) && parsedVolume > 0
-    ? "complete"
-    : "invalid";
+const DECIMAL_INPUT = /^(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i;
+
+const decimalText = (value: number): string => {
+  const source = value.toString();
+  if (!/[eE]/.test(source)) return source;
+
+  const [coefficient, exponentText] = source.toLowerCase().split("e");
+  const exponent = Number(exponentText);
+  const [whole, fraction = ""] = coefficient.split(".");
+  const digits = `${whole}${fraction}`;
+  const decimalPoint = whole.length + exponent;
+
+  if (decimalPoint <= 0) return `0.${"0".repeat(-decimalPoint)}${digits}`;
+  if (decimalPoint >= digits.length) return `${digits}${"0".repeat(decimalPoint - digits.length)}`;
+  return `${digits.slice(0, decimalPoint)}.${digits.slice(decimalPoint)}`;
 };
+
+const normalizePositiveDecimal = (input: string | number | undefined): { value: number; text: string } | null => {
+  const raw = typeof input === "number" ? String(input) : input?.trim() ?? "";
+  if (!raw || !DECIMAL_INPUT.test(raw)) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) && value > 0 ? { value, text: decimalText(value) } : null;
+};
+
+// Every preparation path (manual entry, imported protocol, UI display, and
+// save payload) routes through this one normalization boundary.
+export const normalizePreparation = (
+  peptideAmountInput: string | number | undefined,
+  totalVolumeInput: string | number | undefined,
+): NormalizedPreparation => {
+  const peptideRaw = typeof peptideAmountInput === "number" ? String(peptideAmountInput) : peptideAmountInput?.trim() ?? "";
+  const volumeRaw = typeof totalVolumeInput === "number" ? String(totalVolumeInput) : totalVolumeInput?.trim() ?? "";
+  if (!peptideRaw && !volumeRaw) {
+    return { state: "absent", peptideAmount: 0, totalVolume: 0, peptideAmountText: "", totalVolumeText: "" };
+  }
+
+  const peptideAmount = normalizePositiveDecimal(peptideRaw);
+  const totalVolume = normalizePositiveDecimal(volumeRaw);
+  if (!peptideAmount || !totalVolume) {
+    return { state: "invalid", peptideAmount: 0, totalVolume: 0, peptideAmountText: "", totalVolumeText: "" };
+  }
+
+  return {
+    state: "complete",
+    peptideAmount: peptideAmount.value,
+    totalVolume: totalVolume.value,
+    peptideAmountText: peptideAmount.text,
+    totalVolumeText: totalVolume.text,
+  };
+};
+
+export const normalizeImportedPreparation = (importedPeptide: DosageCalculatorProps["importedPeptide"]): NormalizedPreparation => {
+  const normalized = normalizePreparation(importedPeptide?.vialSize, importedPeptide?.totalVolume);
+  return normalized.state === "complete" ? normalized : normalizePreparation("", "");
+};
+
+export const protocolPreparationPayload = (preparation: NormalizedPreparation) =>
+  preparation.state === "complete"
+    ? { vialAmount: `${preparation.peptideAmountText}mg`, reconstitution: `${preparation.totalVolumeText}ml` }
+    : { vialAmount: "", reconstitution: "" };
 
 /*********************************
  * Reconstitution Guide Component
  *********************************/
-const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number }>
-  = ({ peptideAmount, volume }) => {
+const ReconstitutionGuide: React.FC<{ peptideAmountText: string; totalVolumeText: string }>
+  = ({ peptideAmountText, totalVolumeText }) => {
     return (
       <div className="space-y-3 bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
         <h3 className="text-lg font-bold text-white mb-1">Preparation entered</h3>
         <p className="text-sm text-white/70 leading-snug">
-          {formatNumber(peptideAmount, 2)} mg vial with {formatNumber(volume, 2)} mL total volume.
+          {peptideAmountText} mg vial with {totalVolumeText} mL total volume.
         </p>
       </div>
     );
@@ -188,6 +244,9 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   userPresets = [],
   onSavePreset,
 }) => {
+  const initialImportedPreparation = importedPeptide
+    ? normalizeImportedPreparation(importedPeptide)
+    : null;
   const defaultInputs: CalculatorInputs = {
     // addProtocol mode: no hardcoded dose — filled from a cited regimen or
     // typed by the user (see CITATION-GROUNDED DOSING CONTRACT). calculate
@@ -196,19 +255,19 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     desiredDose: mode === 'addProtocol' ? 0 : 250,
     doseUnit: "mcg",
     peptideConcentration: 0, // will be derived and displayed
-    totalVolume: mode === 'addProtocol' ? 0 : 1,
-    peptideAmount: mode === 'addProtocol' ? 0 : 10,
+    totalVolume: initialImportedPreparation?.totalVolume ?? (mode === 'addProtocol' ? 0 : 1),
+    peptideAmount: initialImportedPreparation?.peptideAmount ?? (mode === 'addProtocol' ? 0 : 10),
     insulinSyringeUnits: true,
   };
 
   const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
   const [preparation, setPreparation] = useState(() => ({
-    totalVolume: mode === 'addProtocol' ? "" : String(defaultInputs.totalVolume),
-    peptideAmount: mode === 'addProtocol' ? "" : String(defaultInputs.peptideAmount),
+    totalVolume: initialImportedPreparation?.totalVolumeText ?? (mode === 'addProtocol' ? "" : String(defaultInputs.totalVolume)),
+    peptideAmount: initialImportedPreparation?.peptideAmountText ?? (mode === 'addProtocol' ? "" : String(defaultInputs.peptideAmount)),
   }));
   // addProtocol mode starts with NO peptide selected (H4) — auto-selecting
   // peptideLibrary[0] previously landed on whatever the storefront listed
-  // first, which could be a diluent like Bacteriostatic Water, not a real
+  // first, which could be a diluent entry rather than a real
   // peptide. "calculate" mode (standalone tool, no protocol attached) keeps
   // a reasonable starting display name.
   const [peptideName, setPeptideName] = useState<string>(mode === "addProtocol" ? "" : "BPC-157");
@@ -253,23 +312,32 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const [emailEnabled, setEmailEnabled] = useState<boolean>(false);
   const [reminderMinutes, setReminderMinutes] = useState<number>(15);
 
+  const applyPreparation = useCallback((nextPreparation: { peptideAmount: string; totalVolume: string }) => {
+    const normalized = normalizePreparation(nextPreparation.peptideAmount, nextPreparation.totalVolume);
+    setPreparation(nextPreparation);
+    setInputs((previous) => ({
+      ...previous,
+      peptideAmount: normalized.peptideAmount,
+      totalVolume: normalized.totalVolume,
+    }));
+    return normalized;
+  }, []);
+
   // Apply imported peptide defaults
   useEffect(() => {
     if (!importedPeptide) return;
     setPeptideName(importedPeptide.name);
-    const importedVialSize = Number(importedPeptide.vialSize);
-    const hasImportedVialSize = Number.isFinite(importedVialSize) && importedVialSize > 0;
+    const importedPreparation = normalizeImportedPreparation(importedPeptide);
     setInputs((prev) => ({
       ...prev,
-      // An imported vial size is incomplete preparation without a member
-      // confirmed volume, so Add Protocol must not turn it into dose math.
-      peptideAmount: mode === 'addProtocol' ? 0 : (hasImportedVialSize ? importedVialSize : prev.peptideAmount),
-      totalVolume: mode === 'addProtocol' ? 0 : prev.totalVolume,
+      peptideAmount: importedPreparation.peptideAmount,
+      totalVolume: importedPreparation.totalVolume,
       desiredDose: importedPeptide.recommendedDose ?? prev.desiredDose,
     }));
-    if (mode === 'addProtocol') {
-      setPreparation({ totalVolume: "", peptideAmount: "" });
-    }
+    setPreparation({
+      peptideAmount: importedPreparation.peptideAmountText,
+      totalVolume: importedPreparation.totalVolumeText,
+    });
   }, [importedPeptide, mode]);
 
   // Live results
@@ -283,15 +351,18 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   // handlers that actually originate from user input instead.
   useEffect(() => {
     const e: string[] = [];
-    const preparationState = getPreparationState(preparation.peptideAmount, preparation.totalVolume);
-    if (mode !== 'addProtocol' && inputs.totalVolume <= 0) e.push("Total volume must be greater than 0 ml.");
-    if (mode !== 'addProtocol' && inputs.peptideAmount <= 0) e.push("Peptide amount in vial must be greater than 0 mg.");
-    if (mode === 'addProtocol' && preparationState === 'invalid') {
+    const normalizedPreparation = normalizePreparation(preparation.peptideAmount, preparation.totalVolume);
+    if (mode !== 'addProtocol' && normalizedPreparation.state !== 'complete') {
+      e.push(importedPeptide
+        ? "Imported preparation needs both vial amount and total volume."
+        : "Enter both vial amount and total volume.");
+    }
+    if (mode === 'addProtocol' && normalizedPreparation.state === 'invalid') {
       e.push("Enter both vial amount and total volume, or leave both blank.");
     }
     if (inputs.desiredDose <= 0) e.push("Desired dose must be greater than 0.");
     setErrors(e);
-  }, [inputs, mode, preparation]);
+  }, [inputs, importedPeptide, mode, preparation]);
 
   // Derived values for visuals
 
@@ -373,8 +444,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const handleProtocolSave = async () => {
     if (!onSaveProtocol || mode !== 'addProtocol') return;
     setHasInteracted(true);
-    const preparationState = getPreparationState(preparation.peptideAmount, preparation.totalVolume);
-    if (preparationState === 'invalid') return;
+    const normalizedPreparation = normalizePreparation(preparation.peptideAmount, preparation.totalVolume);
+    if (normalizedPreparation.state === 'invalid') return;
 
     // T2: a second click landing before the disabled attribute commits
     // cannot start a duplicate save.
@@ -427,8 +498,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           frequency: formatScheduleString(scheduleType, daysToSave, selectedTimes)
         },
         duration,
-        vialAmount: preparationState === 'complete' ? `${preparation.peptideAmount.trim()}mg` : "",
-        reconstitution: preparationState === 'complete' ? `${preparation.totalVolume.trim()}ml` : "",
+        ...protocolPreparationPayload(normalizedPreparation),
         notes,
         administrationType,
         notifications: {
@@ -483,12 +553,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         desiredDose: 0,
       };
     });
-    setPreparation({ totalVolume: "", peptideAmount: "" });
-  }, [peptideLibrary]);
+    applyPreparation({ totalVolume: "", peptideAmount: "" });
+  }, [applyPreparation, peptideLibrary]);
 
   // H4: no auto-select-first-item. The picker used to default to
-  // peptideLibrary[0], which could silently land on a diluent (e.g.
-  // "Bacteriostatic Water 10mL") if the storefront happened to list it
+  // peptideLibrary[0], which could silently land on a diluent entry if the
+  // storefront happened to list it
   // first, then compute prep math for the diluent instead of a real
   // peptide. The selector now starts empty ("Select a peptide" placeholder)
   // until the member makes an explicit choice.
@@ -545,8 +615,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     setInputs((prev) => ({ ...prev, desiredDose: value, doseUnit: unit ?? prev.doseUnit }));
   }, []);
 
-  const preparationState = getPreparationState(preparation.peptideAmount, preparation.totalVolume);
-  const hasCompletePreparation = mode !== 'addProtocol' || preparationState === 'complete';
+  const normalizedPreparation = normalizePreparation(preparation.peptideAmount, preparation.totalVolume);
+  const hasCompletePreparation = normalizedPreparation.state === 'complete';
 
   // Keep display peptideConcentration synced (from vial + volume)
   const displayConcentration = useMemo(() => {
@@ -702,14 +772,12 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   onChange={(e) => {
                     setHasInteracted(true);
                     const value = e.target.value;
-                    const parsed = Number(value);
-                    setPreparation((current) => ({ ...current, totalVolume: value }));
-                    setInputs((s) => ({ ...s, totalVolume: Number.isFinite(parsed) ? parsed : 0 }));
+                    applyPreparation({ ...preparation, totalVolume: value });
                   }}
-                  value={mode === 'addProtocol' ? preparation.totalVolume : String(inputs.totalVolume)}
+                  value={preparation.totalVolume}
                   className="bg-black/20 border border-white/15 rounded-lg px-3 py-2.5 text-white focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all w-full"
                 >
-                  {mode === 'addProtocol' && <option value="" className="bg-gray-800 text-white">Choose total volume</option>}
+                  <option value="" className="bg-gray-800 text-white">Choose total volume</option>
                   {[1, 0.5, 1.5, 2, 2.5, 3].map((v) => (
                     <option key={v} value={v} className="bg-gray-800 text-white">{v} ml</option>
                   ))}
@@ -720,13 +788,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 <input
                   type="number"
                   aria-label="Peptide amount in vial"
-                  value={mode === 'addProtocol' ? preparation.peptideAmount : inputs.peptideAmount}
+                  value={preparation.peptideAmount}
                   onChange={(e) => {
                     setHasInteracted(true);
                     const value = e.target.value;
-                    const parsed = Number(value);
-                    setPreparation((current) => ({ ...current, peptideAmount: value }));
-                    setInputs((s) => ({ ...s, peptideAmount: Number.isFinite(parsed) ? parsed : 0 }));
+                    applyPreparation({ ...preparation, peptideAmount: value });
                   }}
                   placeholder="e.g., 10, 50, 100"
                   min="0"
@@ -1000,8 +1066,8 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           </div>
 
           {hasCompletePreparation && <ReconstitutionGuide
-            peptideAmount={inputs.peptideAmount}
-            volume={inputs.totalVolume}
+            peptideAmountText={normalizedPreparation.peptideAmountText}
+            totalVolumeText={normalizedPreparation.totalVolumeText}
           />}
 
           {/* Notes */}

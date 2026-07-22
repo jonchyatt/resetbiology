@@ -17,9 +17,15 @@ import * as calculatorMod from "../src/components/Peptides/DosageCalculator.tsx"
 import * as freqMod from "../src/lib/peptide-frequency.ts";
 import * as schedMod from "../src/lib/scheduleNotifications.ts";
 import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 
 const { computeSyringeUnitsFromPrep, readPrepForProtocol } = trackerMod.default ?? trackerMod;
-const { getPreparationState } = calculatorMod.default ?? calculatorMod;
+const {
+  calculateDosage,
+  normalizePreparation,
+  normalizeImportedPreparation,
+  protocolPreparationPayload,
+} = calculatorMod.default ?? calculatorMod;
 const { resolveFrequency, isDoseDayForProtocol, hasKnownSchedule } = freqMod.default ?? freqMod;
 const { shouldScheduleOnDate, parseDoseTimes } = schedMod.default ?? schedMod;
 
@@ -47,28 +53,95 @@ function assertTrue(cond, label) {
 
 console.log("--- P0-03: Add Protocol preparation states stay member-confirmed ---");
 {
-  // These are the exact state classifications DosageCalculator uses before
-  // it enables preparation-dependent results or emits callback prep strings.
-  // Catalog selection, deep links, peptide changes, and reset all use the
-  // same empty pair; only two explicit values make preparation complete.
-  assertEqual(getPreparationState("", ""), "absent", "P0-03 untouched: preparation starts absent");
-  assertEqual(getPreparationState("", ""), "absent", "P0-03 card-selected: catalog metadata does not become preparation");
-  assertEqual(getPreparationState("5", "2"), "complete", "P0-03 explicit-complete: two positive member values enable conversion");
-  assertEqual(getPreparationState("3", "1.5"), "complete", "P0-03 persisted-complete: complete imported values remain usable");
-  assertEqual(getPreparationState("5", ""), "invalid", "P0-03 partial: vial alone blocks save");
-  assertEqual(getPreparationState("", "2"), "invalid", "P0-03 partial: volume alone blocks save");
-  assertEqual(getPreparationState("0", "2"), "invalid", "P0-03 invalid: zero vial amount blocks save");
-  assertEqual(getPreparationState("5", "not-a-number"), "invalid", "P0-03 invalid: non-numeric volume blocks save");
-  assertEqual(getPreparationState("", ""), "absent", "P0-03 peptide-change: preparation resets instead of inheriting prior values");
-  assertEqual(getPreparationState("", ""), "absent", "P0-03 reset: preparation returns to the valid no-prep state");
+  // The component, its imported-protocol effect, and its save callback all
+  // call these helpers. This proves transitions and serialized payloads, not
+  // just a duplicated state label.
+  const untouched = normalizePreparation("", "");
+  const selected = normalizePreparation("", "");
+  const explicit = normalizePreparation("5", "2");
+  const imported = normalizeImportedPreparation({ id: "p1", name: "Imported", vialSize: 3, totalVolume: 1.5 });
+  const missingImport = normalizeImportedPreparation({ id: "p2", name: "Missing volume", vialSize: 10 });
+  const invalidImport = normalizeImportedPreparation({ id: "p3", name: "Invalid vial", vialSize: Number.NaN, totalVolume: 2 });
+  const partial = normalizePreparation("5", "");
+  const invalid = normalizePreparation("0", "2");
+  const afterPeptideChange = normalizePreparation("", "");
+  const afterReset = normalizePreparation("", "");
+
+  assertEqual(untouched.state, "absent", "P0-03 untouched: preparation starts absent");
+  assertEqual(selected.state, "absent", "P0-03 card-selected: catalog metadata does not become preparation");
+  assertEqual(explicit, {
+    state: "complete", peptideAmount: 5, totalVolume: 2, peptideAmountText: "5", totalVolumeText: "2",
+  }, "P0-03 explicit-complete: normalized preparation drives calculation");
+  assertEqual(imported.state, "complete", "P0-03 imported-complete: both imported values are required and usable");
+  assertEqual(missingImport.state, "absent", "P0-03 missing import: vial alone clears to no preparation");
+  assertEqual(invalidImport.state, "absent", "P0-03 invalid import: non-finite vial clears to no preparation");
+  assertEqual(partial.state, "invalid", "P0-03 partial: vial alone blocks save");
+  assertEqual(
+    { state: partial.state, peptideAmount: partial.peptideAmount, totalVolume: partial.totalVolume },
+    { state: "invalid", peptideAmount: 0, totalVolume: 0 },
+    "P0-03 incomplete imported calculate path keeps math at zero until the second field completes it",
+  );
+  assertEqual(invalid.state, "invalid", "P0-03 invalid: zero vial amount blocks save");
+  assertEqual(afterPeptideChange.state, "absent", "P0-03 peptide-change: preparation clears instead of inheriting prior values");
+  assertEqual(afterReset.state, "absent", "P0-03 reset: preparation returns to the valid no-prep state");
+  assertEqual(protocolPreparationPayload(untouched), { vialAmount: "", reconstitution: "" }, "P0-03 absent prep: callback emits empty prep fields");
+  assertEqual(protocolPreparationPayload(explicit), { vialAmount: "5mg", reconstitution: "2ml" }, "P0-03 complete prep: callback emits normalized member values");
+
+  assertEqual(normalizePreparation(".5", "1").peptideAmountText, "0.5", "P0-03 .5 normalizes to decimal text");
+  assertEqual(normalizePreparation("0.005", "1").peptideAmountText, "0.005", "P0-03 0.005 is never rounded into a different vial value");
+  assertEqual(normalizePreparation("1e2", "1").peptideAmountText, "100", "P0-03 scientific notation saves and displays as decimal text");
 
   const calculatorSource = readFileSync(new URL("../src/components/Peptides/DosageCalculator.tsx", import.meta.url), "utf8");
+  assertTrue(
+    calculatorSource.includes("const hasCompletePreparation = normalizedPreparation.state === 'complete';"),
+    "P0-03 completeness has no calculate-mode bypass",
+  );
+  assertTrue(
+    calculatorSource.includes("value={preparation.totalVolume}")
+      && calculatorSource.includes("value={preparation.peptideAmount}")
+      && calculatorSource.includes("<option value=\"\" className=\"bg-gray-800 text-white\">Choose total volume</option>"),
+    "P0-03 preparation controls bind to raw preparation strings with an empty-volume option",
+  );
+  assertTrue(
+    calculatorSource.includes("setPreparation(nextPreparation);")
+      && calculatorSource.includes("applyPreparation({ ...preparation, peptideAmount: value });"),
+    "P0-03 one raw imported field remains visible while normalized math stays incomplete",
+  );
   const saveHandler = calculatorSource.slice(calculatorSource.indexOf("const handleProtocolSave"));
-  const preparationGuard = saveHandler.indexOf("if (preparationState === 'invalid') return;");
+  const preparationGuard = saveHandler.indexOf("if (normalizedPreparation.state === 'invalid') return;");
   const saveLatch = saveHandler.indexOf("savingInFlightRef.current = true;");
   assertTrue(
     preparationGuard >= 0 && saveLatch >= 0 && preparationGuard < saveLatch,
     "P0-03 invalid preparation returns before the save latch can be set",
+  );
+  assertTrue(
+    !/bacteriostatic|BAC water|refrigerator|30 days/i.test(calculatorSource),
+    "P0-03 calculator contains no fixed diluent, refrigeration, or 30-day claims",
+  );
+  assertTrue(
+    calculatorSource.includes("const [duration, setDuration] = useState<string>('');"),
+    "P0-03 duration starts empty",
+  );
+
+  const baselineSource = execFileSync(
+    "git",
+    ["show", "add9dc2996418a5d3b2e0977a341d3fab5b2b96d:src/components/Peptides/DosageCalculator.tsx"],
+    { encoding: "utf8" },
+  );
+  const calculationBody = (source) => {
+    const start = source.indexOf("export const calculateDosage");
+    const end = source.indexOf("/*********************************", start);
+    return source.slice(start, end);
+  };
+  assertEqual(
+    calculationBody(calculatorSource).replace(/\r\n/g, "\n"),
+    calculationBody(baselineSource),
+    "P0-03 calculateDosage is byte-identical to add9 baseline after repository EOL normalization",
+  );
+  assertEqual(
+    calculateDosage({ desiredDose: 250, doseUnit: "mcg", peptideConcentration: 0, peptideAmount: explicit.peptideAmount, totalVolume: explicit.totalVolume, insulinSyringeUnits: true }).insulinUnits,
+    10,
+    "P0-03 normalized numeric inputs drive the unchanged calculator",
   );
 }
 
