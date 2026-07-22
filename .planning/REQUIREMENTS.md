@@ -24,7 +24,7 @@ These requirements preserve the full GODMODE v2 brief and add the research-backe
 
 - [ ] **LOG-01** — Every set has a stable client-created event identity generated once and replayed unchanged; retrying the same event cannot duplicate sets, transitions, points, or awards.
 - [ ] **LOG-02** — The server verifies authentication, ownership, payload shape, and the event identity; a database uniqueness rule returns the original receipt on replay.
-- [ ] **LOG-03** — The production uniqueness rule is inspected or created and verified through the isolated relay before the event writer is enabled.
+- [x] **LOG-03** — The production uniqueness rule is inspected or created and verified through the isolated relay before the event writer is enabled.
 - [ ] **LOG-04** — A comparable working set is prefilled from the last valid same-exercise, same-variant, same-equipment, normalized-unit observation; otherwise the reviewed protocol target is used.
 - [ ] **LOG-05** — Stale or noncomparable history is shown only as context; a reviewed return ramp seeds a conservative target and explains why.
 - [ ] **LOG-06** — An unchanged straight set is accepted with one tap, and changed weight or repetitions are adjustable without interrupting the session.
@@ -176,7 +176,7 @@ Roadmap phase ownership is populated and checked by the roadmapper. No requireme
 | FND-12 | Phase 6 | Not started |
 | LOG-01 | Phase 7 | Not started |
 | LOG-02 | Phase 7 | Not started |
-| LOG-03 | Phase 7 | Not started |
+| LOG-03 | Phase 7 | Complete — 07-03B/07-03B1 production proof PASS |
 | LOG-04 | Phase 7 | Not started |
 | LOG-05 | Phase 7 | Not started |
 | LOG-06 | Phase 7 | Not started |

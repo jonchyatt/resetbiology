@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Muscle-Preservation Engine
-status: 07_03b_index_live_contention_proof_hold
-last_updated: "2026-07-22T12:47:00-06:00"
+status: 07_03b_complete_07_03c1_unlocked
+last_updated: "2026-07-22T14:18:55-06:00"
 last_activity: 2026-07-22
 progress:
   total_phases: 8
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-07-21)
 ## Current Position
 
 Phase: 7 of 13 — Repeat-Safe Logging & Event Spine
-Plan: 07-03B intended Atlas index installed; contention-proof classifier diagnosis pending
-Status: Product `2ba442e7` is blind-accepted, production-deployed, runtime-dormant, and canonical `/workout` HTTP 200. Sol authorized one apply. The exact intended uniqueness index is live, cleanup passed, and a post-run census plus blind verifier proved zero residue. `LOG-03` remains open because the 32-way contention proof stopped with an honest HOLD.
-Last activity: 2026-07-22 — secured census PASS; Sol premutation PASS; one apply returned `HOLD_CONTENTION_UNEXPECTED`; cleanup PASS; zero-residue census PASS; blind aftermath verifier PASS
+Plan: 07-03C1 authenticated store adapter, route, and one-way browser-journal drain unlocked
+Status: Product `4a2465b8` is blind-accepted, production-deployed, runtime-dormant, and canonical `/workout` HTTP 200. The corrected isolated relay proved exactly one winner and 31 reconciled collisions, cross-user independence, full ten-field immutability, exact cleanup, restored zero-row baseline, and unchanged index topology. Fresh post-run census and blind receipt verification passed. `LOG-03` is complete.
+Last activity: 2026-07-22 — exact deployment PASS; fresh census PASS; Sol premutation PASS; one authorized apply PASS; cleanup PASS; zero-residue census PASS; blind production-receipt PASS
 
 Progress: [----------] 0%
 
@@ -131,17 +131,13 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Complete the required ADHD divergence for the fuzzy production collision-classification bug when machine load permits; keep generators isolated from the critic and publish a trap list.
-- Build and hostile-test the smallest exact collision proof without accepting every duplicate error, parsing human error text, or rerunning unchanged.
-- Obtain fresh blind code verification, a new read-only census, and a new Sol premutation PASS before any additional production proof run.
-- After a fully passing production receipt credits `LOG-03`, freeze 07-03C1 for the authenticated store adapter, route, and one-way browser-journal drain.
+- Freeze 07-03C1 as a seven-section implementation ticket for the authenticated store adapter, route, and one-way browser-journal drain.
+- Keep the accepted event writer dormant until the authenticated boundary and drain are independently verified.
 - Continue qualified protocol review as a parallel human evidence track; do not invent clinical approval.
 
 ### Blockers/Concerns
 
-- No blocker to 07-03C1 research or ticket drafting.
-- Production member data is clean and the intended uniqueness index is live. Uniqueness completion is blocked by the relay's exact duplicate-collision classifier, not by the vault or cleanup.
-- The attempted five-way Claude Sonnet divergence timed out and its four exact orphaned generator processes were stopped; retry only after CPU and free-memory gates pass.
+- No blocker to 07-03C1 ticket freezing or implementation. `LOG-03` is production-proven and member data is clean.
 - Jon's 2026-07-21 authority transfer supersedes the older workout implementation ownership holds; deterministic, clinical, security, production-identity, and blind-verification gates remain.
 - Live production protocol shapes, Atlas indexes, transaction support, and deployment commit identity remain execution-time evidence gates; repository declarations are not proof.
 - Phase 8 REHIT content, Phase 10 movement taxonomy, Phase 11 strength formula and nutrition contract, and Phase 12-13 provider/privacy decisions require the named reviews identified in research.
@@ -149,7 +145,7 @@ Recent decisions affecting current work:
 
 ## Milestone Operating Boundary
 
-Roadmap creation is complete. Runtime implementation, production writes, credentials, browser state, external services, seeds, and clinical content remain untouched.
+Roadmap creation is complete. The Phase 7 event spine and production uniqueness boundary are proven, while the application writer remains deliberately dormant until 07-03C1 is accepted.
 
 - Preserve all v1 phase directories and history.
 - Plan and execute v2.0 sequentially from Phase 6 through Phase 13 unless an explicit dependency decision changes the order.
@@ -159,6 +155,6 @@ Roadmap creation is complete. Runtime implementation, production writes, credent
 
 ## Session Continuity
 
-Last session: 2026-07-22T12:14:22.7009496-06:00
-Stopped at: 07-03B intended index live and member data clean; diagnosing the safe exact collision-classification boundary before any new production proof authority.
+Last session: 2026-07-22T14:18:55-06:00
+Stopped at: 07-03B/07-03B1 complete with production relay PASS, exact cleanup, zero-residue post-census, and blind receipt PASS; 07-03C1 unlocked.
 Resume files: `.planning/ROADMAP.md`; `C:/Users/jonch/Projects/jarvis/data/rb-muscle-preservation-engine-v2/runtime-logs/receipts/07-03b-deployment-premutation-hold.md`
