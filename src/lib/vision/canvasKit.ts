@@ -9,18 +9,30 @@
 
 export type Point = { x: number; y: number }
 
+const fittedCanvasDpr = new WeakMap<HTMLCanvasElement, number>()
+
 /** Size a canvas to its CSS box at devicePixelRatio; returns logical (CSS) size. */
 export function fitCanvasToElement(canvas: HTMLCanvasElement): { width: number; height: number; dpr: number } {
-  const dpr = typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 2) : 1
+  const dpr = typeof window === 'undefined' ? 1 : window.devicePixelRatio
+  if (!Number.isFinite(dpr) || dpr <= 0) throw new RangeError('devicePixelRatio must be finite and positive')
+
   const rect = canvas.getBoundingClientRect()
-  const width = Math.max(1, Math.round(rect.width))
-  const height = Math.max(1, Math.round(rect.height))
-  if (canvas.width !== width * dpr || canvas.height !== height * dpr) {
-    canvas.width = width * dpr
-    canvas.height = height * dpr
-    const ctx = canvas.getContext('2d')
-    if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  const width = rect.width
+  const height = rect.height
+  const backingWidth = Math.round(width * dpr)
+  const backingHeight = Math.round(height * dpr)
+  const dprChanged = fittedCanvasDpr.get(canvas) !== dpr
+
+  // A DPR change must reset the backing store even where rounding leaves the
+  // integer dimensions unchanged. No CSS dimensions are touched here.
+  if (dprChanged || canvas.width !== backingWidth || canvas.height !== backingHeight) {
+    canvas.width = backingWidth
+    canvas.height = backingHeight
   }
+  fittedCanvasDpr.set(canvas, dpr)
+
+  const ctx = canvas.getContext('2d')
+  if (ctx) ctx.setTransform(backingWidth / width, 0, 0, backingHeight / height, 0, 0)
   return { width, height, dpr }
 }
 
@@ -41,51 +53,85 @@ export type GaborOpts = {
   frequency?: number
   /** 0-1 */
   contrast?: number
+  /** Logical-pixel Gaussian sigma. Defaults to one quarter of the patch size. */
+  sigma?: number
+  /** Raster/compositing identity. Defaults to the receiving context's current mode. */
+  compositingMode?: GlobalCompositeOperation
   /** degrees */
   phase?: number
+  /** Animation-only cache bucket. Threshold stimuli leave this unset for exact phase identity. */
+  phaseQuantizationDegrees?: number
 }
 
 const gaborCache = new Map<string, HTMLCanvasElement>()
 const GABOR_CACHE_MAX = 64
 
-function gaborKey(o: Required<GaborOpts>): string {
-  // Quantize continuous params so animation frames share cache entries
-  return [
-    Math.round(o.size),
-    Math.round(o.orientation / 5) * 5,
-    Math.round(o.frequency),
-    Math.round(o.contrast * 20) / 20,
-    Math.round(o.phase / 20) * 20,
-  ].join('|')
+type ResolvedGaborOpts = {
+  size: number
+  orientation: number
+  frequency: number
+  contrast: number
+  sigma: number
+  compositingMode: GlobalCompositeOperation
+  phase: number
 }
 
-function renderGaborTile(o: Required<GaborOpts>): HTMLCanvasElement {
-  const size = Math.max(4, Math.round(o.size))
+type GaborRaster = ResolvedGaborOpts & {
+  backingWidth: number
+  backingHeight: number
+  rasterScaleX: number
+  rasterScaleY: number
+}
+
+/** Keep animation reuse explicit; threshold calls retain their requested phase exactly. */
+export function normalizeGaborPhase(phase: number, phaseQuantizationDegrees?: number): number {
+  if (!Number.isFinite(phaseQuantizationDegrees) || phaseQuantizationDegrees === undefined || phaseQuantizationDegrees <= 0) return phase
+  return Math.round(phase / phaseQuantizationDegrees) * phaseQuantizationDegrees
+}
+
+function gaborKey(o: GaborRaster): string {
+  // Therapeutic values remain exact by default. The animation caller opts in
+  // to phase normalization before this key and the raster are both created.
+  return JSON.stringify([
+    o.size,
+    o.backingWidth,
+    o.backingHeight,
+    o.rasterScaleX,
+    o.rasterScaleY,
+    o.orientation,
+    o.frequency,
+    o.contrast,
+    o.sigma,
+    o.compositingMode,
+    o.phase,
+  ])
+}
+
+function renderGaborTile(o: GaborRaster): HTMLCanvasElement {
   const tile = document.createElement('canvas')
-  tile.width = size
-  tile.height = size
+  tile.width = o.backingWidth
+  tile.height = o.backingHeight
   const tctx = tile.getContext('2d')!
-  const imageData = tctx.createImageData(size, size)
+  const imageData = tctx.createImageData(o.backingWidth, o.backingHeight)
   const data = imageData.data
 
-  const sigma = size / 4
-  const half = size / 2
+  const half = o.size / 2
   const theta = (o.orientation * Math.PI) / 180
   const cosT = Math.cos(theta)
   const sinT = Math.sin(theta)
   const phaseRad = (o.phase * Math.PI) / 180
-  const freq = (2 * Math.PI * o.frequency) / size
+  const freq = (2 * Math.PI * o.frequency) / o.size
   const bg = 128
 
-  for (let py = 0; py < size; py++) {
-    for (let px = 0; px < size; px++) {
-      const xc = px - half
-      const yc = py - half
+  for (let py = 0; py < o.backingHeight; py++) {
+    for (let px = 0; px < o.backingWidth; px++) {
+      const xc = px / o.rasterScaleX - half
+      const yc = py / o.rasterScaleY - half
       const xp = xc * cosT + yc * sinT
-      const gaussian = Math.exp(-(xc * xc + yc * yc) / (2 * sigma * sigma))
+      const gaussian = Math.exp(-(xc * xc + yc * yc) / (2 * o.sigma * o.sigma))
       const value = gaussian * Math.cos(freq * xp + phaseRad) * o.contrast
       const pixel = Math.max(0, Math.min(255, Math.round(bg + value * 127)))
-      const idx = (py * size + px) * 4
+      const idx = (py * o.backingWidth + px) * 4
       data[idx] = pixel
       data[idx + 1] = pixel
       data[idx + 2] = pixel
@@ -97,6 +143,17 @@ function renderGaborTile(o: Required<GaborOpts>): HTMLCanvasElement {
   return tile
 }
 
+function releaseGaborTile(tile: HTMLCanvasElement): void {
+  tile.width = 0
+  tile.height = 0
+}
+
+/** Focused-test seam: cache ownership remains private in production code. */
+export function __resetGaborCacheForTest(): void {
+  for (const tile of gaborCache.values()) releaseGaborTile(tile)
+  gaborCache.clear()
+}
+
 /** Draw a Gabor patch centered at (x, y). Cached across frames. */
 export function drawGaborPatch(
   ctx: CanvasRenderingContext2D,
@@ -104,12 +161,24 @@ export function drawGaborPatch(
   y: number,
   opts: GaborOpts,
 ): void {
-  const o: Required<GaborOpts> = {
+  const transform = ctx.getTransform?.()
+  const backingScaleX = Math.abs(transform?.a ?? 1) || 1
+  const backingScaleY = Math.abs(transform?.d ?? 1) || 1
+  const backingWidth = Math.max(1, Math.round(opts.size * backingScaleX))
+  const backingHeight = Math.max(1, Math.round(opts.size * backingScaleY))
+  const phase = normalizeGaborPhase(opts.phase ?? 0, opts.phaseQuantizationDegrees)
+  const o: GaborRaster = {
     size: opts.size,
     orientation: opts.orientation ?? 0,
     frequency: opts.frequency ?? 4,
     contrast: opts.contrast ?? 1,
-    phase: opts.phase ?? 0,
+    sigma: opts.sigma ?? opts.size / 4,
+    compositingMode: opts.compositingMode ?? ctx.globalCompositeOperation ?? 'source-over',
+    phase,
+    backingWidth,
+    backingHeight,
+    rasterScaleX: backingWidth / opts.size,
+    rasterScaleY: backingHeight / opts.size,
   }
   const key = gaborKey(o)
   let tile = gaborCache.get(key)
@@ -117,7 +186,11 @@ export function drawGaborPatch(
     tile = renderGaborTile(o)
     if (gaborCache.size >= GABOR_CACHE_MAX) {
       const firstKey = gaborCache.keys().next().value
-      if (firstKey !== undefined) gaborCache.delete(firstKey)
+      if (firstKey !== undefined) {
+        const evicted = gaborCache.get(firstKey)
+        if (evicted) releaseGaborTile(evicted)
+        gaborCache.delete(firstKey)
+      }
     }
     gaborCache.set(key, tile)
   }
