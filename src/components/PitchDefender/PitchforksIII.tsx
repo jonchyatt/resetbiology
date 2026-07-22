@@ -5620,6 +5620,26 @@ export default function PitchforksIII() {
           event.preventDefault()
           deferNewNoteAdmission()
         }}
+        onKeyDown={event => {
+          if (event.key !== 'Tab') return
+          const dialog = event.currentTarget
+          const enabledButtons = [...dialog.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')]
+          const first = enabledButtons[0]
+          const last = enabledButtons[enabledButtons.length - 1]
+          if (!first || !last) {
+            event.preventDefault()
+            admissionDialogPanelRef.current?.focus()
+            return
+          }
+          const active = document.activeElement
+          if (event.shiftKey && (active === first || active === admissionDialogPanelRef.current || !dialog.contains(active))) {
+            event.preventDefault()
+            last.focus()
+          } else if (!event.shiftKey && (active === last || active === admissionDialogPanelRef.current || !dialog.contains(active))) {
+            event.preventDefault()
+            first.focus()
+          }
+        }}
       >
         {ceremony.active && ceremony.note && (
           <div
