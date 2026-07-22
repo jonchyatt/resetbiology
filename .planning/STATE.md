@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Muscle-Preservation Engine
-status: 07_03c1_frozen_implementation_next
-last_updated: "2026-07-22T14:18:55-06:00"
+status: 07_03c1_complete_07_03c2_design_next
+last_updated: "2026-07-22T16:36:59-06:00"
 last_activity: 2026-07-22
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 2
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 50
 ---
 
 # Project State
@@ -20,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** Members can act on an honest, evidence-cited daily plan without a marketer, paywall, or opaque score standing between them and their own data.
-**Current focus:** Phase 7 — implement and prove the frozen authenticated event route, then build browser journal draining as the separate 07-03C2 slice.
+**Current focus:** Phase 7 — design, freeze, build, and prove the separate 07-03C2 browser journal synchronization slice on top of the production-proven event route.
 
 ## Current Position
 
 Phase: 7 of 13 — Repeat-Safe Logging & Event Spine
-Plan: 07-03C1 authenticated store adapter, route, hostile tests, and isolated production route proof frozen
-Status: Sol froze `POST /api/workout/events` with direct bounded JSON, canonical `User.id`, create-eight/read-ten database mapping, exact-state collision reconciliation, a four-file write set, and isolated exact-row cleanup. C1 contains no browser drain; C2 owns that work. Current `origin/master` is `29112374` after a non-overlapping Retro Blaster advance.
-Last activity: 2026-07-22 — ADHD divergence complete; separate critic complete; three focus passes complete; Sol `FOREMAN=FREEZE`; seven-section C1 ticket and GSD plan created
+Plan: 07-03C1 complete; 07-03C2 browser journal drain, retry, acknowledgment persistence, and foreground synchronization next
+Status: C1 is live at `3c5c8da8b254d14ec4fe0cbc060bd86bee89e354`. Candidate, bridge, foreman, exact-commit production proof, exact cleanup, and blind production receipt all passed. The accepted server event route remains disconnected from member UI until C2 independently passes.
+Last activity: 2026-07-22 — C1 deployed and proved on production; first/replay/concurrency/conflict/lost-response cases passed; exact row removed; baseline restored; vault locked; zero private proof residue
 
-Progress: [----------] 0%
+Progress: [#####-----] 50%
 
 ## Performance Metrics
 
@@ -131,14 +131,14 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Implement 07-03C1 from current `origin/master` using only the exact four-file write set.
-- Keep browser drain, retry, acknowledgement persistence, and foreground synchronization in 07-03C2.
+- Run mandatory ADHD divergence for the open 07-03C2 synchronization architecture, then obtain a separate critic trap list and Sol freeze.
+- Build browser drain, retry, acknowledgment persistence, and foreground synchronization only inside the frozen 07-03C2 write set.
 - Keep the accepted event writer unreachable from member UI until C1 production proof and C2 browser synchronization independently pass.
 - Continue qualified protocol review as a parallel human evidence track; do not invent clinical approval.
 
 ### Blockers/Concerns
 
-- No blocker to 07-03C1 ticket freezing or implementation. `LOG-03` is production-proven and member data is clean.
+- No blocker remains in 07-03C1. `LOG-02` and `LOG-03` are production-proven and member data is clean.
 - Jon's 2026-07-21 authority transfer supersedes the older workout implementation ownership holds; deterministic, clinical, security, production-identity, and blind-verification gates remain.
 - Live production protocol shapes, Atlas indexes, transaction support, and deployment commit identity remain execution-time evidence gates; repository declarations are not proof.
 - Phase 8 REHIT content, Phase 10 movement taxonomy, Phase 11 strength formula and nutrition contract, and Phase 12-13 provider/privacy decisions require the named reviews identified in research.
@@ -146,7 +146,7 @@ Recent decisions affecting current work:
 
 ## Milestone Operating Boundary
 
-Roadmap creation is complete. The Phase 7 event spine and production uniqueness boundary are proven. 07-03C1 is frozen for implementation, while member UI and browser synchronization remain deliberately disconnected.
+Roadmap creation is complete. The Phase 7 event spine, production uniqueness boundary, and authenticated server intake are proven. Member UI remains deliberately disconnected while 07-03C2 browser synchronization is designed and proved separately.
 
 - Preserve all v1 phase directories and history.
 - Plan and execute v2.0 sequentially from Phase 6 through Phase 13 unless an explicit dependency decision changes the order.
@@ -157,5 +157,5 @@ Roadmap creation is complete. The Phase 7 event spine and production uniqueness 
 ## Session Continuity
 
 Last session: 2026-07-22
-Stopped at: 07-03C1 frozen; exact four-file implementation from current origin/master is next.
-Resume files: `.planning/phases/07-repeat-safe-logging-event-spine/07-03C1-PLAN.md`; `C:/Users/jonch/Projects/jarvis/data/rb-muscle-preservation-engine-v2/runtime-logs/tickets/07-03c1-authenticated-event-route.md`
+Stopped at: 07-03C1 complete; mandatory ADHD divergence and foreman freeze for 07-03C2 are next.
+Resume files: `.planning/phases/07-repeat-safe-logging-event-spine/07-03C1-PLAN.md`; `.planning/research/ARCHITECTURE.md`; `.planning/research/PITFALLS.md`
