@@ -1,7 +1,7 @@
 # Reset Biology Vision GODMODE — State
 
 last_updated: 2026-07-21
-status: P0_B_FOREMAN_GATE
+status: P0_C_FOREMAN_GATE
 foreman: gpt-5.6-sol at xhigh
 conduit_session: fe2b7091
 branch: vision-interactive-overhaul
@@ -12,8 +12,9 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 ## Current verdict
 
 - ACCEPT: P0-A is `VERIFIED + DEPLOYED + LIVE_PASS` at product `add9dc29`; production master, authenticated member-local API behavior, Chromium phone-width journey, real WebKit journey, tester cursor, and cleanup receipts all passed.
-- AUTHORIZE: P0-B DailyAward migration advances to the Sol foreman ticket gate as the next serialized implementation packet.
-- HOLD: P0-C remains queued behind P0-B acceptance; Phase 8 remains held for Jon's persona ruling.
+- ACCEPT_WITH_EVIDENCE_DEVIATION: P0-B is `DEPLOYED + LIVE_ACCEPTED` at product `5c22bfe7`; all four Vision point writers now use one atomic, member-local `DailyAward` helper with current values unchanged. The live tester sequence proved first award `100`, source reset, same-day retry `0`, and exact aggregate delta `6030 -> 6130`. Direct collection enumeration was unavailable, so Sol accepted the missing database-row receipt as an evidence-channel deviation, not a product defect.
+- AUTHORIZE: P0-C HiDPI integrity advances to the Sol foreman ticket gate as the next serialized implementation packet.
+- HOLD: Phase 8 remains held for Jon's persona ruling.
 - ACCEPT_OUTCOME_WITH_PROCESS_DEVIATION: P0-D's exact 12-row cleanup outcome is closed. Historical receipts prove the 12 tagged filler rows; P0-A's authenticated reset removed them; post-clean state is `enrolled:false`. The immediate pre-delete snapshot control was skipped and remains recorded as a process failure. No dead audit-only cleanup tool will be built.
 - REJECT: stale camera parking, old WP0–WP8 as the complete roadmap, direct point creation, capped or CSS-resolution therapeutic stimuli, single-eye visual acceptance, Vercel CLI, and branch/spectacle work that shortchanges the adult trunk.
 
@@ -49,6 +50,15 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 - Production Chromium phone-width contract journey 18/18; canonical WebKit journey 13/13; canonical WebKit tester probe 6/6; WebKit abort/zero-persistence probe PASS.
 - Automated sessions created by proof were removed from both the tester identity and the initially mismatched non-tester identity; both finished unenrolled with no fake Vision progress.
 
+## P0-B closure evidence
+
+- Final deployed SHA: `5c22bfe70a43f819e4da93f5e1bbfba4a7dcfa36`; the post-rebase patch ID exactly matches the blind-reviewed candidate.
+- Deterministic gates: Vision points PASS, member-local day PASS, reminder oracle 13/13, traversal 60/60 with six assessments, TypeScript PASS, exact five-file write set, and production build 233/233 pages.
+- Fresh Terra xhigh blind verdict: `PASS_WITH_NOTES`; no product defect. The verifier's short build ceiling was superseded by the completed conduit build, and its shallow source-deletion test was superseded by the live reset/re-enroll proof.
+- Canonical Vercel deployment succeeded. The unused Cloudflare Pages mirror check failed and remains a noncanonical infrastructure note.
+- Authenticated WebKit production proof on `jonchyatt@gmail.com`, local day `2026-07-21` in `America/Denver`: first enrollment returned `pointsAwarded:100`; captured source enrollment was reset; same-day re-enrollment returned `pointsAwarded:0`; total points moved exactly `6030 -> 6130`; final account state was `enrolled:false`.
+- Sol ruling: `ACCEPT_WITH_EVIDENCE_DEVIATION`. No direct database collection count was available because the local DB credential, Vercel team connector, Atlas CLI, and browser-control bridge were unavailable. Preserve the remaining tester DailyAward and 100-point ledger entry; do not add an inspection route, expose credentials, or blindly delete them.
+
 ## P0-D closure ruling
 
 - Sol verdict: `ACCEPT_OUTCOME_WITH_PROCESS_DEVIATION`.
@@ -60,4 +70,4 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 
 ## Next gate
 
-Sol classifies the current DailyAward sibling pattern, names the exact four direct Vision point writers, defines one transaction-safe helper and its idempotency key contract, and issues the seven-section P0-B ticket. No P0-B implementation begins before that foreman ruling.
+Sol classifies every existing Vision canvas and procedural Gabor path, freezes the true-DPR geometry and cache contract, defines deterministic DPR 1/2/3 checks plus dual-eye static/temporal gates, and issues the seven-section P0-C ticket. No P0-C implementation begins before that foreman ruling.
