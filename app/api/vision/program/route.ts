@@ -122,18 +122,19 @@ export async function GET(req: NextRequest) {
     // the whole training page.
     let gaborThresholdPrior: PersistedGaborThresholdPrior | null = null
     try {
-      const rawGaborPriorDocs = (await prisma.$runCommandRaw({
-        find: 'vision_daily_sessions',
+      const rawGaborPriorDocs = (await prisma.visionDailySession.findRaw({
         filter: {
           userId: { $oid: user.id },
           enrollmentId: { $oid: enrollment.id },
           gaborThresholdPrior: { $exists: true },
         },
-        projection: { userId: 1, enrollmentId: 1, gaborThresholdPrior: 1 },
-        sort: { completedAt: -1, _id: -1 },
-      })) as { cursor?: { firstBatch?: unknown[] } }
+        options: {
+          projection: { userId: 1, enrollmentId: 1, gaborThresholdPrior: 1 },
+          sort: { completedAt: -1, _id: -1 },
+        },
+      })) as unknown as unknown[]
       gaborThresholdPrior = selectNewestValidGaborThresholdPrior(
-        Array.isArray(rawGaborPriorDocs?.cursor?.firstBatch) ? rawGaborPriorDocs.cursor!.firstBatch : [],
+        Array.isArray(rawGaborPriorDocs) ? rawGaborPriorDocs : [],
         user.id,
         enrollment.id,
       )

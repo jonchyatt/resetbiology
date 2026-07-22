@@ -364,31 +364,72 @@ const quickPracticeSource = readFileSync('src/components/Vision/Training/QuickPr
 const typesSource = readFileSync('src/components/Vision/Engines/types.ts', 'utf8')
 const persistenceSource = readFileSync('src/lib/vision/gaborPriorPersistence.ts', 'utf8')
 
-// GET is filtered by BOTH ids plus existence, sorted newest-first with an
-// _id tie-break, and applies no arbitrary limit.
-assert.match(
-  routeSource,
-  /find: 'vision_daily_sessions'[\s\S]{0,200}userId: \{ \$oid: user\.id \}[\s\S]{0,120}enrollmentId: \{ \$oid: enrollment\.id \}[\s\S]{0,120}gaborThresholdPrior: \{ \$exists: true \}/,
-  'GET raw find filters by userId, enrollmentId, and prior existence together',
-)
-assert.match(routeSource, /sort: \{ completedAt: -1, _id: -1 \}/, 'GET raw find sorts newest-first with an _id tie-break')
+// GET no longer runs a raw `find` command — the cursor-bounded transport is
+// gone, replaced by Prisma's own findRaw (which returns the complete matching
+// array, not a bounded initial batch).
 assert.doesNotMatch(
   routeSource,
-  /find: 'vision_daily_sessions'[\s\S]{0,400}limit:/,
-  'GET raw find for the prior applies no arbitrary limit',
+  /\$runCommandRaw\(\{\s*find:/,
+  'no $runCommandRaw({ find: ... }) remains in the GET path',
+)
+
+// GET's findRaw is filtered by BOTH ids plus existence, with the projection
+// and deterministic newest-first (with _id tie-break) sort under `options`,
+// and applies no arbitrary limit.
+assert.match(
+  routeSource,
+  /prisma\.visionDailySession\.findRaw\(\{[\s\S]{0,80}filter: \{[\s\S]{0,80}userId: \{ \$oid: user\.id \}[\s\S]{0,120}enrollmentId: \{ \$oid: enrollment\.id \}[\s\S]{0,120}gaborThresholdPrior: \{ \$exists: true \}/,
+  'GET findRaw filters by userId, enrollmentId, and prior existence together',
+)
+assert.match(
+  routeSource,
+  /options: \{[\s\S]{0,80}projection: \{ userId: 1, enrollmentId: 1, gaborThresholdPrior: 1 \}[\s\S]{0,80}sort: \{ completedAt: -1, _id: -1 \}[\s\S]{0,20}\},/,
+  'GET findRaw carries projection and the newest-first, _id-tie-broken sort under options',
+)
+assert.doesNotMatch(
+  routeSource,
+  /findRaw\(\{[\s\S]{0,400}limit:/,
+  'GET findRaw for the prior applies no arbitrary limit',
 )
 assert.match(routeSource, /selectNewestValidGaborThresholdPrior\(/, 'GET calls the pure newest-valid selector')
 assert.match(routeSource, /gaborThresholdPrior: null,/, 'the unenrolled response is explicit about gaborThresholdPrior:null')
 assert.match(
   routeSource,
+  /let gaborThresholdPrior: PersistedGaborThresholdPrior \| null = null\s+try \{/,
+  'the optional enrolled prior lookup starts from a usable cold null',
+)
+assert.match(
+  routeSource,
   /catch \(error\) \{[\s\S]{0,160}Vision Gabor prior lookup failed; using cold localization:/,
   'an optional prior lookup failure falls back cold instead of failing the whole program GET',
 )
+assert.match(
+  routeSource,
+  /catch \(error\) \{[\s\S]{0,220}\}\s+return NextResponse\.json\(\{\s+success: true,\s+enrolled: true,\s+isTester,\s+gaborThresholdPrior,/,
+  'after a caught lookup failure the enrolled response returns the unchanged cold null',
+)
+
+// findRaw returns the complete matching array (no cursor batch size to hit),
+// so more than the old ~101-document initial-batch bound must still surface
+// an older valid snapshot past a wall of newer invalid ones.
+const manyInvalidThenOneValidDoc: unknown[] = [
+  ...Array.from({ length: 150 }, () => ({
+    userId: { $oid: USER_ID },
+    enrollmentId: { $oid: ENROLLMENT_ID },
+    gaborThresholdPrior: { ...validStoredPlain, stale: true },
+  })),
+  { userId: { $oid: USER_ID }, enrollmentId: { $oid: ENROLLMENT_ID }, gaborThresholdPrior: validStoredPlain },
+]
+assert.deepEqual(
+  selectNewestValidGaborThresholdPrior(manyInvalidThenOneValidDoc, USER_ID, ENROLLMENT_ID),
+  canonicalFromStored,
+  'an older valid snapshot surfaces past 150 newer invalid ones — well past the old ~101-document cursor batch bound',
+)
 
 // POST writes engineResults and (only if qualified) gaborThresholdPrior in
-// the SAME single $set — exactly two raw Mongo calls exist in this route:
-// the GET find, and this POST update.
-assert.equal((routeSource.match(/\$runCommandRaw/g) ?? []).length, 2, 'route makes exactly two raw Mongo calls total (GET find + POST update)')
+// the SAME single $set — exactly one raw Mongo call remains in this route:
+// the POST update (GET now uses findRaw, not $runCommandRaw).
+assert.equal((routeSource.match(/\$runCommandRaw/g) ?? []).length, 1, 'route makes exactly one raw Mongo call now (POST update only)')
 assert.match(
   routeSource,
   /const sessionResultsForStorage: Prisma\.InputJsonObject = gaborThresholdPrior[\s\S]{0,120}\? \{ engineResults, gaborThresholdPrior \}[\s\S]{0,60}: \{ engineResults \}/,
