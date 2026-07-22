@@ -1,7 +1,7 @@
 # Phase 6 Verification Contract
 
-**Phase:** 06 — Muscle-Preservation Foundation  
-**Status:** Control-plane proof in progress; runtime proof not yet authorized  
+**Phase:** 06 — Muscle-Preservation Foundation
+**Status:** Control-plane proof in progress; runtime proof not yet authorized
 **Production target:** `https://resetbiology.com/workout`
 
 ## Two Separate Verdicts

@@ -1,6 +1,6 @@
 # Requirements: Muscle-Preservation Engine v2.0
 
-**Defined:** 2026-07-21  
+**Defined:** 2026-07-21
 **True north:** Help a member complete the next safe, progressive session with almost no decision burden, while preserving an honest and inspectable record of training, function, protein support, and weight context.
 
 These requirements preserve the full GODMODE v2 brief and add the research-backed upgrades. They are product contracts, not permission to make medical claims.
@@ -269,5 +269,5 @@ Roadmap phase ownership is populated and checked by the roadmapper. No requireme
 | OPS-10 | Phase 13 | Not started |
 
 ---
-*Requirements defined: 2026-07-21*  
+*Requirements defined: 2026-07-21*
 *Last updated: 2026-07-21 after state-of-the-art research and foreman classification*

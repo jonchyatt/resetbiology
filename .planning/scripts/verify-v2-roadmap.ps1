@@ -18,7 +18,8 @@ $phaseMatches = [regex]::Matches(
 )
 foreach ($phaseMatch in $phaseMatches) {
   $phase = [int]$phaseMatch.Groups[1].Value
-  foreach ($id in ($phaseMatch.Groups[2].Value -split ', ')) {
+  foreach ($rawId in ($phaseMatch.Groups[2].Value -split ', ')) {
+    $id = $rawId.Trim()
     if ($roadmapOwners.ContainsKey($id)) {
       throw "Roadmap requirement $id has more than one primary phase: $($roadmapOwners[$id]) and $phase."
     }

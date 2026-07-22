@@ -1,7 +1,7 @@
 # Feature Landscape: Muscle-Preservation Engine
 
-**Domain:** Consumer workout guidance for people losing weight or using/tapering a GLP-1 medicine  
-**Researched:** 2026-07-21  
+**Domain:** Consumer workout guidance for people losing weight or using/tapering a GLP-1 medicine
+**Researched:** 2026-07-21
 **Overall confidence:** HIGH for product conventions and the broad value of resistance training during energy restriction; MEDIUM for digital adherence mechanisms; LOW-to-MEDIUM for GLP-1-specific muscle-preservation outcomes because the direct resistance-plus-protein randomized trial is still a protocol.
 
 ## Product Outcome
@@ -283,4 +283,3 @@ Do not use session count alone as proof of clinical retention. Report starts, re
 ### Claim-Audit Source
 
 - [ECO 2025 cohort press report](https://medicalxpress.com/news/2025-04-muscle-mass-loss-minimized-weight.html) — LOW-to-MEDIUM confidence: conference press material, not a randomized peer-reviewed outcome paper. Use only to explain why the 13%/3% headline is not release-grade evidence.
-

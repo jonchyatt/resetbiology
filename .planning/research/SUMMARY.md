@@ -1,8 +1,8 @@
 # Reset Biology Muscle-Preservation Engine — Research Summary
 
-**Project:** Reset Biology `/workout` GODMODE v2  
-**Domain:** Consumer workout guidance for people losing weight or using or tapering a GLP-1 medicine  
-**Researched:** 2026-07-21  
+**Project:** Reset Biology `/workout` GODMODE v2
+**Domain:** Consumer workout guidance for people losing weight or using or tapering a GLP-1 medicine
+**Researched:** 2026-07-21
 **Overall confidence:** HIGH for the technical foundation and release controls; MEDIUM for product-specific clinical interpretation; LOW-to-MEDIUM for direct GLP-1 resistance-plus-protein outcome claims
 
 ## Executive Summary
@@ -127,51 +127,51 @@ Continue GSD numbering after the completed v1 milestone.
 
 ### Phase 6: Reconcile Production and Freeze Contracts
 
-**Why first:** Every later feature depends on real production protocol shapes, routes, member identity, plan identity, and current database indexes.  
-**Delivers:** Verification of the five polish fixes; tolerant reader fallbacks; live route and dead-shadow map; production shape/index inventory; immutable event, protocol snapshot, readiness snapshot, completion outcome, canonical exercise identity, and movement-purpose metadata contracts; shared header repair.  
+**Why first:** Every later feature depends on real production protocol shapes, routes, member identity, plan identity, and current database indexes.
+**Delivers:** Verification of the five polish fixes; tolerant reader fallbacks; live route and dead-shadow map; production shape/index inventory; immutable event, protocol snapshot, readiness snapshot, completion outcome, canonical exercise identity, and movement-purpose metadata contracts; shared header repair.
 **Exit gate:** REHIT plus two other protocols assign correctly on production; all shared-header consumers pass at 390 pixels; exact live commit is proven; no dead-shadow edit.
 
 ### Phase 7: Durable Logging Foundation
 
-**Why now:** Prefill, one-tap confirmation, Undo, rest timing, swaps, points safety, and every later coach action need a repeat-safe event path.  
-**Delivers:** Dedicated Dexie workout journal; pure reducer; member-partitioned foreground replay; comparable prefill; one-tap confirm; compensating Undo; deadline rest timer; basic swaps limited to a preapproved subset; coarse tap-cost telemetry contract.  
+**Why now:** Prefill, one-tap confirmation, Undo, rest timing, swaps, points safety, and every later coach action need a repeat-safe event path.
+**Delivers:** Dedicated Dexie workout journal; pure reducer; member-partitioned foreground replay; comparable prefill; one-tap confirm; compensating Undo; deadline rest timer; basic swaps limited to a preapproved subset; coarse tap-cost telemetry contract.
 **Exit gate:** Production unique index inspected; simultaneous replay creates one canonical event; lost-response, offline/reload, storage-denial, multiple-tab, and logout/login isolation tests pass.
 
 ### Phase 8: Guided Strength and Honest REHIT Players
 
-**Why now:** The players can trust the logging and replay foundation and can persist every transition before presenting it.  
-**Delivers:** One canonical plan compiler; strength state machine; phone-guided REHIT state machine; finite contract; crash resume; cue preflight; absolute-deadline audio and visuals; optional wake lock; partial and safe-stop outcomes; one completion/advance/points transaction.  
+**Why now:** The players can trust the logging and replay foundation and can persist every transition before presenting it.
+**Delivers:** One canonical plan compiler; strength state machine; phone-guided REHIT state machine; finite contract; crash resume; cue preflight; absolute-deadline audio and visuals; optional wake lock; partial and safe-stop outcomes; one completion/advance/points transaction.
 **Exit gate:** Background/sleep matrix, frame citations, audible receipts, reduced-motion path, safe resume, and exactly-one completion/award race pass.
 
 ### Phase 9: Readiness Prescription
 
-**Why now:** Readiness must modify a canonical, runnable plan rather than decorate a score.  
-**Delivers:** Versioned original and modified plan snapshots; planned, reduced, and recovery tiers; What Changed / Why / What Next; rescue-ladder transitions; estimated freshness and an unknown-data-aware activity path.  
-**Dependency reconciliation:** Phase 9 may precede the full substitution graph only if it modifies dose by reviewed set, effort, or interval rules and never invents or dynamically substitutes exercises. If readiness changes exercise selection, Phase 10 becomes a hard prerequisite.  
+**Why now:** Readiness must modify a canonical, runnable plan rather than decorate a score.
+**Delivers:** Versioned original and modified plan snapshots; planned, reduced, and recovery tiers; What Changed / Why / What Next; rescue-ladder transitions; estimated freshness and an unknown-data-aware activity path.
+**Dependency reconciliation:** Phase 9 may precede the full substitution graph only if it modifies dose by reviewed set, effort, or interval rules and never invents or dynamically substitutes exercises. If readiness changes exercise selection, Phase 10 becomes a hard prerequisite.
 **Exit gate:** Boundary fixtures at 39, 40, 69, and 70; visible deterministic plan changes; unknown stays unknown; fixed symptoms and stopping rules always outrank a high score.
 
 ### Phase 10: Safety Substitution Intelligence
 
-**Why separate:** The metadata shape is required in Phase 6, but authoring and clinically approving the complete movement-purpose, joint-position, equipment, complexity, and exclusion graph is its own safety workstream.  
-**Delivers:** Reviewed substitution graph; deterministic ranking; preference memory; three-honest-tries behavior that never applies through pain; cycle detection; safe no-alternative outcome.  
+**Why separate:** The metadata shape is required in Phase 6, but authoring and clinically approving the complete movement-purpose, joint-position, equipment, complexity, and exclusion graph is its own safety workstream.
+**Delivers:** Reviewed substitution graph; deterministic ranking; preference memory; three-honest-tries behavior that never applies through pain; cycle detection; safe no-alternative outcome.
 **Exit gate:** Complete substitution matrix, fixed pain/referral branches, empty-result behavior, and clinical approval.
 
 ### Phase 11: Evidence and Adherence Views
 
-**Why later:** Evidence needs stable comparable events, explicit session outcomes, reviewed exercise identity, and a frozen nutrition contract.  
-**Delivers:** Evidence Ladder and Confidence Passport; weekly estimated strength trend with absolute and bodyweight-adjusted anchors; functional checkpoints; protocol journey; local-day calendar; Purpose-Preserving Rescue Ladder; adherence-neutral continuity; shared nutrition/workout scorecard; member-owned monthly receipt.  
+**Why later:** Evidence needs stable comparable events, explicit session outcomes, reviewed exercise identity, and a frozen nutrition contract.
+**Delivers:** Evidence Ladder and Confidence Passport; weekly estimated strength trend with absolute and bodyweight-adjusted anchors; functional checkpoints; protocol journey; local-day calendar; Purpose-Preserving Rescue Ladder; adherence-neutral continuity; shared nutrition/workout scorecard; member-owned monthly receipt.
 **Exit gate:** Independent formula reproduction; bodyweight-denominator, missing-group, equipment-change, and outlier fixtures; nutrition parity; daylight-saving and travel suite; no tissue-certainty copy.
 
 ### Phase 12: Unified Workout Coach
 
-**Why late:** The coach may propose only actions already representable, safety-filtered, and repeat-safe in the normal product.  
-**Delivers:** One authenticated Cloudflare boundary; centralized swappable configuration; fixed pre-generation safety fences; bounded read-only grounding; narrow proposal contract; fresh confirm-before-action; database-backed rate limiting; graceful quota/provider failure.  
+**Why late:** The coach may propose only actions already representable, safety-filtered, and repeat-safe in the normal product.
+**Delivers:** One authenticated Cloudflare boundary; centralized swappable configuration; fixed pre-generation safety fences; bounded read-only grounding; narrow proposal contract; fresh confirm-before-action; database-backed rate limiting; graceful quota/provider failure.
 **Exit gate:** Cross-user, injection, fabricated identifier, stale proposal, provider failure, replay, and no-write-before-confirm tests pass. Raw transcripts remain off unless separately ratified.
 
 ### Phase 13: Craft, Privacy, Security, and Full Production Proof
 
-**Why last:** This phase closes the whole system; it must audit rather than invent accessibility or safety that earlier phases skipped.  
-**Delivers:** Final loading/empty/error polish; 390-pixel and 200-percent-zoom matrix; bounded telemetry retention and deletion; full blind dual-eye recordings with frame citations; exact baseline cleanup; least-privilege credential rotation and old-user revocation.  
+**Why last:** This phase closes the whole system; it must audit rather than invent accessibility or safety that earlier phases skipped.
+**Delivers:** Final loading/empty/error polish; 390-pixel and 200-percent-zoom matrix; bounded telemetry retention and deletion; full blind dual-eye recordings with frame citations; exact baseline cleanup; least-privilege credential rotation and old-user revocation.
 **Exit gate:** Exact-commit evidence manifest; static, temporal, and audible receipts; zero console errors; pre/post test-account equality; live database-backed reads and writes on the new credential; a fresh fully redacted old-credential authentication failure.
 
 ### Phase-Ordering Rules
@@ -240,5 +240,5 @@ The requirements document should turn these conclusions into explicit acceptance
 **Claim-audit source — LOW-to-MEDIUM confidence:** the ECO 2025 conference press report explains the origin and limitations of the 13% headline but is not a randomized peer-reviewed outcome paper and does not support a 3% muscle-loss claim.
 
 ---
-*Research completed: 2026-07-21*  
+*Research completed: 2026-07-21*
 *Ready for requirements and roadmap: yes, with the named clinical, database, privacy, and nutrition holds above*

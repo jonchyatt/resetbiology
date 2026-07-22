@@ -1,7 +1,7 @@
 # Architecture: Reset Biology Muscle-Preservation Engine
 
-**Project:** Reset Biology `/workout` GODMODE v2  
-**Researched:** 2026-07-21  
+**Project:** Reset Biology `/workout` GODMODE v2
+**Researched:** 2026-07-21
 **Architecture posture:** One event truth, deterministic clinical rules, progressive browser enhancement, and no new packages
 
 ## True-North Architecture

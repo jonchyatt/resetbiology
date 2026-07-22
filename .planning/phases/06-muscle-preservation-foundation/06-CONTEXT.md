@@ -1,7 +1,7 @@
 # Phase 6 Context: Muscle-Preservation Foundation
 
-**Milestone:** v2.0 Muscle-Preservation Engine  
-**User workstream alias:** Phase 0 — reconcile and verify production  
+**Milestone:** v2.0 Muscle-Preservation Engine
+**User workstream alias:** Phase 0 — reconcile and verify production
 **Status:** Scaffold allowed; runtime changes held until ownership boundaries are clear
 
 ## Phase Boundary

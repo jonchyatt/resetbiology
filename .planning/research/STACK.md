@@ -1,7 +1,7 @@
 # Technology Stack: Muscle-Preservation Engine
 
-**Project:** Reset Biology v2.0 Muscle-Preservation Engine  
-**Researched:** 2026-07-21  
+**Project:** Reset Biology v2.0 Muscle-Preservation Engine
+**Researched:** 2026-07-21
 **Confidence:** HIGH for repository and browser-platform choices; MEDIUM for production index rollout until Atlas state is inspected
 
 ## Recommendation in one sentence

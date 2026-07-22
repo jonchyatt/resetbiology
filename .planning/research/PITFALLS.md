@@ -1,8 +1,8 @@
 # Domain Pitfalls: Reset Biology Muscle-Preservation Engine
 
-**Domain:** Clinician-warm workout guidance for members tapering GLP-1 medication  
-**Project:** Reset Biology `/workout` GODMODE v2  
-**Researched:** 2026-07-21  
+**Domain:** Clinician-warm workout guidance for members tapering GLP-1 medication
+**Project:** Reset Biology `/workout` GODMODE v2
+**Researched:** 2026-07-21
 **Overall confidence:** HIGH for browser, Next.js, Prisma, MongoDB, and security mechanics; MEDIUM for product-specific clinical interpretation pending formal clinical review
 
 ## Operating Position
