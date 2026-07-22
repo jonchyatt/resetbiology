@@ -6,6 +6,29 @@
 
 ---
 
+## 0. 2026-07-21 GODMODE scope addendum — controlling roadmap
+
+Jon's 2026-07-21 directive expands this shipped foundation into a Phase 0–9 crown build. Where this addendum conflicts with the older T0–T4 / WP0–WP8 map below, this addendum wins. The older map and append-only ledger remain preserved as implementation history and evidence.
+
+**True north:** build a vision gym people want to use for 60 sessions, where visual threshold—not game reflex—is the therapeutic variable and member-facing score. The general-adult contrast and near-vision spine is the trunk and receives the deepest work first. Integration and convergence are later branches that feed the trunk without taking work away from it.
+
+**Current phase ladder:**
+
+1. Foundation truth: local-day correctness, idempotent points, true-DPR stimuli, and exact tester cleanup.
+2. Adult trunk: state-of-the-art Gabor threshold work, valid Snellen preparation, calm-zone visual system, and recovery economy.
+3. Camera distance: client-only iris/card calibration, lock mode, and live angular rescaling. Camera is now IN SCOPE.
+4. Flagship Gabor fade-in shooter with a staircase-sealed therapeutic core.
+5. Tasteful game feel around the preserved 12-week curriculum engines.
+6. Complementary per-eye dichoptic integration.
+7. Adaptive office-grade convergence work with hard safety gates.
+8. Gemini-generated ethereal art at the periphery and reward beats only.
+9. Grounded, recovery-aware Vision Coach with code-enforced medical fences.
+10. Headset-ready eye-separation architecture and a VAC-aware WebXR specification.
+
+**Binding laws:** procedural/vector stimuli at true device-pixel resolution; threshold controls difficulty; forced-choice decisions and false alarms; quiet detection zones; one hard session per member-local day; honest claims; adjunct-only amblyopia framing; screening-not-diagnosis camera framing; on-device camera processing; executable symptom stops; additive data changes; dual-eye production proof at every visual gate.
+
+The detailed GSD control plane is in `.planning/vision-interactive/`. Jarvis holds the exhaustive ATLAS map and foreman ledger under `data/rb-vision-interactive/`.
+
 ## 1. North Star
 
 The 12-week vision program must stop being *a digital PDF with Mark Done buttons* and become **a guided vision gym**: every session is a coached, full-screen, animated workout your eyes physically follow — timed, measured, scored, narrated — that a user *wants* to come back to for 60 sessions. FUN FIRST, educational second (Jon doctrine).
@@ -76,13 +99,13 @@ Shipped same-day: comeback mode (W2b-a, lapse >48h → "Welcome back — today c
 - **W3.3 Video demos** — 30-60s clip per exercise from ScreenFit PDF storyboards (content pipeline, not code).
 - **W3.4 Night mode** — red-shifted dark palette for evening sessions (roadmap item).
 
-### Tier 4 — Frontier (phase 2, explicitly out of current scope)
-- **W4.1 Camera assist**: webcam distance tracking (upgrade existing `DistanceTracker.tsx`), face-mesh head-stillness scoring (MediaPipe), gaze-estimation compliance (WebGazer-class). Jon ruled: screen-guided ships FIRST; camera = phase 2 experiment.
+### Tier 4 — Historical frontier map (superseded by the 2026-07-21 phase ladder)
+- **W4.1 Camera assist**: the old park is reversed. Camera distance is now an in-scope Phase-2 deliverable after the adult trunk, using client-only iris landmarks plus per-device card calibration, lock mode, and live angular rescaling.
 - **W4.2 Custom exercise builder** (admin CRUD like Breathe's library) · **W4.3 community/leaderboards** · **W4.4 wearable distance** · **W4.5 offline PWA/Dexie parity with Breathe** · **W4.6 Drive sync**.
 
 ## 4. Hard constraints (violating any = regression)
 1. **Never strip**: 3-tab layout, 6 binocular modes, phase gating, streaks/points, untimed mode, enrollment flow. New engines are ADDITIVE (`feedback_never_strip_features_silently.md`, `feedback_v2_alongside_v1.md`).
-2. **Deploy = `git push origin master` ONLY.** NEVER run `vercel` CLI in this repo (duplicate-project trap; cost money twice). Live Vercel project is `app`.
+2. **Deploy = `git push origin vision-interactive-overhaul:master` ONLY for this rail.** NEVER run `vercel` CLI in this repo (duplicate-project trap; cost money twice). Live Vercel project is `app`.
 3. **Layout trap**: routes live in `/app/`, components in `/src/components/` — search both before declaring anything missing.
 4. **Verify on the LIVE site** (resetbiology.com) at phone viewport — localhost proof is not proof; HH Chromium ≠ iOS Safari proof, so keep all interactions touch-first, no hover-dependent UI. **The ship gate additionally requires one real WebKit pass** (Jon's iPhone Safari or a WebKit runner): touch targets, TTS/audio unlock, fullscreen portal behavior, orientation change, canvas frame rate.
 5. **Free-tier AI only** for anonymous-user features.
@@ -156,3 +179,4 @@ The 51 PDFs in `screenfit/` hold the original coaching language, rep schemes, an
 | 2026-07-13 | FLW declare-complete | FLW consult 5 HOLD-WITH-FIXES → all addressed same session. **HIGH (confirmed by reading the probe screenshot): mount-scroll buried the abort X under the fixed Header/breadcrumb stack** → `scroll-mt-36` fix (b1ea5d39) + hardened `scripts/abort-visibility-probe.mjs` (elementFromPoint hit-test, real X-tap, zero-persistence assert) — **PASS on Chromium (X cy=187 unobstructed, scrollY 471→405) AND real WebKit (cy=187, scrollY 403)**, receipts `abort-probe-{chromium,webkit}.png` + JSON lines in jarvis journey dir. LOW (receipt identity): deployed master lineage is `8fa99856` (Chunk A) · `2cc30a90` (B pt1) · `b4bee3a9` (B pt2) · `25ad3fdd` · `43215961` · `88fb1e7a` · `b1ea5d39` — earlier branch-side SHAs ed127f3e/7f9162ee/21b80fac were pre-rebase equivalents of the first three. MED (control plane): open+bind a rail Gorr instance before next consult — next session's first move. | b1ea5d39 | abort receipt PASS both engines |
 | 2026-07-15 | Tester lane | **Tester rip-through bypass** (foreman run 2026-07-15-adf3, Sol plan-gate flw-consult-6 HOLD-WITH-FIXES applied — traversal-cursor redesign): additive `testDayOffset` cursor (startDate NEVER mutated), `advance_day` (allowlist-gated, 409 double-tap guard, rest-day auto-skip) + `reset_test_cursor` (exact restore), amber `TESTER · Jump to next session →` on Session-Complete + rest-day cards, deterministic 60-session traversal proof `scripts/vision-day-traversal-check.mjs` (60/60 PASS). Built by Sonnet worker (Codex lane environmentally blocked — 3 OS-level sweeper kills), blind-verified PASS_WITH_NOTES (8/8 required; 4 cosmetic notes parked: script mirror-drift, date-math scope, terminal-day card cosmetic, swallowed 409). | e6541835 | tsc+build clean · traversal 60/60 · blind PASS_WITH_NOTES · live probe pending |
 | 2026-07-15 | Gabor engine | **GaborAcuityEngine** (library-only per CW/Oracle follow-up structure; curriculum mapping still parked): orientation-ID forced choice on canvasKit drawGaborPatch, 2-down-1-up contrast staircase [1,100] w/ hardened contract (balanced bags, response locking, 10s lapse timeout, thresholdValid gating), texture-tier copy (no cpd), hard-blocker-4 safety (X every state, abort=zero result, clean pause/resume, static reduced-motion), registry + visionExercises entry. **Blind verifier FAILed v1 on a real HIGH — diagonal glyphs swapped vs rendered stimulus (numerically derived) — fix wave 91923ed0, re-verified PASS with independent math re-derivation.** | 36066aa5+91923ed0 | tsc clean ×3 · blind PASS after 1 fix wave · live probe + dual-eye pending |
+| 2026-07-21 | GODMODE control plane | Jon expanded the crown module through Phases 0–9 and restored camera distance to scope. Sol accepted the adult-trunk-first true north, GSD scaffold, exhaustive ATLAS map, and serialized Phase-0 tickets P0-A through P0-D. Product code remains held until the scaffold candidate is blind-accepted. | pending control-plane commit | plan gate |
