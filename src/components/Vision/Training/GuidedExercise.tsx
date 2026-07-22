@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import {
   Play,
   Pause,
@@ -10,9 +10,11 @@ import {
   CheckCircle,
   Clock,
   ChevronRight,
-  Target
+  ChevronDown,
+  Target,
+  Film
 } from 'lucide-react'
-import { VisionExercise } from '@/data/visionExercises'
+import type { VisionExercise, VisionExerciseDemo } from '@/data/visionExercises'
 
 interface GuidedExerciseProps {
   exercise: VisionExercise
@@ -60,12 +62,236 @@ const AUDIO_PATTERNS = {
   },
 }
 
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches)
+    handleChange()
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    }
+
+    mediaQuery.addListener(handleChange)
+    return () => mediaQuery.removeListener(handleChange)
+  }, [])
+
+  return prefersReducedMotion
+}
+
+function DemoSvgFrame({ children }: { children: ReactNode }) {
+  return (
+    <svg
+      viewBox="0 0 400 240"
+      className="w-full h-auto rounded-lg border border-gray-700/50 bg-gray-950/50"
+      role="img"
+      aria-label="Exercise demonstration"
+    >
+      <rect x="0" y="0" width="400" height="240" rx="12" fill="#111827" />
+      {children}
+    </svg>
+  )
+}
+
+function FocusPushupsDemo({ reducedMotion }: { reducedMotion: boolean }) {
+  return (
+    <DemoSvgFrame>
+      <line x1="95" y1="170" x2="305" y2="70" stroke="rgba(56,189,248,0.35)" strokeWidth="3" strokeDasharray="6 7" />
+      <line x1="95" y1="70" x2="305" y2="170" stroke="rgba(56,189,248,0.35)" strokeWidth="3" strokeDasharray="6 7" />
+      <circle cx="82" cy="120" r="20" fill="rgba(45,212,191,0.18)" stroke="#2dd4bf" strokeWidth="3" />
+      <circle cx="318" cy="120" r="20" fill="rgba(45,212,191,0.18)" stroke="#2dd4bf" strokeWidth="3" />
+      <text x="82" y="125" textAnchor="middle" className="fill-gray-200 text-[14px] font-semibold">Eye</text>
+      <text x="318" y="125" textAnchor="middle" className="fill-gray-200 text-[14px] font-semibold">Eye</text>
+      <line x1="140" y1="120" x2="260" y2="120" stroke="rgba(156,163,175,0.5)" strokeWidth="2" />
+      <circle cx="200" cy="120" r={reducedMotion ? 18 : 14} fill="#f59e0b" stroke="#fde68a" strokeWidth="4">
+        {!reducedMotion && (
+          <>
+            <animate attributeName="cx" values="270;130;270" dur="3.4s" repeatCount="indefinite" />
+            <animate attributeName="r" values="12;22;12" dur="3.4s" repeatCount="indefinite" />
+          </>
+        )}
+      </circle>
+      <text x="200" y="210" textAnchor="middle" className="fill-gray-400 text-[12px]">near - clear - far</text>
+    </DemoSvgFrame>
+  )
+}
+
+function SmoothTrackingDemo({ reducedMotion }: { reducedMotion: boolean }) {
+  const path = 'M80,120 C125,35 275,35 320,120 C275,205 125,205 80,120 C125,35 275,205 320,120'
+
+  return (
+    <DemoSvgFrame>
+      <path d={path} fill="none" stroke="rgba(45,212,191,0.35)" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="80" cy="120" r="12" fill="#2dd4bf" stroke="#ccfbf1" strokeWidth="4">
+        {!reducedMotion && (
+          <animateMotion dur="5s" repeatCount="indefinite" path={path} />
+        )}
+      </circle>
+      <line x1="200" y1="90" x2="200" y2="150" stroke="rgba(255,255,255,0.25)" strokeWidth="2" />
+      <line x1="170" y1="120" x2="230" y2="120" stroke="rgba(255,255,255,0.25)" strokeWidth="2" />
+      <text x="200" y="214" textAnchor="middle" className="fill-gray-400 text-[12px]">eyes follow the loop, head stays centered</text>
+    </DemoSvgFrame>
+  )
+}
+
+function PeripheralPointingDemo({ reducedMotion }: { reducedMotion: boolean }) {
+  const cuePath = 'M200,40 A150,80 0 1 1 199,40'
+  const cuePositions = [
+    [90, 70], [200, 45], [310, 70], [340, 120],
+    [310, 170], [200, 195], [90, 170], [60, 120]
+  ]
+
+  return (
+    <DemoSvgFrame>
+      <circle cx="200" cy="120" r="20" fill="rgba(45,212,191,0.16)" stroke="#2dd4bf" strokeWidth="3" />
+      <line x1="188" y1="120" x2="212" y2="120" stroke="#e5e7eb" strokeWidth="3" />
+      <line x1="200" y1="108" x2="200" y2="132" stroke="#e5e7eb" strokeWidth="3" />
+      {cuePositions.map(([x, y], index) => (
+        <circle key={`${x}-${y}-${index}`} cx={x} cy={y} r="9" fill="rgba(148,163,184,0.35)" />
+      ))}
+      <circle cx="200" cy="40" r="13" fill="#f59e0b" stroke="#fde68a" strokeWidth="4">
+        {!reducedMotion && (
+          <animateMotion dur="4s" repeatCount="indefinite" path={cuePath} />
+        )}
+      </circle>
+      <text x="200" y="214" textAnchor="middle" className="fill-gray-400 text-[12px]">fixate center, notice the edge cue</text>
+    </DemoSvgFrame>
+  )
+}
+
+function EyeJumpsDemo({ reducedMotion }: { reducedMotion: boolean }) {
+  const points = [
+    [85, 120], [315, 120], [200, 55], [200, 185]
+  ]
+
+  return (
+    <DemoSvgFrame>
+      {points.map(([x, y], index) => (
+        <g key={`${x}-${y}`}>
+          <circle cx={x} cy={y} r="24" fill="rgba(56,189,248,0.14)" stroke="rgba(56,189,248,0.55)" strokeWidth="3" />
+          <text x={x} y={y + 5} textAnchor="middle" className="fill-gray-200 text-[15px] font-semibold">
+            {index + 1}
+          </text>
+        </g>
+      ))}
+      <circle cx="85" cy="120" r="13" fill="#f59e0b" stroke="#fde68a" strokeWidth="4">
+        {!reducedMotion && (
+          <>
+            <animate attributeName="cx" values="85;315;200;200;85" dur="4s" repeatCount="indefinite" calcMode="discrete" />
+            <animate attributeName="cy" values="120;120;55;185;120" dur="4s" repeatCount="indefinite" calcMode="discrete" />
+          </>
+        )}
+      </circle>
+      <text x="200" y="214" textAnchor="middle" className="fill-gray-400 text-[12px]">jump, land, confirm clarity</text>
+    </DemoSvgFrame>
+  )
+}
+
+function MirrorScanDemo({ reducedMotion }: { reducedMotion: boolean }) {
+  const path = 'M105,65 H295 V175 H105 Z'
+
+  return (
+    <DemoSvgFrame>
+      <rect x="105" y="65" width="190" height="110" rx="10" fill="rgba(31,41,55,0.9)" stroke="rgba(148,163,184,0.75)" strokeWidth="3" />
+      <line x1="200" y1="65" x2="200" y2="175" stroke="rgba(148,163,184,0.25)" strokeWidth="2" />
+      <line x1="105" y1="120" x2="295" y2="120" stroke="rgba(148,163,184,0.25)" strokeWidth="2" />
+      <circle cx="105" cy="65" r="12" fill="#2dd4bf" stroke="#ccfbf1" strokeWidth="4">
+        {!reducedMotion && (
+          <animateMotion dur="4.5s" repeatCount="indefinite" path={path} />
+        )}
+      </circle>
+      <circle cx="200" cy="120" r="8" fill="#e5e7eb" />
+      <text x="200" y="214" textAnchor="middle" className="fill-gray-400 text-[12px]">scan the frame while head stays centered</text>
+    </DemoSvgFrame>
+  )
+}
+
+function DemoAnimation({ demo, reducedMotion }: { demo: Extract<VisionExerciseDemo, { type: 'animation' }>; reducedMotion: boolean }) {
+  switch (demo.animation) {
+    case 'focus-pushups':
+      return <FocusPushupsDemo reducedMotion={reducedMotion} />
+    case 'smooth-tracking':
+      return <SmoothTrackingDemo reducedMotion={reducedMotion} />
+    case 'peripheral-pointing':
+      return <PeripheralPointingDemo reducedMotion={reducedMotion} />
+    case 'eye-jumps':
+      return <EyeJumpsDemo reducedMotion={reducedMotion} />
+    case 'mirror-scan':
+      return <MirrorScanDemo reducedMotion={reducedMotion} />
+    default:
+      return null
+  }
+}
+
+function ExerciseDemo({
+  demo,
+  exerciseTitle,
+  reducedMotion
+}: {
+  demo: VisionExerciseDemo
+  exerciseTitle: string
+  reducedMotion: boolean
+}) {
+  const [isOpen, setIsOpen] = useState(true)
+
+  return (
+    <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl border border-primary-400/20 shadow-lg overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-gray-800/60 transition-colors"
+      >
+        <span className="flex items-center gap-2 text-white font-semibold">
+          <Film className="w-4 h-4 text-primary-400" />
+          Demonstration
+        </span>
+        {isOpen ? (
+          <ChevronDown className="w-5 h-5 text-gray-400" />
+        ) : (
+          <ChevronRight className="w-5 h-5 text-gray-400" />
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="p-4 pt-0 space-y-3">
+          {demo.type === 'video' ? (
+            <video
+              className="w-full rounded-lg border border-gray-700/50 bg-black"
+              controls
+              preload="metadata"
+              poster={demo.posterUrl}
+            >
+              <source src={demo.url} />
+              Video demonstration unavailable for {exerciseTitle}.
+            </video>
+          ) : (
+            <DemoAnimation demo={demo} reducedMotion={reducedMotion} />
+          )}
+          {demo.caption && (
+            <p className="text-sm text-gray-400">{demo.caption}</p>
+          )}
+          {reducedMotion && demo.type === 'animation' && (
+            <p className="text-xs text-gray-500">Reduced motion is enabled, so the static first-frame diagram is shown.</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedExerciseProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [elapsedTime, setElapsedTime] = useState(0)
   const [showCompletionScreen, setShowCompletionScreen] = useState(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | undefined>(undefined)
@@ -583,6 +809,14 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
           </p>
         </div>
       </div>
+
+      {exercise.demo && (
+        <ExerciseDemo
+          demo={exercise.demo}
+          exerciseTitle={exercise.title}
+          reducedMotion={prefersReducedMotion}
+        />
+      )}
 
       {/* Visual Guide Canvas */}
       <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl border border-primary-400/20 shadow-lg overflow-hidden">
