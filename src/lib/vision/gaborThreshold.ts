@@ -366,12 +366,8 @@ export function getGaborThresholdEstimate(state: GaborThresholdState): GaborThre
     return { valid: false, reason: 'too-few-reversals' }
   }
 
-  // The protocol terminates at reversal eight; only those six post-burn-in
-  // reversals define its threshold, even if a caller has not stopped promptly.
-  const reversalContrastsPct = state.reversalContrastsPct.slice(
-    GABOR_THRESHOLD_PROTOCOL.discardedReversals,
-    GABOR_THRESHOLD_PROTOCOL.discardedReversals + GABOR_THRESHOLD_PROTOCOL.averagedReversals,
-  )
+  const usableReversals = state.reversalContrastsPct.slice(GABOR_THRESHOLD_PROTOCOL.discardedReversals)
+  const reversalContrastsPct = usableReversals.slice(-GABOR_THRESHOLD_PROTOCOL.averagedReversals)
   const contrastThresholdPct = Math.pow(
     10,
     reversalContrastsPct.reduce((sum, value) => sum + Math.log10(value), 0)

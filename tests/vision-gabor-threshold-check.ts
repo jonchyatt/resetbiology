@@ -36,6 +36,10 @@ function median(values: readonly number[]): number {
   return sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2
 }
 
+function medianAbsoluteLog10Error(estimates: readonly number[], truth: number): number {
+  return median(estimates.map((estimate) => Math.abs(Math.log10(estimate / truth))))
+}
+
 // A 3-down/1-up transformed rule converges where p^3 = 1/2.
 close(GABOR_3_DOWN_1_UP_TARGET_CORRECT, 0.793700526, 1e-9, '3-down/1-up target')
 close(Math.pow(GABOR_3_DOWN_1_UP_TARGET_CORRECT, 3), 0.5, 1e-12, 'target satisfies p^3 = 0.5')
@@ -231,6 +235,41 @@ if (fixtureEstimate.valid) {
   assert.deepEqual(fixtureEstimate.reversalContrastsPct, reversalFixture.slice(2))
 }
 
+const elevenReversals = [90, 80, 1, 2, 4, 8, 16, 32, 64, 100, 50]
+const lateEstimate = getGaborThresholdEstimate({
+  ...createGaborThresholdState(),
+  adaptiveTrials: 60,
+  reversalContrastsPct: elevenReversals,
+})
+assert.equal(lateEstimate.valid, true)
+if (lateEstimate.valid) {
+  const actualReversalsSixThroughEleven = elevenReversals.slice(5)
+  const rejectedReversalsThreeThroughEight = elevenReversals.slice(2, 8)
+  assert.deepEqual(
+    lateEstimate.reversalContrastsPct,
+    actualReversalsSixThroughEleven,
+    'an overrun estimate uses actual reversals 6-11, not frozen reversals 3-8',
+  )
+  close(
+    lateEstimate.contrastThresholdPct,
+    Math.pow(actualReversalsSixThroughEleven.reduce((product, value) => product * value, 1), 1 / 6),
+    1e-12,
+    'overrun threshold uses the final six usable reversals',
+  )
+  assert.notEqual(
+    lateEstimate.contrastThresholdPct,
+    Math.pow(rejectedReversalsThreeThroughEight.reduce((product, value) => product * value, 1), 1 / 6),
+    'asymmetric fixture distinguishes latest-six from first-six formulas',
+  )
+}
+
+const asymmetricEstimateFixture = [5, 10, 40]
+const correctMedianPerRunError = medianAbsoluteLog10Error(asymmetricEstimateFixture, 10)
+const rejectedErrorOfMedian = Math.abs(Math.log10(median(asymmetricEstimateFixture) / 10))
+close(correctMedianPerRunError, Math.log10(2), 1e-12, 'bank error is the median per-run absolute log error')
+assert.equal(rejectedErrorOfMedian, 0)
+assert.notEqual(correctMedianPerRunError, rejectedErrorOfMedian, 'error-of-median substitution is detectably different')
+
 // The seeded therapeutic block has one and only one declared composition.
 const block = buildGaborThresholdBlock({ seed: 'p1-a1-proof', blockIndex: 0, currentContrastPct: 20 })
 assert.equal(block.length, 10)
@@ -374,6 +413,7 @@ interface SimulatedSession {
   readonly measurementResponses: readonly boolean[]
   readonly localizationResponses: number
   readonly measurementAdaptiveTrials: number
+  readonly firstValidResponseIndex: number | null
 }
 
 function runMeasurement(
@@ -384,6 +424,8 @@ function runMeasurement(
 ): SimulatedSession {
   let state = initialState
   const measurementResponses: boolean[] = []
+  let estimatePct: number | null = null
+  let firstValidResponseIndex: number | null = null
   for (let trial = 0; trial < responseCap; trial += 1) {
     const correct = random() < observerCorrectProbability(state.contrastPct, thresholdPct)
     measurementResponses.push(correct)
@@ -391,13 +433,19 @@ function runMeasurement(
       response: correct ? 'correct' : 'incorrect',
       adaptive: true,
     }).state
+    const estimate = getGaborThresholdEstimate(state)
+    if (estimate.valid) {
+      estimatePct = estimate.contrastThresholdPct
+      firstValidResponseIndex = trial + 1
+      break
+    }
   }
-  const estimate = getGaborThresholdEstimate(state)
   return {
-    estimatePct: estimate.valid ? estimate.contrastThresholdPct : null,
+    estimatePct,
     measurementResponses,
     localizationResponses: 0,
     measurementAdaptiveTrials: state.adaptiveTrials,
+    firstValidResponseIndex,
   }
 }
 
@@ -453,8 +501,15 @@ function evaluateBank(
     assert.equal(result.measurementAdaptiveTrials, result.measurementResponses.length)
     assert.ok(result.localizationResponses + result.measurementAdaptiveTrials <= 60)
     if (result.estimatePct !== null) {
+      assert.equal(
+        result.measurementResponses.length,
+        result.firstValidResponseIndex,
+        'processing stops on the response that first makes the threshold valid',
+      )
       validRuns += 1
       validEstimates.push(result.estimatePct)
+    } else {
+      assert.equal(result.firstValidResponseIndex, null)
     }
     for (const correct of result.measurementResponses.slice(-20)) {
       terminalCorrect += Number(correct)
@@ -463,7 +518,7 @@ function evaluateBank(
   }
 
   const validRatePct = (validRuns / 240) * 100
-  const medianLog10Error = Math.abs(Math.log10(median(validEstimates) / thresholdPct))
+  const medianLog10Error = medianAbsoluteLog10Error(validEstimates, thresholdPct)
   const terminalMeasurementAccuracyPct = (terminalCorrect / terminalResponses) * 100
   simulationRows.push({
     lane,
