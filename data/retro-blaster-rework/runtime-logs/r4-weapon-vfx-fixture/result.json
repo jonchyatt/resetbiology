@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "baseSha": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "assertionCount": 12,
+  "assertions": [
+    "protected v1 mic-lock block remains byte-identical to the R4 base",
+    "mic authority predicate closes every independent failure gate",
+    "freshness schedules stay lit through 3:1 and fail closed on frame four",
+    "presentation predicate agrees with the frozen engine qualifier",
+    "charge is real-mic-only and bound to the open attack target",
+    "canonical tracer and hit-lock are unique, ID-bound, and threshold exact",
+    "deepest legal dive retains an observable pre-lock tracer frame",
+    "finalizer authorizes bloom even when presentation projectile is missing",
+    "geometry oracle pins charge, tracer, lock, bloom, motion, and hint neutrality",
+    "shell uses one captured tuple and change-only derive-once datasets",
+    "hook observer extension preserves ten destructuring consumers",
+    "adversarial ended-track interleaving always defeats an advanced generation"
+  ],
+  "protectedEngineSha256": "61a058a47f237723192a604d398dd34356646d144c6432c3508a5dd0993955a8",
+  "hookBeforeSha256": "1174319b843be7183bae542e4bfc76c631831267efd419338cd4cc5fdd576423",
+  "hookAfterSha256": "8515917a3f0b4066d23d85c4d7e4b0b9553f25ff332332604be0412cca5ea9f5",
+  "constants": {
+    "micConfidenceFloor": 0.75,
+    "micToleranceCents": 70,
+    "staleFrameGrace": 3,
+    "maxSimStepMs": 50,
+    "laserSpeed": 540,
+    "playerY": 303.75,
+    "diveAttackY": 231.75,
+    "alienHeight": 20.25,
+    "alienWidth": 27
+  },
+  "targetFrequency": 261.6255653005986,
+  "foldedBoundaryCheck": 69.99999999900005
+}

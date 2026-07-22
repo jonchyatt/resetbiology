@@ -38,10 +38,12 @@ import {
 } from '../../src/components/PitchDefender/retroBlasterEngine'
 
 const SHELL_PATH = 'src/components/PitchDefender/RetroBlasterII.tsx'
+// R9b re-freeze: audio/detector are the accepted R9a bytes; renderer changes
+// only for the target-invariant answer-mask branch and is proved separately.
 const protectedHashes = {
-  audio: '68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430',
-  detector: '9ED5801EF0D19EC65C73B639A70F3E11A394ADE4562D0442D8B375F25A651CC2',
-  renderer: '109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3',
+  audio: 'B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744',
+  detector: '8515917A3F0B4066D23D85C4D7E4B0B9553F25FF332332604BE0412CCA5EA9F5',
+  renderer: 'AD6452B3A0C9265A047F3EC3B87484978C33E96C75F9F1FCE8907DC638A552FB',
 } as const
 
 function sha256(path: string): string {

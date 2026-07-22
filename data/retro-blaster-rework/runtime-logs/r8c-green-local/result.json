@@ -1,0 +1,384 @@
+{
+  "schema": "retro-blaster-r8c-signal-check/v2",
+  "generatedAt": "2026-07-22T20:21:53.977Z",
+  "mode": "(missing)",
+  "exactBase": "d34edf4090eacd8fd051361d27bec754033aac9c",
+  "head": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "originMaster": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "fixture": {
+    "path": "scripts/retro-blaster/r8c-signal-check-fixture.ts",
+    "sha256": "9D7B2462D0EF6FFD35303BF59609B8140141C12A1E5418B78F9CBAD9D074635F"
+  },
+  "inspectedSourceHashes": {
+    "engine": "1BC53D8E186A88999035209F25D413EA6728E08AD2A5533031FCB7FC421AD436",
+    "shell": "4DB085E0FBC4B45A0FE004BCEC996758E0BDC752015032E01D3060BD90513CB7",
+    "renderer": "AD6452B3A0C9265A047F3EC3B87484978C33E96C75F9F1FCE8907DC638A552FB",
+    "audio": "B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744",
+    "family": "8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46",
+    "detector": "8515917A3F0B4066D23D85C4D7E4B0B9553F25FF332332604BE0412CCA5EA9F5"
+  },
+  "counts": {
+    "total": 35,
+    "pass": 33,
+    "fail": 2
+  },
+  "shapeValid": true,
+  "status": "FAIL",
+  "rows": [
+    {
+      "id": "R8C-01",
+      "contract": "wave 1 is guided and never masked as a probe",
+      "status": "PASS",
+      "evidence": {
+        "cuePolicy": "guided",
+        "mask": false
+      }
+    },
+    {
+      "id": "R8C-02",
+      "contract": "wave 2+ opens one pending opportunity at beginWave",
+      "status": "PASS",
+      "evidence": {
+        "pending": true
+      }
+    },
+    {
+      "id": "R8C-03",
+      "contract": "first selected reviewed and ready EAR attack is blind",
+      "status": "PASS",
+      "evidence": {
+        "cuePolicy": "blind"
+      }
+    },
+    {
+      "id": "R8C-04",
+      "contract": "first selected unreviewed EAR attack is guided and consumes the opportunity",
+      "status": "PASS",
+      "evidence": {
+        "disposition": "guided-unreviewed"
+      }
+    },
+    {
+      "id": "R8C-05",
+      "contract": "first selected output-not-ready EAR attack is guided and consumes the opportunity",
+      "status": "PASS",
+      "evidence": {
+        "disposition": "guided-output-not-ready"
+      }
+    },
+    {
+      "id": "R8C-06",
+      "contract": "first selected VOICE attack is guided and consumes the opportunity",
+      "status": "PASS",
+      "evidence": {
+        "disposition": "guided-voice"
+      }
+    },
+    {
+      "id": "R8C-07",
+      "contract": "no later attack is promoted after an ineligible first opportunity",
+      "status": "PASS",
+      "evidence": {
+        "first": "guided-unreviewed",
+        "second": "guided"
+      }
+    },
+    {
+      "id": "R8C-08",
+      "contract": "new startAttack input seam preserves selector queue review RNG and cadence counts",
+      "status": "PASS",
+      "evidence": {
+        "selected": "r8c-control:alien:2:0",
+        "rngCalls": 0
+      }
+    },
+    {
+      "id": "R8C-09",
+      "contract": "same seed reproduces the same selected and decorated attack",
+      "status": "PASS",
+      "evidence": {
+        "attack": {
+          "attackId": "r8c-seed:attack:1",
+          "alienId": "r8c-seed:alien:2:0",
+          "note": "C4",
+          "side": 1,
+          "cue": {
+            "owner": "r8c-probe",
+            "policy": "blind"
+          },
+          "cuePolicy": "blind",
+          "answerHelpUsed": false,
+          "outputReadyAtStart": true,
+          "readinessObservationId": 900,
+          "stimulusRequest": null,
+          "phase": "telegraph",
+          "telegraphStartedAtMs": 1001,
+          "demandAtMs": null,
+          "deadlineAtMs": null,
+          "outboundT": 0,
+          "returnFromT": 0,
+          "returnStartedAtMs": null,
+          "outcome": null,
+          "resolvedAtMs": null,
+          "voiceWindowEligible": null,
+          "voiceHeardPhonation": false
+        }
+      }
+    },
+    {
+      "id": "R8C-10",
+      "contract": "mask spans pending telegraph awaiting and unresolved outbound",
+      "status": "PASS",
+      "evidence": {
+        "pending": true,
+        "telegraph": true,
+        "awaiting": true,
+        "outbound": true
+      }
+    },
+    {
+      "id": "R8C-11",
+      "contract": "guided selection drops the mask in the selection frame",
+      "status": "PASS",
+      "evidence": {
+        "before": true,
+        "after": false
+      }
+    },
+    {
+      "id": "R8C-12",
+      "contract": "note swap is whole-view neutral while response controls stay operable",
+      "status": "PASS",
+      "evidence": {
+        "deepEqual": true,
+        "phases": [
+          "pending",
+          "telegraph",
+          "awaiting-stimulus",
+          "outbound"
+        ],
+        "stimulusRequestNeutralized": true,
+        "responseNotes": [
+          "C4",
+          "A4",
+          "G4",
+          "E4"
+        ]
+      }
+    },
+    {
+      "id": "R8C-13",
+      "contract": "stale or missing readiness cancels before request and demand",
+      "status": "PASS",
+      "evidence": {
+        "activeAttack": null,
+        "requests": 0
+      }
+    },
+    {
+      "id": "R8C-14",
+      "contract": "exactly one request emits and awaiting emits no second request",
+      "status": "PASS",
+      "evidence": {
+        "first": 1,
+        "next": 0
+      }
+    },
+    {
+      "id": "R8C-15",
+      "contract": "positive next-tick ack splits request cadence from full ack-time response",
+      "status": "PASS",
+      "evidence": {
+        "requestAt": 1351,
+        "demandAt": 1401,
+        "deadlineAt": 3401
+      }
+    },
+    {
+      "id": "R8C-16",
+      "contract": "negative ack commits no demand timestamp or grade",
+      "status": "PASS",
+      "evidence": {
+        "disposition": "cancelled-negative-ack"
+      }
+    },
+    {
+      "id": "R8C-17",
+      "contract": "missing ack times out at 1000ms active clamped time with zero grade",
+      "status": "PASS",
+      "evidence": {
+        "timeoutMs": 1000,
+        "gradeCount": 0
+      }
+    },
+    {
+      "id": "R8C-18",
+      "contract": "hidden time advances neither timeout nor demand",
+      "status": "PASS",
+      "evidence": {
+        "frozenMs": 900
+      }
+    },
+    {
+      "id": "R8C-19",
+      "contract": "positive ack outside one clamped active step cancels with zero demand and grade",
+      "status": "PASS",
+      "evidence": {
+        "deltaMs": 100,
+        "acceptMaxMs": 50
+      }
+    },
+    {
+      "id": "R8C-20",
+      "contract": "stale duplicate wrong-tuple and post-cancel acknowledgments are inert",
+      "status": "PASS",
+      "evidence": {
+        "staleIgnored": true,
+        "duplicateIgnored": true
+      }
+    },
+    {
+      "id": "R8C-21",
+      "contract": "route or new-game stale acknowledgment is inert by game ID",
+      "status": "PASS",
+      "evidence": {
+        "oldGameId": "r8c-old-game",
+        "liveGameId": "r8c-new-game"
+      }
+    },
+    {
+      "id": "R8C-22",
+      "contract": "guided and blind healthy controls preserve cadence and full blind deadline",
+      "status": "PASS",
+      "evidence": {
+        "cadence": [
+          1351
+        ],
+        "responseMs": 2000
+      }
+    },
+    {
+      "id": "R8C-23",
+      "contract": "replay and easy hint emit zero pre-terminal blind pitch",
+      "status": "PASS",
+      "evidence": {
+        "engineHintPitches": 0,
+        "replayGuard": true,
+        "requestPlayNoteEvents": 0
+      }
+    },
+    {
+      "id": "R8C-24",
+      "contract": "blind correct wrong and timeout produce one inherited terminal and at most one EAR grade",
+      "status": "PASS",
+      "evidence": {
+        "gradeCounts": {
+          "correct": 1,
+          "wrong": 1,
+          "timeout": 1
+        }
+      }
+    },
+    {
+      "id": "R8C-25",
+      "contract": "post-terminal teaching is marked and latency begins at actual dispatch",
+      "status": "PASS",
+      "evidence": {
+        "latencyMs": 321,
+        "terminalAlreadyRecorded": true
+      }
+    },
+    {
+      "id": "R8C-26",
+      "contract": "non-click input cancels blind before lane authority changes",
+      "status": "PASS",
+      "evidence": {
+        "disposition": "cancelled-mode-change"
+      }
+    },
+    {
+      "id": "R8C-27",
+      "contract": "missing wave soul fails reviewed closed without live per-tick FSRS eligibility",
+      "status": "PASS",
+      "evidence": {
+        "reviewed": false
+      }
+    },
+    {
+      "id": "R8C-28",
+      "contract": "awaiting-stimulus holds the neutral telegraph at the formation anchor",
+      "status": "PASS",
+      "evidence": {
+        "x": 306.5,
+        "y": 76.5,
+        "unavailableTargetFailsClosed": true
+      }
+    },
+    {
+      "id": "R8C-29",
+      "contract": "negative skew and timeout cancellation re-arm cadence without a replacement probe",
+      "status": "PASS",
+      "evidence": {
+        "nextAttackAtMs": 1901,
+        "pending": false
+      }
+    },
+    {
+      "id": "R8C-30",
+      "contract": "machine answer seam drives input only and player-facing invariance is independent",
+      "status": "PASS",
+      "evidence": {
+        "noteSwapWholeViewIndependent": true,
+        "identityMasked": true,
+        "colorHintSilence": true,
+        "proofDatasetsPresent": true
+      }
+    },
+    {
+      "id": "R8C-31",
+      "contract": "VOICE source meter and timeout eligibility remain unchanged",
+      "status": "FAIL",
+      "evidence": {},
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744'\n- '68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430'\n\n    at <anonymous> (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:658:10)\n    at check (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:220:57)\n    at assert (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:652:1)\n    at Object.<anonymous> (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:774:44)\n    at Module._compile (node:internal/modules/cjs/loader:1812:14)\n    at Object.transformer (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\node_modules\\tsx\\dist\\register-D46fvsV_.cjs:3:1104)\n    at Module.load (node:internal/modules/cjs/loader:1533:32)\n    at Module._load (node:internal/modules/cjs/loader:1335:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:328:3)"
+    },
+    {
+      "id": "R8C-32",
+      "contract": "fresh two-note curriculum contract replaces the four-note policy constant",
+      "status": "PASS",
+      "evidence": {
+        "freshRoster": [
+          "C4",
+          "A4"
+        ],
+        "policyModuleOnlyKey": true
+      }
+    },
+    {
+      "id": "R8C-33",
+      "contract": "protected Retro source audio detector family dependencies and lockfiles remain exact across sibling commits",
+      "status": "FAIL",
+      "evidence": {},
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744'\n- '68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430'\n\n    at <anonymous> (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:690:10)\n    at check (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:220:57)\n    at assert (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:673:1)\n    at Object.<anonymous> (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\scripts\\retro-blaster\\r8c-signal-check-fixture.ts:774:44)\n    at Module._compile (node:internal/modules/cjs/loader:1812:14)\n    at Object.transformer (C:\\Users\\jonch\\rbw-retro-blaster-r9b\\node_modules\\tsx\\dist\\register-D46fvsV_.cjs:3:1104)\n    at Module.load (node:internal/modules/cjs/loader:1533:32)\n    at Module._load (node:internal/modules/cjs/loader:1335:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:328:3)"
+    },
+    {
+      "id": "R8C-34",
+      "contract": "900ms RAF starvation advances one step and grants the full response window",
+      "status": "PASS",
+      "evidence": {
+        "requestedWallDtMs": 900,
+        "directorDeltaMs": 50,
+        "responseMs": 2000
+      }
+    },
+    {
+      "id": "R8C-35",
+      "contract": "ceremony may reveal its reviewed-false note and is playing-mask exempt",
+      "status": "PASS",
+      "evidence": {
+        "reviewed": false,
+        "mask": false,
+        "note": "D4"
+      }
+    }
+  ]
+}

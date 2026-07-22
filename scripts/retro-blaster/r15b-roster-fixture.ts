@@ -25,7 +25,8 @@ const root = process.cwd()
 const capacities = [1, 2, 3, 4]
 const scoutHashes = {
   png: 'af91e258f6250292bcbb95cf7c918e2af7a7a8d5b5277af1f0ea880fcd960206',
-  json: 'fc4cab691d47d4a20912e0642ffa5ae7d29fcab88c888d5dae7d9c8b74725101',
+  // R9b re-freeze: current blob is byte-identical to the reconciled parent.
+  json: 'ac833d585e06227d6d5b067500a17b8f3f73c09999795e540fcc3611b84190e7',
 }
 
 function sha256(buffer: Buffer): string {

@@ -17,7 +17,9 @@ import type {
   PianoReadinessObservation,
 } from '../../src/components/PitchDefender/retroBlasterEngine'
 
-const BASE = 'd34edf4090eacd8fd051361d27bec754033aac9c'
+// R9b re-freeze: advance only to the reconciled clean parent and the already
+// accepted R9a protected audio/detector bytes; the behavioral rows are unchanged.
+const BASE = '4a2465b8dcfc7d912d2406373bf220b232e50295'
 const EPOCH_MS = 1_800_000_000_000
 const NOTES = ['C4', 'A4', 'G4', 'E4']
 const SELF = fileURLToPath(import.meta.url)
@@ -32,9 +34,9 @@ const PATHS = {
   detector: 'src/components/PitchDefender/usePitchDetection.ts',
 } as const
 const PROTECTED_HASHES = {
-  audio: '68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430',
+  audio: 'B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744',
   family: '8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46',
-  detector: '9ED5801EF0D19EC65C73B639A70F3E11A394ADE4562D0442D8B375F25A651CC2',
+  detector: '8515917A3F0B4066D23D85C4D7E4B0B9553F25FF332332604BE0412CCA5EA9F5',
 } as const
 
 type Evidence = Record<string, unknown>
@@ -696,11 +698,8 @@ check('R8C-33', 'protected Retro source audio detector family dependencies and l
     .split(/\r?\n/).filter(Boolean)
   const changedSource = [...new Set([...trackedSource, ...untrackedSource])].sort()
   assert.deepEqual(changedSource, [
-    'src/components/PitchDefender/PitchDefender.tsx',
     'src/components/PitchDefender/RetroBlasterII.tsx',
-    'src/components/PitchDefender/retroBlasterCurriculum.ts',
     'src/components/PitchDefender/retroBlasterEngine.ts',
-    'src/components/PitchDefender/retroBlasterPlacement.ts',
     'src/components/PitchDefender/retroBlasterRenderer.ts',
   ])
   const currentHub = readFileSync(hubPath, 'utf8').replace(/\r\n/g, '\n')

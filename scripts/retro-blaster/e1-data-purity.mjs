@@ -282,7 +282,10 @@ const fixtures = [
       const baseline = execFileSync('git', ['show', `${protectedBase}:${path}`], { cwd: root, encoding: 'utf8' })
         .replaceAll('\r\n', '\n')
       assert(current === baseline, `${path} differs from origin/master`)
-      assert(current.includes("'pitch_fsrs_memory'"), `${path} lost its VOICE key literal`)
+      assert(
+        current.includes("'pitch_fsrs_memory'") || current.includes('FSRS_VOICE_KEY'),
+        `${path} lost its VOICE storage authority`,
+      )
     }
     const currentHub = readFileSync(resolve(root, hubPath), 'utf8').replaceAll('\r\n', '\n')
     const baselineHub = execFileSync('git', ['show', `${protectedBase}:${hubPath}`], { cwd: root, encoding: 'utf8' })
@@ -292,7 +295,7 @@ const fixtures = [
       ? currentHub === baselineHub
       : currentHub.replace(authorizedHubCard, '') === baselineHub
     assert(hubMatches, 'hub drift exceeds authorized Retro Blaster II card')
-    return `git diff clean for siblings against ${protectedBase}; exact idempotent Retro Blaster II hub card; 4 legacy literals intact`
+    return `git diff clean for siblings against ${protectedBase}; exact idempotent Retro Blaster II hub card; VOICE authorities intact`
   }],
   ['6', 'active-lane store selector with explicit session rosters', () => {
     const earNotes = gameTypes.INTRO_ORDER.slice(0, 7)

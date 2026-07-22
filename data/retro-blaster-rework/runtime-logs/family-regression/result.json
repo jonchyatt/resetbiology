@@ -1,30 +1,30 @@
 {
   "status": "PASS",
-  "protectedBase": "6f4c8da158b9773bbda90eef0cc51334e6fa636b",
+  "protectedBase": "4a2465b8dcfc7d912d2406373bf220b232e50295",
   "rows": [
     {
       "name": "R0 parity",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 155,
+      "durationMs": 568,
       "stdoutSha256": "340934de7b52cfe97cd807c4275b7742891ca27a9e8b761cc6adfaba12789a02",
-      "stderrSha256": "9e5a16e879c83184335605b23df5d4cbfca6c7ae2b76ab7bbd399d7af345c6ab",
+      "stderrSha256": "8c9a700ccab201b51521fd57a1386b7b513cd2b685a146b9f0923716f05273ba",
       "finalLine": "R0 PARITY: ALL PASS"
     },
     {
       "name": "E1 data purity",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 803,
-      "stdoutSha256": "ce40b1064288876ee1ce5c6404a595fe02fc531d7fadb6a9adb3b6aed229cba7",
-      "stderrSha256": "50d1fdbb69b95fec3992e56ac0db85db91dc7ba27c00f5931e1089c5bae47dd3",
+      "durationMs": 1779,
+      "stdoutSha256": "37b8ea57c88aef055beac77ffe898180070cfa2351fe4f5bf586e221400942f2",
+      "stderrSha256": "062244c659a28a212470f8b5f548ff7b2b6cae14bf483d1b3ef09ab9cdbfc0c8",
       "finalLine": "E1 DATA PURITY: ALL PASS"
     },
     {
       "name": "R1.5a parity",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 561,
+      "durationMs": 1295,
       "stdoutSha256": "ed0d26c37770e44b13c1e67923996dd6b715f114976c7bc67d12aaad1c8e7b39",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "PASS R1.5a semantic parity: 22 event payloads/channels preserve inherited timing; no event earlier; max declared R3c authored delay 0ms; R7 note identity/order plus cross-channel interleaving, spawn X, and attack identity excluded as declared FSRS/timing/geometry/ownership"
@@ -33,16 +33,16 @@
       "name": "R1.5a visual contract",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 126,
+      "durationMs": 485,
       "stdoutSha256": "315e05556271d679238894ce7a7231d45cf4d8af04efb08b38f8204aa0791b07",
-      "stderrSha256": "ee1bf64e163726817614bdcbd915a01797a1837b34d87d3d8bb1ce568aac15ad",
+      "stderrSha256": "68e2bbedcb005b2c0987ec04a1956fafbf94b0864a0151f4f310b9349adf40e6",
       "finalLine": "PASS R1.5a visual contract: protected diff clean; backdrop=640x360 PNG sha256=7c093a99e0c37e24f685941fc19530611f5d99173cb1ed457e45d924379bdc59; load failure/reduced-motion/CRT/vocal-meter contracts present"
     },
     {
       "name": "R1.5b roster",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 377,
+      "durationMs": 854,
       "stdoutSha256": "7466bfee92d790cbc82819bf44cff25195a2e78163e30a95982b6c2c4039a693",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "late load cannot morph an existing alien; scout/procedural fallbacks remain available"
@@ -51,7 +51,7 @@
       "name": "R2 sprite atlas",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 84,
+      "durationMs": 201,
       "stdoutSha256": "4e4dd630f2700a517f4ec39b472497b1b0694dedfc5421a42a231870470439dd",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "PASS chip anchor unchanged at (149, 88)"
@@ -60,7 +60,7 @@
       "name": "R3b formation",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 363,
+      "durationMs": 953,
       "stdoutSha256": "481bda437f23038f187ff946a337f6dfc7502743352481e3d6cabcf67fb5a910",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "targetability, long-frame mic parity, state recovery, silence contract PASS"
@@ -69,8 +69,8 @@
       "name": "R3c authored dives",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 340,
-      "stdoutSha256": "f0bf5dba6ca75934ea810817ee57a37f22a2b69220e105343511abfcd289d457",
+      "durationMs": 621,
+      "stdoutSha256": "6cb2bcd73d2c4c9c11bdedaaf0dbda802dc88fece72de962216ba5ae01af1040",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
     },
@@ -78,8 +78,8 @@
       "name": "R4 causal weapon VFX",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 549,
-      "stdoutSha256": "5b20d6430caddd77f4e3d9238e7592a11e88ba87b1883ce3eb26bc1776c32397",
+      "durationMs": 786,
+      "stdoutSha256": "cb35aea803631e6a81c39d1e6328695bc874d5261a19c0739cb8be0bd3cee1cb",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
     },
@@ -87,7 +87,7 @@
       "name": "R7 FSRS soul-binding",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 1257,
+      "durationMs": 1552,
       "stdoutSha256": "f53b72199f6ca16b7b3d8db79773d5e9f872d81beb55aeb9be842e78a6bdded6",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
@@ -96,8 +96,8 @@
       "name": "R8a radio check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 317,
-      "stdoutSha256": "e02e22030b81282cbfca50025a672ef3aef9382d5f2f1825e00b0075088ac73c",
+      "durationMs": 552,
+      "stdoutSha256": "57ab9707b0c9ce2095b57912a1009845231156c77ea76c0dbacd9b2fdacc9734",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
     },
@@ -105,8 +105,17 @@
       "name": "R9a curriculum",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 648,
-      "stdoutSha256": "a82212441b28b2dd4a9a6c2761c5bfbbd42121865781b641223d29d7f46af7b8",
+      "durationMs": 1307,
+      "stdoutSha256": "54f492c2a6b0f9fea7661ce877910c890c2d8710fd300e6db59477ee6d22a99c",
+      "stderrSha256": "e1a97e21485a7ab4a3cab8542aca1c4db1ae3bc65cce06da794cd2a88bd69cc7",
+      "finalLine": "}"
+    },
+    {
+      "name": "R10 first-player mastery",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 574,
+      "stdoutSha256": "7b95621cf83cbb58e028b3ea9b8420db5dfd0b2c63b07cc49f5594e3593b783b",
       "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "finalLine": "}"
     },
@@ -114,9 +123,9 @@
       "name": "R8c signal check",
       "status": "PASS",
       "exitCode": 0,
-      "durationMs": 454,
-      "stdoutSha256": "534f6e36e0ec2f2f5240b5d0fa5f12c20444bdaa2b20daaec09ba99699912089",
-      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "durationMs": 769,
+      "stdoutSha256": "ac9e2ca0fb8e5d4b14ed51e4e0aa63822a3fc22d158084e78ca0b802535fc9dc",
+      "stderrSha256": "88da58abd2f1eea917426972f3bd8f703a368ad8a859b460d381265f95de1ef0",
       "finalLine": "}"
     }
   ]

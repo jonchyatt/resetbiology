@@ -1,0 +1,726 @@
+{
+  "schema": "retro-blaster-r9b-cue-taper/green-v1",
+  "generatedAt": "2026-07-22T20:34:05.545Z",
+  "mode": "--green",
+  "exactBase": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "head": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "originMaster": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "fixture": {
+    "path": "scripts/retro-blaster/r9b-cue-taper-fixture.ts",
+    "sha256": "526585DF80BDB548E03D9D0D0BB32930AF2EE0CB6BAEF8525DB480C4541B9481"
+  },
+  "output": "C:\\Users\\jonch\\rbw-retro-blaster-r9b\\data\\retro-blaster-rework\\runtime-logs\\r9b-green-local\\source-contract.json",
+  "inspectedSourceHashes": {
+    "engine": "B19FB664A7E4990199BF43E557AD75A58D6D6F82329A6609A89A025663B98985",
+    "shell": "BA3E201169CD38A6D3287893E4DF7CF79F3069451C0347A1D3E1E9A67663CEB7",
+    "renderer": "AD6452B3A0C9265A047F3EC3B87484978C33E96C75F9F1FCE8907DC638A552FB",
+    "audio": "B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744",
+    "detector": "8515917A3F0B4066D23D85C4D7E4B0B9553F25FF332332604BE0412CCA5EA9F5",
+    "sibling": "CAA31FCE012E82DA1BD7E6DA2AEE5300522BD0450DEC1D293AAAA1FA6FE407C5",
+    "types": "FE36957396DF11499A3508C89D773E419DB5767894F80F072B067EB3AE0AFDEB",
+    "family": "8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46",
+    "r8c": "8F1EF0390DA5FF10B90F757EEF97B5BD8054AF371FC05B4E35D5F7EFD3E91374",
+    "r10": "D834E099F849E7FAFFC761B896B849F6B9B88E8BA3B784119F4369511BFDAEC3"
+  },
+  "counts": {
+    "total": 46,
+    "protectedPass": 10,
+    "contractPass": 36,
+    "expectedRed": 0,
+    "unexpectedPass": 0,
+    "unexpectedFail": 0
+  },
+  "shapeValid": true,
+  "status": "PASS",
+  "touchedPathAudit": {
+    "trackedSourceDiff": [
+      "src/components/PitchDefender/RetroBlasterII.tsx",
+      "src/components/PitchDefender/retroBlasterEngine.ts",
+      "src/components/PitchDefender/retroBlasterRenderer.ts"
+    ],
+    "untrackedSource": []
+  },
+  "rows": [
+    {
+      "id": "P-01",
+      "group": "protected-baseline",
+      "contract": "fixture starts from exact inspected base",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "head": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+        "originMaster": "4a2465b8dcfc7d912d2406373bf220b232e50295"
+      }
+    },
+    {
+      "id": "P-02",
+      "group": "protected-baseline",
+      "contract": "audio engine remains byte-protected",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-03",
+      "group": "protected-baseline",
+      "contract": "pitch detector remains byte-protected",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-04",
+      "group": "protected-baseline",
+      "contract": "Retro Blaster v1 sibling remains byte-protected",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-05",
+      "group": "protected-baseline",
+      "contract": "shared note types remain byte-protected",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-06",
+      "group": "protected-baseline",
+      "contract": "family store contract remains byte-protected",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-07",
+      "group": "protected-baseline",
+      "contract": "EAR and VOICE family keys remain distinct",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-08",
+      "group": "protected-baseline",
+      "contract": "closed R8c request/ack identity-mask seam remains present",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-09",
+      "group": "protected-baseline",
+      "contract": "accepted R10 first-player pace/protection contract remains present",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {}
+    },
+    {
+      "id": "P-10",
+      "group": "protected-baseline",
+      "contract": "source changes stay inside the phase-authorized Retro ceiling",
+      "expectation": "PASS",
+      "evidenceClass": "runtime-measured",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "tracked": [
+          "src/components/PitchDefender/RetroBlasterII.tsx",
+          "src/components/PitchDefender/retroBlasterEngine.ts",
+          "src/components/PitchDefender/retroBlasterRenderer.ts"
+        ],
+        "untracked": [],
+        "authorized": [
+          "src/components/PitchDefender/retroBlasterEngine.ts",
+          "src/components/PitchDefender/RetroBlasterII.tsx",
+          "src/components/PitchDefender/retroBlasterRenderer.ts"
+        ]
+      }
+    },
+    {
+      "id": "R-01",
+      "group": "cue-ownership",
+      "contract": "construction-safe AttackCuePlan discriminated union exists",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "type AttackCuePlan": true,
+          "owner: 'r8c-probe'": true,
+          "owner: 'ordinary'": true,
+          "cue: AttackCuePlan": true
+        }
+      }
+    },
+    {
+      "id": "R-02",
+      "group": "cue-ownership",
+      "contract": "one guarded cue constructor rejects invalid owner-policy pairs",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "buildAttackCuePlan": true,
+          "ordinary + blind": true,
+          "r8c-probe + safe-try": true
+        }
+      }
+    },
+    {
+      "id": "R-03",
+      "group": "cue-ownership",
+      "contract": "R8c ownership is assigned before ordinary cue decoration",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "cueOwner": 587,
+        "ordinaryArmRead": 924
+      }
+    },
+    {
+      "id": "R-04",
+      "group": "volatile-state",
+      "contract": "sparse EAR-only safeTryArms state starts empty and is never serialized",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "safeTryArms": true,
+          "safeTryArms: {}": true,
+          "SafeTryArmMap": true
+        }
+      }
+    },
+    {
+      "id": "R-05",
+      "group": "volatile-state",
+      "contract": "single private guarded EAR-click writer owns every arm mutation",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "function tryArmOrdinaryEarSafeTry": true,
+          "inputMode !== 'click'": true,
+          "cue.owner !== 'ordinary'": true,
+          "answerHelpUsed": true
+        }
+      }
+    },
+    {
+      "id": "R-06",
+      "group": "volatile-state",
+      "contract": "qualifying writer reads reviewed not-due immutable snapshot and output readiness",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "tryArmOrdinaryEarSafeTry": true,
+          "soul.reviewed": true,
+          "!soul.due": true,
+          "outputReady": true
+        }
+      }
+    },
+    {
+      "id": "R-07",
+      "group": "volatile-state",
+      "contract": "starting any safe try clears the complete arm map before telegraph",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "clearSafeTryArms": true,
+          "cuePolicy: 'safe-try'": true,
+          "telegraphStartedAtMs": true
+        }
+      }
+    },
+    {
+      "id": "R-08",
+      "group": "volatile-state",
+      "contract": "dual-arm C/A sequence has a global guided barrier",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "clearSafeTryArms": true,
+          "safeTryArms = {}": true,
+          "safe-try": true
+        }
+      }
+    },
+    {
+      "id": "R-09",
+      "group": "volatile-state",
+      "contract": "R8c owns and freezes the complete ordinary arm map in every disposition",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "owner: 'r8c-probe'": true,
+          "safeTryArms": true,
+          "signalCheckDisposition": true
+        }
+      }
+    },
+    {
+      "id": "R-10",
+      "group": "volatile-state",
+      "contract": "first encounter reload mode reset and stale state fail to guided",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "safeTryArms: {}": true,
+          "clearSafeTryArms": true,
+          "resetOrdinaryCueSupport": true
+        }
+      }
+    },
+    {
+      "id": "R-11",
+      "group": "assist-boundary",
+      "contract": "ActiveAttack records non-persisted answerHelpUsed",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "answerHelpUsed: boolean": true,
+          "answerHelpUsed: false": true
+        }
+      }
+    },
+    {
+      "id": "R-12",
+      "group": "assist-boundary",
+      "contract": "baseline guided projection and Tone Replay do not mark answer help",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "answerHelpUsed": true,
+          "tone-replay-answer-neutral": true
+        }
+      }
+    },
+    {
+      "id": "R-13",
+      "group": "assist-boundary",
+      "contract": "timed exact-answer hint marks answer help",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "Hint: try": true,
+          "answerHelpUsed = true": true
+        }
+      }
+    },
+    {
+      "id": "R-14",
+      "group": "assist-boundary",
+      "contract": "Full Help is an engine-owned same-attack same-deadline transition",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "requestFullCueHelp": true,
+          "attackId": true,
+          "deadlineAtMs": true,
+          "answerHelpUsed = true": true
+        }
+      }
+    },
+    {
+      "id": "R-15",
+      "group": "assist-boundary",
+      "contract": "safe try and answer-revealing assist can never re-arm themselves",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "cue.policy === 'guided'": true,
+          "!attack.answerHelpUsed": true,
+          "tryArmOrdinaryEarSafeTry": true
+        }
+      }
+    },
+    {
+      "id": "R-16",
+      "group": "sanitized-view",
+      "contract": "ViewState exposes distinct supportMode and answerMaskActive",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "supportMode": true,
+          "answerMaskActive": true
+        }
+      }
+    },
+    {
+      "id": "R-17",
+      "group": "sanitized-view",
+      "contract": "safe-try view removes target note alien association and spotlight",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "safeTryProjection": true,
+          "neutralSpotlight": true,
+          "neutralNote": true,
+          "neutralAlien": true
+        }
+      }
+    },
+    {
+      "id": "R-18",
+      "group": "sanitized-view",
+      "contract": "safe-try renderer input neutralizes formation hue chip soul laser and particle channels",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "answerMaskActive": true,
+          "neutralSoul": true,
+          "safeTryProjection": true,
+          "targetInvariant": true
+        }
+      }
+    },
+    {
+      "id": "R-19",
+      "group": "sanitized-view",
+      "contract": "R8c identityMaskActive remains separate from ordinary answer mask",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "answerMaskActive": true,
+          "identityMaskActive": true,
+          "data-retro-support-mode": true
+        }
+      }
+    },
+    {
+      "id": "R-20",
+      "group": "sanitized-view",
+      "contract": "safe try never emits blind replay-lock or signal-check evidence attributes",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "data-retro-support-mode": true,
+          "safe-try": true,
+          "data-retro-identity-mask": true
+        }
+      }
+    },
+    {
+      "id": "R-21",
+      "group": "sanitized-view",
+      "contract": "renderer has an explicit target-invariant answer-mask branch",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "answerMaskActive": true,
+          "targetInvariant": true
+        }
+      }
+    },
+    {
+      "id": "R-22",
+      "group": "sanitized-view",
+      "contract": "renderer fixture exposes deterministic canvas-buffer hashing with scrim removed",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "answerMaskActive": true,
+          "safe-try-canvas-hash": true
+        }
+      }
+    },
+    {
+      "id": "R-23",
+      "group": "shell-contract",
+      "contract": "playfield-only safe-try scrim exists with no answer-bearing art",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "data-retro-safe-try-scrim": true,
+          "SAFE TRY": true,
+          "aria-hidden": true
+        }
+      }
+    },
+    {
+      "id": "R-24",
+      "group": "shell-contract",
+      "contract": "scrim is canvas-bound absolute inset and does not intercept pointers",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "data-retro-safe-try-scrim": true,
+          "absolute inset-0": true,
+          "pointer-events-none": true
+        }
+      }
+    },
+    {
+      "id": "R-25",
+      "group": "shell-contract",
+      "contract": "covered canvas answer coordinates are inert and DOM answers are sole live choices",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "answerMaskActive": true,
+          "handleCanvasClick": true,
+          "canvas-answer-inert": true
+        }
+      }
+    },
+    {
+      "id": "R-26",
+      "group": "shell-contract",
+      "contract": "live choice copy is canonical dynamic and never hardcodes C OR A",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "dynamic": true,
+        "hardcoded": false
+      }
+    },
+    {
+      "id": "R-27",
+      "group": "shell-contract",
+      "contract": "safe-try entry moves focus to a distinct neutral tabindex target",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "safeTryFocusRef": true,
+          "tabIndex={-1}": true,
+          "data-retro-safe-try-focus": true
+        }
+      }
+    },
+    {
+      "id": "R-28",
+      "group": "shell-contract",
+      "contract": "one stable polite live region owns the atomic instruction",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "data-retro-safe-try-status": true,
+          "aria-live=\"polite\"": true,
+          "liveChoiceNames": true
+        }
+      }
+    },
+    {
+      "id": "R-29",
+      "group": "shell-contract",
+      "contract": "Tone Replay remains on Space R and pointer without changing help state",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "TONE REPLAY [SPACE / R]": true,
+          "ev.key === ' '": true,
+          "ev.key === 'r'": true,
+          "tone-replay-answer-neutral": true
+        }
+      }
+    },
+    {
+      "id": "R-30",
+      "group": "shell-contract",
+      "contract": "Full Help uses otherwise-unbound H and submits no answer",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "FULL HELP [H]": true,
+          "ev.key === 'h'": true,
+          "requestFullCueHelp": true
+        }
+      }
+    },
+    {
+      "id": "R-31",
+      "group": "receipt-lifecycle",
+      "contract": "unresolved safe try defers raw audio receipt outside DOM",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "pendingSafeTryAudioReceiptRef": true,
+          "defer-safe-try-receipt": true
+        }
+      }
+    },
+    {
+      "id": "R-32",
+      "group": "receipt-lifecycle",
+      "contract": "answer help timeout life loss game over and wave transition publish once after reveal",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "flushPendingSafeTryAudioReceipt": true,
+          "publish-after-reveal": true,
+          "gameOver": true,
+          "waveComplete": true
+        }
+      }
+    },
+    {
+      "id": "R-33",
+      "group": "receipt-lifecycle",
+      "contract": "QUIT unmount and route teardown discard pending receipt",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "discardPendingSafeTryAudioReceipt": true,
+          "clearRetroAudioReceipt": true
+        }
+      }
+    },
+    {
+      "id": "R-34",
+      "group": "receipt-lifecycle",
+      "contract": "hidden blur resize orientation and phase exits cannot leave stale scrim",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "resetOrdinaryCueSupport": true,
+          "visibilitychange": true,
+          "data-retro-safe-try-scrim": true
+        }
+      }
+    },
+    {
+      "id": "R-35",
+      "group": "ceiling-and-causality",
+      "contract": "safe try writes no storage curriculum FSRS selector cadence grade or mic-lock authority",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "writerIndex": 35136
+      }
+    },
+    {
+      "id": "R-36",
+      "group": "ceiling-and-causality",
+      "contract": "R9b source contract preserves R8c R10 routes VOICE meter gain deferral and no-clinical-claim boundaries",
+      "expectation": "PASS",
+      "evidenceClass": "source-backed",
+      "actual": "PASS",
+      "classification": "MATCH",
+      "evidence": {
+        "found": {
+          "data-retro-support-mode": true,
+          "data-retro-vocal-meter": true,
+          "safe-try": true
+        }
+      }
+    }
+  ]
+}

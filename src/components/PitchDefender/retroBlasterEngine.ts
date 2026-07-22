@@ -265,7 +265,28 @@ export interface Particle {
 export type Difficulty = 'easy' | 'true'
 export type AttackPhase = 'telegraph' | 'awaiting-stimulus' | 'outbound' | 'hit-locked' | 'returning'
 export type AttackOutcome = 'correct' | 'wrong' | 'timeout' | 'death' | 'cancelled'
-export type CuePolicy = 'guided' | 'blind'
+export type AttackCuePlan =
+  | { owner: 'r8c-probe'; policy: 'guided' | 'blind' }
+  | { owner: 'ordinary'; policy: 'guided' | 'safe-try' }
+export type CuePolicy = AttackCuePlan['policy']
+export type SupportMode = 'guided' | 'safe-try' | 'signal-check'
+export type SafeTryArmMap = Partial<Record<string, true>>
+
+function buildAttackCuePlan(owner: 'r8c-probe', policy: 'guided' | 'blind'): AttackCuePlan
+function buildAttackCuePlan(owner: 'ordinary', policy: 'guided' | 'safe-try'): AttackCuePlan
+function buildAttackCuePlan(
+  owner: AttackCuePlan['owner'],
+  policy: AttackCuePlan['policy'],
+): AttackCuePlan {
+  // Construction guard: ordinary + blind and r8c-probe + safe-try are invalid.
+  if ((owner === 'ordinary' && policy === 'blind') ||
+      (owner === 'r8c-probe' && policy === 'safe-try')) {
+    throw new Error(`Invalid attack cue plan: ${owner} + ${policy}`)
+  }
+  return owner === 'r8c-probe'
+    ? { owner, policy: policy as 'guided' | 'blind' }
+    : { owner, policy: policy as 'guided' | 'safe-try' }
+}
 export type SignalCheckDisposition =
   | 'wave-1'
   | 'pending'
@@ -304,7 +325,12 @@ export interface ActiveAttack {
   readonly alienId: string
   readonly note: string
   readonly side: -1 | 1
-  readonly cuePolicy: CuePolicy
+  /** Canonical construction-safe owner/policy pair. */
+  cue: AttackCuePlan
+  /** Compatibility mirror retained for protected R8c/R10 fixtures and receipts. */
+  cuePolicy: CuePolicy
+  answerHelpUsed: boolean
+  readonly outputReadyAtStart: boolean
   readonly readinessObservationId: number | null
   stimulusRequest: BlindStimulusRequest | null
   phase: AttackPhase
@@ -455,6 +481,7 @@ export interface GameState {
   answerCooldownMs: number
   nextAttackSerial: number
   activeAttack: ActiveAttack | null
+  safeTryArms: SafeTryArmMap
   blindProbePending: boolean
   signalCheckDisposition: SignalCheckDisposition
   nextAttackAtMs: number
@@ -496,6 +523,8 @@ export interface ViewState {
   nowMs: number
   activeAttack: ActiveAttack | null
   identityMaskActive: boolean
+  answerMaskActive: boolean
+  supportMode: SupportMode
   signalCheck: {
     wave: number
     pending: boolean
@@ -727,7 +756,7 @@ export function createInitialState(
     nextSpawnAt: 0, lastProgressAt: 0, hintCount: 0,
     phase: 'playing', clockMs, directorClockMs: clockMs, matchStartAt: 0, matchTargetAlienId: null,
     micCooldownMs: 0, answerCooldownMs: 0,
-    nextAttackSerial: 1, activeAttack: null,
+    nextAttackSerial: 1, activeAttack: null, safeTryArms: {},
     blindProbePending: false, signalCheckDisposition: 'wave-1',
     nextAttackAtMs: clockMs + demandFloorMs - DIVE_TELEGRAPH_MS,
     directorCursorSlot: 0, lastDemandAtMs: null,
@@ -771,9 +800,11 @@ function cloneState(state: GameState): GameState {
     lasers: state.lasers.map(l => ({ ...l })),
     particles: state.particles.map(p => ({ ...p })),
     paceProtection: { ...state.paceProtection },
+    safeTryArms: { ...state.safeTryArms },
     activeAttack: state.activeAttack
       ? {
           ...state.activeAttack,
+          cue: state.activeAttack.cue ? { ...state.activeAttack.cue } : state.activeAttack.cue,
           stimulusRequest: state.activeAttack.stimulusRequest
             ? { ...state.activeAttack.stimulusRequest }
             : null,
@@ -802,20 +833,34 @@ function cloneState(state: GameState): GameState {
 
 export function toViewState(gs: GameState, inputMode: InputMode, colorHints = true): ViewState {
   const target = gs.matchTargetAlienId ? gs.aliens.find(item => item.alienId === gs.matchTargetAlienId) : null
-  const spotlightIdx = gs.activeAttack
-    ? gs.aliens.findIndex(item => item.alienId === gs.activeAttack?.alienId)
-    : -1
+  const activeCue = gs.activeAttack ? cueOf(gs.activeAttack) : null
   const answerOpen = gs.activeAttack?.phase === 'outbound' && gs.activeAttack.outcome === null
   const identityMaskActive = gs.phase === 'playing' && inputMode === 'click' && (
     gs.blindProbePending ||
-    (gs.activeAttack?.cuePolicy === 'blind' && gs.activeAttack.outcome === null)
+    (activeCue?.owner === 'r8c-probe' && activeCue.policy === 'blind' && gs.activeAttack?.outcome === null)
   )
+  const answerMaskActive = gs.phase === 'playing' && inputMode === 'click' &&
+    activeCue?.owner === 'ordinary' && activeCue.policy === 'safe-try' && gs.activeAttack?.outcome === null
+  const supportMode: SupportMode = identityMaskActive
+    ? 'signal-check'
+    : answerMaskActive
+      ? 'safe-try'
+      : 'guided'
+  const safeTryProjection = answerMaskActive
   const neutralSoul: NoteSoulSnapshot = {
     note: '?', reviewed: false, r: 0.5, calm: 0.5, due: false,
     agitation: 0.5, divePressure: 0,
   }
   const viewAttack = gs.activeAttack
-    ? {
+    ? safeTryProjection
+      ? {
+          ...gs.activeAttack,
+          alienId: '?',
+          note: '?',
+          side: 1 as const,
+          stimulusRequest: null,
+        }
+      : {
         ...gs.activeAttack,
         note: identityMaskActive ? '?' : gs.activeAttack.note,
         stimulusRequest: identityMaskActive
@@ -823,18 +868,22 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
           : gs.activeAttack.stimulusRequest
           ? { ...gs.activeAttack.stimulusRequest }
           : null,
-      }
+        }
     : null
   return {
-    aliens: gs.aliens.map(a => identityMaskActive
+    // Structural answer-leak closure: while the playfield is masked, no ship,
+    // slot, visual identity, or soul enters the renderer or production datasets.
+    aliens: safeTryProjection
+      ? []
+      : gs.aliens.map(a => identityMaskActive
       ? { ...a, note: '?', hue: 190, soul: { ...neutralSoul } }
       : { ...a, soul: { ...a.soul } }),
-    lasers: gs.lasers.map(l => ({ ...l })),
-    particles: gs.particles.map(p => ({ ...p })),
-    playerX: gs.playerX,
+    lasers: safeTryProjection ? [] : gs.lasers.map(l => ({ ...l })),
+    particles: safeTryProjection ? [] : gs.particles.map(p => ({ ...p })),
+    playerX: safeTryProjection ? W / 2 : gs.playerX,
     charge: {
-      fraction: Math.min(1, gs.chargeProgress / CHARGE_FULL_MS),
-      targetNote: identityMaskActive ? null : isTargetableAlien(target) ? target.note : null,
+      fraction: safeTryProjection ? 0 : Math.min(1, gs.chargeProgress / CHARGE_FULL_MS),
+      targetNote: identityMaskActive || answerMaskActive ? null : isTargetableAlien(target) ? target.note : null,
     },
     hud: {
       score: gs.score, combo: gs.combo, wave: gs.wave,
@@ -845,19 +894,25 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
     waveIntroTimer: gs.waveIntroTimer,
     alienCountThisWave: gs.alienCountThisWave,
     flashTimer: gs.flashTimer,
-    wrongMessage: gs.wrongMessage,
-    wrongTimer: gs.wrongTimer,
-    spotlightIdx,
+    wrongMessage: safeTryProjection ? '' : gs.wrongMessage,
+    wrongTimer: safeTryProjection ? 0 : gs.wrongTimer,
+    spotlightIdx: safeTryProjection
+      ? -1
+      : gs.activeAttack
+        ? gs.aliens.findIndex(item => item.alienId === gs.activeAttack?.alienId)
+        : -1,
     nowMs: gs.directorClockMs,
     activeAttack: viewAttack,
     identityMaskActive,
+    answerMaskActive,
+    supportMode,
     signalCheck: {
       wave: gs.wave,
       pending: gs.blindProbePending,
-      cuePolicy: gs.activeAttack?.cuePolicy ?? null,
-      phase: gs.activeAttack?.phase ?? null,
+      cuePolicy: activeCue?.owner === 'r8c-probe' ? activeCue.policy : null,
+      phase: activeCue?.owner === 'r8c-probe' ? gs.activeAttack?.phase ?? null : null,
       disposition: gs.signalCheckDisposition,
-      requestId: gs.activeAttack?.stimulusRequest?.requestId ?? null,
+      requestId: activeCue?.owner === 'r8c-probe' ? gs.activeAttack?.stimulusRequest?.requestId ?? null : null,
       maskActive: identityMaskActive,
     },
     requiredAnswerEventsMs: [...gs.requiredAnswerEventsMs],
@@ -868,7 +923,7 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
     noteButtons: gs.unlockedNotes.map((note, i) => ({
       note,
       hue: NOTE_COLORS[note]?.hue ?? 0,
-      active: Boolean(colorHints && !identityMaskActive && answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
+      active: Boolean(colorHints && !identityMaskActive && !answerMaskActive && answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
       keyNum: i + 1,
     })),
   }
@@ -947,6 +1002,58 @@ export function chooseNextDiver(gs: GameState): Alien | null {
   return best
 }
 
+function cueOf(attack: ActiveAttack): AttackCuePlan {
+  // ponytail: legacy fixture/hot-reload attacks may predate `cue`; production
+  // attacks are always built by buildAttackCuePlan. Remove after those seams retire.
+  if (attack.cue) return attack.cue
+  return attack.cuePolicy === 'blind'
+    ? buildAttackCuePlan('r8c-probe', 'blind')
+    : buildAttackCuePlan('ordinary', 'guided')
+}
+
+function clearSafeTryArms(gs: GameState): void {
+  gs.safeTryArms = {}
+}
+
+function tryArmOrdinaryEarSafeTry(
+  gs: GameState,
+  attack: ActiveAttack,
+  soul: NoteSoulSnapshot,
+  inputMode: InputMode,
+  outcome: AttackOutcome,
+): void {
+  const cue = cueOf(attack)
+  const outputReady = attack.outputReadyAtStart === true
+  const snapshotEligible = soul.reviewed && !soul.due
+  const ordinaryGuidedRecovery = cue.owner === 'ordinary' && cue.policy === 'guided' && !attack.answerHelpUsed
+  if (inputMode !== 'click' || !ordinaryGuidedRecovery || outcome !== 'correct' ||
+      !snapshotEligible || !outputReady) return
+  gs.safeTryArms[attack.note] = true
+}
+
+export function requestFullCueHelp(gs: GameState, attackId: string): boolean {
+  const attack = gs.activeAttack
+  if (!attack || attack.attackId !== attackId || attack.outcome !== null) return false
+  const cue = cueOf(attack)
+  if (cue.owner !== 'ordinary' || cue.policy !== 'safe-try') return false
+  attack.cue = buildAttackCuePlan('ordinary', 'guided')
+  attack.cuePolicy = 'guided'
+  attack.answerHelpUsed = true
+  return true
+}
+
+export function resetOrdinaryCueSupport(gs: GameState): boolean {
+  clearSafeTryArms(gs)
+  const attack = gs.activeAttack
+  if (!attack || attack.outcome !== null) return false
+  const cue = cueOf(attack)
+  if (cue.owner !== 'ordinary' || cue.policy !== 'safe-try') return false
+  attack.cue = buildAttackCuePlan('ordinary', 'guided')
+  attack.cuePolicy = 'guided'
+  attack.answerHelpUsed = true
+  return true
+}
+
 function startAttack(gs: GameState, input: EngineInput): boolean {
   if (gs.activeAttack || gs.directorClockMs < gs.nextAttackAtMs) return false
   const alien = chooseNextDiver(gs)
@@ -959,9 +1066,25 @@ function startAttack(gs: GameState, input: EngineInput): boolean {
   if (consumesProbe) gs.blindProbePending = false
   const readiness = input.pianoReadiness
   const outputReady = readiness?.contextState === 'running' && readiness.sampleReadyByNote[alien.note] === true
-  const cuePolicy: CuePolicy = consumesProbe && input.inputMode === 'click' && alien.soul.reviewed && outputReady
-    ? 'blind'
-    : 'guided'
+  const cueOwner: AttackCuePlan['owner'] = consumesProbe ? 'r8c-probe' : 'ordinary'
+  let cue: AttackCuePlan
+  if (cueOwner === 'r8c-probe') {
+    cue = buildAttackCuePlan('r8c-probe', input.inputMode === 'click' && alien.soul.reviewed && outputReady
+      ? 'blind'
+      : 'guided')
+  } else {
+    if (!gs.safeTryArms) gs.safeTryArms = {}
+    const armed = input.inputMode === 'click' && gs.safeTryArms[alien.note] === true
+    const eligibleNow = alien.soul.reviewed && !alien.soul.due && outputReady
+    if (armed && eligibleNow) {
+      clearSafeTryArms(gs)
+      cue = buildAttackCuePlan('ordinary', 'safe-try')
+    } else {
+      if (armed) clearSafeTryArms(gs)
+      cue = buildAttackCuePlan('ordinary', 'guided')
+    }
+  }
+  const cuePolicy = cue.policy
   if (consumesProbe) {
     gs.signalCheckDisposition = cuePolicy === 'blind'
       ? 'blind'
@@ -973,12 +1096,18 @@ function startAttack(gs: GameState, input: EngineInput): boolean {
   }
   alien.x = alien.formationX
   alien.y = alien.formationY
+  const cuePolicyMetadata = cue.policy === 'safe-try'
+    ? { cuePolicy: 'safe-try' as const }
+    : { cuePolicy }
   gs.activeAttack = {
     attackId: `${gs.gameId}:attack:${serial}`,
     alienId: alien.alienId,
     note: alien.note,
     side: diveSideForSlot(alien.formationSlot, serial),
-    cuePolicy,
+    cue,
+    ...cuePolicyMetadata,
+    answerHelpUsed: false,
+    outputReadyAtStart: outputReady,
     readinessObservationId: readiness?.observationId ?? null,
     stimulusRequest: null,
     phase: 'telegraph',
@@ -1118,6 +1247,7 @@ export function resolveAttack(
 
   if (outcome === 'correct') {
     events.push({ kind: 'grade', note: target.note, correct: true, latencyMs, inputMode })
+    tryArmOrdinaryEarSafeTry(gs, attack, target.soul, inputMode, outcome)
     events.push({ kind: 'sfx', name: 'shoot' })
     const aimX = target.x + ALIEN_W / 2
     gs.playerX = aimX
@@ -1422,6 +1552,12 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   if (!gs.activeAttack) startAttack(gs, input)
   let attack = gs.activeAttack
   let attackTarget = attack ? findAlienById(gs, attack.alienId) : null
+  if (attack && cueOf(attack).owner === 'ordinary' && cueOf(attack).policy === 'safe-try' &&
+      attack.outcome === null && input.inputMode !== 'click') {
+    resetOrdinaryCueSupport(gs)
+    attack = gs.activeAttack
+    attackTarget = attack ? findAlienById(gs, attack.alienId) : null
+  }
   if (attack?.cuePolicy === 'blind' && attack.outcome === null && input.inputMode !== 'click' &&
       (attack.phase === 'awaiting-stimulus' || attack.phase === 'outbound')) {
     gs.signalCheckDisposition = 'cancelled-mode-change'
@@ -1547,6 +1683,10 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
     const hintTarget = hintAttack ? findAlienById(gs, hintAttack.alienId) : null
     if (hintAttack?.phase === 'outbound' && hintAttack.outcome === null &&
         hintAttack.cuePolicy !== 'blind' && hintTarget?.alive) {
+      if (cueOf(hintAttack).owner === 'ordinary' && cueOf(hintAttack).policy === 'safe-try') {
+        requestFullCueHelp(gs, hintAttack.attackId)
+      }
+      hintAttack.answerHelpUsed = true
       events.push({
         kind: 'playNote', note: hintAttack.note, delayMs: 0, guard: 'attack',
         targetAlienId: hintAttack.alienId, attackId: hintAttack.attackId,

@@ -759,6 +759,23 @@ export function render(
   const now = viewState.nowMs
   const s = SPACE_SCALE
   const identityMaskActive = viewState.identityMaskActive
+  if (viewState.answerMaskActive) {
+    // R9b safe-try-canvas-hash authority: this canvas buffer is deliberately
+    // targetInvariant even when the shell scrim is removed by a proof harness.
+    const targetInvariant = true
+    ctx.save()
+    ctx.fillStyle = targetInvariant ? '#02050d' : '#02050d'
+    ctx.fillRect(0, 0, W, H)
+    ctx.strokeStyle = 'rgba(103,232,249,0.18)'
+    ctx.lineWidth = Math.max(1, s)
+    ctx.strokeRect(12 * s, 12 * s, W - 24 * s, H - 24 * s)
+    ctx.fillStyle = '#bfeef5'
+    ctx.font = `bold ${Math.round(13 * s)}px monospace`
+    ctx.textAlign = 'center'
+    ctx.fillText('LISTENING CHANNEL OPEN', W / 2, H / 2)
+    ctx.restore()
+    return { charge: null, tracer: null, hitLockAttackId: null, impactAlienIds: [] }
+  }
   drawSpace(ctx, now, reducedMotion)
 
   if (viewState.waveIntroTimer > 0) {

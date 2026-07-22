@@ -24,7 +24,9 @@ import {
 } from '../../src/components/PitchDefender/retroBlasterCurriculum'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from '../../src/components/PitchDefender/types'
 
-const BASE = '17ec77141671c68aebc1c397ac12c0dac5c3286c'
+// R9b compatibility re-freeze: R9a behavior runs against the reconciled parent;
+// only the three R9b presentation/engine files may differ.
+const BASE = '4a2465b8dcfc7d912d2406373bf220b232e50295'
 const SELF = fileURLToPath(import.meta.url)
 const MODE = process.argv[2] === '--green' ? '--green' : '--red'
 const OUTPUT = resolve(process.argv[MODE === '--green' ? 3 : 2] ??
@@ -54,8 +56,8 @@ const EXPECTED_HASHES = {
   shell: '8F7BF26EAD3FA57ACDA75A2DD557F08CED30F50E871B682D461317C1D7AC5C0F',
   types: 'FE36957396DF11499A3508C89D773E419DB5767894F80F072B067EB3AE0AFDEB',
   family: '8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46',
-  audio: '68184AD29A2582212D6AEC8E74CF440EF13C764C4894CE4D08964484D20CC430',
-  detector: '9ED5801EF0D19EC65C73B639A70F3E11A394ADE4562D0442D8B375F25A651CC2',
+  audio: 'B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744',
+  detector: '8515917A3F0B4066D23D85C4D7E4B0B9553F25FF332332604BE0412CCA5EA9F5',
   renderer: '109BD3EDC642B17CD30E5C5B804BE60BC673604EB69793D7F95764AB51D8D1D3',
   sibling: 'CAA31FCE012E82DA1BD7E6DA2AEE5300522BD0450DEC1D293AAAA1FA6FE407C5',
 } as const
@@ -318,9 +320,8 @@ await add('P-02', 'protected-baseline', MODE === '--green'
   const completeDelta = [...new Set([...tracked, ...untracked])].sort()
   const expectedDelta = MODE === '--green' ? [
     'src/components/PitchDefender/RetroBlasterII.tsx',
-    'src/components/PitchDefender/retroBlasterCurriculum.ts',
     'src/components/PitchDefender/retroBlasterEngine.ts',
-    'src/components/PitchDefender/retroBlasterPlacement.ts',
+    'src/components/PitchDefender/retroBlasterRenderer.ts',
   ] : []
   return {
     pass: JSON.stringify(completeDelta) === JSON.stringify(expectedDelta),
@@ -343,10 +344,10 @@ await add('P-04', 'protected-baseline', 'unlock thresholds remain exact for dist
 }))
 
 await add('P-05', 'protected-baseline', MODE === '--green'
-  ? 'six protected source hashes remain exact while engine and shell intentionally change'
+  ? 'five protected source hashes remain exact while engine shell and renderer intentionally change'
   : 'all eight frozen source hashes are exact', 'PASS', 'source-backed', () => ({
   pass: Object.entries(EXPECTED_HASHES).every(([key, value]) =>
-    MODE === '--green' && (key === 'engine' || key === 'shell')
+    MODE === '--green' && (key === 'engine' || key === 'shell' || key === 'renderer')
       ? hashes[key] !== value
       : hashes[key as keyof typeof EXPECTED_HASHES] === value),
   evidence: { expected: EXPECTED_HASHES, actual: Object.fromEntries(Object.keys(EXPECTED_HASHES).map(key => [key, hashes[key as keyof typeof hashes]])) },

@@ -1,0 +1,152 @@
+{
+  "schema": "retro-blaster-r9b-cue-taper/behavior-v1",
+  "generatedAt": "2026-07-22T20:34:00.293Z",
+  "status": "PASS",
+  "counts": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0
+  },
+  "rows": [
+    {
+      "id": "B-01",
+      "contract": "a first ordinary EAR encounter is fully guided",
+      "status": "PASS",
+      "evidence": {
+        "cue": {
+          "owner": "ordinary",
+          "policy": "guided"
+        }
+      }
+    },
+    {
+      "id": "B-02",
+      "contract": "a qualifying guided recovery arms only its reviewed not-due output-ready note",
+      "status": "PASS",
+      "evidence": {
+        "arms": {
+          "C4": true
+        }
+      }
+    },
+    {
+      "id": "B-03",
+      "contract": "the armed note gets one ordinary safe try and clears the entire map before telegraph",
+      "status": "PASS",
+      "evidence": {
+        "cue": {
+          "owner": "ordinary",
+          "policy": "safe-try"
+        },
+        "arms": {}
+      }
+    },
+    {
+      "id": "B-04",
+      "contract": "the safe-try projection is target-invariant and contains no target association",
+      "status": "PASS",
+      "evidence": {
+        "supportMode": "safe-try",
+        "spotlightIdx": -1
+      }
+    },
+    {
+      "id": "B-05",
+      "contract": "Full Help reveals the same attack without extending its deadline or submitting",
+      "status": "PASS",
+      "evidence": {
+        "attackId": "r9b:recovery:attack:2",
+        "demandAtMs": 1700,
+        "deadlineAtMs": 3700
+      }
+    },
+    {
+      "id": "B-06",
+      "contract": "resolving a safe try never arms a replacement",
+      "status": "PASS",
+      "evidence": {
+        "arms": {},
+        "outcome": "correct"
+      }
+    },
+    {
+      "id": "B-07",
+      "contract": "clearing dual arms creates a global guided barrier across notes",
+      "status": "PASS",
+      "evidence": {
+        "first": {
+          "owner": "ordinary",
+          "policy": "safe-try"
+        },
+        "next": {
+          "owner": "ordinary",
+          "policy": "guided"
+        }
+      }
+    },
+    {
+      "id": "B-08",
+      "contract": "R8c blind ownership freezes pre-existing ordinary arms",
+      "status": "PASS",
+      "evidence": {
+        "cue": {
+          "owner": "r8c-probe",
+          "policy": "blind"
+        },
+        "arms": {
+          "C4": true
+        }
+      }
+    },
+    {
+      "id": "B-09",
+      "contract": "R8c fail-soft guidance also freezes ordinary arms",
+      "status": "PASS",
+      "evidence": {
+        "cue": {
+          "owner": "r8c-probe",
+          "policy": "guided"
+        },
+        "arms": {
+          "C4": true
+        }
+      }
+    },
+    {
+      "id": "B-10",
+      "contract": "a stale due arm clears and fails safely to ordinary guidance",
+      "status": "PASS",
+      "evidence": {
+        "cue": {
+          "owner": "ordinary",
+          "policy": "guided"
+        },
+        "arms": {}
+      }
+    },
+    {
+      "id": "B-11",
+      "contract": "mode or activity reset reveals guidance without changing the attack deadline",
+      "status": "PASS",
+      "evidence": {
+        "deadlineAtMs": 3700,
+        "cue": {
+          "owner": "ordinary",
+          "policy": "guided"
+        }
+      }
+    },
+    {
+      "id": "B-12",
+      "contract": "the timed exact-answer hint first lifts the answer mask and marks help",
+      "status": "PASS",
+      "evidence": {
+        "hintCount": 1,
+        "cue": {
+          "owner": "ordinary",
+          "policy": "guided"
+        }
+      }
+    }
+  ]
+}

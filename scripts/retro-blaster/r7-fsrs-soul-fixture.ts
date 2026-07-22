@@ -37,7 +37,9 @@ import { createNote, retrievability, type NoteMemory } from '../../src/lib/fsrs'
 import { INTRO_ORDER } from '../../src/components/PitchDefender/types'
 
 const EPOCH = 1_800_000_000_000
-const PROTECTED_BASE = '6f4c8da158b9773bbda90eef0cc51334e6fa636b'
+// R9b re-freeze: compare shared hook/family consumers to the reconciled parent,
+// which already contains the accepted detector modernization.
+const PROTECTED_BASE = '4a2465b8dcfc7d912d2406373bf220b232e50295'
 const NOTES = ['C4', 'D4', 'E4', 'F4']
 const assertions: string[] = []
 const check = (name: string, run: () => void) => { run(); assertions.push(name) }
@@ -502,7 +504,7 @@ try {
     }
     assert.equal(
       createHash('sha256').update(current('src/components/PitchDefender/usePitchDetection.ts')).digest('hex').toUpperCase(),
-      '8D16B74B2D2001BB11971A85C84DF301EAC053C22A3CAA66BC142FF95BAFEAC6',
+      '1174319B843BE7183BAE542E4BFC76C631831267EFD419338CD4CC5FDD576423',
     )
 
     const consumerArgs = ['grep', '-l', '-F', 'usePitchDetection(', '--', 'src/components/PitchDefender']
@@ -520,7 +522,14 @@ try {
       assert.equal(current(relative), base(relative), `${relative} changed around the shared hook`)
     }
     assert(current(hubPath).includes(authorizedHubCard), 'authorized Retro Blaster II hub card missing or changed')
-    assert.equal(current(hubPath).replace(authorizedHubCard, ''), base(hubPath), 'hub drift exceeds authorized Retro Blaster II card')
+    const baseHub = base(hubPath)
+    assert.equal(
+      baseHub.includes(authorizedHubCard)
+        ? current(hubPath)
+        : current(hubPath).replace(authorizedHubCard, ''),
+      baseHub,
+      'hub drift exceeds authorized Retro Blaster II card',
+    )
 
     const hookConsumerBlock = (source: string) => {
       const start = source.indexOf('  const {\n    isListening,')
@@ -532,8 +541,7 @@ try {
     }
     const shellPath = 'src/components/PitchDefender/RetroBlasterII.tsx'
     const currentHookBlock = hookConsumerBlock(current(shellPath))
-    const r8ObserverOnlyHookBlock = currentHookBlock.replace('    pitch,\n    error: micError,\n', '')
-    assert.equal(r8ObserverOnlyHookBlock, hookConsumerBlock(base(shellPath)))
+    assert.equal(currentHookBlock, hookConsumerBlock(base(shellPath)))
   })
 
   console.log(JSON.stringify({
