@@ -2,7 +2,7 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Muscle-Preservation Engine
-status: control_plan_revision
+status: control_plan_accepted_runtime_hold
 last_updated: "2026-07-21T19:00:18.5538069-06:00"
 last_activity: 2026-07-21
 progress:
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-07-21)
 ## Current Position
 
 Phase: 6 of 13 — Production Reconciliation & Contract Foundation
-Plan: 06-01 control-plane establishment; runtime plans remain held
-Status: Blind plan-check revision in progress; no FND requirement credit
-Last activity: 2026-07-21 — roadmap mapped 105/105; 06-01 returned for executor and verification hardening
+Plan: 06-01 control-plane establishment accepted; runtime plans remain held
+Status: Blind plan check passed at `e37d808f`; no FND requirement credit and no runtime authorization
+Last activity: 2026-07-21 — 06-01 blind PASS after executor, write-set, coverage, and FND verification hardening
 
 Progress: [----------] 0%
 
@@ -131,7 +131,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Complete the revised 06-01 control-plane check, then plan Phase 6 runtime slices from all FND-01 through FND-12 acceptance cases after ownership release.
+- After ownership release, plan separate Phase 6 runtime slices from all FND-01 through FND-12 acceptance cases.
 - Keep runtime source held until the workout-content, nutrition-scorecard, security, and Hawkeye ownership boundaries are transferred or serialized.
 
 ### Blockers/Concerns

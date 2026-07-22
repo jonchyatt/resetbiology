@@ -1,7 +1,7 @@
 # Phase 6 Verification Contract
 
 **Phase:** 06 — Muscle-Preservation Foundation
-**Status:** Control-plane proof in progress; runtime proof not yet authorized
+**Status:** Control-plane PASS at `e37d808f`; runtime proof not yet authorized
 **Production target:** `https://resetbiology.com/workout`
 
 ## Two Separate Verdicts
@@ -114,10 +114,10 @@ Any dirty tree, mismatched production commit, missing frame citation, failed cle
 
 | Hypothesis | Change | Verification | Result | Lesson |
 |---|---|---|---|---|
-| Freezing vision, evidence, ownership, and proof rules before source work will prevent accidental scope loss and unsafe promotion | Built a clean v2 milestone with research, atomic requirements, roadmap, and exact tickets | Commit ancestry, status, path audit, requirement count, traceability audit | Pending roadmap completion and final clean commit | A large build becomes controllable when every slice has one owner, one write set, and one falsifiable proof path |
+| Freezing vision, evidence, ownership, and proof rules before source work will prevent accidental scope loss and unsafe promotion | Built a clean v2 milestone with research, atomic requirements, roadmap, exact tickets, and a runnable coverage verifier | Commit ancestry, status, path audit, 105/105/105 set-and-phase audit, GSD task parser, and blind plan check | PASS at `e37d808f`; no runtime credit granted | A large build becomes controllable when every slice has one owner, one write set, and one falsifiable proof path |
 
 ### Debug
 
 | Failing case | Candidate cause | Fix attempt | Post-check | Next threshold |
 |---|---|---|---|---|
-| Old polish work was partial, dirty, and tempting to treat as ready | Its intent was good but verification and production identity were incomplete | Preserve it locally as superseded evidence and restart from current remote source | Old commit stays local; v2 worktree contains only planning changes | Runtime remains held until lock and browser ownership are explicit |
+| Old polish work was partial, dirty, and tempting to treat as ready | Its intent was good but verification and production identity were incomplete | Preserve it locally as superseded evidence and restart from current remote source | Old commit stays local; current-base v2 worktree contains only planning changes; blind control verdict is PASS | Runtime remains held until lock and browser ownership are explicit |

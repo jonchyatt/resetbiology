@@ -140,7 +140,7 @@
 | 3. Peptide Science | v1.0 | 3/3 | Complete | 2026-03-19 |
 | 4. Behavioral Science | v1.0 | 3/3 | Complete | 2026-03-19 |
 | 5. Quality Assurance | v1.0 | 2/2 | Complete | 2026-03-19 |
-| 6. Production Reconciliation & Contract Foundation | v2.0 | 0/1 control; runtime TBD | Control plan in revision | - |
+| 6. Production Reconciliation & Contract Foundation | v2.0 | 0/1 control; runtime TBD | Control plan accepted; runtime held | - |
 | 7. Repeat-Safe Logging & Event Spine | v2.0 | 0/TBD | Not started | - |
 | 8. Guided Strength & Honest Manual REHIT | v2.0 | 0/TBD | Not started | - |
 | 9. Readiness Prescriptions, Freshness & Activity | v2.0 | 0/TBD | Not started | - |
