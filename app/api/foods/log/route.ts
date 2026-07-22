@@ -2,10 +2,19 @@ import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
-import { dayKeyToUtcMidnight, todayLocalKey } from '@/lib/localDay';
+import { dayKeyToUtcMidnight, localDayKey } from '@/lib/localDay';
+import { awardNutritionPoints } from '@/lib/nutritionPoints';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+const DAY_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidDayKey(value: unknown): value is string {
+  if (typeof value !== 'string' || !DAY_KEY_RE.test(value)) return false;
+  const parsed = dayKeyToUtcMidnight(value);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
+}
 
 export async function POST(req: Request) {
   try {
@@ -52,20 +61,10 @@ export async function POST(req: Request) {
         : null;
 
     const logTimestamp = loggedAt ? new Date(loggedAt) : new Date();
-    const startOfDay = new Date(logTimestamp);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
-
-    const existingCountToday = await prisma.foodLog.count({
-      where: {
-        userId: user.id,
-        loggedAt: {
-          gte: startOfDay,
-          lt: endOfDay,
-        },
-      },
-    });
+    const dayKey = isValidDayKey(localDate) ? localDate : localDayKey(logTimestamp);
+    const dayStart = dayKeyToUtcMidnight(dayKey);
+    const nextDay = new Date(dayStart);
+    nextDay.setUTCDate(nextDay.getUTCDate() + 1);
 
     const log = await prisma.foodLog.create({
       data: {
@@ -80,7 +79,7 @@ export async function POST(req: Request) {
         nutrients,
         photoUrl: safePhotoUrl,
         notes,
-        localDate, // User's local date YYYY-MM-DD
+        localDate: dayKey, // One validated user-local YYYY-MM-DD key for every daily side effect
         localTime, // User's local time HH:MM:SS
         loggedAt: logTimestamp,
         mealType,
@@ -93,32 +92,21 @@ export async function POST(req: Request) {
       where: {
         userId_date_taskName: {
           userId: user.id,
-          date: startOfDay,
+          date: dayStart,
           taskName: 'meals',
         },
       },
       update: { completed: true },
       create: {
         userId: user.id,
-        date: startOfDay,
+        date: dayStart,
         taskName: 'meals',
         completed: true,
       },
     });
 
-    let pointsAwarded = 0;
-    if (existingCountToday === 0) {
-      await prisma.gamificationPoint.create({
-        data: {
-          userId: user.id,
-          amount: 10,
-          pointType: 'nutrition',
-          activitySource: 'Logged nutrition for today',
-          earnedAt: logTimestamp,
-        },
-      });
-      pointsAwarded = 10;
-    }
+    const award = await awardNutritionPoints({ userId: user.id, dayKey });
+    const pointsAwarded = award.points;
 
     const timestamp = logTimestamp.toLocaleTimeString('en-US', {
       hour: 'numeric',
@@ -130,10 +118,11 @@ export async function POST(req: Request) {
       where: {
         userId: user.id,
         date: {
-          gte: startOfDay,
-          lt: endOfDay,
+          gte: dayStart,
+          lt: nextDay,
         },
       },
+      orderBy: { createdAt: 'desc' },
     });
 
     if (existingJournal) {
@@ -146,6 +135,9 @@ export async function POST(req: Request) {
 
       const previous = entryData.nutritionNotes ? `${entryData.nutritionNotes}\n` : '';
       entryData.nutritionNotes = `${previous}${nutritionNote}`;
+      if (typeof entryData.localDate !== 'string' || !entryData.localDate) {
+        entryData.localDate = dayKey;
+      }
       const tasksCompleted = entryData.tasksCompleted || {};
       tasksCompleted.meals = true;
       entryData.tasksCompleted = tasksCompleted;
@@ -168,6 +160,7 @@ export async function POST(req: Request) {
         breathNotes: '',
         moduleNotes: '',
         tasksCompleted: { meals: true },
+        localDate: dayKey,
       };
 
       await prisma.journalEntry.create({
@@ -176,7 +169,7 @@ export async function POST(req: Request) {
           entry: JSON.stringify(entryData),
           mood: null,
           weight: null,
-          date: dayKeyToUtcMidnight(typeof localDate === 'string' && localDate ? localDate : todayLocalKey()),
+          date: dayStart,
         },
       });
     }
