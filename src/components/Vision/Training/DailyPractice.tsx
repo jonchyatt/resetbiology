@@ -23,6 +23,7 @@ import WeeklyAssessment, { type WeeklyAssessmentResult } from './WeeklyAssessmen
 import ProgressDashboard from './ProgressDashboard'
 import SessionRemindersCard from './SessionRemindersCard'
 import type { EngineResult } from '@/components/Vision/Engines/types'
+import type { GaborThresholdPrior } from '@/lib/vision/gaborThreshold'
 import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
@@ -121,6 +122,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [resetConfirming, setResetConfirming] = useState(false)
   const [isTester, setIsTester] = useState(false)
   const [advancingDay, setAdvancingDay] = useState(false)
+  const [gaborThresholdPrior, setGaborThresholdPrior] = useState<GaborThresholdPrior | null>(null)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -209,6 +211,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
       if (data.success) {
         setEnrolled(data.enrolled)
         setIsTester(Boolean(data.isTester))
+        setGaborThresholdPrior(data.gaborThresholdPrior ?? null)
         if (data.enrolled) {
           setEnrollment(data.enrollment)
           setTodaySession(data.todaySession)
@@ -1086,6 +1089,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                       streakDays={enrollment.streakDays}
                       sessionsCompleted={enrollment.sessionsCompleted}
                       lastSessionDate={enrollment.lastSessionDate ?? null}
+                      gaborThresholdPrior={gaborThresholdPrior}
                       onFinish={handleRunnerFinish}
                       onExit={() => setShowGuidedRunner(false)}
                     />

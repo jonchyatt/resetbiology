@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import type { VisionExercise } from '@/data/visionExercises'
+import type { GaborThresholdPrior } from '@/lib/vision/gaborThreshold'
 
 /**
  * VisionEngine contract — every interactive exercise engine implements this.
@@ -64,6 +65,8 @@ export type EngineProps = {
   onComplete: (result: EngineResult) => void
   /** User bailed out — runner decides what to do (skip / retry / end session) */
   onExit: () => void
+  /** Server-owned warm-start snapshot (gabor-contrast only; other engines ignore it) */
+  gaborThresholdPrior?: GaborThresholdPrior | null
 }
 
 export type VisionEngineComponent = ComponentType<EngineProps>

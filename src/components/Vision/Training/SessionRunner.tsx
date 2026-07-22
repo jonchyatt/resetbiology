@@ -21,6 +21,7 @@ import { prefersReducedMotion } from '@/lib/vision/canvasKit'
 import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 import { getEngine } from '@/components/Vision/Engines'
 import { clampScore, type EngineResult } from '@/components/Vision/Engines/types'
+import type { GaborThresholdPrior } from '@/lib/vision/gaborThreshold'
 import { localDayKey } from '@/lib/localDay'
 import GuidedExercise from './GuidedExercise'
 import SnellenQuickCheck, { type SnellenQuickCheckResult } from './SnellenQuickCheck'
@@ -94,6 +95,8 @@ interface SessionRunnerProps {
   sessionsCompleted?: number
   /** ISO date of last completed session — drives comeback mode (consult 2 #2) */
   lastSessionDate?: string | null
+  /** Server-owned warm-start snapshot; forwarded only to the gabor-contrast engine */
+  gaborThresholdPrior?: GaborThresholdPrior | null
   onFinish: (payload: SessionRunnerFinishPayload) => void
   onExit: () => void
 }
@@ -150,6 +153,7 @@ export default function SessionRunner({
   streakDays = 0,
   sessionsCompleted = 0,
   lastSessionDate = null,
+  gaborThresholdPrior = null,
   onFinish,
   onExit,
 }: SessionRunnerProps) {
@@ -466,6 +470,7 @@ export default function SessionRunner({
                     muted={muted}
                     onComplete={handleEngineComplete(stage.index)}
                     onExit={handleEngineExit(stage.index)}
+                    gaborThresholdPrior={exercise.id === 'gabor-contrast' ? gaborThresholdPrior : undefined}
                   />
                 ) : (
                   /* v1 fallback — every exercise always runnable (never-strip) */

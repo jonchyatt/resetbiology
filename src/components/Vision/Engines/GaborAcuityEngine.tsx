@@ -26,6 +26,7 @@ import {
   type GaborPresentationResponse,
   type GaborProductionCoordinator,
   type GaborResolvedPresentation,
+  type GaborThresholdPrior,
 } from '@/lib/vision/gaborThreshold'
 
 const ORIENTATIONS = {
@@ -56,10 +57,12 @@ function formatTime(totalSec: number): string {
   return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`
 }
 
-function createActiveCoordinator(preview: boolean, seed: string): ActiveCoordinator {
+// Preview mode never touches `prior` — that branch simply never reads the
+// argument, regardless of what a caller passes.
+function createActiveCoordinator(preview: boolean, seed: string, prior: GaborThresholdPrior | null): ActiveCoordinator {
   return preview
     ? { mode: 'preview', state: createGaborEasyPreviewCoordinator(seed) }
-    : { mode: 'guided', state: createGaborProductionCoordinator({ seed, prior: null }) }
+    : { mode: 'guided', state: createGaborProductionCoordinator({ seed, prior }) }
 }
 
 function presentActiveCoordinator(active: ActiveCoordinator, timeCapReached: boolean): ActiveCoordinator {
@@ -99,6 +102,7 @@ export default function GaborAcuityEngine({
   onComplete,
   onExit,
   preview = false,
+  gaborThresholdPrior = null,
 }: GaborAcuityEngineProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const speechRef = useRef<SpeechQueue | null>(null)
@@ -134,7 +138,7 @@ export default function GaborAcuityEngine({
   }, [])
 
   const seedRef = useRef<string>(GABOR_THRESHOLD_PROTOCOL.id)
-  const coordinatorRef = useRef<ActiveCoordinator>(createActiveCoordinator(preview, seedRef.current))
+  const coordinatorRef = useRef<ActiveCoordinator>(createActiveCoordinator(preview, seedRef.current, gaborThresholdPrior))
   const completedRef = useRef(false)
   const reportedRef = useRef(false)
   const resultRef = useRef<EngineResult | null>(null)
@@ -371,7 +375,7 @@ export default function GaborAcuityEngine({
     if (phaseRef.current !== 'intro') return
     unlockAudio()
     seedRef.current = `${preview ? 'easy-preview' : GABOR_THRESHOLD_PROTOCOL.id}:${Date.now()}`
-    coordinatorRef.current = createActiveCoordinator(preview, seedRef.current)
+    coordinatorRef.current = createActiveCoordinator(preview, seedRef.current, gaborThresholdPrior)
     completedRef.current = false
     reportedRef.current = false
     resultRef.current = null
@@ -391,7 +395,7 @@ export default function GaborAcuityEngine({
         finishRef.current()
       }
     }, 250)
-  }, [elapsedSeconds, preview, publishProgress])
+  }, [elapsedSeconds, gaborThresholdPrior, preview, publishProgress])
 
   const pauseManual = useCallback(() => {
     if (phaseRef.current !== 'trial' && phaseRef.current !== 'feedback') return

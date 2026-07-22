@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { Prisma } from '@prisma/client'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { visionMasterProgram } from '@/data/visionProtocols'
 import { visionExerciseMap } from '@/data/visionExercises'
 import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
+import {
+  buildGaborThresholdPriorFromEngineResults,
+  selectNewestValidGaborThresholdPrior,
+  type PersistedGaborThresholdPrior,
+} from '@/lib/vision/gaborPriorPersistence'
 import {
   isVisionSessionCompleteForDay,
   previousVisionDayKey,
@@ -65,6 +71,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({
         success: true,
         enrolled: false,
+        gaborThresholdPrior: null,
         program: {
           id: visionMasterProgram.id,
           name: visionMasterProgram.name,
@@ -108,10 +115,37 @@ export async function GET(req: NextRequest) {
       today.day,
     )
 
+    // Newest server-owned guided-Gabor threshold snapshot for this user +
+    // enrollment (P1-A4). There is no arbitrary application limit: an invalid
+    // later snapshot must not hide an earlier valid one. This continuity hint
+    // is optional, so a lookup failure falls back safely instead of taking down
+    // the whole training page.
+    let gaborThresholdPrior: PersistedGaborThresholdPrior | null = null
+    try {
+      const rawGaborPriorDocs = (await prisma.$runCommandRaw({
+        find: 'vision_daily_sessions',
+        filter: {
+          userId: { $oid: user.id },
+          enrollmentId: { $oid: enrollment.id },
+          gaborThresholdPrior: { $exists: true },
+        },
+        projection: { userId: 1, enrollmentId: 1, gaborThresholdPrior: 1 },
+        sort: { completedAt: -1, _id: -1 },
+      })) as { cursor?: { firstBatch?: unknown[] } }
+      gaborThresholdPrior = selectNewestValidGaborThresholdPrior(
+        Array.isArray(rawGaborPriorDocs?.cursor?.firstBatch) ? rawGaborPriorDocs.cursor!.firstBatch : [],
+        user.id,
+        enrollment.id,
+      )
+    } catch (error) {
+      console.error('Vision Gabor prior lookup failed; using cold localization:', error)
+    }
+
     return NextResponse.json({
       success: true,
       enrolled: true,
       isTester,
+      gaborThresholdPrior,
       enrollment: {
         id: enrollment.id,
         startDate: enrollment.startDate,
@@ -361,13 +395,20 @@ export async function POST(req: NextRequest) {
 
       // MongoDB is schemaless; persist the additive engine-results payload on the
       // created document without touching typed legacy fields (same pattern as
-      // /api/vision/sessions).
+      // /api/vision/sessions). The guided-Gabor threshold prior (P1-A4) rides
+      // along in the SAME $set only when this session's result qualifies —
+      // an invalid/incomplete Gabor result still gets engineResults saved, it
+      // just gets no gaborThresholdPrior field at all.
       if (engineResults !== undefined) {
+        const gaborThresholdPrior = buildGaborThresholdPriorFromEngineResults(engineResults)
+        const sessionResultsForStorage: Prisma.InputJsonObject = gaborThresholdPrior
+          ? { engineResults, gaborThresholdPrior }
+          : { engineResults }
         await prisma.$runCommandRaw({
           update: 'vision_daily_sessions',
           updates: [{
             q: { _id: { $oid: dailySession.id } },
-            u: { $set: { engineResults } }
+            u: { $set: sessionResultsForStorage }
           }]
         })
       }
