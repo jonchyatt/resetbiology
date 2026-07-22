@@ -108,11 +108,11 @@ export function RegimenSourcePicker({ card, loading, onSelectDose }: RegimenSour
                     <button
                       type="button"
                       onClick={() => onSelectDose(r.dose_value as number, unit)}
-                      className="bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 border border-amber-200/40 px-2.5 py-1 rounded-md font-semibold transition-all"
+                      className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-100 border border-primary-300/40 px-2.5 py-1 rounded-md font-semibold transition-all"
                     >
                       Use {r.dose_value}{r.dose_unit ?? ""}
                     </button>
-                    {conversion && <span className="text-amber-300/50">{conversion}</span>}
+                    {conversion && <span className="text-primary-300/70">{conversion}</span>}
                   </div>
                 )}
               </div>

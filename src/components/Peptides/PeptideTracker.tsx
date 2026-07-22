@@ -2286,7 +2286,7 @@ export function PeptideTracker() {
               </button>
               <button
                 onClick={() => openCalculatorModal(protocol)}
-                className="bg-amber-300/30 hover:bg-amber-300/50 text-amber-100 font-semibold py-2 px-4 rounded-lg border border-amber-200/40 backdrop-blur-sm transition-all text-sm whitespace-nowrap shadow-[0_0_20px_rgba(245,193,92,0.35)]"
+                className="bg-primary-600/30 hover:bg-primary-600/50 text-primary-100 font-semibold py-2 px-4 rounded-lg border border-primary-300/40 backdrop-blur-sm transition-all text-sm whitespace-nowrap shadow-[0_0_20px_rgba(45,212,191,0.2)]"
               >
                 Dose Calculator
               </button>
@@ -2308,16 +2308,7 @@ export function PeptideTracker() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.88)), url(/hero-background.jpg)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative">
       <div className="relative z-10 pt-16">
         <PushUnavailableWarning />
         {/* Portal Subnav Header */}
