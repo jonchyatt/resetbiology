@@ -392,13 +392,13 @@ export function NutritionTracker() {
       }))
   }, [historyItems])
 
-  const deleteFood = async (entryId: string) => {
+  const handleDeleteEntry = async (entryId: string) => {
     const ok = await toast.confirm({ title: 'Delete this food entry?', destructive: true, confirmLabel: 'Delete' })
     if (!ok) return
     try {
-      const res = await fetch(`/api/foods/log?id=${entryId}`, { method: 'DELETE' })
+      const res = await fetch(`/api/nutrition/entries/${encodeURIComponent(entryId)}`, { method: 'DELETE' })
       const data = await res.json()
-      if (data.ok) {
+      if (res.ok && data.success === true) {
         refreshAll()
         toast.success('Entry deleted')
       } else {
@@ -450,24 +450,6 @@ export function NutritionTracker() {
     setShowEditModal(false)
     setEditingEntry(null)
     setFoodName(''); setCalories(''); setProtein(''); setCarbs(''); setFats('')
-  }
-
-  const handleDeleteHistoryEntry = async (entryId: string) => {
-    const ok = await toast.confirm({ title: 'Delete this food entry?', destructive: true, confirmLabel: 'Delete' })
-    if (!ok) return
-    try {
-      const res = await fetch(`/api/foods/log?id=${entryId}`, { method: 'DELETE' })
-      const data = await res.json()
-      if (data.ok) {
-        refreshAll()
-        toast.success('Entry deleted')
-      } else {
-        toast.error('Failed to delete entry')
-      }
-    } catch (error) {
-      console.error('Error deleting food:', error)
-      toast.error('Failed to delete entry')
-    }
   }
 
   // F3.1: use the FoodLog item route, with its real payload shape. Nutrients merge preserves fiber/sodium.
@@ -779,7 +761,7 @@ export function NutritionTracker() {
                                 </p>
                               </div>
                               <button
-                                onClick={() => deleteFood(food.id)}
+                                onClick={() => handleDeleteEntry(food.id)}
                                 className="text-red-400 hover:text-red-300 transition-colors"
                               >
                                 <X className="w-4 h-4" />
@@ -922,7 +904,7 @@ export function NutritionTracker() {
                                   <button onClick={() => handleEditEntry(entry)} className="text-blue-400 hover:text-blue-300 transition-colors" title="Edit entry">
                                     <Edit className="w-4 h-4" />
                                   </button>
-                                  <button onClick={() => handleDeleteHistoryEntry(entry.id)} className="text-red-400 hover:text-red-300 transition-colors" title="Delete entry">
+                                  <button onClick={() => handleDeleteEntry(entry.id)} className="text-red-400 hover:text-red-300 transition-colors" title="Delete entry">
                                     <Trash2 className="w-4 h-4" />
                                   </button>
                                 </div>
