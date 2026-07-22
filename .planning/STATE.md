@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Muscle-Preservation Engine
-status: 07_03b_complete_07_03c1_unlocked
+status: 07_03c1_frozen_implementation_next
 last_updated: "2026-07-22T14:18:55-06:00"
 last_activity: 2026-07-22
 progress:
   total_phases: 8
   completed_phases: 0
-  total_plans: 1
+  total_plans: 2
   completed_plans: 0
   percent: 0
 ---
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** Members can act on an honest, evidence-cited daily plan without a marketer, paywall, or opaque score standing between them and their own data.
-**Current focus:** Phase 7 — finish the production uniqueness proof, then connect the accepted event spine to one authenticated one-tap logging slice.
+**Current focus:** Phase 7 — implement and prove the frozen authenticated event route, then build browser journal draining as the separate 07-03C2 slice.
 
 ## Current Position
 
 Phase: 7 of 13 — Repeat-Safe Logging & Event Spine
-Plan: 07-03C1 authenticated store adapter, route, and one-way browser-journal drain unlocked
-Status: Product `4a2465b8` is blind-accepted, production-deployed, runtime-dormant, and canonical `/workout` HTTP 200. The corrected isolated relay proved exactly one winner and 31 reconciled collisions, cross-user independence, full ten-field immutability, exact cleanup, restored zero-row baseline, and unchanged index topology. Fresh post-run census and blind receipt verification passed. `LOG-03` is complete.
-Last activity: 2026-07-22 — exact deployment PASS; fresh census PASS; Sol premutation PASS; one authorized apply PASS; cleanup PASS; zero-residue census PASS; blind production-receipt PASS
+Plan: 07-03C1 authenticated store adapter, route, hostile tests, and isolated production route proof frozen
+Status: Sol froze `POST /api/workout/events` with direct bounded JSON, canonical `User.id`, create-eight/read-ten database mapping, exact-state collision reconciliation, a four-file write set, and isolated exact-row cleanup. C1 contains no browser drain; C2 owns that work. Current `origin/master` is `29112374` after a non-overlapping Retro Blaster advance.
+Last activity: 2026-07-22 — ADHD divergence complete; separate critic complete; three focus passes complete; Sol `FOREMAN=FREEZE`; seven-section C1 ticket and GSD plan created
 
 Progress: [----------] 0%
 
@@ -131,8 +131,9 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Freeze 07-03C1 as a seven-section implementation ticket for the authenticated store adapter, route, and one-way browser-journal drain.
-- Keep the accepted event writer dormant until the authenticated boundary and drain are independently verified.
+- Implement 07-03C1 from current `origin/master` using only the exact four-file write set.
+- Keep browser drain, retry, acknowledgement persistence, and foreground synchronization in 07-03C2.
+- Keep the accepted event writer unreachable from member UI until C1 production proof and C2 browser synchronization independently pass.
 - Continue qualified protocol review as a parallel human evidence track; do not invent clinical approval.
 
 ### Blockers/Concerns
@@ -145,7 +146,7 @@ Recent decisions affecting current work:
 
 ## Milestone Operating Boundary
 
-Roadmap creation is complete. The Phase 7 event spine and production uniqueness boundary are proven, while the application writer remains deliberately dormant until 07-03C1 is accepted.
+Roadmap creation is complete. The Phase 7 event spine and production uniqueness boundary are proven. 07-03C1 is frozen for implementation, while member UI and browser synchronization remain deliberately disconnected.
 
 - Preserve all v1 phase directories and history.
 - Plan and execute v2.0 sequentially from Phase 6 through Phase 13 unless an explicit dependency decision changes the order.
@@ -155,6 +156,6 @@ Roadmap creation is complete. The Phase 7 event spine and production uniqueness 
 
 ## Session Continuity
 
-Last session: 2026-07-22T14:18:55-06:00
-Stopped at: 07-03B/07-03B1 complete with production relay PASS, exact cleanup, zero-residue post-census, and blind receipt PASS; 07-03C1 unlocked.
-Resume files: `.planning/ROADMAP.md`; `C:/Users/jonch/Projects/jarvis/data/rb-muscle-preservation-engine-v2/runtime-logs/receipts/07-03b-deployment-premutation-hold.md`
+Last session: 2026-07-22
+Stopped at: 07-03C1 frozen; exact four-file implementation from current origin/master is next.
+Resume files: `.planning/phases/07-repeat-safe-logging-event-spine/07-03C1-PLAN.md`; `C:/Users/jonch/Projects/jarvis/data/rb-muscle-preservation-engine-v2/runtime-logs/tickets/07-03c1-authenticated-event-route.md`

@@ -52,7 +52,7 @@
   3. Logging remains partitioned to the authenticated member across logout and account changes, and when durable browser storage is unavailable the member sees an honest online-only state before any unacknowledged action is described as saved.
   4. Before the writer is enabled, an inspected production uniqueness rule and authenticated canonical read-back prove one accepted event and original replay receipt under a simultaneous race.
   5. During logging, a member can use an accessible unit-aware plate calculation, reviewed demonstration and form/stopping cues, and one optional final-set effort check without that check being required or framed as medical clearance.
-**Plans**: TBD
+**Plans**: 07-03A dormant server ledger; 07-03B/07-03B1 production uniqueness proof; 07-03C1 authenticated event route; later Phase 7 plans remain pending
 **UI hint**: yes
 
 ### Phase 8: Guided Strength & Honest Manual REHIT

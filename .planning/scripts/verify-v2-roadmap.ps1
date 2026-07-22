@@ -8,7 +8,7 @@ $roadmapText = Get-Content -LiteralPath $roadmapPath -Raw
 
 $definitionIds = [regex]::Matches(
   $requirementsText,
-  '(?m)^- \[ \] \*\*([A-Z]+-[0-9]+)\*\*'
+  '(?m)^- \[[ xX]\] \*\*([A-Z]+-[0-9]+)\*\*'
 ) | ForEach-Object { $_.Groups[1].Value }
 
 $roadmapOwners = @{}
