@@ -1,17 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: completed
-stopped_at: Completed 05-02-PLAN.md — Milestone v1.0 COMPLETE. All 54 requirements across 5 phases satisfied. Ready for production push (git push auto-deploys to Vercel).
-last_updated: "2026-03-19T16:14:32.036Z"
-last_activity: "2026-03-19 -- Completed 05-02-PLAN.md (cross-domain audit: QUAL-03 and QUAL-04 satisfied)"
+milestone: v2.0
+milestone_name: Muscle-Preservation Engine
+status: planning
+last_updated: "2026-07-22T00:18:22.925Z"
+last_activity: 2026-07-22
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 17
-  completed_plans: 17
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -25,16 +24,15 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 5 of 5 (Quality Assurance — COMPLETE)
-Plan: 2 of 2 in phase 5 complete (05-01 PMID sweep; 05-02 cross-domain audit)
-Status: MILESTONE v1.0 COMPLETE — all 4 QUAL requirements satisfied, build clean, ready for production push
-Last activity: 2026-03-19 -- Completed 05-02-PLAN.md (cross-domain audit: QUAL-03 and QUAL-04 satisfied)
-
-Progress: [████████████████████] 100% (16/16 plans)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-07-22 — Milestone v2.0 started
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 11
 - Average duration: ~4.3 min
 - Total execution time: ~0.75 hours
@@ -50,6 +48,7 @@ Progress: [████████████████████] 100% (1
 | 05-quality-assurance | 2 completed | 26 min | 13 min |
 
 **Recent Trend:**
+
 - Last 5 plans: 04-01 (6 min), 04-02 (5 min), 04-03 (3 min), 05-01 (8 min), 05-02 (18 min)
 - Trend: stable; 05-02 longer due to full build verification on Windows
 
@@ -135,6 +134,7 @@ None yet.
 **ACTIVE: Run `/gsd:autonomous` after `/clear` to continue.**
 
 This milestone is approved for fully autonomous execution:
+
 - Plan each phase → execute each plan → commit → advance to next phase
 - Sequential, full opus quality with cross-domain awareness
 - All 5 phases, 16 plans, 54 requirements
@@ -142,6 +142,7 @@ This milestone is approved for fully autonomous execution:
 - No user approval needed between phases — keep going until all 5 complete
 
 **Critical research rules:**
+
 - ALL PubMed IDs must be REAL — verify every citation exists
 - Web search for actual studies, do NOT fabricate PMIDs
 - Cross-domain connections are essential (breath↔exercise↔nutrition↔peptides↔cognition)
