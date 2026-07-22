@@ -19,7 +19,7 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 
 - `localDayKey` is shared across eleven modules and has a CRITICAL dependency radius. Phase P0-A should call the existing contract without changing it unless a separately reviewed change is unavoidable.
 - `fitCanvasToElement` has a HIGH dependency radius across eight vision rendering paths. Phase P0-C requires deterministic DPR checks and visual regression proof across affected engines.
-- Current product branch is clean and one preserved probe-scripts commit ahead of `origin/master` after rebase.
+- Current product branch is clean after rebase; the exact mutable ahead/behind count is verified from Git at each ticket gate rather than frozen here.
 - Phase 8 persona identity is a recorded non-Phase-0 blocker: direct user text says inverse-Gil, while the separately saved rail copy says Inverse Yale. Do not build or blend either until Jon resolves it.
 
 ## Next gate

@@ -10,7 +10,7 @@
 | 5 | Add dichoptic integration | Phase 4 | Per-eye framebuffer proof and safety/claims pass |
 | 6 | Add adaptive convergence | Phase 5 | Fusional-demand trace and eligibility/symptom gates |
 | 7 | Integrate the ethereal art system | May generate after Phase 0; closes after Phase 6 | Provenance plus dual-eye calm-zone pass |
-| 8 | Add the grounded Vision Coach | Phases 4–7 | Data-grounding and deterministic red-team fences |
+| 8 | Add the grounded Vision Coach | Phases 4–7 plus Jon resolves inverse-Gil versus Inverse Yale identity | Data-grounding and deterministic red-team fences |
 | 9 | Ship headset-ready architecture and specification | Phases 5–6 | Renderer seam and VAC-aware spec blind-pass |
 
 ## Phase 0 serialized tickets
