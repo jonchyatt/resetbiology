@@ -724,6 +724,12 @@ export default function RetroBlasterII() {
       colorHints: colorHintsRef.current,
     }, dtMs, Math.random)
     stateRef.current = result.state
+    if (result.viewState.answerMaskActive && !renderedAnswerMaskRef.current) {
+      // A previous guided tone can be the same note as this safe try. Scrub its
+      // public receipt before the first masked frame; the new receipt stays in
+      // pendingSafeTryAudioReceiptRef until reveal.
+      clearRetroAudioReceipt(canvasRef.current)
+    }
     const micLockSignalActive = deriveMicLockSignalActive({
       inputMode: inputModeRef.current,
       isListening: listeningRef.current,
@@ -2151,12 +2157,13 @@ export default function RetroBlasterII() {
             const hue = NOTE_COLORS[note]?.hue ?? 0
             const isActiveNote = showTargetIdentity && activeNoteName === note.replace(/\d/, '')
             const noteLabel = `${note.replace(/\d/, '')}=${i + 1}`
+            const neutralAnswerChoice = answerMaskActive
             const responseStyle = {
-              borderColor: colorHints ? `hsl(${hue}, 70%, 55%)` : '#607080',
+              borderColor: !neutralAnswerChoice && colorHints ? `hsl(${hue}, 70%, 55%)` : '#607080',
               background: isActiveNote
                 ? `hsla(${hue}, 70%, 35%, 0.6)`
                 : 'transparent',
-              color: colorHints ? `hsl(${hue}, 90%, 75%)` : '#dce9ef',
+              color: !neutralAnswerChoice && colorHints ? `hsl(${hue}, 90%, 75%)` : '#dce9ef',
               fontWeight: isActiveNote ? 700 : 400,
             }
             if (activeLane === 'voice') {
@@ -2298,6 +2305,7 @@ export default function RetroBlasterII() {
       {!isCeremony && (
       <div className="mt-3 flex gap-3 flex-wrap justify-center pb-3">
         <button onClick={replayActiveNote} disabled={replayLocked}
+          onMouseDown={event => { if (answerMaskActive) event.preventDefault() }}
           aria-label={replayLocked ? 'Signal check replay locked until answer' : 'Play target note'}
           className="px-4 py-2 text-xs font-bold tracking-widest active:scale-95 transition-all disabled:cursor-not-allowed disabled:opacity-60"
           style={{ background: 'rgba(255,227,76,0.15)', color: '#ffe34c', border: '1px solid #ffe34c' }}>

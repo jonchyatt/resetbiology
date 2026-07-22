@@ -1,20 +1,20 @@
 {
   "schema": "retro-blaster-r9a-curriculum/green-v1",
-  "generatedAt": "2026-07-22T20:35:56.789Z",
+  "generatedAt": "2026-07-22T20:59:39.720Z",
   "mode": "--green",
   "exactBase": "4a2465b8dcfc7d912d2406373bf220b232e50295",
-  "head": "4a2465b8dcfc7d912d2406373bf220b232e50295",
-  "originMaster": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "head": "29112374bbbfc10bd9bca37573079d213b963b9c",
+  "originMaster": "29112374bbbfc10bd9bca37573079d213b963b9c",
   "fixture": {
     "path": "scripts/retro-blaster/r9a-curriculum-fixture.ts",
-    "sha256": "B67BB1E3C1BC52501E44655D6B4C23FAE5466E8F8225BDD8910892A1A1AEC6E6"
+    "sha256": "756D427C3C97DC98530FF8F0C7856EBAB914B81B362DEEBFA3B6CD15995F1784"
   },
   "output": "C:\\Users\\jonch\\rbw-retro-blaster-r9b\\data\\retro-blaster-rework\\runtime-logs\\r9a-green-local\\family-fixture-result.json",
   "policyKey": "retro_blaster_curriculum_v1",
   "lockName": "retro-blaster-curriculum-v1",
   "inspectedSourceHashes": {
     "engine": "B19FB664A7E4990199BF43E557AD75A58D6D6F82329A6609A89A025663B98985",
-    "shell": "BA3E201169CD38A6D3287893E4DF7CF79F3069451C0347A1D3E1E9A67663CEB7",
+    "shell": "E9485F19576A272ACEB8987C30B05B8C2F706DD6EF9FA66F86474ED73B83FBB6",
     "types": "FE36957396DF11499A3508C89D773E419DB5767894F80F072B067EB3AE0AFDEB",
     "family": "8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46",
     "audio": "B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744",
@@ -38,9 +38,7 @@
   "status": "PASS",
   "touchedPathAudit": {
     "trackedSourceDiff": [
-      "src/components/PitchDefender/RetroBlasterII.tsx",
-      "src/components/PitchDefender/retroBlasterEngine.ts",
-      "src/components/PitchDefender/retroBlasterRenderer.ts"
+      "src/components/PitchDefender/RetroBlasterII.tsx"
     ],
     "untrackedSource": []
   },
@@ -54,15 +52,15 @@
       "actual": "PASS",
       "classification": "MATCH",
       "evidence": {
-        "head": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+        "head": "29112374bbbfc10bd9bca37573079d213b963b9c",
         "mergeBase": "4a2465b8dcfc7d912d2406373bf220b232e50295",
-        "originMaster": "4a2465b8dcfc7d912d2406373bf220b232e50295"
+        "originMaster": "29112374bbbfc10bd9bca37573079d213b963b9c"
       }
     },
     {
       "id": "P-02",
       "group": "protected-baseline",
-      "contract": "the candidate-specific product source delta against the integrated remote stays inside the exact R9a ceiling",
+      "contract": "the cumulative product source delta against the immutable reconciled base stays inside the exact R9a ceiling",
       "expectation": "PASS",
       "evidenceClass": "source-backed",
       "actual": "PASS",
@@ -161,7 +159,7 @@
         },
         "actual": {
           "engine": "B19FB664A7E4990199BF43E557AD75A58D6D6F82329A6609A89A025663B98985",
-          "shell": "BA3E201169CD38A6D3287893E4DF7CF79F3069451C0347A1D3E1E9A67663CEB7",
+          "shell": "E9485F19576A272ACEB8987C30B05B8C2F706DD6EF9FA66F86474ED73B83FBB6",
           "types": "FE36957396DF11499A3508C89D773E419DB5767894F80F072B067EB3AE0AFDEB",
           "family": "8711C1C5E66427AE32C641D1C60E0B393894E828FEF85DD8579D643B3A078E46",
           "audio": "B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744",

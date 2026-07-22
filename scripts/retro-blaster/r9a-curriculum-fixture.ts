@@ -312,10 +312,10 @@ await add('P-01', 'protected-baseline', MODE === '--green'
 }))
 
 await add('P-02', 'protected-baseline', MODE === '--green'
-  ? 'the candidate-specific product source delta against the integrated remote stays inside the exact R9a ceiling'
+  ? 'the cumulative product source delta against the immutable reconciled base stays inside the exact R9a ceiling'
   : 'tracked and untracked product source are clean', 'PASS', 'source-backed', () => {
   const sourceRoot = 'src/components/PitchDefender'
-  const tracked = git('diff', '--name-only', MODE === '--green' ? 'origin/master' : 'HEAD', '--', sourceRoot).split(/\r?\n/).filter(Boolean)
+  const tracked = git('diff', '--name-only', MODE === '--green' ? BASE : 'HEAD', '--', sourceRoot).split(/\r?\n/).filter(Boolean)
   const untracked = git('ls-files', '--others', '--exclude-standard', '--', sourceRoot).split(/\r?\n/).filter(Boolean)
   const completeDelta = [...new Set([...tracked, ...untracked])].sort()
   const expectedDelta = MODE === '--green' ? [

@@ -108,10 +108,14 @@ async function add(
 }
 
 async function main(): Promise<void> {
-  await add('P-01', 'protected-baseline', 'fixture starts from exact inspected base', 'PASS', 'runtime-measured', () => ({
-    pass: git('rev-parse', 'HEAD') === BASE && git('rev-parse', 'origin/master') === BASE,
-    evidence: { head: git('rev-parse', 'HEAD'), originMaster: git('rev-parse', 'origin/master') },
-  }))
+  await add('P-01', 'protected-baseline', 'candidate is an exact descendant of the inspected base', 'PASS', 'runtime-measured', () => {
+    const head = git('rev-parse', 'HEAD')
+    const originMaster = git('rev-parse', 'origin/master')
+    const mergeBase = git('merge-base', BASE, head)
+    const redExact = MODE === '--red' && head === BASE && originMaster === BASE
+    const greenDescendant = MODE === '--green' && mergeBase === BASE && (originMaster === BASE || originMaster === head)
+    return { pass: redExact || greenDescendant, evidence: { head, originMaster, mergeBase } }
+  })
   await add('P-02', 'protected-baseline', 'audio engine remains byte-protected', 'PASS', 'source-backed', () => hashes.audio === PROTECTED_HASHES.audio)
   await add('P-03', 'protected-baseline', 'pitch detector remains byte-protected', 'PASS', 'source-backed', () => hashes.detector === PROTECTED_HASHES.detector)
   await add('P-04', 'protected-baseline', 'Retro Blaster v1 sibling remains byte-protected', 'PASS', 'source-backed', () => hashes.sibling === PROTECTED_HASHES.sibling)
@@ -124,7 +128,7 @@ async function main(): Promise<void> {
   await add('P-09', 'protected-baseline', 'accepted R10 first-player pace/protection contract remains present', 'PASS', 'source-backed', () =>
     hasAll(source.r10, ['four-threshold pace placement and manual override', 'explicit pre-flight safe practice placement and C/A launch source contract', 'protectedCount', 'demotions']))
   await add('P-10', 'protected-baseline', 'source changes stay inside the phase-authorized Retro ceiling', 'PASS', 'runtime-measured', () => {
-    const tracked = git('diff', '--name-only', 'HEAD', '--', 'src').split(/\r?\n/).filter(Boolean)
+    const tracked = git('diff', '--name-only', BASE, '--', 'src').split(/\r?\n/).filter(Boolean)
     const untracked = git('ls-files', '--others', '--exclude-standard', '--', 'src').split(/\r?\n/).filter(Boolean)
     const authorized = new Set([PATHS.engine, PATHS.shell, PATHS.renderer])
     return {
@@ -201,20 +205,36 @@ async function main(): Promise<void> {
   await add('R-25', 'shell-contract', 'covered canvas answer coordinates are inert and DOM answers are sole live choices', 'RED', 'source-backed', () =>
     passIf(source.shell, ['answerMaskActive', 'handleCanvasClick', 'canvas-answer-inert']))
   await add('R-26', 'shell-contract', 'live choice copy is canonical dynamic and never hardcodes C OR A', 'RED', 'source-backed', () => ({
-    pass: source.shell.includes('liveChoiceNames') && !source.shell.includes('CHOOSE C OR A'),
-    evidence: { dynamic: source.shell.includes('liveChoiceNames'), hardcoded: source.shell.includes('CHOOSE C OR A') },
+    pass: source.shell.includes('liveChoiceNames') && source.shell.includes('const neutralAnswerChoice = answerMaskActive') &&
+      !source.shell.includes('CHOOSE C OR A'),
+    evidence: {
+      dynamic: source.shell.includes('liveChoiceNames'),
+      neutralComputedStyle: source.shell.includes('const neutralAnswerChoice = answerMaskActive'),
+      hardcoded: source.shell.includes('CHOOSE C OR A'),
+    },
   }))
   await add('R-27', 'shell-contract', 'safe-try entry moves focus to a distinct neutral tabindex target', 'RED', 'source-backed', () =>
     passIf(source.shell, ['safeTryFocusRef', 'tabIndex={-1}', 'data-retro-safe-try-focus']))
   await add('R-28', 'shell-contract', 'one stable polite live region owns the atomic instruction', 'RED', 'source-backed', () =>
     passIf(source.shell, ['data-retro-safe-try-status', 'aria-live="polite"', 'liveChoiceNames']))
   await add('R-29', 'shell-contract', 'Tone Replay remains on Space R and pointer without changing help state', 'RED', 'source-backed', () =>
-    passIf(source.shell, ['TONE REPLAY [SPACE / R]', "ev.key === ' '", "ev.key === 'r'", 'tone-replay-answer-neutral']))
+    passIf(source.shell, [
+      'TONE REPLAY [SPACE / R]',
+      "ev.key === ' '",
+      "ev.key === 'r'",
+      'tone-replay-answer-neutral',
+      'onMouseDown={event => { if (answerMaskActive) event.preventDefault() }}',
+    ]))
   await add('R-30', 'shell-contract', 'Full Help uses otherwise-unbound H and submits no answer', 'RED', 'source-backed', () =>
     passIf(source.shell, ['FULL HELP [H]', "ev.key === 'h'", 'requestFullCueHelp']))
 
   await add('R-31', 'receipt-lifecycle', 'unresolved safe try defers raw audio receipt outside DOM', 'RED', 'source-backed', () =>
-    passIf(source.shell, ['pendingSafeTryAudioReceiptRef', 'defer-safe-try-receipt']))
+    passIf(source.shell, [
+      'pendingSafeTryAudioReceiptRef',
+      'defer-safe-try-receipt',
+      'result.viewState.answerMaskActive && !renderedAnswerMaskRef.current',
+      'clearRetroAudioReceipt(canvasRef.current)',
+    ]))
   await add('R-32', 'receipt-lifecycle', 'answer help timeout life loss game over and wave transition publish once after reveal', 'RED', 'source-backed', () =>
     passIf(source.shell, ['flushPendingSafeTryAudioReceipt', 'publish-after-reveal', 'gameOver', 'waveComplete']))
   await add('R-33', 'receipt-lifecycle', 'QUIT unmount and route teardown discard pending receipt', 'RED', 'source-backed', () =>
@@ -262,7 +282,7 @@ async function main(): Promise<void> {
     shapeValid,
     status,
     touchedPathAudit: {
-      trackedSourceDiff: git('diff', '--name-only', 'HEAD', '--', 'src').split(/\r?\n/).filter(Boolean),
+      trackedSourceDiff: git('diff', '--name-only', BASE, '--', 'src').split(/\r?\n/).filter(Boolean),
       untrackedSource: git('ls-files', '--others', '--exclude-standard', '--', 'src').split(/\r?\n/).filter(Boolean),
     },
     rows,

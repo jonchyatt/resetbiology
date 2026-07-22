@@ -1,18 +1,18 @@
 {
   "schema": "retro-blaster-r9b-cue-taper/green-v1",
-  "generatedAt": "2026-07-22T20:34:05.545Z",
+  "generatedAt": "2026-07-22T20:58:36.889Z",
   "mode": "--green",
   "exactBase": "4a2465b8dcfc7d912d2406373bf220b232e50295",
-  "head": "4a2465b8dcfc7d912d2406373bf220b232e50295",
-  "originMaster": "4a2465b8dcfc7d912d2406373bf220b232e50295",
+  "head": "29112374bbbfc10bd9bca37573079d213b963b9c",
+  "originMaster": "29112374bbbfc10bd9bca37573079d213b963b9c",
   "fixture": {
     "path": "scripts/retro-blaster/r9b-cue-taper-fixture.ts",
-    "sha256": "526585DF80BDB548E03D9D0D0BB32930AF2EE0CB6BAEF8525DB480C4541B9481"
+    "sha256": "B8B0671CDE6069EEDD6D0504EFC0F1F854449454A212A8A81A0D50588169FC79"
   },
   "output": "C:\\Users\\jonch\\rbw-retro-blaster-r9b\\data\\retro-blaster-rework\\runtime-logs\\r9b-green-local\\source-contract.json",
   "inspectedSourceHashes": {
     "engine": "B19FB664A7E4990199BF43E557AD75A58D6D6F82329A6609A89A025663B98985",
-    "shell": "BA3E201169CD38A6D3287893E4DF7CF79F3069451C0347A1D3E1E9A67663CEB7",
+    "shell": "E9485F19576A272ACEB8987C30B05B8C2F706DD6EF9FA66F86474ED73B83FBB6",
     "renderer": "AD6452B3A0C9265A047F3EC3B87484978C33E96C75F9F1FCE8907DC638A552FB",
     "audio": "B513FFAC628518A936C140BC0D6C9BC30B18C263DC6672C12ED120AD0CD23744",
     "detector": "8515917A3F0B4066D23D85C4D7E4B0B9553F25FF332332604BE0412CCA5EA9F5",
@@ -44,14 +44,15 @@
     {
       "id": "P-01",
       "group": "protected-baseline",
-      "contract": "fixture starts from exact inspected base",
+      "contract": "candidate is an exact descendant of the inspected base",
       "expectation": "PASS",
       "evidenceClass": "runtime-measured",
       "actual": "PASS",
       "classification": "MATCH",
       "evidence": {
-        "head": "4a2465b8dcfc7d912d2406373bf220b232e50295",
-        "originMaster": "4a2465b8dcfc7d912d2406373bf220b232e50295"
+        "head": "29112374bbbfc10bd9bca37573079d213b963b9c",
+        "originMaster": "29112374bbbfc10bd9bca37573079d213b963b9c",
+        "mergeBase": "4a2465b8dcfc7d912d2406373bf220b232e50295"
       }
     },
     {
@@ -563,6 +564,7 @@
       "classification": "MATCH",
       "evidence": {
         "dynamic": true,
+        "neutralComputedStyle": true,
         "hardcoded": false
       }
     },
@@ -611,7 +613,8 @@
           "TONE REPLAY [SPACE / R]": true,
           "ev.key === ' '": true,
           "ev.key === 'r'": true,
-          "tone-replay-answer-neutral": true
+          "tone-replay-answer-neutral": true,
+          "onMouseDown={event => { if (answerMaskActive) event.preventDefault() }}": true
         }
       }
     },
@@ -642,7 +645,9 @@
       "evidence": {
         "found": {
           "pendingSafeTryAudioReceiptRef": true,
-          "defer-safe-try-receipt": true
+          "defer-safe-try-receipt": true,
+          "result.viewState.answerMaskActive && !renderedAnswerMaskRef.current": true,
+          "clearRetroAudioReceipt(canvasRef.current)": true
         }
       }
     },
