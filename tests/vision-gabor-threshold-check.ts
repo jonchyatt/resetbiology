@@ -9,19 +9,25 @@ import {
   buildGaborLocalizationTrial,
   buildGaborEasyPreview,
   buildGaborThresholdBlock,
+  applyGaborProductionResponse,
   classifyGaborResponse,
+  createGaborProductionCoordinator,
   createGaborLocalizationState,
   createGaborThresholdState,
   getGaborLocalizationEstimate,
   getGaborThresholdEstimate,
   prepareGaborThresholdSession,
   gaborStopFlags,
+  getGaborProductionProgress,
+  presentNextGaborExposure,
   resolveGaborPresentation,
   resolveGaborStopReason,
   startGaborMeasurementAfterLocalization,
   updateGaborLocalization,
   updateGaborThreshold,
   type GaborThresholdPrior,
+  type GaborPresentationResponse,
+  type GaborProductionCoordinator,
   type GaborThresholdState,
 } from '../src/lib/vision/gaborThreshold'
 
@@ -547,6 +553,251 @@ function randomFor(seed: number): () => number {
   }
 }
 
+function correctResponseForPending(state: GaborProductionCoordinator): GaborPresentationResponse {
+  const presentation = state.pending!.presentation
+  return presentation.stimulusPresent
+    ? { type: 'orientation', orientationDegrees: presentation.orientationDegrees! }
+    : { type: 'no-pattern' }
+}
+
+function incorrectResponseForPending(state: GaborProductionCoordinator): GaborPresentationResponse {
+  const presentation = state.pending!.presentation
+  return presentation.stimulusPresent
+    ? responseForOrientation(presentation.orientationDegrees!, false)
+    : { type: 'orientation', orientationDegrees: 0 }
+}
+
+function driveCoordinator(
+  initial: GaborProductionCoordinator,
+  choose: (state: GaborProductionCoordinator, adaptiveIndex: number) => GaborPresentationResponse,
+): GaborProductionCoordinator {
+  let state = initial
+  let adaptiveIndex = 0
+  while (!state.terminal) {
+    state = presentNextGaborExposure(state, { timeCapReached: false })
+    if (state.terminal) break
+    const isAdaptive = state.pending!.stage === 'measurement' && state.pending!.presentation.trial.adaptive
+    state = applyGaborProductionResponse(state, choose(state, adaptiveIndex), { timeCapReached: false })
+    if (isAdaptive) adaptiveIndex += 1
+  }
+  return state
+}
+
+// The block scheduler exposes an injected random stream and consumes exactly
+// one selection draw for each of its ten exposures, including the catch.
+let selectionCalls = 0
+const countedBlock = buildGaborThresholdBlock({
+  seed: 'scheduler-count',
+  blockIndex: 0,
+  selectionRandom: () => {
+    selectionCalls += 1
+    return 0.314159
+  },
+})
+assert.equal(countedBlock.length, 10)
+assert.equal(selectionCalls, 10)
+assert.equal(countedBlock.filter((trial) => trial.kind === 'catch').length, 1)
+
+// Pending is a hard coordinator invariant and the second presentation is an
+// exact no-op. A response consumes it once; a duplicate is the same object.
+const pendingStart = createGaborProductionCoordinator({ seed: 'pending-proof', prior: null })
+const firstPending = presentNextGaborExposure(pendingStart, { timeCapReached: false })
+assert.ok(firstPending.pending)
+assert.equal(presentNextGaborExposure(firstPending, { timeCapReached: false }), firstPending)
+const firstResponded = applyGaborProductionResponse(firstPending, correctResponseForPending(firstPending), { timeCapReached: false })
+assert.equal(
+  applyGaborProductionResponse(firstResponded, correctResponseForPending(firstPending), { timeCapReached: false }),
+  firstResponded,
+  'duplicate response preserves exact coordinator identity',
+)
+
+// Timeout never mutates either controller. Repeated cold timeouts therefore
+// stop at exactly 100 localization exposures with no invented measurement.
+const allTimeout = driveCoordinator(
+  createGaborProductionCoordinator({ seed: 'all-timeout', prior: null }),
+  () => ({ type: 'timeout' }),
+)
+assert.equal(allTimeout.terminal?.reason, 'exposure-cap')
+assert.equal(allTimeout.counters.localizationExposures, 100)
+assert.equal(allTimeout.counters.scheduledExposures, 0)
+assert.equal(allTimeout.localization?.responses, 0)
+assert.equal(allTimeout.measurement, null)
+assert.equal(allTimeout.counters.lapses, 100)
+assert.equal(allTimeout.terminal?.metrics.thresholdValid, 0)
+assert.equal('contrastThresholdPct' in allTimeout.terminal!.metrics, false)
+
+const timePending = presentNextGaborExposure(
+  createGaborProductionCoordinator({ seed: 'time-cap', prior: null }),
+  { timeCapReached: false },
+)
+const timedOut = presentNextGaborExposure(timePending, { timeCapReached: true })
+assert.equal(timedOut.terminal?.reason, 'time-cap')
+assert.equal(timedOut.localization, timePending.localization, 'time cap does not mutate localization')
+assert.equal(timedOut.measurement, timePending.measurement, 'time cap does not mutate measurement')
+assert.equal(timedOut.counters.trials, 0)
+
+const coldAllCorrect = driveCoordinator(
+  createGaborProductionCoordinator({ seed: 0x51a7, prior: null }),
+  (coordinator) => correctResponseForPending(coordinator),
+)
+const coldAllIncorrect = driveCoordinator(
+  createGaborProductionCoordinator({ seed: 0x51a7, prior: null }),
+  (coordinator) => incorrectResponseForPending(coordinator),
+)
+assert.equal(coldAllCorrect.terminal?.reason, 'measurement-cap')
+assert.equal(coldAllIncorrect.terminal?.reason, 'measurement-cap')
+assert.equal(coldAllCorrect.measurement?.adaptiveTrials, 48)
+assert.equal(coldAllIncorrect.measurement?.adaptiveTrials, 48)
+assert.equal(coldAllCorrect.counters.localizationExposures + coldAllCorrect.counters.scheduledExposures, 92)
+assert.equal(coldAllIncorrect.counters.localizationExposures + coldAllIncorrect.counters.scheduledExposures, 92)
+
+const cccI = driveCoordinator(
+  createGaborProductionCoordinator({ seed: 0x51a7, prior: null }),
+  (coordinator, adaptiveIndex) => coordinator.pending!.stage === 'measurement'
+    && coordinator.pending!.presentation.trial.adaptive
+    && adaptiveIndex % 4 === 3
+    ? incorrectResponseForPending(coordinator)
+    : correctResponseForPending(coordinator),
+)
+assert.equal(cccI.terminal?.reason, 'valid')
+assert.equal(cccI.measurement?.adaptiveTrials, 24)
+assert.equal(cccI.counters.localizationExposures + cccI.counters.scheduledExposures, 50)
+assert.equal(presentNextGaborExposure(cccI, { timeCapReached: false }), cccI)
+assert.equal(cccI.counters.localizationExposures + cccI.counters.scheduledExposures + 1, 51, 'next ordinal 51 is never presented')
+
+// Locate one production catch, then apply the complete binding matrix through
+// the coordinator rather than merely testing the classifier in isolation.
+let catchPending = createGaborProductionCoordinator({
+  seed: 'catch-matrix',
+  prior: compatiblePrior,
+})
+while (!catchPending.pending || catchPending.pending.presentation.trial.kind !== 'catch') {
+  if (catchPending.pending) {
+    catchPending = applyGaborProductionResponse(
+      catchPending,
+      correctResponseForPending(catchPending),
+      { timeCapReached: false },
+    )
+  }
+  catchPending = presentNextGaborExposure(catchPending, { timeCapReached: false })
+}
+const catchMeasurement = catchPending.measurement
+const catchFalseAlarm = applyGaborProductionResponse(
+  catchPending,
+  { type: 'orientation', orientationDegrees: 0 },
+  { timeCapReached: false },
+)
+const catchCorrectRejection = applyGaborProductionResponse(
+  catchPending,
+  { type: 'no-pattern' },
+  { timeCapReached: false },
+)
+const catchLapse = applyGaborProductionResponse(
+  catchPending,
+  { type: 'timeout' },
+  { timeCapReached: false },
+)
+assert.equal(catchFalseAlarm.lastResponse?.falseAlarm, true)
+assert.equal(catchFalseAlarm.counters.catchFalseAlarms, catchPending.counters.catchFalseAlarms + 1)
+assert.equal(catchCorrectRejection.lastResponse?.correct, true)
+assert.equal(catchLapse.lastResponse?.lapse, true)
+assert.equal(catchLapse.lastResponse?.falseAlarm, false)
+assert.equal(catchFalseAlarm.measurement, catchMeasurement)
+assert.equal(catchCorrectRejection.measurement, catchMeasurement)
+assert.equal(catchLapse.measurement, catchMeasurement)
+
+const localizationNoPatternPending = presentNextGaborExposure(
+  createGaborProductionCoordinator({ seed: 'local-no-pattern', prior: null }),
+  { timeCapReached: false },
+)
+const localizationNoPattern = applyGaborProductionResponse(
+  localizationNoPatternPending,
+  { type: 'no-pattern' },
+  { timeCapReached: false },
+)
+const localizationTimeout = applyGaborProductionResponse(
+  localizationNoPatternPending,
+  { type: 'timeout' },
+  { timeCapReached: false },
+)
+assert.equal(localizationNoPattern.lastResponse?.staircaseResponse, 'incorrect')
+assert.equal(localizationNoPattern.localization?.responses, 1)
+assert.equal(localizationTimeout.lastResponse?.lapse, true)
+assert.equal(localizationTimeout.localization, localizationNoPatternPending.localization)
+
+let adaptivePending = createGaborProductionCoordinator({ seed: 'adaptive-matrix', prior: compatiblePrior })
+while (!adaptivePending.pending?.presentation.trial.adaptive) {
+  if (adaptivePending.pending) {
+    adaptivePending = applyGaborProductionResponse(
+      adaptivePending,
+      correctResponseForPending(adaptivePending),
+      { timeCapReached: false },
+    )
+  }
+  adaptivePending = presentNextGaborExposure(adaptivePending, { timeCapReached: false })
+}
+const adaptiveNoPattern = applyGaborProductionResponse(
+  adaptivePending,
+  { type: 'no-pattern' },
+  { timeCapReached: false },
+)
+const adaptiveTimeout = applyGaborProductionResponse(
+  adaptivePending,
+  { type: 'timeout' },
+  { timeCapReached: false },
+)
+assert.equal(adaptiveNoPattern.lastResponse?.staircaseResponse, 'incorrect')
+assert.equal(adaptiveNoPattern.measurement?.adaptiveTrials, adaptivePending.measurement!.adaptiveTrials + 1)
+assert.equal(adaptiveTimeout.lastResponse?.lapse, true)
+assert.equal(adaptiveTimeout.measurement, adaptivePending.measurement)
+
+const replayRandom = randomFor(98765)
+const expectedInjectedBlock = buildGaborThresholdBlock({
+  seed: 'cursor-proof',
+  blockIndex: 0,
+  selectionRandom: replayRandom,
+})
+let coordinatorSelectionCalls = 0
+const coordinatorRandom = randomFor(98765)
+const countedSelectionRandom = () => {
+  coordinatorSelectionCalls += 1
+  return coordinatorRandom()
+}
+let cursorProof = createGaborProductionCoordinator({ seed: 'cursor-proof', prior: compatiblePrior })
+const cursorIds: string[] = []
+for (let exposure = 0; exposure < 3; exposure += 1) {
+  cursorProof = presentNextGaborExposure(cursorProof, {
+    timeCapReached: false,
+    selectionRandom: countedSelectionRandom,
+  })
+  cursorIds.push(cursorProof.pending!.presentation.trial.id)
+  cursorProof = applyGaborProductionResponse(
+    cursorProof,
+    correctResponseForPending(cursorProof),
+    { timeCapReached: false },
+  )
+}
+assert.deepEqual(cursorIds, expectedInjectedBlock.slice(0, 3).map((trial) => trial.id))
+assert.equal(coordinatorSelectionCalls, 10, 'the coordinator builds the current block once and consumes its natural prefix')
+for (let exposure = 3; exposure < 10; exposure += 1) {
+  cursorProof = presentNextGaborExposure(cursorProof, {
+    timeCapReached: false,
+    selectionRandom: countedSelectionRandom,
+  })
+  cursorProof = applyGaborProductionResponse(
+    cursorProof,
+    correctResponseForPending(cursorProof),
+    { timeCapReached: false },
+  )
+}
+assert.equal(coordinatorSelectionCalls, 10)
+cursorProof = presentNextGaborExposure(cursorProof, {
+  timeCapReached: false,
+  selectionRandom: countedSelectionRandom,
+})
+assert.equal(coordinatorSelectionCalls, 20, 'the next block consumes the next ten scheduler draws only when presented')
+assert.equal(applyGaborProductionResponse(cccI, { type: 'timeout' }, { timeCapReached: false }), cccI)
+
 const simulationRows: Array<{
   lane: string
   thresholdPct: number
@@ -564,90 +815,80 @@ interface SimulatedSession {
   readonly firstValidResponseIndex: number | null
   readonly scheduledExposures: number
   readonly stopReason: 'valid' | 'measurement-cap' | 'exposure-cap' | 'time-cap'
+  readonly observerCalls: number
+  readonly presentedKinds: readonly string[]
+  readonly finalState: GaborProductionCoordinator
 }
 
-function runMeasurement(
-  initialState: GaborThresholdState,
+function responseForOrientation(orientationDegrees: number, correct: boolean): GaborPresentationResponse {
+  const answer = correct
+    ? orientationDegrees
+    : GABOR_ORIENTATIONS_DEGREES.find((orientation) => orientation !== orientationDegrees)!
+  return { type: 'orientation', orientationDegrees: answer }
+}
+
+function runCoordinator(
+  initialState: GaborProductionCoordinator,
   thresholdPct: number,
   random: () => number,
-  responseCap: number,
-  scheduledExposureCap: number,
-  sessionExposureCap: number,
-  localizationExposures: number,
-  scheduleSeed: number,
 ): SimulatedSession {
   let state = initialState
   const measurementResponses: boolean[] = []
-  let estimatePct: number | null = null
   let firstValidResponseIndex: number | null = null
-  let scheduledExposures = 0
-  let stopReason: SimulatedSession['stopReason'] | null = null
-  while (!stopReason) {
-    stopReason = resolveGaborStopReason({
-      thresholdCompleted: state.completed,
-      measurementResponses: state.adaptiveTrials,
-      measurementResponseCap: responseCap,
-      scheduledExposures,
-      scheduledExposureCap,
-      totalExposures: localizationExposures + scheduledExposures,
-      sessionExposureCap,
-      timeCapReached: false,
-    })
-    if (stopReason) break
+  let observerCalls = 0
+  const presentedKinds: string[] = []
+  while (!state.terminal) {
+    state = presentNextGaborExposure(state, { timeCapReached: false })
+    if (state.terminal) break
+    const pending = state.pending
+    assert.ok(pending, 'one pending exposure follows a successful presentation transition')
 
-    const block = buildGaborThresholdBlock({
-      seed: scheduleSeed,
-      blockIndex: Math.floor(scheduledExposures / 10),
-    })
-    const scheduledTrial = block[scheduledExposures % 10]
-    const presentation = resolveGaborPresentation(scheduledTrial, state.contrastPct)
-    scheduledExposures += 1
-    if (scheduledTrial.adaptive) {
-      const correct = random() < observerCorrectProbability(presentation.contrastPct, thresholdPct)
-      measurementResponses.push(correct)
-      state = updateGaborThreshold(state, {
-        response: correct ? 'correct' : 'incorrect',
-        adaptive: true,
-      }).state
+    const observerDraw = random()
+    observerCalls += 1
+    presentedKinds.push(pending.stage === 'localization' ? 'localization' : pending.presentation.trial.kind)
+
+    let response: GaborPresentationResponse
+    if (pending.stage === 'localization' || pending.presentation.trial.adaptive) {
+      const correct = observerDraw < observerCorrectProbability(pending.presentation.contrastPct, thresholdPct)
+      response = responseForOrientation(pending.presentation.orientationDegrees!, correct)
+      if (pending.stage === 'measurement') {
+        measurementResponses.push(correct)
+      }
+    } else if (!pending.presentation.stimulusPresent) {
+      response = { type: 'no-pattern' }
+    } else {
+      response = responseForOrientation(pending.presentation.orientationDegrees!, true)
     }
-    const estimate = getGaborThresholdEstimate(state)
-    if (estimate.valid) {
-      estimatePct = estimate.contrastThresholdPct
-      firstValidResponseIndex = state.adaptiveTrials
-      stopReason = 'valid'
-      break
+    state = applyGaborProductionResponse(state, response, { timeCapReached: false })
+    if (state.terminal?.reason === 'valid') {
+      firstValidResponseIndex = state.measurement?.adaptiveTrials ?? null
     }
   }
+  const terminal = state.terminal!
+  const estimatePct = terminal.metrics.thresholdValid === 1
+    ? terminal.metrics.contrastThresholdPct
+    : null
   return {
     estimatePct,
     measurementResponses,
-    localizationResponses: 0,
-    measurementAdaptiveTrials: state.adaptiveTrials,
+    localizationResponses: state.localization?.responses ?? 0,
+    measurementAdaptiveTrials: state.measurement?.adaptiveTrials ?? 0,
     firstValidResponseIndex,
-    scheduledExposures,
-    stopReason: stopReason!,
+    scheduledExposures: state.counters.scheduledExposures,
+    stopReason: terminal.reason,
+    observerCalls,
+    presentedKinds,
+    finalState: state,
   }
 }
 
 function simulateFirstRun(thresholdPct: number, thresholdIndex: number, run: number): SimulatedSession {
-  const random = randomFor(0x51a7 + thresholdIndex * 10_000 + run)
-  const scheduleSeed = 0x51a7 + thresholdIndex * 10_000 + run
-  let localization = createGaborLocalizationState()
-  for (let trial = 0; trial < GABOR_THRESHOLD_PROTOCOL.localizationResponses; trial += 1) {
-    const correct = random() < observerCorrectProbability(localization.contrastPct, thresholdPct)
-    localization = updateGaborLocalization(localization, correct ? 'correct' : 'incorrect').state
-  }
-  const measurement = runMeasurement(
-    startGaborMeasurementAfterLocalization(localization),
+  const seed = 0x51a7 + thresholdIndex * 10_000 + run
+  return runCoordinator(
+    createGaborProductionCoordinator({ seed, prior: null }),
     thresholdPct,
-    random,
-    GABOR_THRESHOLD_PROTOCOL.coldMeasurementResponseCap,
-    GABOR_THRESHOLD_PROTOCOL.coldScheduledExposureCap,
-    GABOR_THRESHOLD_PROTOCOL.sessionExposureCap,
-    localization.responses,
-    scheduleSeed,
+    randomFor(seed),
   )
-  return { ...measurement, localizationResponses: localization.responses }
 }
 
 function simulateWarmRun(
@@ -660,19 +901,10 @@ function simulateWarmRun(
     ...compatiblePrior,
     contrastThresholdPct: thresholdPct * Math.pow(10, priorOffsetLog10),
   }
-  const session = prepareGaborThresholdSession(prior)
-  assert.equal(session.mode, 'warm-start')
-  if (session.mode !== 'warm-start') throw new Error('compatible warm prior unexpectedly localized')
-  return runMeasurement(
-    session.measurement,
-    thresholdPct,
-    randomFor(0x51a7 + thresholdIndex * 10_000 + run),
-    session.measurementResponseCap,
-    session.scheduledExposureCap,
-    session.sessionExposureCap,
-    0,
-    0x51a7 + thresholdIndex * 10_000 + run,
-  )
+  const seed = 0x51a7 + thresholdIndex * 10_000 + run
+  const coordinator = createGaborProductionCoordinator({ seed, prior })
+  assert.equal(coordinator.mode, 'warm-start')
+  return runCoordinator(coordinator, thresholdPct, randomFor(seed))
 }
 
 function evaluateBank(
@@ -689,7 +921,27 @@ function evaluateBank(
     const result = runSession(run)
     assert.equal(result.measurementAdaptiveTrials, result.measurementResponses.length)
     assert.ok(result.localizationResponses + result.scheduledExposures <= 100)
+    assert.equal(
+      result.observerCalls,
+      result.finalState.counters.localizationExposures + result.finalState.counters.scheduledExposures,
+      'observer stream consumes one draw for every presented exposure and no unpresented exposure',
+    )
+    for (const kind of result.finalState.mode === 'warm-start'
+      ? ['anchor', 'easy', 'transfer', 'flanker', 'catch']
+      : ['localization', 'anchor', 'easy', 'transfer', 'flanker', 'catch']) {
+      assert.ok(result.presentedKinds.includes(kind), `${kind} consumes its observer draw`)
+    }
     assert.equal(Object.values(gaborStopFlags(result.stopReason)).reduce((sum, flag) => sum + flag, 0), 1)
+    const { counters, terminal } = result.finalState
+    assert.equal(terminal!.metrics.trials, counters.trials)
+    assert.equal(terminal!.metrics.localizationExposures, counters.localizationExposures)
+    assert.equal(terminal!.metrics.scheduledExposures, counters.scheduledExposures)
+    assert.equal(terminal!.metrics.easyTrials, counters.easyTrials)
+    assert.equal(terminal!.metrics.transferTrials, counters.transferTrials)
+    assert.equal(terminal!.metrics.flankerTrials, counters.flankerTrials)
+    assert.equal(terminal!.metrics.catchTrials, counters.catchTrials)
+    assert.equal(terminal!.metrics.catchFalseAlarms, counters.catchFalseAlarms)
+    assert.equal(terminal!.metrics.lapses, counters.lapses)
     if (result.estimatePct !== null) {
       assert.equal(
         result.measurementResponses.length,
@@ -744,16 +996,33 @@ for (const [thresholdIndex, thresholdPct] of truths.entries()) {
   }
 }
 
+assert.deepEqual(
+  simulationRows.filter((row) => row.lane === 'first-run').map((row) => row.validRuns),
+  [226, 223, 216, 228, 224],
+  'ratified cold vector for truths 2/5/10/20/40',
+)
+assert.deepEqual(
+  simulationRows.filter((row) => row.lane === 'warm-minus0.15').map((row) => row.validRuns),
+  [240, 238, 240, 239, 239],
+  'ratified warm-minus vector for truths 2/5/10/20/40',
+)
+assert.deepEqual(
+  simulationRows.filter((row) => row.lane === 'warm-plus0.15').map((row) => row.validRuns),
+  [237, 239, 240, 239, 236],
+  'ratified warm-plus vector for truths 2/5/10/20/40',
+)
+assert.equal(simulationRows.find((row) => row.lane === 'first-run' && row.thresholdPct === 10)?.validRuns, 216)
+
 assert.deepEqual(simulateFirstRun(10, 2, 17), simulateFirstRun(10, 2, 17), 'first-run replay is deterministic')
 assert.deepEqual(simulateWarmRun(10, 2, 17, -0.15), simulateWarmRun(10, 2, 17, -0.15), 'warm replay is deterministic')
 
 const coreSource = readFileSync('src/lib/vision/gaborThreshold.ts', 'utf8')
 const engineSource = readFileSync('src/components/Vision/Engines/GaborAcuityEngine.tsx', 'utf8')
-assert.equal((coreSource.match(/selectionDraw: random\(\)/g) ?? []).length, 1, 'block ordering takes exactly one selection draw per exposure')
-assert.match(engineSource, /blockCacheRef\.current\.get\(blockIndex\)/, 'the engine builds each seeded block once')
-assert.match(engineSource, /resolveGaborPresentation\(trial, measurementRef\.current\.contrastPct\)/)
 assert.doesNotMatch(engineSource, /Math\.max\(50,.*\* 2|Math\.max\(30,.*\* 1\.5/, 'React cannot duplicate live contrast formulas')
 assert.doesNotMatch(engineSource, /tierForWeek|TIER_FREQUENCY|applyStaircase|2-down-1-up/)
+assert.match(engineSource, /presentNextGaborExposure\(coordinatorRef\.current/)
+assert.match(engineSource, /applyGaborProductionResponse\(coordinatorRef\.current/)
+assert.doesNotMatch(engineSource, /classifyGaborResponse|updateGaborThreshold|resolveGaborStopReason|getGaborThresholdEstimate/)
 for (const metric of [
   'trials', 'accuracyPct', 'measurementAccuracyPct', 'totalExposures', 'localizationExposures',
   'scheduledExposures', 'measurementResponses', 'adaptiveTrials', 'reversals', 'thresholdValid',
@@ -761,12 +1030,9 @@ for (const metric of [
   'catchFalseAlarms', 'lapses', 'warmStarted', 'protocolVersion',
   'anchorSpatialFrequencyCyclesPerPatch', 'stopValid', 'stopMeasurementCap', 'stopExposureCap', 'stopTimeCap',
 ] as const) {
-  assert.match(engineSource, new RegExp(`\\b${metric}\\b`), `engine emits ${metric}`)
+  assert.match(coreSource, new RegExp(`\\b${metric}\\b`), `coordinator emits ${metric}`)
 }
 assert.match(engineSource, /CATCH_WINDOW_MS = 1_500/)
-assert.match(engineSource, /responseLockedRef\.current = true/)
-assert.match(engineSource, /classifyGaborResponse\(current\.resolved, response\)/)
-assert.match(engineSource, /current\.resolved\.trial\.adaptive && classified\.staircaseResponse/)
 assert.match(engineSource, /flex h-7 items-center/, 'feedback owns fixed external space')
 assert.match(engineSource, /aria-label="No pattern visible"/)
 

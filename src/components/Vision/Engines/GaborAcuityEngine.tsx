@@ -14,25 +14,13 @@ import { drawGaborPatch, fitCanvasToElement, prefersReducedMotion } from '@/lib/
 import { SpeechQueue, getSharedMuted, subscribeSharedMuted, unlockAudio } from '@/lib/vision/audioKit'
 import {
   GABOR_THRESHOLD_PROTOCOL,
-  buildGaborLocalizationTrial,
-  buildGaborThresholdBlock,
-  classifyGaborResponse,
-  createGaborLocalizationState,
-  gaborStopFlags,
-  getGaborThresholdEstimate,
-  prepareGaborThresholdSession,
-  resolveGaborPresentation,
-  resolveGaborStopReason,
-  startGaborMeasurementAfterLocalization,
-  updateGaborLocalization,
-  updateGaborThreshold,
+  applyGaborProductionResponse,
+  createGaborProductionCoordinator,
+  getGaborProductionProgress,
+  presentNextGaborExposure,
   type GaborPresentationResponse,
+  type GaborProductionCoordinator,
   type GaborResolvedPresentation,
-  type GaborStopReason,
-  type GaborThresholdSessionStart,
-  type GaborThresholdState,
-  type GaborThresholdTrial,
-  type GaborTrialKind,
 } from '@/lib/vision/gaborThreshold'
 
 const ORIENTATIONS = {
@@ -53,37 +41,6 @@ const NEUTRAL_FIELD = '#808080'
 type Phase = 'intro' | 'trial' | 'feedback' | 'paused' | 'complete'
 type PauseReason = 'manual' | 'lapse' | null
 type Feedback = 'correct' | 'wrong' | 'timeout' | null
-type CurrentPresentation = {
-  readonly stage: 'localization' | 'measurement'
-  readonly resolved: GaborResolvedPresentation
-}
-type Counters = {
-  trials: number
-  correct: number
-  measurementCorrect: number
-  localizationExposures: number
-  scheduledExposures: number
-  easyTrials: number
-  transferTrials: number
-  flankerTrials: number
-  catchTrials: number
-  catchFalseAlarms: number
-  lapses: number
-}
-
-const emptyCounters = (): Counters => ({
-  trials: 0,
-  correct: 0,
-  measurementCorrect: 0,
-  localizationExposures: 0,
-  scheduledExposures: 0,
-  easyTrials: 0,
-  transferTrials: 0,
-  flankerTrials: 0,
-  catchTrials: 0,
-  catchFalseAlarms: 0,
-  lapses: 0,
-})
 
 function formatTime(totalSec: number): string {
   const seconds = Math.max(0, Math.round(totalSec))
@@ -109,16 +66,12 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
     setPhaseState(next)
   }, [])
 
-  const sessionRef = useRef<GaborThresholdSessionStart>(prepareGaborThresholdSession(null))
-  const localizationRef = useRef(createGaborLocalizationState())
-  const measurementRef = useRef<GaborThresholdState | null>(null)
-  const countersRef = useRef<Counters>(emptyCounters())
-  const currentRef = useRef<CurrentPresentation | null>(null)
-  const blockCacheRef = useRef(new Map<number, readonly GaborThresholdTrial[]>())
   const seedRef = useRef<string>(GABOR_THRESHOLD_PROTOCOL.id)
-  const responseLockedRef = useRef(true)
+  const coordinatorRef = useRef<GaborProductionCoordinator>(createGaborProductionCoordinator({
+    seed: seedRef.current,
+    prior: null,
+  }))
   const completedRef = useRef(false)
-  const lapseStreakRef = useRef(0)
   const resumeStartsNextRef = useRef(false)
 
   const trialTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -128,7 +81,7 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
   const pausedAccumRef = useRef(0)
   const pauseStartRef = useRef<number | null>(null)
 
-  const finishRef = useRef<(reason: GaborStopReason) => void>(() => {})
+  const finishRef = useRef<() => void>(() => {})
   const startNextRef = useRef<() => void>(() => {})
   const finalizeResponseRef = useRef<(response: GaborPresentationResponse) => void>(() => {})
 
@@ -216,109 +169,46 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
     drawCell(distance, distance / 2, extent, presentation.flankers.contrastPct / 100)
   }, [])
 
-  const currentStopReason = useCallback((): GaborStopReason | null => {
-    const counters = countersRef.current
-    const measurement = measurementRef.current
-    const session = sessionRef.current
-    return resolveGaborStopReason({
-      thresholdCompleted: measurement?.completed ?? false,
-      measurementResponses: measurement?.adaptiveTrials ?? 0,
-      measurementResponseCap: session.measurementResponseCap,
-      scheduledExposures: counters.scheduledExposures,
-      scheduledExposureCap: session.scheduledExposureCap,
-      totalExposures: counters.localizationExposures + counters.scheduledExposures,
-      sessionExposureCap: session.sessionExposureCap,
-      timeCapReached: elapsedSeconds() >= TIME_CAP_SECONDS,
+  const publishProgress = useCallback((coordinator: GaborProductionCoordinator) => {
+    const progress = getGaborProductionProgress(coordinator)
+    setStatsDisplay({
+      exposures: progress.totalExposures,
+      responses: progress.measurementResponses,
+      reversals: progress.reversals,
+      accuracyPct: progress.accuracyPct,
     })
-  }, [elapsedSeconds])
+    onProgress?.(progress)
+  }, [onProgress])
 
-  const finish = useCallback((reason: GaborStopReason) => {
+  const finish = useCallback(() => {
     if (completedRef.current) return
+    const terminal = coordinatorRef.current.terminal
+    if (!terminal) return
     completedRef.current = true
-    responseLockedRef.current = true
     clearTrialTimer()
     clearAdvanceTimer()
     if (tickIntervalRef.current) clearInterval(tickIntervalRef.current)
     tickIntervalRef.current = undefined
     speechRef.current?.stop()
 
-    const counters = countersRef.current
-    const measurement = measurementRef.current
-    const estimate = measurement ? getGaborThresholdEstimate(measurement) : { valid: false as const }
-    const measurementResponses = measurement?.adaptiveTrials ?? 0
-    const accuracyPct = counters.trials > 0 ? Math.round((counters.correct / counters.trials) * 100) : 0
-    const measurementAccuracyPct = measurementResponses > 0
-      ? Math.round((counters.measurementCorrect / measurementResponses) * 100)
-      : 0
-    const flags = gaborStopFlags(reason)
-    const metrics = {
-      trials: counters.trials,
-      accuracyPct,
-      measurementAccuracyPct,
-      totalExposures: counters.localizationExposures + counters.scheduledExposures,
-      localizationExposures: counters.localizationExposures,
-      scheduledExposures: counters.scheduledExposures,
-      measurementResponses,
-      adaptiveTrials: measurementResponses,
-      reversals: measurement?.reversalContrastsPct.length ?? 0,
-      thresholdValid: Number(estimate.valid),
-      ...(estimate.valid ? { contrastThresholdPct: estimate.contrastThresholdPct } : {}),
-      easyTrials: counters.easyTrials,
-      transferTrials: counters.transferTrials,
-      flankerTrials: counters.flankerTrials,
-      catchTrials: counters.catchTrials,
-      catchFalseAlarms: counters.catchFalseAlarms,
-      lapses: counters.lapses,
-      warmStarted: 0,
-      protocolVersion: 1,
-      anchorSpatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
-      stopValid: flags.stopValid,
-      stopMeasurementCap: flags.stopMeasurementCap,
-      stopExposureCap: flags.stopExposureCap,
-      stopTimeCap: flags.stopTimeCap,
-    }
     const result: EngineResult = {
       exerciseId: exercise.id,
       durationSec: Math.round(elapsedSeconds()),
       completed: true,
-      score: clampScore(measurementResponses > 0 ? measurementAccuracyPct : accuracyPct),
-      metrics,
+      score: clampScore(terminal.scorePct),
+      metrics: terminal.metrics,
     }
+    const progress = getGaborProductionProgress(coordinatorRef.current)
     setStatsDisplay({
-      exposures: metrics.totalExposures,
-      responses: measurementResponses,
-      reversals: metrics.reversals,
-      accuracyPct,
+      exposures: progress.totalExposures,
+      responses: progress.measurementResponses,
+      reversals: progress.reversals,
+      accuracyPct: progress.accuracyPct,
     })
     setPhase('complete')
     onComplete(result)
   }, [clearAdvanceTimer, clearTrialTimer, elapsedSeconds, exercise.id, onComplete, setPhase])
   finishRef.current = finish
-
-  const publishProgress = useCallback(() => {
-    const counters = countersRef.current
-    const measurement = measurementRef.current
-    const measurementResponses = measurement?.adaptiveTrials ?? 0
-    const accuracyPct = counters.trials > 0 ? Math.round((counters.correct / counters.trials) * 100) : 0
-    setStatsDisplay({
-      exposures: counters.localizationExposures + counters.scheduledExposures,
-      responses: measurementResponses,
-      reversals: measurement?.reversalContrastsPct.length ?? 0,
-      accuracyPct,
-    })
-    onProgress?.({
-      trials: counters.trials,
-      accuracyPct,
-      totalExposures: counters.localizationExposures + counters.scheduledExposures,
-      localizationExposures: counters.localizationExposures,
-      scheduledExposures: counters.scheduledExposures,
-      measurementResponses,
-      adaptiveTrials: measurementResponses,
-      reversals: measurement?.reversalContrastsPct.length ?? 0,
-      catchFalseAlarms: counters.catchFalseAlarms,
-      lapses: counters.lapses,
-    })
-  }, [onProgress])
 
   const armResponseWindow = useCallback((presentation: GaborResolvedPresentation) => {
     clearTrialTimer()
@@ -328,104 +218,45 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
     )
   }, [clearTrialTimer])
 
-  const incrementKindCount = useCallback((kind: GaborTrialKind) => {
-    const counters = countersRef.current
-    if (kind === 'easy') counters.easyTrials += 1
-    else if (kind === 'transfer') counters.transferTrials += 1
-    else if (kind === 'flanker') counters.flankerTrials += 1
-    else if (kind === 'catch') counters.catchTrials += 1
-  }, [])
-
   const startNextPresentation = useCallback(() => {
     if (completedRef.current) return
-    const stop = currentStopReason()
-    if (stop) {
-      finishRef.current(stop)
+    const next = presentNextGaborExposure(coordinatorRef.current, {
+      timeCapReached: elapsedSeconds() >= TIME_CAP_SECONDS,
+    })
+    coordinatorRef.current = next
+    publishProgress(next)
+    if (next.terminal) {
+      finishRef.current()
       return
     }
-
-    let current: CurrentPresentation
-    if (localizationRef.current.responses < GABOR_THRESHOLD_PROTOCOL.localizationResponses) {
-      const exposureIndex = countersRef.current.localizationExposures
-      const trial = buildGaborLocalizationTrial(seedRef.current, exposureIndex)
-      current = {
-        stage: 'localization',
-        resolved: resolveGaborPresentation(trial, localizationRef.current.contrastPct),
-      }
-      countersRef.current.localizationExposures += 1
-    } else {
-      if (!measurementRef.current) {
-        measurementRef.current = startGaborMeasurementAfterLocalization(localizationRef.current)
-      }
-      const exposureIndex = countersRef.current.scheduledExposures
-      const blockIndex = Math.floor(exposureIndex / 10)
-      let block = blockCacheRef.current.get(blockIndex)
-      if (!block) {
-        block = buildGaborThresholdBlock({ seed: seedRef.current, blockIndex })
-        blockCacheRef.current.set(blockIndex, block)
-      }
-      const trial = block[exposureIndex % block.length]
-      current = {
-        stage: 'measurement',
-        resolved: resolveGaborPresentation(trial, measurementRef.current.contrastPct),
-      }
-      countersRef.current.scheduledExposures += 1
-      incrementKindCount(trial.kind)
-    }
-
-    currentRef.current = current
-    responseLockedRef.current = false
+    const pending = next.pending
+    if (!pending) return
     setFeedback(null)
     setPhase('trial')
-    drawPresentation(current.resolved)
-    publishProgress()
-    armResponseWindow(current.resolved)
-  }, [armResponseWindow, currentStopReason, drawPresentation, incrementKindCount, publishProgress, setPhase])
+    drawPresentation(pending.presentation)
+    armResponseWindow(pending.presentation)
+  }, [armResponseWindow, drawPresentation, elapsedSeconds, publishProgress, setPhase])
   startNextRef.current = startNextPresentation
 
   const finalizeResponse = useCallback((response: GaborPresentationResponse) => {
-    const current = currentRef.current
-    if (!current || completedRef.current || phaseRef.current !== 'trial' || responseLockedRef.current) return
-    responseLockedRef.current = true
+    if (completedRef.current || phaseRef.current !== 'trial') return
     clearTrialTimer()
-
-    const classified = classifyGaborResponse(current.resolved, response)
-    const counters = countersRef.current
-    counters.trials += 1
-    if (classified.correct) counters.correct += 1
-    if (classified.falseAlarm) counters.catchFalseAlarms += 1
-    if (classified.lapse) {
-      counters.lapses += 1
-      lapseStreakRef.current += 1
-    } else {
-      lapseStreakRef.current = 0
-    }
-
-    if (current.stage === 'localization') {
-      if (classified.staircaseResponse) {
-        localizationRef.current = updateGaborLocalization(
-          localizationRef.current,
-          classified.staircaseResponse,
-        ).state
-      }
-    } else if (current.resolved.trial.adaptive && classified.staircaseResponse && measurementRef.current) {
-      measurementRef.current = updateGaborThreshold(measurementRef.current, {
-        response: classified.staircaseResponse,
-        adaptive: true,
-      }).state
-      if (classified.correct) counters.measurementCorrect += 1
-    }
-
+    const next = applyGaborProductionResponse(coordinatorRef.current, response, {
+      timeCapReached: elapsedSeconds() >= TIME_CAP_SECONDS,
+    })
+    if (next === coordinatorRef.current) return
+    coordinatorRef.current = next
+    const classified = next.lastResponse
+    if (!classified) return
     setFeedback(classified.lapse ? 'timeout' : classified.correct ? 'correct' : 'wrong')
     setPhase('feedback')
-    publishProgress()
+    publishProgress(next)
 
-    const stop = currentStopReason()
-    if (stop) {
-      finishRef.current(stop)
+    if (next.terminal) {
+      finishRef.current()
       return
     }
-    if (classified.lapse && lapseStreakRef.current >= LAPSES_TO_PAUSE) {
+    if (classified.lapse && next.counters.consecutiveLapses >= LAPSES_TO_PAUSE) {
       pauseStartRef.current = performance.now()
       resumeStartsNextRef.current = true
       setPauseReason('lapse')
@@ -435,24 +266,17 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
     }
     clearAdvanceTimer()
     advanceTimeoutRef.current = setTimeout(() => startNextRef.current(), FEEDBACK_MS)
-  }, [clearAdvanceTimer, clearTrialTimer, currentStopReason, publishProgress, setPhase])
+  }, [clearAdvanceTimer, clearTrialTimer, elapsedSeconds, publishProgress, setPhase])
   finalizeResponseRef.current = finalizeResponse
 
   const start = useCallback(() => {
     if (phaseRef.current !== 'intro') return
     unlockAudio()
-    sessionRef.current = prepareGaborThresholdSession(null)
-    localizationRef.current = createGaborLocalizationState()
-    measurementRef.current = null
-    countersRef.current = emptyCounters()
-    currentRef.current = null
-    blockCacheRef.current.clear()
+    seedRef.current = `${GABOR_THRESHOLD_PROTOCOL.id}:${Date.now()}`
+    coordinatorRef.current = createGaborProductionCoordinator({ seed: seedRef.current, prior: null })
     completedRef.current = false
-    responseLockedRef.current = true
-    lapseStreakRef.current = 0
     pausedAccumRef.current = 0
     pauseStartRef.current = null
-    seedRef.current = `${GABOR_THRESHOLD_PROTOCOL.id}:${Date.now()}`
     startWallRef.current = performance.now()
     speechRef.current?.speak('Choose the stripe direction, or choose no pattern when the field is blank.', { interrupt: true })
     startNextRef.current()
@@ -460,9 +284,13 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
       if (completedRef.current) return
       const elapsed = elapsedSeconds()
       setElapsedDisplay(elapsed)
-      if (elapsed >= TIME_CAP_SECONDS) finishRef.current('time-cap')
+      if (elapsed >= TIME_CAP_SECONDS) {
+        coordinatorRef.current = presentNextGaborExposure(coordinatorRef.current, { timeCapReached: true })
+        publishProgress(coordinatorRef.current)
+        finishRef.current()
+      }
     }, 250)
-  }, [elapsedSeconds])
+  }, [elapsedSeconds, publishProgress])
 
   const pauseManual = useCallback(() => {
     if (phaseRef.current !== 'trial' && phaseRef.current !== 'feedback') return
@@ -485,22 +313,20 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
       startNextRef.current()
       return
     }
-    const current = currentRef.current
-    if (!current) {
+    const pending = coordinatorRef.current.pending
+    if (!pending) {
       startNextRef.current()
       return
     }
-    responseLockedRef.current = false
     setFeedback(null)
     setPhase('trial')
-    drawPresentation(current.resolved)
-    armResponseWindow(current.resolved)
+    drawPresentation(pending.presentation)
+    armResponseWindow(pending.presentation)
   }, [armResponseWindow, drawPresentation, setPhase])
 
   const handleAbort = useCallback(() => {
     if (completedRef.current) return
     completedRef.current = true
-    responseLockedRef.current = true
     clearTrialTimer()
     clearAdvanceTimer()
     if (tickIntervalRef.current) clearInterval(tickIntervalRef.current)
@@ -509,10 +335,10 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
   }, [clearAdvanceTimer, clearTrialTimer, onExit])
 
   useEffect(() => {
-    drawPresentation(currentRef.current?.resolved ?? null)
+    drawPresentation(coordinatorRef.current.pending?.presentation ?? null)
     const canvas = canvasRef.current
     if (!canvas || typeof ResizeObserver === 'undefined') return
-    const observer = new ResizeObserver(() => drawPresentation(currentRef.current?.resolved ?? null))
+    const observer = new ResizeObserver(() => drawPresentation(coordinatorRef.current.pending?.presentation ?? null))
     if (canvas.parentElement) observer.observe(canvas.parentElement)
     return () => observer.disconnect()
   }, [drawPresentation])

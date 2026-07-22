@@ -482,12 +482,15 @@ export interface GaborThresholdTrial {
 export interface GaborThresholdBlockOptions {
   readonly seed: string | number
   readonly blockIndex: number
+  /** Test seam: production omits this and uses the seeded generator. */
+  readonly selectionRandom?: () => number
 }
 
 /** Build one seeded ten-trial therapeutic block. */
 export function buildGaborThresholdBlock({
   seed,
   blockIndex,
+  selectionRandom,
 }: GaborThresholdBlockOptions): readonly GaborThresholdTrial[] {
   assertBlockIndex(blockIndex)
   const trials: GaborThresholdTrial[] = []
@@ -544,7 +547,11 @@ export function buildGaborThresholdBlock({
   }))
 
   trials.push(catchTrial(`block-${blockIndex}-catch-0`))
-  return orderWithOneSelectionDrawPerTrial(trials, `${String(seed)}:block-order:${blockIndex}`)
+  return shuffleGaborBlock(
+    trials,
+    `${String(seed)}:block-order:${blockIndex}`,
+    selectionRandom,
+  )
 }
 
 /** One deterministic localization target; response index and exposure index stay separate. */
@@ -706,6 +713,385 @@ export function gaborStopFlags(reason: GaborStopReason): {
   }
 }
 
+export interface GaborProductionCounters {
+  readonly trials: number
+  readonly correctResponses: number
+  readonly measurementCorrect: number
+  readonly localizationExposures: number
+  readonly scheduledExposures: number
+  readonly easyTrials: number
+  readonly transferTrials: number
+  readonly flankerTrials: number
+  readonly catchTrials: number
+  readonly catchFalseAlarms: number
+  readonly lapses: number
+  readonly consecutiveLapses: number
+}
+
+export interface GaborProductionMetrics {
+  readonly [metric: string]: number
+  readonly trials: number
+  readonly accuracyPct: number
+  readonly measurementAccuracyPct: number
+  readonly totalExposures: number
+  readonly localizationExposures: number
+  readonly scheduledExposures: number
+  readonly measurementResponses: number
+  readonly adaptiveTrials: number
+  readonly reversals: number
+  readonly thresholdValid: number
+  readonly easyTrials: number
+  readonly transferTrials: number
+  readonly flankerTrials: number
+  readonly catchTrials: number
+  readonly catchFalseAlarms: number
+  readonly lapses: number
+  readonly warmStarted: number
+  readonly protocolVersion: number
+  readonly anchorSpatialFrequencyCyclesPerPatch: number
+  readonly stopValid: number
+  readonly stopMeasurementCap: number
+  readonly stopExposureCap: number
+  readonly stopTimeCap: number
+}
+
+export interface GaborProductionProgress {
+  readonly [metric: string]: number
+  readonly trials: number
+  readonly accuracyPct: number
+  readonly totalExposures: number
+  readonly localizationExposures: number
+  readonly scheduledExposures: number
+  readonly measurementResponses: number
+  readonly adaptiveTrials: number
+  readonly reversals: number
+  readonly catchFalseAlarms: number
+  readonly lapses: number
+}
+
+export interface GaborPendingPresentation {
+  readonly stage: 'localization' | 'measurement'
+  readonly exposureIndex: number
+  readonly presentation: GaborResolvedPresentation
+}
+
+export interface GaborProductionTerminal {
+  readonly reason: GaborStopReason
+  readonly metrics: GaborProductionMetrics
+  readonly scorePct: number
+}
+
+interface GaborBlockCursor {
+  readonly blockIndex: number
+  readonly trials: readonly GaborThresholdTrial[]
+  readonly nextOffset: number
+}
+
+export interface GaborProductionCoordinator {
+  readonly protocol: typeof GABOR_THRESHOLD_PROTOCOL.id
+  readonly seed: string | number
+  readonly mode: GaborThresholdSessionStart['mode']
+  readonly fallbackReason: GaborThresholdSessionStart['fallbackReason']
+  readonly measurementResponseCap: number
+  readonly scheduledExposureCap: number
+  readonly sessionExposureCap: number
+  readonly localization: GaborLocalizationState | null
+  readonly measurement: GaborThresholdState | null
+  readonly blockCursor: GaborBlockCursor | null
+  readonly pending: GaborPendingPresentation | null
+  readonly responseLocked: boolean
+  readonly counters: GaborProductionCounters
+  readonly lastResponse: GaborClassifiedResponse | null
+  readonly terminal: GaborProductionTerminal | null
+}
+
+export interface GaborProductionCoordinatorOptions {
+  readonly seed: string | number
+  readonly prior?: GaborThresholdPrior | null
+}
+
+export interface GaborPresentOptions {
+  readonly timeCapReached: boolean
+  /** Test seam used only when the next ten-exposure block is first built. */
+  readonly selectionRandom?: () => number
+}
+
+export interface GaborApplyResponseOptions {
+  readonly timeCapReached: boolean
+}
+
+/** Create the one production authority for cold or compatible warm sessions. */
+export function createGaborProductionCoordinator({
+  seed,
+  prior = null,
+}: GaborProductionCoordinatorOptions): GaborProductionCoordinator {
+  const session = prepareGaborThresholdSession(prior)
+  return {
+    protocol: GABOR_THRESHOLD_PROTOCOL.id,
+    seed,
+    mode: session.mode,
+    fallbackReason: session.fallbackReason,
+    measurementResponseCap: session.measurementResponseCap,
+    scheduledExposureCap: session.scheduledExposureCap,
+    sessionExposureCap: session.sessionExposureCap,
+    localization: session.localization,
+    measurement: session.measurement,
+    blockCursor: null,
+    pending: null,
+    responseLocked: true,
+    counters: emptyProductionCounters(),
+    lastResponse: null,
+    terminal: null,
+  }
+}
+
+/**
+ * Present exactly one next exposure, or lock the terminal snapshot. A pending
+ * exposure is an invariant: without a time-cap signal this is an exact no-op.
+ */
+export function presentNextGaborExposure(
+  coordinator: GaborProductionCoordinator,
+  options: GaborPresentOptions,
+): GaborProductionCoordinator {
+  if (coordinator.terminal) return coordinator
+
+  const stopped = stopGaborCoordinatorIfNeeded(coordinator, options.timeCapReached)
+  if (stopped !== coordinator) return stopped
+  if (coordinator.pending) return coordinator
+
+  if (coordinator.localization
+    && coordinator.localization.responses < GABOR_THRESHOLD_PROTOCOL.localizationResponses) {
+    const exposureIndex = coordinator.counters.localizationExposures
+    const trial = buildGaborLocalizationTrial(coordinator.seed, exposureIndex)
+    return {
+      ...coordinator,
+      pending: {
+        stage: 'localization',
+        exposureIndex,
+        presentation: resolveGaborPresentation(trial, coordinator.localization.contrastPct),
+      },
+      responseLocked: false,
+      counters: {
+        ...coordinator.counters,
+        localizationExposures: exposureIndex + 1,
+      },
+      lastResponse: null,
+    }
+  }
+
+  const measurement = coordinator.measurement
+  if (!measurement) throw new Error('Gabor measurement cannot start before localization is complete.')
+
+  const scheduledExposureIndex = coordinator.counters.scheduledExposures
+  const requestedBlockIndex = Math.floor(scheduledExposureIndex / 10)
+  const cursor = coordinator.blockCursor?.blockIndex === requestedBlockIndex
+    && coordinator.blockCursor.nextOffset < coordinator.blockCursor.trials.length
+    ? coordinator.blockCursor
+    : {
+        blockIndex: requestedBlockIndex,
+        trials: buildGaborThresholdBlock({
+          seed: coordinator.seed,
+          blockIndex: requestedBlockIndex,
+          selectionRandom: options.selectionRandom,
+        }),
+        nextOffset: 0,
+      }
+  const trial = cursor.trials[cursor.nextOffset]
+  const counters = incrementProductionKind({
+    ...coordinator.counters,
+    scheduledExposures: scheduledExposureIndex + 1,
+  }, trial.kind)
+  return {
+    ...coordinator,
+    blockCursor: { ...cursor, nextOffset: cursor.nextOffset + 1 },
+    pending: {
+      stage: 'measurement',
+      exposureIndex: scheduledExposureIndex,
+      presentation: resolveGaborPresentation(trial, measurement.contrastPct),
+    },
+    responseLocked: false,
+    counters,
+    lastResponse: null,
+  }
+}
+
+/** Apply one response to the sole pending exposure. Duplicate calls are exact no-ops. */
+export function applyGaborProductionResponse(
+  coordinator: GaborProductionCoordinator,
+  response: GaborPresentationResponse,
+  options: GaborApplyResponseOptions,
+): GaborProductionCoordinator {
+  if (coordinator.terminal || !coordinator.pending || coordinator.responseLocked) return coordinator
+
+  const classified = classifyGaborResponse(coordinator.pending.presentation, response)
+  let localization = coordinator.localization
+  let measurement = coordinator.measurement
+  let counters: GaborProductionCounters = {
+    ...coordinator.counters,
+    trials: coordinator.counters.trials + 1,
+    correctResponses: coordinator.counters.correctResponses + Number(classified.correct),
+    catchFalseAlarms: coordinator.counters.catchFalseAlarms + Number(classified.falseAlarm),
+    lapses: coordinator.counters.lapses + Number(classified.lapse),
+    consecutiveLapses: classified.lapse ? coordinator.counters.consecutiveLapses + 1 : 0,
+  }
+
+  if (coordinator.pending.stage === 'localization') {
+    if (localization && classified.staircaseResponse) {
+      localization = updateGaborLocalization(localization, classified.staircaseResponse).state
+      if (localization.responses === GABOR_THRESHOLD_PROTOCOL.localizationResponses) {
+        measurement = startGaborMeasurementAfterLocalization(localization)
+      }
+    }
+  } else if (coordinator.pending.presentation.trial.adaptive
+    && classified.staircaseResponse
+    && measurement) {
+    measurement = updateGaborThreshold(measurement, {
+      response: classified.staircaseResponse,
+      adaptive: true,
+    }).state
+    if (classified.correct) {
+      counters = { ...counters, measurementCorrect: counters.measurementCorrect + 1 }
+    }
+  }
+
+  const responded: GaborProductionCoordinator = {
+    ...coordinator,
+    localization,
+    measurement,
+    pending: null,
+    responseLocked: true,
+    counters,
+    lastResponse: classified,
+  }
+  return stopGaborCoordinatorIfNeeded(responded, options.timeCapReached)
+}
+
+export function getGaborProductionProgress(
+  coordinator: GaborProductionCoordinator,
+): GaborProductionProgress {
+  const measurementResponses = coordinator.measurement?.adaptiveTrials ?? 0
+  return {
+    trials: coordinator.counters.trials,
+    accuracyPct: percentage(coordinator.counters.correctResponses, coordinator.counters.trials),
+    totalExposures: totalProductionExposures(coordinator),
+    localizationExposures: coordinator.counters.localizationExposures,
+    scheduledExposures: coordinator.counters.scheduledExposures,
+    measurementResponses,
+    adaptiveTrials: measurementResponses,
+    reversals: coordinator.measurement?.reversalContrastsPct.length ?? 0,
+    catchFalseAlarms: coordinator.counters.catchFalseAlarms,
+    lapses: coordinator.counters.lapses,
+  }
+}
+
+function stopGaborCoordinatorIfNeeded(
+  coordinator: GaborProductionCoordinator,
+  timeCapReached: boolean,
+): GaborProductionCoordinator {
+  const reason = resolveGaborStopReason({
+    thresholdCompleted: coordinator.measurement?.completed ?? false,
+    measurementResponses: coordinator.measurement?.adaptiveTrials ?? 0,
+    measurementResponseCap: coordinator.measurementResponseCap,
+    scheduledExposures: coordinator.counters.scheduledExposures,
+    scheduledExposureCap: coordinator.scheduledExposureCap,
+    totalExposures: totalProductionExposures(coordinator),
+    sessionExposureCap: coordinator.sessionExposureCap,
+    timeCapReached,
+  })
+  return reason ? terminalizeGaborCoordinator(coordinator, reason) : coordinator
+}
+
+function terminalizeGaborCoordinator(
+  coordinator: GaborProductionCoordinator,
+  reason: GaborStopReason,
+): GaborProductionCoordinator {
+  const estimate = coordinator.measurement
+    ? getGaborThresholdEstimate(coordinator.measurement)
+    : { valid: false as const }
+  const progress = getGaborProductionProgress(coordinator)
+  const measurementAccuracyPct = percentage(
+    coordinator.counters.measurementCorrect,
+    progress.measurementResponses,
+  )
+  const flags = gaborStopFlags(reason)
+  const metrics: GaborProductionMetrics = {
+    trials: coordinator.counters.trials,
+    accuracyPct: progress.accuracyPct,
+    measurementAccuracyPct,
+    totalExposures: progress.totalExposures,
+    localizationExposures: coordinator.counters.localizationExposures,
+    scheduledExposures: coordinator.counters.scheduledExposures,
+    measurementResponses: progress.measurementResponses,
+    adaptiveTrials: progress.adaptiveTrials,
+    reversals: progress.reversals,
+    thresholdValid: Number(estimate.valid),
+    ...(estimate.valid ? { contrastThresholdPct: estimate.contrastThresholdPct } : {}),
+    easyTrials: coordinator.counters.easyTrials,
+    transferTrials: coordinator.counters.transferTrials,
+    flankerTrials: coordinator.counters.flankerTrials,
+    catchTrials: coordinator.counters.catchTrials,
+    catchFalseAlarms: coordinator.counters.catchFalseAlarms,
+    lapses: coordinator.counters.lapses,
+    warmStarted: Number(coordinator.mode === 'warm-start'),
+    protocolVersion: 1,
+    anchorSpatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
+    stopValid: flags.stopValid,
+    stopMeasurementCap: flags.stopMeasurementCap,
+    stopExposureCap: flags.stopExposureCap,
+    stopTimeCap: flags.stopTimeCap,
+  }
+  return {
+    ...coordinator,
+    pending: null,
+    responseLocked: true,
+    terminal: {
+      reason,
+      metrics,
+      scorePct: progress.measurementResponses > 0 ? measurementAccuracyPct : progress.accuracyPct,
+    },
+  }
+}
+
+function emptyProductionCounters(): GaborProductionCounters {
+  return {
+    trials: 0,
+    correctResponses: 0,
+    measurementCorrect: 0,
+    localizationExposures: 0,
+    scheduledExposures: 0,
+    easyTrials: 0,
+    transferTrials: 0,
+    flankerTrials: 0,
+    catchTrials: 0,
+    catchFalseAlarms: 0,
+    lapses: 0,
+    consecutiveLapses: 0,
+  }
+}
+
+function incrementProductionKind(
+  counters: GaborProductionCounters,
+  kind: GaborTrialKind,
+): GaborProductionCounters {
+  if (kind === 'anchor') return counters
+  const field = kind === 'easy'
+    ? 'easyTrials'
+    : kind === 'transfer'
+      ? 'transferTrials'
+      : kind === 'flanker'
+        ? 'flankerTrials'
+        : 'catchTrials'
+  return { ...counters, [field]: counters[field] + 1 }
+}
+
+function totalProductionExposures(coordinator: GaborProductionCoordinator): number {
+  return coordinator.counters.localizationExposures + coordinator.counters.scheduledExposures
+}
+
+function percentage(numerator: number, denominator: number): number {
+  return denominator > 0 ? Math.round((numerator / denominator) * 100) : 0
+}
+
 function stimulusTrial({
   id,
   kind,
@@ -823,6 +1209,21 @@ function shuffleDeterministically<T>(values: T[], seed: string): T[] {
     const swapIndex = Math.floor(random() * (index + 1))
     ;[values[index], values[swapIndex]] = [values[swapIndex], values[index]]
   }
+  return values
+}
+
+/**
+ * Preserve the ratified Fisher-Yates order while consuming one scheduler draw
+ * for every member of the ten-exposure block. Fisher-Yates needs nine draws to
+ * determine the order; the final draw accounts for the sole remaining member.
+ */
+function shuffleGaborBlock<T>(values: T[], seed: string, injectedRandom?: () => number): T[] {
+  const random = injectedRandom ?? mulberry32(fnv1a32(seed))
+  for (let index = values.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1))
+    ;[values[index], values[swapIndex]] = [values[swapIndex], values[index]]
+  }
+  if (values.length > 0) random()
   return values
 }
 
