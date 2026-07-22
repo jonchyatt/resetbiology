@@ -6,7 +6,8 @@
  * binds responses, and reports the locked result.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { Pause, Play, ShieldAlert, Volume2, VolumeX, X } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
 import { clampScore } from './types'
@@ -93,6 +94,20 @@ export default function GaborAcuityEngine({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const speechRef = useRef<SpeechQueue | null>(null)
   if (!speechRef.current) speechRef.current = new SpeechQueue()
+
+  const previewRootRef = useRef<HTMLDivElement>(null)
+  const titleId = useId()
+  // Captured synchronously during render (before commit unmounts the launcher
+  // that triggered this preview), since by the time an effect runs the
+  // launcher's activeElement has already reset to <body>.
+  const previewOpenSnapshotRef = useRef<{ focusEl: HTMLElement | null; scrollX: number; scrollY: number } | null>(null)
+  if (preview && previewOpenSnapshotRef.current === null && typeof document !== 'undefined') {
+    previewOpenSnapshotRef.current = {
+      focusEl: document.activeElement instanceof HTMLElement ? document.activeElement : null,
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+    }
+  }
 
   const reducedMotion = useMemo(() => prefersReducedMotion(), [])
   const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
@@ -410,6 +425,72 @@ export default function GaborAcuityEngine({
     onExit()
   }, [clearAdvanceTimer, clearTrialTimer, onExit])
 
+  // Lock body scroll, inert the rest of the page, focus the overlay, and
+  // reverse all of it (scroll position, launcher focus) on close.
+  useEffect(() => {
+    if (!preview || typeof document === 'undefined') return
+    const root = previewRootRef.current
+    const priorBodyOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    const restoredInert: Array<{ el: HTMLElement; prior: boolean }> = []
+    Array.from(document.body.children).forEach(child => {
+      if (child === root || !(child instanceof HTMLElement)) return
+      restoredInert.push({ el: child, prior: child.inert })
+      child.inert = true
+    })
+
+    root?.focus()
+
+    return () => {
+      document.body.style.overflow = priorBodyOverflow
+      restoredInert.forEach(({ el, prior }) => { el.inert = prior })
+
+      const snapshot = previewOpenSnapshotRef.current
+      window.scrollTo(snapshot?.scrollX ?? 0, snapshot?.scrollY ?? 0)
+
+      const priorFocusEl = snapshot?.focusEl
+      const focusTarget = priorFocusEl && document.contains(priorFocusEl)
+        ? priorFocusEl
+        : Array.from(document.querySelectorAll<HTMLElement>('button'))
+          .find(button => button.textContent?.includes('Easy Gabor Preview'))
+      focusTarget?.focus()
+    }
+  }, [preview])
+
+  const handleOverlayKeyDown = useCallback((event: KeyboardEvent<HTMLDivElement>) => {
+    if (!preview) return
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      event.stopPropagation()
+      handleAbort()
+      return
+    }
+    if (event.key !== 'Tab') return
+    const root = previewRootRef.current
+    if (!root) return
+    const focusables = Array.from(
+      root.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'),
+    ).filter(el => !el.hasAttribute('disabled'))
+    if (focusables.length === 0) {
+      event.preventDefault()
+      root.focus()
+      return
+    }
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    if (document.activeElement === root) {
+      event.preventDefault()
+      ;(event.shiftKey ? last : first).focus()
+    } else if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }, [preview, handleAbort])
+
   useEffect(() => {
     drawPresentation(coordinatorRef.current.state.pending?.presentation ?? null)
     const canvas = canvasRef.current
@@ -442,11 +523,28 @@ export default function GaborAcuityEngine({
     : null
   const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950'
 
-  return (
-    <div className="relative flex h-full min-h-[100dvh] w-full select-none flex-col overflow-hidden bg-[#808080]">
+  // Preview runs embedded deep in the scrolling Vision Library page (no fixed
+  // shell of its own), so it needs the same fixed-overlay treatment
+  // SessionRunner gives guided mode. Guided mode already sits inside
+  // SessionRunner's fixed shell and just fills it (h-full) without forcing an
+  // extra 100dvh on top of that shell's own sizing.
+  const rootClassName = preview
+    ? 'fixed inset-0 z-[100000] flex min-h-0 w-full select-none flex-col overflow-hidden bg-[#808080] outline-none'
+    : 'relative flex h-full min-h-0 w-full select-none flex-col overflow-hidden bg-[#808080]'
+
+  const engineBody = (
+    <div
+      className={rootClassName}
+      ref={previewRootRef}
+      tabIndex={preview ? -1 : undefined}
+      role={preview ? 'dialog' : undefined}
+      aria-modal={preview ? true : undefined}
+      aria-labelledby={preview ? titleId : undefined}
+      onKeyDown={handleOverlayKeyDown}
+    >
       <div className="relative z-10 flex items-center justify-between bg-gradient-to-b from-gray-950/90 to-transparent px-4 py-3">
         <div>
-          <p className="text-sm font-semibold text-white">{exercise.title}</p>
+          <p id={preview ? titleId : undefined} className="text-sm font-semibold text-white">{exercise.title}</p>
           <p className="text-xs text-gray-300">
             {phase === 'trial' || phase === 'feedback'
               ? 'Find the stripe direction'
@@ -584,6 +682,8 @@ export default function GaborAcuityEngine({
       )}
     </div>
   )
+
+  return preview && typeof document !== 'undefined' ? createPortal(engineBody, document.body) : engineBody
 }
 
 function GaborAnswerPad({
