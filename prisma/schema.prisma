@@ -79,6 +79,7 @@ model User {
   nbackProgress           NBackProgress[]
   userBreathExercises     UserBreathExercise[]
   visionProgramEnrollment VisionProgramEnrollment?
+  workoutEvents           WorkoutEvent[]
 
   @@map("users")
 }
@@ -1387,4 +1388,26 @@ model DailyAward {
 
   @@unique([userId, dayKey, awardType])
   @@map("daily_awards")
+}
+
+// Ticket 07-03A — dormant append-only server ledger for the workout-event/1
+// contract. Insert-only and account-bound; nothing in production writes to
+// or reads from this collection yet (07-03B proves the index, 07-03C1 wires
+// the route). @@unique([userId, eventId]) is schema intent only until a live
+// Atlas census proves the index exists.
+model WorkoutEvent {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String   @db.ObjectId
+  eventId            String
+  schemaVersion      String
+  digest             String
+  type               String
+  occurredAt         String
+  payload            Json
+  compensatesEventId String?
+  acceptedAt         DateTime @default(now())
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@map("workout_events")
 }
