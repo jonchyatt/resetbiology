@@ -197,6 +197,56 @@ export type CalendarSlotRecord = {
   sourceDose?: any;
 };
 
+// Scheduled labels are a narrow wire contract, not free-form display text.
+// Invalid legacy values stay visible only through a real logged timestamp.
+export function formatScheduledTime12h(time: string | null | undefined): string | null {
+  if (typeof time !== "string" || !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return null;
+  const [hours, minutes] = time.split(":").map(Number);
+  const period = hours >= 12 ? "PM" : "AM";
+  return `${hours % 12 || 12}:${minutes.toString().padStart(2, "0")} ${period}`;
+}
+
+export function scheduledTimeSortValue(time: string | null | undefined): number {
+  if (!formatScheduledTime12h(time)) return 24 * 60;
+  const [hours, minutes] = time!.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+export function compareCompletedDoseEntries<T extends {
+  actualTime?: string | null;
+  scheduledTime: string | null;
+}>(a: T, b: T): number {
+  const actualA = a.actualTime ? new Date(a.actualTime).getTime() : Number.NaN;
+  const actualB = b.actualTime ? new Date(b.actualTime).getTime() : Number.NaN;
+  const hasActualA = Number.isFinite(actualA);
+  const hasActualB = Number.isFinite(actualB);
+
+  if (hasActualA && hasActualB) return actualB - actualA;
+  if (hasActualA) return -1;
+  if (hasActualB) return 1;
+
+  const hasScheduledA = formatScheduledTime12h(a.scheduledTime) !== null;
+  const hasScheduledB = formatScheduledTime12h(b.scheduledTime) !== null;
+  if (hasScheduledA && hasScheduledB) {
+    return scheduledTimeSortValue(b.scheduledTime) - scheduledTimeSortValue(a.scheduledTime);
+  }
+  if (hasScheduledA) return -1;
+  if (hasScheduledB) return 1;
+  return 0;
+}
+
+export function resolveDoseTimeLabel(
+  scheduledTime: string | null | undefined,
+  actualTime: string | null | undefined,
+  completed: boolean,
+  formatActualTime: (timestamp: string) => string,
+): string {
+  const scheduledLabel = formatScheduledTime12h(scheduledTime);
+  if (scheduledLabel) return scheduledLabel;
+  if (completed && actualTime) return formatActualTime(actualTime);
+  return "Time unavailable";
+}
+
 // The product's only decision point for opening dose entry. It delegates all
 // frequency parsing to peptide-frequency.ts so unknown text never becomes an
 // invented schedule or an invented violation.
@@ -296,16 +346,7 @@ export function selectDoseEntrySlot<T extends { id: string; scheduledTime: strin
     return pendingSlots.find((slot) => slot.id === requestedScheduledDoseId);
   }
   return [...pendingSlots].sort(
-    (a, b) => {
-      const asMinutes = (time: string | null) => {
-        if (!time) return 24 * 60;
-        const [hours, minutes] = time.split(":").map(Number);
-        return Number.isFinite(hours) && Number.isFinite(minutes)
-          ? hours * 60 + minutes
-          : 24 * 60;
-      };
-      return asMinutes(a.scheduledTime) - asMinutes(b.scheduledTime);
-    },
+    (a, b) => scheduledTimeSortValue(a.scheduledTime) - scheduledTimeSortValue(b.scheduledTime),
   )[0];
 }
 
@@ -385,18 +426,6 @@ export function PeptideTracker() {
     // Create date at midnight in local timezone
     const date = new Date(year, month, day, 0, 0, 0, 0);
     return date;
-  };
-
-  // "08:00" -> "8:00 AM" for the Weekly Schedule grid + Today's-doses row.
-  // T1 R3: TOTAL — only a canonical 24h "HH:MM" formats; anything else
-  // (legacy "05:08 AM"-style rows already in the DB, garbage) is returned
-  // unchanged. Never NaN, never a silently-wrong "5:00".
-  const formatTime12h = (time: string): string => {
-    if (!/^([01]?\d|2[0-3]):[0-5]\d$/.test(time)) return time;
-    const [h, m] = time.split(":").map(Number);
-    const period = h >= 12 ? "PM" : "AM";
-    const h12 = h % 12 || 12;
-    return `${h12}:${m.toString().padStart(2, "0")} ${period}`;
   };
 
   // Presentation-only header framing — "your daily protocol" greeting + date.
@@ -539,43 +568,24 @@ export function PeptideTracker() {
     [todayKey],
   );
 
-  // T2 FINDING 1: time can be null (server stores `time: time || null`) —
-  // never crash, just sort it to the end.
-  const parseTimeToMinutes = useCallback((time: string | null | undefined) => {
-    if (typeof time !== "string") return 24 * 60;
-    const [hoursStr, minutesStr] = time.split(":");
-    const hours = Number.parseInt(hoursStr, 10);
-    const minutes = Number.parseInt(minutesStr ?? "0", 10);
-    if (!Number.isFinite(hours)) return 24 * 60;
-    return hours * 60 + (Number.isFinite(minutes) ? minutes : 0);
-  }, []);
-
   const todaysDoseBuckets = useMemo(() => {
     const pending = todaysDoses
       .filter((dose) => !dose.completed)
       .sort(
         (a, b) =>
-          parseTimeToMinutes(a.scheduledTime) -
-          parseTimeToMinutes(b.scheduledTime),
+          scheduledTimeSortValue(a.scheduledTime) -
+          scheduledTimeSortValue(b.scheduledTime),
       );
 
-    // T2 FINDING 1: prefer the dose's own ISO timestamp (contract R2);
-    // parseTimeToMinutes is only evaluated as a fallback when actualTime is
-    // absent, so a null/invalid scheduledTime never reaches it eagerly.
+    // T2 FINDING 1: valid logged timestamps are newest-first. If those are
+    // absent/invalid, valid scheduled times fall back descending; invalid
+    // schedule data remains last instead of jumping ahead of a real dose.
     const completed = todaysDoses
       .filter((dose) => dose.completed)
-      .sort((a, b) => {
-        const timeA = a.actualTime
-          ? new Date(a.actualTime).getTime()
-          : parseTimeToMinutes(a.scheduledTime) * 60 * 1000;
-        const timeB = b.actualTime
-          ? new Date(b.actualTime).getTime()
-          : parseTimeToMinutes(b.scheduledTime) * 60 * 1000;
-        return timeB - timeA;
-      });
+      .sort(compareCompletedDoseEntries);
 
     return { pending, completed };
-  }, [todaysDoses, parseTimeToMinutes]);
+  }, [todaysDoses]);
 
   // Generate future doses based on active protocols
   const generateFutureDoses = useCallback(
@@ -1984,16 +1994,17 @@ export function PeptideTracker() {
       .replace(/\s+Package\s*$/i, "")
       .trim();
     const Icon = protocol?.administrationType === "oral" ? Pill : Syringe;
-    // T2 FINDING 1 (R2): null/invalid scheduledTime falls back to the
-    // dose's own ISO timestamp instead of rendering nothing.
-    const timeLabel = dose.scheduledTime
-      ? formatTime12h(dose.scheduledTime)
-      : dose.actualTime
-        ? new Date(dose.actualTime).toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-          })
-        : "";
+    const formatLoggedTime = (timestamp: string) =>
+      new Date(timestamp).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    const timeLabel = resolveDoseTimeLabel(
+      dose.scheduledTime,
+      dose.actualTime,
+      dose.completed,
+      formatLoggedTime,
+    );
 
     if (dose.completed) {
       const loggedAtLabel = dose.actualTime
@@ -2682,6 +2693,12 @@ export function PeptideTracker() {
                           const dose = record.sourceDose;
                           const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
                           const doseDate = doseDateSource ? new Date(doseDateSource) : null;
+                          const timeLabel = resolveDoseTimeLabel(
+                            record.scheduledTime,
+                            doseDateSource,
+                            true,
+                            (timestamp) => new Date(timestamp).toLocaleTimeString(),
+                          );
                           return (
                             <div
                               key={record.sourceDose?.id ? `${record.slotKey}::${record.sourceDose.id}` : record.slotKey}
@@ -2693,7 +2710,7 @@ export function PeptideTracker() {
                                     {record.protocolName}
                                   </h4>
                                   <p className="text-sm text-gray-400">
-                                    {dose?.dosage || "Dose logged"} - {record.scheduledTime || "Time not recorded"}
+                                    {dose?.dosage || "Dose logged"} - {timeLabel}
                                   </p>
                                 </div>
                                 <div className="text-right flex items-start gap-2">
@@ -2730,7 +2747,9 @@ export function PeptideTracker() {
                           completed sibling never hides them by matching a name. */}
                       {(doseHistoryByDate.get(selectedCalendarDay)?.records || [])
                         .filter((record) => record.status === "pending")
-                        .map((record) => (
+                        .map((record) => {
+                          const scheduledLabel = formatScheduledTime12h(record.scheduledTime);
+                          return (
                             <div
                               key={record.slotKey}
                               className="p-4 bg-blue-900/20 rounded-lg border border-blue-600/30"
@@ -2741,7 +2760,7 @@ export function PeptideTracker() {
                                     {record.protocolName}
                                   </h4>
                                   <p className="text-sm text-blue-300 mt-1">
-                                    Scheduled {record.scheduledTime ? `at ${formatTime12h(record.scheduledTime)}` : ""}
+                                    {scheduledLabel ? `Scheduled at ${scheduledLabel}` : "Time unavailable"}
                                   </p>
                                 </div>
                                 <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-400/40">
@@ -2749,7 +2768,8 @@ export function PeptideTracker() {
                                 </span>
                               </div>
                             </div>
-                          ))}
+                          );
+                        })}
 
                       {(doseHistoryByDate.get(selectedCalendarDay)?.records || []).length === 0 && (
                         <div className="text-center py-8 text-gray-400">
@@ -2868,8 +2888,8 @@ export function PeptideTracker() {
 
                               const doseTimes = isActiveDay
                                 ? parseDoseTimes(selectedProtocol.timing).map(
-                                    formatTime12h,
-                                  )
+                                    formatScheduledTime12h,
+                                  ).filter((time): time is string => time !== null)
                                 : [];
 
                               return (

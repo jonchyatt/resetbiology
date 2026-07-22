@@ -30,6 +30,10 @@ const {
   selectDoseEntrySlot,
   resolveDoseEntryIntent,
   matchCompletionSlot,
+  formatScheduledTime12h,
+  scheduledTimeSortValue,
+  compareCompletedDoseEntries,
+  resolveDoseTimeLabel,
 } = trackerMod.default ?? trackerMod;
 const {
   calculateDosage,
@@ -641,6 +645,84 @@ console.log("\n--- P0-04: off-schedule confirmation and calendar slot identity -
       && !trackerSource.includes("doseName === futureDose.protocolName")
       && (trackerSource.match(/matchCompletionSlot\(/g) || []).length >= 3,
     "P0-04 rendered Today and Calendar both call the same completion-slot matcher",
+  );
+}
+
+console.log("\n--- P0-06: malformed scheduled times stay unavailable or logged ---");
+{
+  [null, "", "   ", "morning", "8:00", "08:0", "25:99"].forEach((time) => {
+    assertEqual(
+      formatScheduledTime12h(time),
+      null,
+      `P0-06 invalid scheduled time '${String(time)}' never formats`,
+    );
+  });
+  assertEqual(formatScheduledTime12h("08:00"), "8:00 AM", "P0-06 canonical morning formats normally");
+  assertEqual(formatScheduledTime12h("20:00"), "8:00 PM", "P0-06 canonical evening formats normally");
+  assertEqual(
+    resolveDoseTimeLabel("25:99", "2026-07-21T20:15:00.000Z", true, (timestamp) => `logged ${timestamp}`),
+    "logged 2026-07-21T20:15:00.000Z",
+    "P0-06 completed invalid schedule uses its actual logged timestamp",
+  );
+  assertEqual(
+    resolveDoseTimeLabel("morning", undefined, false, () => "must not render"),
+    "Time unavailable",
+    "P0-06 pending invalid schedule without an actual timestamp stays calm",
+  );
+  assertEqual(
+    [
+      { id: "invalid", scheduledTime: "25:99" },
+      { id: "evening", scheduledTime: "20:00" },
+      { id: "missing", scheduledTime: null },
+      { id: "morning", scheduledTime: "08:00" },
+    ].sort((a, b) => scheduledTimeSortValue(a.scheduledTime) - scheduledTimeSortValue(b.scheduledTime))
+      .map((slot) => slot.id),
+    ["morning", "evening", "invalid", "missing"],
+    "P0-06 invalid scheduled times sort after every canonical time",
+  );
+  assertEqual(
+    selectDoseEntrySlot([
+      { id: "invalid", scheduledTime: "25:99" },
+      { id: "morning", scheduledTime: "08:00" },
+    ])?.id,
+    "morning",
+    "P0-06 dose entry uses the same invalid-last sort contract",
+  );
+  assertEqual(
+    [
+      { id: "invalid-schedule", actualTime: null, scheduledTime: "25:99" },
+      { id: "scheduled-morning", actualTime: null, scheduledTime: "08:00" },
+      { id: "actual-old", actualTime: "2026-07-21T08:00:00.000Z", scheduledTime: "25:99" },
+      { id: "invalid-actual", actualTime: "not-a-date", scheduledTime: "morning" },
+      { id: "scheduled-evening", actualTime: null, scheduledTime: "20:00" },
+      { id: "actual-new", actualTime: "2026-07-21T20:00:00.000Z", scheduledTime: "08:00" },
+    ].sort(compareCompletedDoseEntries).map((dose) => dose.id),
+    [
+      "actual-new",
+      "actual-old",
+      "scheduled-evening",
+      "scheduled-morning",
+      "invalid-schedule",
+      "invalid-actual",
+    ],
+    "P0-06 completed doses keep newest actual timestamps and valid schedule fallbacks ahead of invalid data",
+  );
+  assertEqual(
+    compareCompletedDoseEntries(
+      { actualTime: "2026-07-21T08:00:00.000Z", scheduledTime: "08:00" },
+      { actualTime: "2026-07-21T08:00:00.000Z", scheduledTime: "20:00" },
+    ),
+    0,
+    "P0-06 completed-dose comparator preserves stable ties",
+  );
+
+  const trackerSource = readFileSync(new URL("../src/components/Peptides/PeptideTracker.tsx", import.meta.url), "utf8");
+  assertTrue(
+    trackerSource.includes("resolveDoseTimeLabel(")
+      && trackerSource.includes("formatScheduledTime12h(record.scheduledTime)")
+      && trackerSource.includes(".sort(compareCompletedDoseEntries)")
+      && !trackerSource.includes("record.scheduledTime || \"Time not recorded\""),
+    "P0-06 Today and Calendar displays share the no-verbatim-time contract",
   );
 }
 
