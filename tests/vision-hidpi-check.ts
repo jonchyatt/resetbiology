@@ -12,6 +12,7 @@ type ImageSnapshot = { width: number; height: number; data: Uint8ClampedArray }
 class FakeContext {
   readonly drawCalls: Array<{ tile: FakeCanvas; x: number; y: number; width: number; height: number }> = []
   readonly transforms: Array<[number, number, number, number, number, number]> = []
+  readonly scales: Array<[number, number]> = []
   globalCompositeOperation: GlobalCompositeOperation = 'source-over'
   imageData: ImageSnapshot | undefined
   private transform = { a: 1, d: 1 }
@@ -23,6 +24,11 @@ class FakeContext {
 
   getTransform() {
     return { a: this.transform.a, d: this.transform.d }
+  }
+
+  scale(x: number, y: number) {
+    this.transform = { a: this.transform.a * x, d: this.transform.d * y }
+    this.scales.push([x, y])
   }
 
   createImageData(width: number, height: number) {
@@ -139,6 +145,13 @@ function drawAt(dprValue: number, opts: Parameters<typeof drawGaborPatch>[3], re
   return { canvas, call, tile: call.tile, image: call.tile.ctx.imageData! }
 }
 
+function mimicGuidedFrame(canvas: FakeCanvas): boolean {
+  const { width, height } = fitCanvasToElement(canvas as unknown as HTMLCanvasElement)
+  if (width <= 0 || height <= 0 || canvas.width <= 0 || canvas.height <= 0) return false
+  canvas.ctx.scale(width / 400, height / 300)
+  return true
+}
+
 function run() {
   const canvas = new FakeCanvas(100.25, 50.5)
   for (const [ratio, backingWidth, backingHeight] of [[1, 100, 51], [2, 201, 101], [3, 301, 152]] as const) {
@@ -171,6 +184,63 @@ function run() {
   assert.equal(canvas.height, 155)
   assert.deepEqual(canvas.ctx.transforms.at(-1), [304 / 101.25, 0, 0, 155 / 51.5, 0, 0], 'resize must use a fresh transform')
   assert.equal(canvas.cssWrites, 0)
+
+  for (const [invalidWidth, invalidHeight, expectedWidth, expectedHeight] of [
+    [0, 50, 0, 100],
+    [50, 0, 100, 0],
+    [Number.NaN, 50, 0, 100],
+    [50, Number.POSITIVE_INFINITY, 100, 0],
+    [Number.NEGATIVE_INFINITY, 50, 0, 100],
+    [-1, 50, 0, 100],
+  ] as const) {
+    const invalidCanvas = new FakeCanvas(20, 20)
+    invalidCanvas.width = 99
+    invalidCanvas.height = 99
+    invalidCanvas.rect = { width: invalidWidth, height: invalidHeight }
+    dpr = 2
+    const transformCount = invalidCanvas.ctx.transforms.length
+    assert.deepEqual(
+      fitCanvasToElement(invalidCanvas as unknown as HTMLCanvasElement),
+      { width: Math.max(0, Number.isFinite(invalidWidth) ? invalidWidth : 0), height: Math.max(0, Number.isFinite(invalidHeight) ? invalidHeight : 0), dpr: 2 },
+      'invalid logical dimensions must be sanitized to finite nonnegative values',
+    )
+    assert.equal(invalidCanvas.width, expectedWidth, 'invalid width must clear stale backing safely')
+    assert.equal(invalidCanvas.height, expectedHeight, 'invalid height must clear stale backing safely')
+    assert.equal(invalidCanvas.ctx.transforms.length, transformCount, 'zero logical/backing dimensions must not set an invalid transform')
+  }
+
+  const subpixelCanvas = new FakeCanvas(1, 1)
+  dpr = 0.1
+  const subpixelTransformCount = subpixelCanvas.ctx.transforms.length
+  assert.deepEqual(fitCanvasToElement(subpixelCanvas as unknown as HTMLCanvasElement), { width: 1, height: 1, dpr: 0.1 })
+  assert.equal(subpixelCanvas.width, 0)
+  assert.equal(subpixelCanvas.height, 0)
+  assert.equal(subpixelCanvas.ctx.transforms.length, subpixelTransformCount, 'zero backing dimensions must not set an invalid transform')
+  dpr = Number.NaN
+  assert.throws(() => fitCanvasToElement(subpixelCanvas as unknown as HTMLCanvasElement), RangeError, 'invalid DPR must continue to throw')
+
+  const guidedCanvas = new FakeCanvas(800, 600)
+  dpr = 1
+  assert.equal(mimicGuidedFrame(guidedCanvas), true)
+  dpr = 2
+  assert.equal(mimicGuidedFrame(guidedCanvas), true)
+  assert.equal(guidedCanvas.width, 1600, 'Guided RAF must refit backing width after a DPR-only change')
+  assert.equal(guidedCanvas.height, 1200, 'Guided RAF must refit backing height after a DPR-only change')
+  assert.deepEqual(guidedCanvas.ctx.transforms.slice(-2), [[1, 0, 0, 1, 0, 0], [2, 0, 0, 2, 0, 0]], 'each Guided frame must reset before design scaling')
+  assert.deepEqual(guidedCanvas.ctx.scales, [[2, 2], [2, 2]], 'Guided RAF must apply the unchanged 400x300 design scale after each fresh fit')
+  assert.deepEqual(guidedCanvas.ctx.getTransform(), { a: 4, d: 4 }, 'Guided design scale must not cumulatively multiply prior frames')
+
+  __resetGaborCacheForTest()
+  const invalidGaborCanvas = new FakeCanvas(80, 80)
+  dpr = 1
+  fitCanvasToElement(invalidGaborCanvas as unknown as HTMLCanvasElement)
+  const tilesBeforeInvalidGabor = createdTiles.length
+  const drawsBeforeInvalidGabor = invalidGaborCanvas.ctx.drawCalls.length
+  for (const size of [0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+    drawGaborPatch(invalidGaborCanvas.ctx as unknown as CanvasRenderingContext2D, 40, 40, { size })
+  }
+  assert.equal(createdTiles.length, tilesBeforeInvalidGabor, 'invalid Gabor sizes must not allocate cache tiles')
+  assert.equal(invalidGaborCanvas.ctx.drawCalls.length, drawsBeforeInvalidGabor, 'invalid Gabor sizes must not draw')
 
   const dprOne = drawAt(1, { size: 40, orientation: 33, frequency: 4.5, contrast: 0.6, phase: 0 })
   const dprTwo = drawAt(2, { size: 40, orientation: 33, frequency: 4.5, contrast: 0.6, phase: 0 }, false)
@@ -314,6 +384,8 @@ function run() {
   assert.match(gaborPatch, /width=\{size\}/)
   assert.match(gaborPatch, /height=\{size\}/)
   assert.match(gaborPatch, /style=\{\{ backgroundColor, width: size, height: size \}\}/)
+  assert.match(guidedExercise, /const animate = \(\) => \{\s+const \{ width, height \} = fitCanvasToElement\(canvas\)/)
+  assert.match(guidedExercise, /width <= 0 \|\| height <= 0 \|\| canvas\.width <= 0 \|\| canvas\.height <= 0/)
   assert.match(guidedExercise, /ctx\.scale\(width \/ 400, height \/ 300\)/)
   assert.doesNotMatch(guidedExercise, /width=\{400\}|height=\{300\}/, 'GuidedExercise must not retain a CSS-resolution backing store')
 

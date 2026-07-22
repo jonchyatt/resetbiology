@@ -17,10 +17,14 @@ export function fitCanvasToElement(canvas: HTMLCanvasElement): { width: number; 
   if (!Number.isFinite(dpr) || dpr <= 0) throw new RangeError('devicePixelRatio must be finite and positive')
 
   const rect = canvas.getBoundingClientRect()
-  const width = rect.width
-  const height = rect.height
-  const backingWidth = Math.round(width * dpr)
-  const backingHeight = Math.round(height * dpr)
+  const width = Number.isFinite(rect.width) && rect.width > 0 ? rect.width : 0
+  const height = Number.isFinite(rect.height) && rect.height > 0 ? rect.height : 0
+  const backingDimension = (logicalDimension: number) => {
+    const scaled = logicalDimension * dpr
+    return Number.isFinite(scaled) && scaled > 0 ? Math.round(scaled) : 0
+  }
+  const backingWidth = backingDimension(width)
+  const backingHeight = backingDimension(height)
   const dprChanged = fittedCanvasDpr.get(canvas) !== dpr
 
   // A DPR change must reset the backing store even where rounding leaves the
@@ -32,7 +36,9 @@ export function fitCanvasToElement(canvas: HTMLCanvasElement): { width: number; 
   fittedCanvasDpr.set(canvas, dpr)
 
   const ctx = canvas.getContext('2d')
-  if (ctx) ctx.setTransform(backingWidth / width, 0, 0, backingHeight / height, 0, 0)
+  if (ctx && width > 0 && height > 0 && backingWidth > 0 && backingHeight > 0) {
+    ctx.setTransform(backingWidth / width, 0, 0, backingHeight / height, 0, 0)
+  }
   return { width, height, dpr }
 }
 
@@ -169,6 +175,8 @@ export function drawGaborPatch(
   y: number,
   opts: GaborOpts,
 ): void {
+  if (!Number.isFinite(opts.size) || opts.size <= 0) return
+
   const transform = ctx.getTransform?.()
   const backingScaleX = Math.abs(transform?.a ?? 1) || 1
   const backingScaleY = Math.abs(transform?.d ?? 1) || 1

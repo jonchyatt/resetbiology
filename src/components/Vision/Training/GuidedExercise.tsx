@@ -151,13 +151,18 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const { width, height } = fitCanvasToElement(canvas)
-    ctx.scale(width / 400, height / 300)
     const centerX = 200
     const centerY = 150
     let startTime = Date.now()
 
     const animate = () => {
+      const { width, height } = fitCanvasToElement(canvas)
+      if (width <= 0 || height <= 0 || canvas.width <= 0 || canvas.height <= 0) {
+        animationRef.current = requestAnimationFrame(animate)
+        return
+      }
+      ctx.scale(width / 400, height / 300)
+
       const elapsed = Date.now() - startTime
       const progress = (elapsed % pattern.speed) / pattern.speed
 
