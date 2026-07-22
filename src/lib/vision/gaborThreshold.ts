@@ -64,6 +64,8 @@ export interface GaborThresholdState {
   readonly lastEffectiveDirection: Exclude<GaborStepDirection, 0>
     | null
   readonly reversalContrastsPct: readonly number[]
+  readonly completed: boolean
+  readonly lockedThresholdPct: number | null
 }
 
 export interface GaborThresholdObservation {
@@ -90,7 +92,7 @@ export type GaborThresholdEstimate =
     }
   | {
       readonly valid: false
-      readonly reason: 'too-few-adaptive-trials' | 'too-few-reversals'
+      readonly reason: 'too-few-adaptive-trials' | 'too-few-reversals' | 'threshold-not-locked'
     }
 
 export interface GaborLocalizationState {
@@ -157,6 +159,8 @@ export function createGaborThresholdState(
     consecutiveCorrect: 0,
     lastEffectiveDirection: null,
     reversalContrastsPct: [],
+    completed: false,
+    lockedThresholdPct: null,
   }
 }
 
@@ -273,6 +277,17 @@ export function updateGaborThreshold(
   observation: GaborThresholdObservation,
 ): GaborThresholdTransition {
   const presentedContrastPct = state.contrastPct
+  if (state.completed) {
+    return {
+      state,
+      acceptedForStaircase: false,
+      presentedContrastPct,
+      requestedDirection: 0,
+      effectiveDirection: 0,
+      stepLog10: null,
+      reversalContrastPct: null,
+    }
+  }
   if (!observation.adaptive || observation.response === 'timeout' || observation.response === 'lapse') {
     return {
       state,
@@ -299,8 +314,9 @@ export function updateGaborThreshold(
   }
 
   if (requestedDirection === 0) {
+    const nextState = lockGaborThresholdIfEligible({ ...state, adaptiveTrials, consecutiveCorrect })
     return {
-      state: { ...state, adaptiveTrials, consecutiveCorrect },
+      state: nextState,
       acceptedForStaircase: true,
       presentedContrastPct,
       requestedDirection,
@@ -323,8 +339,9 @@ export function updateGaborThreshold(
     : requestedDirection
 
   if (effectiveDirection === 0) {
+    const nextState = lockGaborThresholdIfEligible({ ...state, adaptiveTrials, consecutiveCorrect })
     return {
-      state: { ...state, adaptiveTrials, consecutiveCorrect },
+      state: nextState,
       acceptedForStaircase: true,
       presentedContrastPct,
       requestedDirection,
@@ -338,17 +355,18 @@ export function updateGaborThreshold(
     && state.lastEffectiveDirection !== effectiveDirection
   const reversalContrastPct = isReversal ? presentedContrastPct : null
 
+  const nextState = lockGaborThresholdIfEligible({
+    ...state,
+    contrastPct,
+    adaptiveTrials,
+    consecutiveCorrect,
+    lastEffectiveDirection: effectiveDirection,
+    reversalContrastsPct: isReversal
+      ? [...state.reversalContrastsPct, presentedContrastPct]
+      : state.reversalContrastsPct,
+  })
   return {
-    state: {
-      ...state,
-      contrastPct,
-      adaptiveTrials,
-      consecutiveCorrect,
-      lastEffectiveDirection: effectiveDirection,
-      reversalContrastsPct: isReversal
-        ? [...state.reversalContrastsPct, presentedContrastPct]
-        : state.reversalContrastsPct,
-    },
+    state: nextState,
     acceptedForStaircase: true,
     presentedContrastPct,
     requestedDirection,
@@ -365,16 +383,28 @@ export function getGaborThresholdEstimate(state: GaborThresholdState): GaborThre
   if (state.reversalContrastsPct.length < GABOR_THRESHOLD_PROTOCOL.reversalsForThreshold) {
     return { valid: false, reason: 'too-few-reversals' }
   }
+  if (!state.completed || state.lockedThresholdPct === null) {
+    return { valid: false, reason: 'threshold-not-locked' }
+  }
 
   const usableReversals = state.reversalContrastsPct.slice(GABOR_THRESHOLD_PROTOCOL.discardedReversals)
   const reversalContrastsPct = usableReversals.slice(-GABOR_THRESHOLD_PROTOCOL.averagedReversals)
-  const contrastThresholdPct = Math.pow(
-    10,
-    reversalContrastsPct.reduce((sum, value) => sum + Math.log10(value), 0)
-      / reversalContrastsPct.length,
-  )
 
-  return { valid: true, contrastThresholdPct, reversalContrastsPct }
+  return { valid: true, contrastThresholdPct: state.lockedThresholdPct, reversalContrastsPct }
+}
+
+function lockGaborThresholdIfEligible(state: GaborThresholdState): GaborThresholdState {
+  if (state.completed
+    || state.adaptiveTrials < GABOR_THRESHOLD_PROTOCOL.adaptiveTrialsForThreshold
+    || state.reversalContrastsPct.length < GABOR_THRESHOLD_PROTOCOL.reversalsForThreshold) return state
+
+  const usableReversals = state.reversalContrastsPct.slice(GABOR_THRESHOLD_PROTOCOL.discardedReversals)
+  const finalSix = usableReversals.slice(-GABOR_THRESHOLD_PROTOCOL.averagedReversals)
+  return {
+    ...state,
+    completed: true,
+    lockedThresholdPct: geometricMean(finalSix),
+  }
 }
 
 function priorFallbackReason(

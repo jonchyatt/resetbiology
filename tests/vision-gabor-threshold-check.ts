@@ -163,6 +163,8 @@ assert.equal(measurementAfterLocalization.adaptiveTrials, 0)
 assert.equal(measurementAfterLocalization.consecutiveCorrect, 0)
 assert.equal(measurementAfterLocalization.lastEffectiveDirection, null)
 assert.deepEqual(measurementAfterLocalization.reversalContrastsPct, [])
+assert.equal(measurementAfterLocalization.completed, false)
+assert.equal(measurementAfterLocalization.lockedThresholdPct, null)
 assert.deepEqual(getGaborThresholdEstimate(measurementAfterLocalization), {
   valid: false,
   reason: 'too-few-adaptive-trials',
@@ -186,6 +188,8 @@ if (warmStart.mode === 'warm-start') {
   assert.equal(warmStart.measurement.consecutiveCorrect, 0)
   assert.equal(warmStart.measurement.lastEffectiveDirection, null)
   assert.deepEqual(warmStart.measurement.reversalContrastsPct, [])
+  assert.equal(warmStart.measurement.completed, false)
+  assert.equal(warmStart.measurement.lockedThresholdPct, null)
 }
 
 for (const [prior, reason] of [
@@ -222,46 +226,100 @@ assert.deepEqual(getGaborThresholdEstimate(tooEarly), { valid: false, reason: 't
 assert.deepEqual(getGaborThresholdEstimate(tooFewReversals), { valid: false, reason: 'too-few-reversals' })
 assert.equal('contrastThresholdPct' in getGaborThresholdEstimate(tooEarly), false)
 
+const thresholdFixtureValue = Math.pow(40 * 20 * 10 * 5 * 2.5 * 1.25, 1 / 6)
 const thresholdFixture: GaborThresholdState = {
   ...createGaborThresholdState(),
   adaptiveTrials: 24,
   reversalContrastsPct: reversalFixture,
+  completed: true,
+  lockedThresholdPct: thresholdFixtureValue,
 }
 const fixtureEstimate = getGaborThresholdEstimate(thresholdFixture)
 assert.equal(fixtureEstimate.valid, true)
 if (fixtureEstimate.valid) {
-  const expected = Math.pow(40 * 20 * 10 * 5 * 2.5 * 1.25, 1 / 6)
-  close(fixtureEstimate.contrastThresholdPct, expected, 1e-12, 'six-reversal geometric mean')
+  close(fixtureEstimate.contrastThresholdPct, thresholdFixtureValue, 1e-12, 'public result returns locked threshold')
   assert.deepEqual(fixtureEstimate.reversalContrastsPct, reversalFixture.slice(2))
 }
 
-const elevenReversals = [90, 80, 1, 2, 4, 8, 16, 32, 64, 100, 50]
-const lateEstimate = getGaborThresholdEstimate({
+const unlockedEligibleFixture: GaborThresholdState = {
   ...createGaborThresholdState(),
-  adaptiveTrials: 60,
-  reversalContrastsPct: elevenReversals,
-})
-assert.equal(lateEstimate.valid, true)
-if (lateEstimate.valid) {
-  const actualReversalsSixThroughEleven = elevenReversals.slice(5)
-  const rejectedReversalsThreeThroughEight = elevenReversals.slice(2, 8)
+  adaptiveTrials: 24,
+  reversalContrastsPct: reversalFixture,
+}
+assert.deepEqual(getGaborThresholdEstimate(unlockedEligibleFixture), {
+  valid: false,
+  reason: 'threshold-not-locked',
+}, 'public result never computes an unlocked threshold')
+
+// Reach the production terminal through the public updater. CCC-I repeats
+// establish eleven real reversals by response 24, so completion and the
+// adaptive-trial minimum arrive on the same accepted response.
+let productionTerminal = createGaborThresholdState()
+let firstValidResponseIndex = 0
+while (!productionTerminal.completed && firstValidResponseIndex < 60) {
+  const response = firstValidResponseIndex % 4 === 3 ? 'incorrect' : 'correct'
+  firstValidResponseIndex += 1
+  productionTerminal = updateGaborThreshold(productionTerminal, { response, adaptive: true }).state
+}
+assert.equal(firstValidResponseIndex, 24)
+assert.equal(productionTerminal.adaptiveTrials, 24)
+assert.equal(productionTerminal.reversalContrastsPct.length, 11)
+assert.equal(productionTerminal.completed, true)
+assert.notEqual(productionTerminal.lockedThresholdPct, null)
+
+const terminalEstimate = getGaborThresholdEstimate(productionTerminal)
+assert.equal(terminalEstimate.valid, true)
+if (terminalEstimate.valid) {
+  const actualReversalsSixThroughEleven = productionTerminal.reversalContrastsPct.slice(5)
+  const rejectedReversalsThreeThroughEight = productionTerminal.reversalContrastsPct.slice(2, 8)
   assert.deepEqual(
-    lateEstimate.reversalContrastsPct,
+    terminalEstimate.reversalContrastsPct,
     actualReversalsSixThroughEleven,
-    'an overrun estimate uses actual reversals 6-11, not frozen reversals 3-8',
+    'the locked estimate uses actual reversals 6-11, not frozen reversals 3-8',
   )
   close(
-    lateEstimate.contrastThresholdPct,
+    terminalEstimate.contrastThresholdPct,
     Math.pow(actualReversalsSixThroughEleven.reduce((product, value) => product * value, 1), 1 / 6),
     1e-12,
-    'overrun threshold uses the final six usable reversals',
+    'production terminal locks the final six usable reversals',
   )
+  assert.equal(terminalEstimate.contrastThresholdPct, productionTerminal.lockedThresholdPct)
   assert.notEqual(
-    lateEstimate.contrastThresholdPct,
+    terminalEstimate.contrastThresholdPct,
     Math.pow(rejectedReversalsThreeThroughEight.reduce((product, value) => product * value, 1), 1 / 6),
     'asymmetric fixture distinguishes latest-six from first-six formulas',
   )
 }
+
+const terminalSnapshot = structuredClone(productionTerminal)
+const lockedThresholdPct = productionTerminal.lockedThresholdPct
+for (const [label, observation] of [
+  ['adaptive correct', { response: 'correct', adaptive: true }],
+  ['adaptive incorrect', { response: 'incorrect', adaptive: true }],
+  ['adaptive lapse', { response: 'lapse', adaptive: true }],
+  ['adaptive timeout', { response: 'timeout', adaptive: true }],
+  ['easy nonadaptive', { response: 'incorrect', adaptive: false }],
+  ['transfer nonadaptive', { response: 'correct', adaptive: false }],
+  ['flanker nonadaptive', { response: 'incorrect', adaptive: false }],
+  ['catch nonadaptive', { response: 'incorrect', adaptive: false }],
+] as const) {
+  const transition = updateGaborThreshold(productionTerminal, observation)
+  assert.equal(transition.acceptedForStaircase, false, `${label} is rejected after completion`)
+  assert.equal(transition.state, productionTerminal, `${label} preserves exact state identity`)
+  assert.deepEqual(transition.state, terminalSnapshot, `${label} leaves every terminal field unchanged`)
+  assert.equal(getGaborThresholdEstimate(transition.state).valid, true)
+  assert.equal(transition.state.lockedThresholdPct, lockedThresholdPct)
+}
+
+for (let remaining = firstValidResponseIndex; remaining < 48; remaining += 1) {
+  const transition = updateGaborThreshold(productionTerminal, {
+    response: remaining % 2 ? 'correct' : 'incorrect',
+    adaptive: true,
+  })
+  assert.equal(transition.acceptedForStaircase, false)
+  assert.equal(transition.state, productionTerminal)
+}
+assert.deepEqual(productionTerminal, terminalSnapshot, 'feeding the remaining response budget cannot move the lock')
 
 const asymmetricEstimateFixture = [5, 10, 40]
 const correctMedianPerRunError = medianAbsoluteLog10Error(asymmetricEstimateFixture, 10)
