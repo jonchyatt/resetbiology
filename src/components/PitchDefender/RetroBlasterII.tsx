@@ -2306,8 +2306,13 @@ export default function RetroBlasterII() {
       )}
       {!isCeremony && (
       <div className="mt-3 flex gap-3 flex-wrap justify-center pb-3">
-        <button onClick={replayActiveNote} disabled={replayLocked}
-          onMouseDown={event => { if (answerMaskActive) event.preventDefault() }}
+        <button onClick={event => {
+          replayActiveNote()
+          if (answerMaskActive && event.detail > 0) {
+            safeTryFocusRef.current?.focus({ preventScroll: true })
+          }
+        }} disabled={replayLocked}
+          onPointerDown={event => { if (answerMaskActive) event.preventDefault() }}
           aria-label={replayLocked ? 'Signal check replay locked until answer' : 'Play target note'}
           className="px-4 py-2 text-xs font-bold tracking-widest active:scale-95 transition-all disabled:cursor-not-allowed disabled:opacity-60"
           style={{ background: 'rgba(255,227,76,0.15)', color: '#ffe34c', border: '1px solid #ffe34c' }}>

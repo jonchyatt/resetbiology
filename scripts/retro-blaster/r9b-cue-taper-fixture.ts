@@ -228,7 +228,8 @@ async function main(): Promise<void> {
       "ev.key === ' '",
       "ev.key === 'r'",
       'tone-replay-answer-neutral',
-      'onMouseDown={event => { if (answerMaskActive) event.preventDefault() }}',
+      'onPointerDown={event => { if (answerMaskActive) event.preventDefault() }}',
+      'answerMaskActive && event.detail > 0',
     ]))
   await add('R-30', 'shell-contract', 'Full Help uses otherwise-unbound H and submits no answer', 'RED', 'source-backed', () =>
     passIf(source.shell, ['FULL HELP [H]', "ev.key === 'h'", 'requestFullCueHelp']))
