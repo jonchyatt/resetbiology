@@ -706,6 +706,33 @@ assert.equal(catchFalseAlarm.measurement, catchMeasurement)
 assert.equal(catchCorrectRejection.measurement, catchMeasurement)
 assert.equal(catchLapse.measurement, catchMeasurement)
 
+const finishAfterCatch = (state: GaborProductionCoordinator) => driveCoordinator(
+  state,
+  (coordinator, adaptiveIndex) => coordinator.pending!.stage === 'measurement'
+    && coordinator.pending!.presentation.trial.adaptive
+    && adaptiveIndex % 4 === 3
+    ? incorrectResponseForPending(coordinator)
+    : correctResponseForPending(coordinator),
+)
+const falseAlarmTerminal = finishAfterCatch(catchFalseAlarm)
+const correctRejectionTerminal = finishAfterCatch(catchCorrectRejection)
+assert.equal(falseAlarmTerminal.terminal?.reason, 'valid')
+assert.equal(correctRejectionTerminal.terminal?.reason, 'valid')
+assert.equal(
+  falseAlarmTerminal.terminal?.metrics.contrastThresholdPct,
+  correctRejectionTerminal.terminal?.metrics.contrastThresholdPct,
+  'catch false alarms never change the measured threshold',
+)
+assert.equal(
+  falseAlarmTerminal.terminal?.metrics.measurementAccuracyPct,
+  correctRejectionTerminal.terminal?.metrics.measurementAccuracyPct,
+  'catch false alarms never change measurement-only accuracy',
+)
+assert.ok(
+  falseAlarmTerminal.terminal!.scorePct < correctRejectionTerminal.terminal!.scorePct,
+  'catch false alarms lower the points-driving motivational score',
+)
+
 const localizationNoPatternPending = presentNextGaborExposure(
   createGaborProductionCoordinator({ seed: 'local-no-pattern', prior: null }),
   { timeCapReached: false },

@@ -1047,7 +1047,7 @@ function terminalizeGaborCoordinator(
     terminal: {
       reason,
       metrics,
-      scorePct: progress.measurementResponses > 0 ? measurementAccuracyPct : progress.accuracyPct,
+      scorePct: progress.accuracyPct,
     },
   }
 }
