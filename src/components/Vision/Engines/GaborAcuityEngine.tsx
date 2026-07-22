@@ -71,6 +71,15 @@ function presentActiveCoordinator(active: ActiveCoordinator, timeCapReached: boo
       }
 }
 
+// Spectates the mounted stimulus identity rather than tracking its own
+// counter, so trial and feedback phases can never disagree on the number.
+function getGaborPreviewTrialNumber(active: ActiveCoordinator): number | null {
+  if (active.mode !== 'preview') return null
+  const { state } = active
+  const mounted = state.pending ? state.pending.exposureIndex + 1 : state.counters.trials
+  return Math.min(state.trials.length, Math.max(1, mounted))
+}
+
 function respondToActiveCoordinator(
   active: ActiveCoordinator,
   response: GaborPresentationResponse,
@@ -580,6 +589,7 @@ export default function GaborAcuityEngine({
 
   const feedbackText = feedback === 'correct' ? 'Correct' : feedback === 'timeout' ? 'No response recorded' : feedback === 'wrong' ? 'Not quite' : ''
   const feedbackClass = feedback === 'correct' ? 'text-secondary-400' : feedback === 'timeout' ? 'text-gray-300' : 'text-yellow-300'
+  const previewTrialNumber = getGaborPreviewTrialNumber(coordinatorRef.current)
   const guidedTerminal = coordinatorRef.current.mode === 'guided'
     ? coordinatorRef.current.state.terminal
     : null
@@ -613,9 +623,13 @@ export default function GaborAcuityEngine({
         <div>
           <p id={preview ? titleId : undefined} className="text-sm font-semibold text-white">{exercise.title}</p>
           <p className="text-xs text-gray-300">
-            {phase === 'trial' || phase === 'feedback'
-              ? 'Find the stripe direction'
-              : preview ? 'Easy preview · 12 trials' : 'Guided contrast-threshold task'}
+            {preview
+              ? (phase === 'trial' || phase === 'feedback' || phase === 'paused')
+                ? `Trial ${previewTrialNumber} of 12`
+                : 'Easy preview · 12 trials'
+              : phase === 'trial' || phase === 'feedback'
+                ? 'Find the stripe direction'
+                : 'Guided contrast-threshold task'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -686,7 +700,7 @@ export default function GaborAcuityEngine({
                 <>
                   <h2 className="text-2xl font-bold text-white">Practice complete</h2>
                   <p className="text-sm leading-relaxed text-gray-300">
-                    Practice complete. This easy preview did not change your saved threshold or today&apos;s hard-session status.
+                    This easy preview did not change your saved threshold or today&apos;s hard-session status.
                   </p>
                   <button onClick={continueAfterPreviewResult} className={`flex min-h-11 w-full items-center justify-center rounded-lg bg-primary-500 px-6 py-3 font-semibold text-white hover:bg-primary-600 ${focusRing}`}>
                     Back to Vision Library

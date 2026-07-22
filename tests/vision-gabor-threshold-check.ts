@@ -556,8 +556,25 @@ while (!easyPreview.terminal) {
   if (presented.pending!.presentation.trial.kind === 'transfer') {
     presentedPreviewFrequencies.push(presented.pending!.presentation.spatialFrequencyCyclesPerPatch!)
   }
+
+  // The engine's preview trial number is a spectator of this mounted identity:
+  // it must sit within 1..12 and agree with the response counter on both sides
+  // of the response, or the header's "Trial N of 12" could disagree with itself.
+  const mountedTrialNumber = presented.pending!.exposureIndex + 1
+  assert.ok(mountedTrialNumber >= 1 && mountedTrialNumber <= 12, 'mounted preview trial number stays within 1..12')
+  assert.equal(
+    mountedTrialNumber,
+    presented.counters.trials + 1,
+    'mounted trial number is one ahead of the pre-response counter',
+  )
+
   const response = correctEasyPreviewResponse(presented)
   const responded = applyGaborEasyPreviewResponse(presented, response)
+  assert.equal(
+    responded.counters.trials,
+    mountedTrialNumber,
+    'post-response counter agrees with the mounted trial number, so trial and feedback never disagree',
+  )
   assert.equal(
     applyGaborEasyPreviewResponse(responded, response),
     responded,
@@ -1150,7 +1167,17 @@ assert.match(engineSource, /onComplete\(resultRef\.current\)/)
 assert.match(engineSource, /Contrast threshold: \{thresholdPct\.toFixed\(1\)\}%/)
 assert.match(engineSource, /Lower is better — this is the faintest contrast reliably identified in today&apos;s task\./)
 assert.match(engineSource, /No reliable threshold this time/)
-assert.match(engineSource, /Practice complete\. This easy preview did not change your saved threshold or today&apos;s hard-session status\./)
+assert.match(engineSource, /<h2 className="text-2xl font-bold text-white">Practice complete<\/h2>/, 'preview completion heading remains')
+assert.match(
+  engineSource,
+  /This easy preview did not change your saved threshold or today&apos;s hard-session status\./,
+  'preview completion body uses the exact approved copy',
+)
+assert.doesNotMatch(
+  engineSource,
+  /Practice complete\. This easy preview/,
+  'preview completion body must not repeat the heading text',
+)
 assert.match(engineSource, /Back to Vision Library/)
 assert.match(engineSource, /!preview && \(/, 'the three-minute progress bar is guided-only')
 assert.doesNotMatch(engineSource, /classifyGaborResponse|updateGaborThreshold|resolveGaborStopReason|getGaborThresholdEstimate/)
@@ -1184,6 +1211,60 @@ assert.match(sessionRunnerSource, /if \(isGaborResult\(result\)\)/, 'session run
 assert.doesNotMatch(sessionRunnerSource, /encouragementFor[^}]*isGaborResult|isGaborResult[^}]*encouragementFor/, 'praise functions must never fire for Gabor')
 assert.match(sessionRunnerSource, /!isGaborResult\(result\)[\s\S]{0,80}result\.score/, 'per-row score suppressed for Gabor in report')
 assert.match(progressDashboardSource, /Lower means fainter patterns were identified/, 'progress dashboard explains lower-is-better for contrastThresholdPct')
+
+// P1-A3.1: preview progress is derived from mounted stimulus state, never a
+// mutable counter, clamped to the preview trial length, and shown through
+// trial/feedback/paused; the guided progress footer stays guided-only.
+assert.match(
+  engineSource,
+  /state\.pending \? state\.pending\.exposureIndex \+ 1 : state\.counters\.trials/,
+  'preview progress derives from mounted exposureIndex or the response counter, not an independent counter',
+)
+assert.match(
+  engineSource,
+  /Math\.min\(state\.trials\.length, Math\.max\(1, mounted\)\)/,
+  'preview progress clamps between 1 and the preview trial length',
+)
+assert.doesNotMatch(
+  engineSource,
+  /previewTrialNumber.*useState|useState.*previewTrialNumber|previewTrialNumber\.current \+=|setPreviewTrialNumber/,
+  'preview progress must not be a mutable counter',
+)
+assert.match(
+  engineSource,
+  /phase === 'trial' \|\| phase === 'feedback' \|\| phase === 'paused'\)[\s\S]{0,40}Trial \$\{previewTrialNumber\} of 12/,
+  'preview header renders Trial N of 12 during trial, feedback, and paused phases',
+)
+assert.match(engineSource, /!preview && \(/, 'the three-minute guided progress footer stays guided-only')
+
+// P1-A3.1: both preview entry paths close normally without inflating the
+// local completedToday counter; genuine quick-practice completion is untouched.
+const previewOnCompleteClosures = [...quickPracticeSource.matchAll(/onComplete=\{\(\) => ([^}]*)\}/g)]
+assert.equal(previewOnCompleteClosures.length, 2, 'exactly two preview onComplete closures exist')
+assert.ok(
+  previewOnCompleteClosures.every(([, body]) => !body.includes('setCompletedToday')),
+  'neither preview onComplete closure appends to completedToday',
+)
+assert.match(
+  previewOnCompleteClosures[0][1],
+  /setSelectedExercise\(null\)/,
+  'the selected-exercise preview closure still closes via setSelectedExercise(null)',
+)
+assert.match(
+  previewOnCompleteClosures[1][1],
+  /setShowGaborPreview\(false\)/,
+  'the featured preview closure still closes via setShowGaborPreview(false)',
+)
+assert.match(
+  quickPracticeSource,
+  /const handleExerciseComplete = \(\) => \{[\s\S]{0,120}setCompletedToday\(prev => \[\.\.\.prev, selectedExercise\.id\]\)[\s\S]{0,60}setSelectedExercise\(null\)/,
+  'genuine quick-practice completion still appends selectedExercise.id to completedToday and closes the selected exercise',
+)
+assert.equal(
+  (quickPracticeSource.match(/setCompletedToday/g) ?? []).length,
+  2,
+  'setCompletedToday is only declared and called once, inside handleExerciseComplete',
+)
 
 console.log('GABOR_THRESHOLD_V1 checks passed.')
 console.log('Observer: four-choice log10-logistic; guess=25%, lapse=2%, slope=8/decade; p(true threshold)=79.3700526%.')

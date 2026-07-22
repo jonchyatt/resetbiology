@@ -68,10 +68,7 @@ export default function QuickPractice() {
             preview
             exercise={previewExercise}
             prescription={resolvePrescription(previewExercise.id, 0)}
-            onComplete={() => {
-              setCompletedToday(prev => [...prev, 'gabor-contrast'])
-              setSelectedExercise(null)
-            }}
+            onComplete={() => setSelectedExercise(null)}
             onExit={() => setSelectedExercise(null)}
           />
         </div>
@@ -114,10 +111,7 @@ export default function QuickPractice() {
           preview
           exercise={previewExercise}
           prescription={resolvePrescription(previewExercise.id, 0)}
-          onComplete={() => {
-            setCompletedToday(prev => [...prev, 'gabor-contrast'])
-            setShowGaborPreview(false)
-          }}
+          onComplete={() => setShowGaborPreview(false)}
           onExit={() => setShowGaborPreview(false)}
         />
       </div>
