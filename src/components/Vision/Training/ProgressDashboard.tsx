@@ -235,6 +235,9 @@ function MetricCard({ metricKey, points }: { metricKey: string; points: MetricPo
         {last.value}
         {meta.unit ? <span className="text-sm text-gray-400 ml-1">{meta.unit}</span> : null}
       </p>
+      {metricKey === 'contrastThresholdPct' && (
+        <p className="text-xs text-gray-400 mb-2">Lower means fainter patterns were identified.</p>
+      )}
       <Sparkline values={values} color={badge.color} height={90} />
       <div className="flex justify-between text-xs text-gray-500 mt-1">
         <span>{formatShortDate(points[0].date)}</span>

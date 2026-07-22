@@ -37,11 +37,13 @@ export default function QuickPractice() {
   const [completedToday, setCompletedToday] = useState<string[]>([])
 
   const filteredExercises = filter === 'all'
-    ? visionExercises
-    : visionExercises.filter(e => e.category === filter)
+    ? visionExercises.filter(e => e.id !== 'gabor-contrast')
+    : visionExercises.filter(e => e.category === filter && e.id !== 'gabor-contrast')
 
-  // Group exercises by category for better organization
-  const exercisesByCategory = visionExercises.reduce((acc, exercise) => {
+  // Group exercises by category for better organization (gabor-contrast excluded from grid)
+  const exercisesByCategory = visionExercises
+    .filter(e => e.id !== 'gabor-contrast')
+    .reduce((acc, exercise) => {
     if (!acc[exercise.category]) acc[exercise.category] = []
     acc[exercise.category].push(exercise)
     return acc
@@ -54,8 +56,27 @@ export default function QuickPractice() {
     setSelectedExercise(null)
   }
 
-  // Show interactive engine (v2) or guided exercise (v1 fallback) if one is selected
+  // Show interactive engine (v2) or guided exercise (v1 fallback) if one is selected.
+  // Explicitly branch gabor-contrast to preview so this path can never reach guided mode.
   if (selectedExercise) {
+    if (selectedExercise.id === 'gabor-contrast') {
+      // Any gabor-contrast selection routes to preview — no guided/hard path possible.
+      const previewExercise = visionExerciseMap['gabor-contrast']
+      return (
+        <div className="min-h-[70vh] flex flex-col">
+          <GaborAcuityEngine
+            preview
+            exercise={previewExercise}
+            prescription={resolvePrescription(previewExercise.id, 0)}
+            onComplete={() => {
+              setCompletedToday(prev => [...prev, 'gabor-contrast'])
+              setSelectedExercise(null)
+            }}
+            onExit={() => setSelectedExercise(null)}
+          />
+        </div>
+      )
+    }
     const Engine = getEngine(selectedExercise.id)
     if (Engine) {
       const prescription = resolvePrescription(selectedExercise.id, 0)
@@ -83,7 +104,7 @@ export default function QuickPractice() {
     )
   }
 
-  // The easy preview is a local, non-persistent use of the canonical renderer
+  // The featured Gabor preview is a local, non-persistent use of the canonical renderer
   // and response flow. It never enters the guided-session persistence path.
   if (showGaborPreview) {
     const previewExercise = visionExerciseMap['gabor-contrast']
@@ -93,7 +114,10 @@ export default function QuickPractice() {
           preview
           exercise={previewExercise}
           prescription={resolvePrescription(previewExercise.id, 0)}
-          onComplete={() => setShowGaborPreview(false)}
+          onComplete={() => {
+            setCompletedToday(prev => [...prev, 'gabor-contrast'])
+            setShowGaborPreview(false)
+          }}
           onExit={() => setShowGaborPreview(false)}
         />
       </div>

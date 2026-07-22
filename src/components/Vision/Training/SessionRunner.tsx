@@ -126,7 +126,7 @@ function headlineMetric(result: EngineResult): string | null {
   const m = result.metrics
   if (isGaborResult(result)) {
     return isValidGaborResult(result)
-      ? `Contrast threshold: ${m.contrastThresholdPct.toFixed(1)}%`
+      ? `Contrast threshold ${m.contrastThresholdPct.toFixed(1)}% · lower is better`
       : 'No reliable threshold this time'
   }
   if (m.accuracyPct !== undefined) return `${Math.round(m.accuracyPct)}% accuracy`
@@ -274,11 +274,17 @@ export default function SessionRunner({
   const handleEngineComplete = useCallback((index: number) => (result: EngineResult) => {
     resultsRef.current = [...resultsRef.current, result]
     setResults(resultsRef.current)
-    if (!isInvalidGaborResult(result)) {
+    // Branch ALL Gabor results before generic score behavior.
+    // Do NOT writeLastMetric for any Gabor result (valid or invalid).
+    if (isGaborResult(result)) {
+      if (isValidGaborResult(result)) {
+        speak(`Contrast threshold ${result.metrics.contrastThresholdPct.toFixed(1)} percent. Lower is better.`)
+      } else {
+        speak('Threshold task logged. No reliable threshold was produced this time.')
+      }
+    } else {
       writeLastMetric(result.exerciseId, result.score)
       speak(encouragementFor(result.score, index))
-    } else {
-      speak('Threshold task logged. No reliable threshold was produced this time.')
     }
     advanceFrom(index)
   }, [advanceFrom, speak])
@@ -561,8 +567,9 @@ export default function SessionRunner({
         )}
 
         {stage.kind === 'report' && (() => {
-          // Identity first, then ONE meaningful signal, then the promise (consult 2 #5)
-          const best = results.filter(result => !isInvalidGaborResult(result)).reduce<EngineResult | null>(
+          // Identity first, then ONE meaningful signal, then the promise (consult 2 #5).
+          // Exclude ALL Gabor results — valid or invalid — from best/personal-best pool.
+          const best = results.filter(result => !isGaborResult(result)).reduce<EngineResult | null>(
             (acc, r) => (acc === null || r.score > acc.score ? r : acc), null)
           const bestExercise = best ? visionExerciseMap[best.exerciseId] : null
           const isPersonalBest = best !== null &&

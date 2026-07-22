@@ -262,6 +262,18 @@ export default function GaborAcuityEngine({
     onComplete(resultRef.current)
   }, [onComplete])
 
+  const continueAfterPreviewResult = useCallback(() => {
+    if (reportedRef.current) return
+    reportedRef.current = true
+    onComplete({
+      exerciseId: exercise.id,
+      durationSec: Math.round(elapsedSeconds()),
+      completed: true,
+      score: 0,
+      metrics: { previewOnly: 1 },
+    })
+  }, [elapsedSeconds, exercise.id, onComplete])
+
   const armResponseWindow = useCallback((presentation: GaborResolvedPresentation) => {
     clearTrialTimer()
     trialTimeoutRef.current = setTimeout(
@@ -454,9 +466,11 @@ export default function GaborAcuityEngine({
           >
             {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
           </button>
-          <button onClick={handleAbort} className={`flex h-11 w-11 items-center justify-center rounded-lg bg-gray-900/80 text-gray-300 backdrop-blur-sm hover:text-white ${focusRing}`} aria-label="Exit exercise">
-            <X className="h-5 w-5" />
-          </button>
+          {phase !== 'complete' && (
+            <button onClick={handleAbort} className={`flex h-11 w-11 items-center justify-center rounded-lg bg-gray-900/80 text-gray-300 backdrop-blur-sm hover:text-white ${focusRing}`} aria-label="Exit exercise">
+              <X className="h-5 w-5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -509,7 +523,7 @@ export default function GaborAcuityEngine({
                   <p className="text-sm leading-relaxed text-gray-300">
                     Practice complete. This easy preview did not change your saved threshold or today&apos;s hard-session status.
                   </p>
-                  <button onClick={onExit} className={`flex min-h-11 w-full items-center justify-center rounded-lg bg-primary-500 px-6 py-3 font-semibold text-white hover:bg-primary-600 ${focusRing}`}>
+                  <button onClick={continueAfterPreviewResult} className={`flex min-h-11 w-full items-center justify-center rounded-lg bg-primary-500 px-6 py-3 font-semibold text-white hover:bg-primary-600 ${focusRing}`}>
                     Back to Vision Library
                   </button>
                 </>
@@ -530,7 +544,7 @@ export default function GaborAcuityEngine({
                 <>
                   <h2 className="text-2xl font-bold text-gray-100">No reliable threshold this time</h2>
                   <p className="text-sm leading-relaxed text-gray-300">
-                    Today&apos;s responses did not produce a stable threshold. Nothing failed, and no zero score is being reported.
+                    Your eyes still did the work; today&apos;s responses did not settle into a reliable reading.
                   </p>
                   <p className="text-xs leading-relaxed text-gray-400">
                     This training task is not an eye exam, diagnosis, or prescription.
