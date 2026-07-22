@@ -24,7 +24,14 @@ page.on('pageerror', e => pageErrors.push(String(e)))
 let step = 0
 const shot = async (n) => { step++; await page.screenshot({ path: path.join(outDir, `${String(step).padStart(2, '0')}-${n}.png`) }) }
 const api = (method, url, body) => page.evaluate(async ({ method, url, body }) => {
-  const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined })
+  const isVisionProgram = new URL(url, location.origin).pathname === '/api/vision/program'
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const localDate = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
+  const requestUrl = isVisionProgram && method === 'GET'
+    ? `${url}${url.includes('?') ? '&' : '?'}${new URLSearchParams({ localDate, timeZone }).toString()}`
+    : url
+  const requestBody = isVisionProgram ? { localDate, timeZone, ...(body || {}) } : body
+  const r = await fetch(requestUrl, { method, headers: { 'Content-Type': 'application/json' }, body: requestBody ? JSON.stringify(requestBody) : undefined })
   const t = await r.text(); try { return { status: r.status, json: JSON.parse(t) } } catch { return { status: r.status } }
 }, { method, url, body })
 

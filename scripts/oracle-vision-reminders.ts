@@ -8,7 +8,9 @@
 
 import { strict as assert } from 'node:assert'
 import { computeDueVisionReminders, type VisionEnrollmentInput, type VisionReminderPrefInput } from '../src/lib/computeVisionReminders'
-import { effectiveStartDate, getTodaySession, visionMasterProgram } from '../src/data/visionProtocols'
+import { visionMasterProgram } from '../src/data/visionProtocols'
+import { localDayKey } from '../src/lib/localDay'
+import { visionProgramSessionForLocalDay } from '../src/lib/vision/localDayInput'
 
 let passCount = 0
 function pass(label: string) {
@@ -17,7 +19,7 @@ function pass(label: string) {
 }
 
 function baseEnrollment(overrides: Partial<VisionEnrollmentInput> = {}): VisionEnrollmentInput {
-  return { startDate: new Date('2026-01-05T00:00:00.000Z'), status: 'active', testDayOffset: null, ...overrides }
+  return { startDate: new Date('2026-01-05T15:00:00.000Z'), status: 'active', testDayOffset: null, ...overrides }
 }
 
 function basePref(overrides: Partial<VisionReminderPrefInput> = {}): VisionReminderPrefInput {
@@ -145,7 +147,7 @@ function basePref(overrides: Partial<VisionReminderPrefInput> = {}): VisionRemin
 {
   // Program day 1 lands exactly on 2026-03-08 so the nonexistent local time
   // (02:00-03:00 skip) falls on a real session day.
-  const enrollment = baseEnrollment({ startDate: new Date('2026-03-08T00:00:00.000Z') })
+  const enrollment = baseEnrollment({ startDate: new Date('2026-03-08T12:00:00.000Z') })
   const pref = basePref({ dailyReminderTime: '02:30', timezone: 'America/Denver' })
   const now = new Date('2026-03-08T09:05:00.000Z') // 5 min after the transition instant (09:00Z)
 
@@ -163,7 +165,7 @@ function basePref(overrides: Partial<VisionReminderPrefInput> = {}): VisionRemin
 
 // ---- 9. fall-back ambiguity: America/Denver 2026-11-01 01:30 (both occurrences -> single localDate) ---
 {
-  const enrollment = baseEnrollment({ startDate: new Date('2026-11-01T00:00:00.000Z') })
+  const enrollment = baseEnrollment({ startDate: new Date('2026-11-01T12:00:00.000Z') })
   const pref = basePref({ dailyReminderTime: '01:30', timezone: 'America/Denver' })
 
   // First occurrence window (01:30 MDT = 07:30Z)
@@ -194,7 +196,7 @@ function basePref(overrides: Partial<VisionReminderPrefInput> = {}): VisionRemin
   const rDenver = computeDueVisionReminders({ enrollment, pref: basePref({ timezone: 'America/Denver' }), now })
   const rNewYork = computeDueVisionReminders({ enrollment, pref: basePref({ timezone: 'America/New_York' }), now })
 
-  // Program day derivation is enrollment+now only -- independent of pref.timezone.
+  // This seeded enrollment has the same calendar key in both zones.
   assert.equal(rDenver.week, rNewYork.week, 'week is timezone-independent')
   assert.equal(rDenver.day, rNewYork.day, 'day is timezone-independent')
   // But the reminder clock-time resolution differs per timezone.
@@ -212,12 +214,10 @@ function basePref(overrides: Partial<VisionReminderPrefInput> = {}): VisionRemin
   const now = new Date('2026-01-05T15:00:00.000Z')
   const r = computeDueVisionReminders({ enrollment, pref: basePref(), now })
 
-  // Cross-check against the SAME helper the route uses directly -- proves
-  // byte-identical derivation, not a re-implementation.
-  const expected = getTodaySession(effectiveStartDate(enrollment), now)
-  assert.equal(r.week, expected.week, 'testDayOffset-shifted week matches effectiveStartDate/getTodaySession directly')
-  assert.equal(r.day, expected.day, 'testDayOffset-shifted day matches effectiveStartDate/getTodaySession directly')
-  pass('testDayOffset applied matches effectiveStartDate()+getTodaySession() directly (shared helper, no duplicated logic)')
+  const expected = visionProgramSessionForLocalDay(enrollment, localDayKey(now, 'America/Denver'), 'America/Denver')
+  assert.equal(r.week, expected.week, 'testDayOffset-shifted week matches the shared API/reminder day function')
+  assert.equal(r.day, expected.day, 'testDayOffset-shifted day matches the shared API/reminder day function')
+  pass('testDayOffset uses the shared API/reminder calendar-day function')
 }
 
 // ---- 12. program complete (week > 12) --------------------------------------

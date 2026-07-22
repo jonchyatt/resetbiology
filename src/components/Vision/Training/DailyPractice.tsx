@@ -23,6 +23,7 @@ import WeeklyAssessment, { type WeeklyAssessmentResult } from './WeeklyAssessmen
 import ProgressDashboard from './ProgressDashboard'
 import SessionRemindersCard from './SessionRemindersCard'
 import type { EngineResult } from '@/components/Vision/Engines/types'
+import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
 const BREATH_WARMUP_MINUTES_KEY = 'visionTraining.breathWarmupMinutes'
@@ -134,6 +135,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...currentVisionLocalDayInput(),
           action: 'update_baselines',
           data: {
             nearSnellen: results.nearSnellen,
@@ -163,6 +165,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...currentVisionLocalDayInput(),
           action: 'update_baselines',
           data: {
             nearSnellen: result.nearSnellen,
@@ -200,7 +203,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
   const loadProgram = async () => {
     try {
-      const response = await fetch('/api/vision/program')
+      const response = await fetch(`/api/vision/program?${new URLSearchParams(currentVisionLocalDayInput()).toString()}`)
       const data = await response.json()
 
       if (data.success) {
@@ -226,7 +229,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
       await fetch('/api/vision/program', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'reset_program' })
+        body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'reset_program' })
       })
     } catch (error) {
       console.error('Failed to reset program:', error)
@@ -244,7 +247,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
       await fetch('/api/vision/program', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'advance_day' })
+        body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'advance_day' })
       })
     } catch (error) {
       console.error('Failed to advance test day:', error)
@@ -260,6 +263,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...currentVisionLocalDayInput(),
           action: 'enroll',
           data: {
             initialNearSnellen: nearSnellenResult || null,
@@ -343,6 +347,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...currentVisionLocalDayInput(),
           action: 'complete_session',
           data: {
             week: todaySession.week,

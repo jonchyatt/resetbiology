@@ -20,6 +20,7 @@ import QuickPractice from './Training/QuickPractice'
 import ProgressDashboard from './Training/ProgressDashboard'
 import TrainingSession from './Training/TrainingSession'
 import ProgramProgress from './Training/ProgramProgress'
+import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
 
 type TabMode = 'curriculum' | 'today' | 'practice' | 'trainer' | 'progress'
 
@@ -83,7 +84,7 @@ export function VisionHealing() {
 
   const checkEnrollment = async () => {
     try {
-      const response = await fetch('/api/vision/program')
+      const response = await fetch(`/api/vision/program?${new URLSearchParams(currentVisionLocalDayInput()).toString()}`)
       const data = await response.json()
       if (data.success && data.enrolled) {
         setIsEnrolled(true)
@@ -126,7 +127,7 @@ export function VisionHealing() {
       const response = await fetch('/api/vision/program', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'enroll', data: {} })
+        body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'enroll', data: {} })
       })
       const data = await response.json()
       if (data.success) {
@@ -149,6 +150,7 @@ export function VisionHealing() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...currentVisionLocalDayInput(),
           action: 'complete_past_session',
           data: { week, day }
         })

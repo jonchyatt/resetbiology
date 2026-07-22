@@ -12,13 +12,22 @@
  * Exits 0 on all-pass, 1 with the failing assertion printed otherwise.
  */
 
-const MS_PER_DAY = 24 * 60 * 60 * 1000
+function localDayKey(date, timeZone) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
+}
+
+function dayContainer(dayKey) {
+  return new Date(`${dayKey}T00:00:00.000Z`)
+}
 
 // Pure day/week math mirrored from src/data/visionProtocols.ts:912
 // getTodaySession(enrollmentStartDate, currentDate). Exercise/session lookup
 // is intentionally omitted — the traversal proof only needs week/day/isRestDay.
-function getTodaySessionPure(startDate, currentDate) {
-  const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / MS_PER_DAY)
+function getTodaySessionPure(enrollmentStart, localDate, timeZone, testDayOffset) {
+  const startDate = dayContainer(localDayKey(enrollmentStart, timeZone))
+  startDate.setUTCDate(startDate.getUTCDate() - (testDayOffset ?? 0))
+  const currentDate = dayContainer(localDate)
+  const daysSinceStart = Math.floor((currentDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000))
   const weekNumberRaw = Math.floor(daysSinceStart / 7) + 1
   const dayOfWeek = (daysSinceStart % 7) + 1
 
@@ -31,22 +40,18 @@ function getTodaySessionPure(startDate, currentDate) {
   return { week: weekNumberRaw, day: dayOfWeek, isRestDay: false, trainable: true, terminal: false }
 }
 
-// Mirrors effectiveStartDate() in app/api/vision/program/route.ts.
-function effectiveStart(startDate, offsetDays) {
-  return new Date(startDate.getTime() - (offsetDays ?? 0) * MS_PER_DAY)
-}
-
 function fail(msg) {
   console.error(`FAIL: ${msg}`)
   process.exit(1)
 }
 
-const enrollmentStart = new Date('2026-01-01T00:00:00.000Z')
-const now = enrollmentStart // pinned "now" — the cursor, not the clock, drives the walk
+const enrollmentStart = new Date('2026-01-01T19:00:00.000Z')
+const timeZone = 'America/Denver'
+const localDate = '2026-01-01'
 
 // Day 0: initial landing before any advance_day call.
 let offset = 0
-let today = getTodaySessionPure(effectiveStart(enrollmentStart, offset), now)
+let today = getTodaySessionPure(enrollmentStart, localDate, timeZone, offset)
 if (!(today.week === 1 && today.day === 1 && today.trainable)) {
   fail(`day 0 should be week 1 day 1 trainable, got ${JSON.stringify(today)}`)
 }
@@ -61,11 +66,11 @@ while (!terminalReached && advanceCount < MAX_ADVANCES) {
   // Mirrors the advance_day PATCH loop: increment up to 3 times, skipping
   // rest days, so one tap always lands on a trainable session or terminal.
   let stepOffset = offset + 1
-  let next = getTodaySessionPure(effectiveStart(enrollmentStart, stepOffset), now)
+  let next = getTodaySessionPure(enrollmentStart, localDate, timeZone, stepOffset)
   let iterations = 1
   while (next.isRestDay && iterations < 3) {
     stepOffset += 1
-    next = getTodaySessionPure(effectiveStart(enrollmentStart, stepOffset), now)
+    next = getTodaySessionPure(enrollmentStart, localDate, timeZone, stepOffset)
     iterations += 1
   }
   offset = stepOffset
@@ -98,9 +103,12 @@ if (weeklyAssessments !== 6) {
 }
 
 // (e) cursor reset math returns effective start === startDate.
-const resetEffectiveStart = effectiveStart(enrollmentStart, null)
-if (resetEffectiveStart.getTime() !== enrollmentStart.getTime()) {
-  fail(`reset_test_cursor should restore effective start === startDate, got ${resetEffectiveStart.toISOString()}`)
+const resetAnchor = dayContainer(localDayKey(enrollmentStart, timeZone))
+const originalAnchor = dayContainer(localDayKey(enrollmentStart, timeZone))
+const shiftedAnchor = new Date(originalAnchor)
+shiftedAnchor.setUTCDate(shiftedAnchor.getUTCDate() - offset)
+if (resetAnchor.getTime() !== originalAnchor.getTime() || resetAnchor.getTime() === shiftedAnchor.getTime()) {
+  fail(`reset_test_cursor should restore the real local start day, got ${resetAnchor.toISOString()}`)
 }
 
 console.log(

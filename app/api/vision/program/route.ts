@@ -2,13 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-import { visionMasterProgram, getTodaySession, effectiveStartDate } from '@/data/visionProtocols'
+import { visionMasterProgram } from '@/data/visionProtocols'
 import { visionExerciseMap } from '@/data/visionExercises'
 import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
+import {
+  isVisionSessionCompleteForDay,
+  previousVisionDayKey,
+  validateVisionLocalDayInput,
+  visionProgramSessionForLocalDay,
+} from '@/lib/vision/localDayInput'
+import { localDayKey } from '@/lib/localDay'
 
 // Tester allowlist for the "rip through the program" traversal bypass.
 // Gates isTester payload flag + the advance_day/reset_test_cursor PATCH actions.
 const TESTER_EMAILS = ['jonchyatt@gmail.com', 'drmccrna@gmail.com']
+
+function invalidLocalDay(error: string) {
+  return NextResponse.json({ error }, { status: 400 })
+}
 
 // GET: Get user's program enrollment and today's session
 export async function GET(req: NextRequest) {
@@ -19,6 +30,12 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    const localDay = validateVisionLocalDayInput({
+      localDate: req.nextUrl.searchParams.get('localDate'),
+      timeZone: req.nextUrl.searchParams.get('timeZone'),
+    })
+    if (!localDay.ok) return invalidLocalDay(localDay.error)
 
     // Get or check enrollment
     const enrollment = await prisma.visionProgramEnrollment.findUnique({
@@ -56,7 +73,11 @@ export async function GET(req: NextRequest) {
 
     // Calculate today's session based on enrollment start date (shifted by the
     // tester traversal cursor, if any).
-    const today = getTodaySession(effectiveStartDate(enrollment))
+    const today = visionProgramSessionForLocalDay(
+      enrollment,
+      localDay.value.localDate,
+      localDay.value.timeZone,
+    )
     const weekPlan = visionMasterProgram.weeklyPlans[today.week - 1]
 
     // Get exercise details for today's session
@@ -66,9 +87,12 @@ export async function GET(req: NextRequest) {
     }
 
     // Check if today's session is already completed
-    const todayLocalDate = new Date().toISOString().split('T')[0]
-    const todayCompleted = enrollment.dailySessions.some(
-      s => s.localDate === todayLocalDate && s.week === today.week && s.day === today.day
+    const todayLocalDate = localDay.value.localDate
+    const todayCompleted = isVisionSessionCompleteForDay(
+      enrollment.dailySessions,
+      todayLocalDate,
+      today.week,
+      today.day,
     )
 
     return NextResponse.json({
@@ -138,6 +162,8 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
+    const localDay = validateVisionLocalDayInput(body)
+    if (!localDay.ok) return invalidLocalDay(localDay.error)
     const { action, data } = body
 
     if (action === 'enroll') {
@@ -190,7 +216,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Not enrolled in program' }, { status: 400 })
       }
 
-      const { week, day, localDate } = data
+      const { week, day } = data
 
       // Check if session already exists for this week/day
       const existingSession = await prisma.visionDailySession.findFirst({
@@ -226,7 +252,7 @@ export async function POST(req: NextRequest) {
           breathWarmupMinutes: 0,
           totalMinutes: sessionData.baselineMinutes + sessionData.exerciseMinutes,
           exercisesCompleted: sessionData.exerciseIds,
-          localDate: localDate || new Date().toISOString().split('T')[0],
+          localDate: localDay.value.localDate,
           notes: 'Marked as complete retroactively'
         }
       })
@@ -285,7 +311,7 @@ export async function POST(req: NextRequest) {
       const performanceBonus = performanceBonusFor(engineResults)
 
       // Check if session already completed today
-      const todayLocalDate = new Date().toISOString().split('T')[0]
+      const todayLocalDate = localDay.value.localDate
       const existingSession = await prisma.visionDailySession.findFirst({
         where: {
           enrollmentId: enrollment.id,
@@ -340,8 +366,8 @@ export async function POST(req: NextRequest) {
       let newStreakDays = enrollment.streakDays
       const lastSession = enrollment.lastSessionDate
       if (lastSession) {
-        const lastDate = new Date(lastSession).toISOString().split('T')[0]
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+        const lastDate = localDayKey(new Date(lastSession), localDay.value.timeZone)
+        const yesterday = previousVisionDayKey(todayLocalDate)
         if (lastDate === yesterday) {
           newStreakDays += 1
         } else if (lastDate !== todayLocalDate) {
@@ -434,6 +460,8 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json()
+    const localDay = validateVisionLocalDayInput(body)
+    if (!localDay.ok) return invalidLocalDay(localDay.error)
     const { action, data } = body
 
     const enrollment = await prisma.visionProgramEnrollment.findUnique({
@@ -523,7 +551,11 @@ export async function PATCH(req: NextRequest) {
 
       // advance_day: double-tap/serialization guard — only advance once the
       // CURRENT effective day is finished (a completed session or a rest day).
-      const today = getTodaySession(effectiveStartDate(enrollment))
+      const today = visionProgramSessionForLocalDay(
+        enrollment,
+        localDay.value.localDate,
+        localDay.value.timeZone,
+      )
       const todayDone = today.isRestDay || enrollment.dailySessions.some(
         s => s.week === today.week && s.day === today.day
       )
@@ -535,11 +567,19 @@ export async function PATCH(req: NextRequest) {
       // increments per Sol H1) so the tester always lands on a trainable
       // session or the program-complete terminal state.
       let offset = (enrollment.testDayOffset ?? 0) + 1
-      let next = getTodaySession(effectiveStartDate({ startDate: enrollment.startDate, testDayOffset: offset }))
+      let next = visionProgramSessionForLocalDay(
+        { startDate: enrollment.startDate, testDayOffset: offset },
+        localDay.value.localDate,
+        localDay.value.timeZone,
+      )
       let advances = 1
       while (next.isRestDay && advances < 3) {
         offset += 1
-        next = getTodaySession(effectiveStartDate({ startDate: enrollment.startDate, testDayOffset: offset }))
+        next = visionProgramSessionForLocalDay(
+          { startDate: enrollment.startDate, testDayOffset: offset },
+          localDay.value.localDate,
+          localDay.value.timeZone,
+        )
         advances += 1
       }
 

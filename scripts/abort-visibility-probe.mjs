@@ -12,10 +12,23 @@ const ctx = await browser.newContext({ ...pw.devices['iPhone 13'] })
 await ctx.addCookies(cookies.map(c => ({ ...c, expires: c.expires > 0 ? Math.round(c.expires) : undefined })))
 const page = await ctx.newPage()
 page.setDefaultTimeout(25000)
+const visionProgramApi = (method, body) => page.evaluate(async ({ method, body }) => {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const localDate = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
+  const url = method === 'GET'
+    ? `/api/vision/program?${new URLSearchParams({ localDate, timeZone }).toString()}`
+    : '/api/vision/program'
+  const r = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: method === 'GET' ? undefined : JSON.stringify({ localDate, timeZone, ...(body || {}) }),
+  })
+  return r.json()
+}, { method, body })
 await page.goto('https://resetbiology.com/vision-training', { waitUntil: 'commit', timeout: 60000 })
 await page.waitForLoadState('domcontentloaded', { timeout: 60000 }).catch(() => {})
 await page.waitForTimeout(3000)
-await page.evaluate(() => fetch('/api/vision/program', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reset_program' }) }))
+await visionProgramApi('PATCH', { action: 'reset_program' })
 await page.reload({ waitUntil: 'domcontentloaded' })
 await page.getByRole('button', { name: /Start 12-Week Program/ }).first().tap()
 await page.getByText('Baseline Day').first().waitFor()
@@ -44,7 +57,7 @@ if (shotPath) await page.screenshot({ path: shotPath })
 // tap the X for real → must land back on Step 1 with nothing persisted
 await page.getByRole('button', { name: 'Exit measurement' }).tap()
 await page.getByText('Step 1: Snellen Baseline').first().waitFor()
-const after = await page.evaluate(async () => (await (await fetch('/api/vision/program')).json()))
+const after = await visionProgramApi('GET')
 const abortClean = after?.enrollment?.currentNearSnellen == null && after?.enrollment?.initialNearSnellen == null
 console.log(JSON.stringify({ browserName, ...hit, xTapReturnsToStep1: true, abortZeroPersistence: abortClean }))
 await browser.close()

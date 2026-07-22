@@ -21,6 +21,7 @@ import { prefersReducedMotion } from '@/lib/vision/canvasKit'
 import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 import { getEngine } from '@/components/Vision/Engines'
 import { clampScore, type EngineResult } from '@/components/Vision/Engines/types'
+import { localDayKey } from '@/lib/localDay'
 import GuidedExercise from './GuidedExercise'
 import SnellenQuickCheck, { type SnellenQuickCheckResult } from './SnellenQuickCheck'
 import { CHART_LINE_TO_SNELLEN } from './SnellenChart'
@@ -51,7 +52,7 @@ function writeLastMetric(exerciseId: string, score: number): void {
   if (typeof window === 'undefined') return
   try {
     const map = readLastMetrics()
-    map[exerciseId] = { score, date: new Date().toISOString().slice(0, 10) }
+    map[exerciseId] = { score, date: localDayKey(new Date()) }
     window.localStorage.setItem(LAST_METRICS_KEY, JSON.stringify(map))
   } catch {
     /* storage unavailable — continuity callbacks just don't show */

@@ -7,15 +7,15 @@
  * time; the cron calls computeDueVisionReminders() per (enrollment, pref)
  * tuple each tick and gets back whether a reminder is due right now.
  *
- * Program-day derivation reuses the existing getTodaySession()/
- * effectiveStartDate() helpers from src/data/visionProtocols.ts — the same
- * ones app/api/vision/program/route.ts uses for the tester traversal UI —
- * so the cron and the program UI can never disagree about "what day is it."
+ * Program-day derivation uses the same member-calendar function as the
+ * program route, so the cron and UI cannot disagree about "what day is it."
  */
 
 import { fromZonedTime } from 'date-fns-tz'
-import { getTodaySession, effectiveStartDate, type DailySession } from '@/data/visionProtocols'
+import { type DailySession } from '@/data/visionProtocols'
 import type { PrismaClient } from '@prisma/client'
+import { isValidVisionTimeZone, visionProgramSessionForLocalDay } from '@/lib/vision/localDayInput'
+import { localDayKey } from '@/lib/localDay'
 
 export interface VisionEnrollmentInput {
   startDate: Date | string
@@ -49,12 +49,15 @@ export function computeDueVisionReminders(args: {
   now: Date
 }): VisionReminderResult {
   const { enrollment, pref, now } = args
-  const timezone = pref.timezone || 'UTC'
-  const localDate = zonedDateString(now, timezone)
+  const timezone = pref.timezone
+  if (!isValidVisionTimeZone(timezone)) {
+    // Never let the deployment timezone manufacture a member reminder.
+    return { due: false, reminderInstant: null, localDate: '', week: 0, day: 0, sessionFocus: null, estMinutes: null }
+  }
+  const localDate = localDayKey(now, timezone)
 
-  // Program-day derivation: identical call shape to route.ts's tester
-  // traversal — same effectiveStartDate(enrollment), same getTodaySession.
-  const { week, day, session, isRestDay } = getTodaySession(effectiveStartDate(enrollment), now)
+  // Program-day derivation shares the API's calendar-normalized tester logic.
+  const { week, day, session, isRestDay } = visionProgramSessionForLocalDay(enrollment, localDate, timezone)
   const sessionFocus = session?.focus ?? null
   const estMinutes = session ? estimatedMinutes(session) : null
 
@@ -107,11 +110,6 @@ export async function isVisionSessionCompletedToday(
 }
 
 // ---- timezone resolution -------------------------------------------------
-
-function zonedDateString(date: Date, timeZone: string): string {
-  // en-CA formats as YYYY-MM-DD directly.
-  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
-}
 
 function resolveTodaysReminderInstant(localDate: string, hhmm: string, timeZone: string): Date {
   const [y, mo, d] = localDate.split('-').map(Number)

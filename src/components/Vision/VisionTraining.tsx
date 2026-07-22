@@ -19,6 +19,7 @@ import CurriculumOverview from './Training/CurriculumOverview'
 import DailyPractice from './Training/DailyPractice'
 import QuickPractice from './Training/QuickPractice'
 import TrainingSession from './Training/TrainingSession'
+import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
 
 type TabMode = 'today' | 'trainer' | 'exercises'
 const NIGHT_MODE_KEY = 'visionTraining.nightMode'
@@ -98,7 +99,7 @@ export function VisionTraining() {
 
   const checkEnrollment = async () => {
     try {
-      const response = await fetch('/api/vision/program')
+      const response = await fetch(`/api/vision/program?${new URLSearchParams(currentVisionLocalDayInput()).toString()}`)
       const data = await response.json()
       if (data.success && data.enrolled) {
         setIsEnrolled(true)
@@ -128,7 +129,7 @@ export function VisionTraining() {
       const response = await fetch('/api/vision/program', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'enroll', data: {} })
+        body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'enroll', data: {} })
       })
       const data = await response.json()
       if (data.success) {

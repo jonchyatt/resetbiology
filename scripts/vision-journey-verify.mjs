@@ -48,10 +48,17 @@ const shot = async (name) => {
 }
 const api = async (method, url, body) => {
   return await page.evaluate(async ({ method, url, body }) => {
-    const r = await fetch(url, {
+    const isVisionProgram = new URL(url, location.origin).pathname === '/api/vision/program'
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    const localDate = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date())
+    const requestUrl = isVisionProgram && method === 'GET'
+      ? `${url}${url.includes('?') ? '&' : '?'}${new URLSearchParams({ localDate, timeZone }).toString()}`
+      : url
+    const requestBody = isVisionProgram ? { localDate, timeZone, ...(body || {}) } : body
+    const r = await fetch(requestUrl, {
       method,
       headers: { 'Content-Type': 'application/json' },
-      body: body ? JSON.stringify(body) : undefined,
+      body: requestBody ? JSON.stringify(requestBody) : undefined,
     })
     const t = await r.text()
     try { return { status: r.status, json: JSON.parse(t) } } catch { return { status: r.status, text: t.slice(0, 300) } }
