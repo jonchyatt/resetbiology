@@ -6,6 +6,7 @@ import BinocularChart from './BinocularChart'
 import type { BinocularMode } from './BinocularChart'
 import DistanceGuidance from './DistanceGuidance'
 import { Play, Pause, RotateCcw, CheckCircle, XCircle, Glasses, MoveHorizontal, Trophy, ArrowRight } from 'lucide-react'
+import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
 
 interface TrainingSessionProps {
   visionType: 'near' | 'far'
@@ -237,7 +238,8 @@ export default function TrainingSession({
           accuracy,
           level: difficulty.label,
           duration: sessionDuration,
-          success
+          success,
+          ...currentVisionLocalDayInput()
         })
       })
     } catch (error) {

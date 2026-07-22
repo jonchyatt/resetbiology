@@ -21,3 +21,10 @@
 4. **P0-D Exact tester cleanup.** Build snapshot-first tooling that refuses any target count other than 12; conduit executes deletion only after verification.
 
 P0-A and P0-B serialize because both own `app/api/vision/program/route.ts`. Product work remains sequential unless Sol records a disjoint write-set exception.
+
+## Current Phase 0 status
+
+- P0-A: `VERIFIED + DEPLOYED + LIVE_PASS` at `add9dc29`.
+- P0-B: accepted for one serialized five-file DailyAward implementation ticket.
+- P0-C: queued behind P0-B acceptance.
+- P0-D: `ACCEPT_OUTCOME_WITH_PROCESS_DEVIATION`; exact 12-row outcome achieved from historical snapshot plus post-clean proof, but the immediate pre-delete snapshot control was skipped. No audit-only tool will be built after the target rows are gone.

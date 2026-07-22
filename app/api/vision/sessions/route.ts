@@ -4,6 +4,8 @@ import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 import { parseEngineResults, performanceBonusFor } from '@/lib/vision/engineResultsPayload'
+import { validateVisionLocalDayInput } from '@/lib/vision/localDayInput'
+import { awardVisionPoints } from '@/lib/vision/visionPoints'
 
 // GET: Load user's vision training history
 export async function GET(request: Request) {
@@ -88,7 +90,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const body = await request.json()
+    let body: any
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: 'Request body must be valid JSON' }, { status: 400 })
+    }
+    const localDay = validateVisionLocalDayInput(body)
+    if (!localDay.ok) {
+      return NextResponse.json({ error: localDay.error }, { status: 400 })
+    }
     const {
       visionType,
       exerciseType,
@@ -185,17 +196,13 @@ export async function POST(request: Request) {
       })
     }
 
-    const completionPoints = success ? 30 : 15
-
-    // Completion points remain the floor; measured performance is additive.
-    await prisma.gamificationPoint.create({
-      data: {
-        userId: user.id,
-        amount: completionPoints + performanceBonus,
-        pointType: 'vision_training',
-        activitySource: `Vision training session: ${visionType}`,
-        earnedAt: new Date()
-      }
+    const award = await awardVisionPoints({
+      userId: user.id,
+      dayKey: localDay.value.localDate,
+      awardType: 'vision_free_training_session',
+      visionType,
+      success: Boolean(success),
+      performanceBonus,
     })
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
@@ -204,7 +211,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       session: engineResults === undefined ? visionSession : { ...visionSession, engineResults },
-      pointsAwarded: completionPoints + performanceBonus,
+      pointsAwarded: award.points,
       performanceBonus
     })
 
