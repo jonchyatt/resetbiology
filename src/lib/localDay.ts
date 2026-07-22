@@ -44,10 +44,31 @@ export function dayKeyToUtcMidnight(key: string): Date {
 
 /** Inverse of dayKeyToUtcMidnight — reads the day key back out. */
 export function utcMidnightToDayKey(date: Date): string {
-  const y = date.getUTCFullYear()
+  const y = String(date.getUTCFullYear()).padStart(4, '0')
   const m = String(date.getUTCMonth() + 1).padStart(2, '0')
   const d = String(date.getUTCDate()).padStart(2, '0')
   return `${y}-${m}-${d}`
+}
+
+/** Strict Gregorian YYYY-MM-DD validation, including impossible-date rejection. */
+export function isValidDayKey(value: unknown): value is string {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
+  if (value.startsWith('0000-')) return false
+
+  const parsed = dayKeyToUtcMidnight(value)
+  return !Number.isNaN(parsed.getTime()) && utcMidnightToDayKey(parsed) === value
+}
+
+/** Pure calendar-day movement using a UTC Date only as a timezone-free container. */
+export function shiftDayKey(dayKey: string, deltaDays: number): string {
+  if (!isValidDayKey(dayKey)) throw new RangeError('Invalid day key')
+  if (!Number.isInteger(deltaDays)) throw new RangeError('Day shift must be an integer')
+
+  const shifted = dayKeyToUtcMidnight(dayKey)
+  shifted.setUTCDate(shifted.getUTCDate() + deltaDays)
+  const result = utcMidnightToDayKey(shifted)
+  if (!isValidDayKey(result)) throw new RangeError('Shifted day is out of range')
+  return result
 }
 
 /**

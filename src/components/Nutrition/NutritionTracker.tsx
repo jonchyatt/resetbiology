@@ -8,6 +8,7 @@ import { RecentFoods } from "./RecentFoods"
 import { MacroGoals, type Goals } from "./MacroGoals"
 import { useToast } from "@/components/ui/Toast"
 import { dayKeyToUtcMidnight, localDayKey, todayLocalKey } from "@/lib/localDay"
+import { shiftDayKey } from "@/lib/localDay"
 
 interface FoodEntry {
   id: string
@@ -408,12 +409,14 @@ export function NutritionTracker() {
   const copyPreviousDay = async () => {
     const ok = await toast.confirm({ title: "Copy yesterday's meals to today?", confirmLabel: 'Copy' })
     if (!ok) return
+    const destinationLocalDate = todayLocalKey()
+    const sourceLocalDate = shiftDayKey(destinationLocalDate, -1)
     try {
       setCopyingDay(true)
       const res = await fetch('/api/nutrition/copy-day', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ daysAgo: 1 })
+        body: JSON.stringify({ daysAgo: 1, sourceLocalDate, destinationLocalDate })
       })
       const data = await res.json()
       if (data.ok) {

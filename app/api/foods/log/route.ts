@@ -2,19 +2,11 @@ import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
-import { dayKeyToUtcMidnight, localDayKey } from '@/lib/localDay';
+import { dayKeyToUtcMidnight, isValidDayKey, localDayKey } from '@/lib/localDay';
 import { awardNutritionPoints } from '@/lib/nutritionPoints';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-const DAY_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-function isValidDayKey(value: unknown): value is string {
-  if (typeof value !== 'string' || !DAY_KEY_RE.test(value)) return false;
-  const parsed = dayKeyToUtcMidnight(value);
-  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
-}
 
 export async function POST(req: Request) {
   try {

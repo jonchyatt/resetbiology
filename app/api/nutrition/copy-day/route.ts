@@ -1,70 +1,144 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth0 } from '@/lib/auth0'
-import { getUserFromSession } from '@/lib/getUserFromSession'
-import { prisma } from '@/lib/prisma'
+import { auth0Edge } from '@/lib/auth0-edge'
+import { isValidDayKey, shiftDayKey } from '@/lib/localDay'
 
-// POST - Copy meals from a previous day to today
-export async function POST(req: NextRequest) {
+type ValidCopyDayRequest = {
+  daysAgo: 1
+  sourceLocalDate: string
+  destinationLocalDate: string
+}
+
+type CopyableMeal = {
+  source: string
+  sourceId: string | null
+  itemName: string
+  brand: string | null
+  quantity: number
+  unit: string
+  gramWeight: number | null
+  nutrients: any
+  mealType: string
+}
+
+type CopyDayDatabase = {
+  getUserId: (session: any) => Promise<string | null>
+  findMeals: (userId: string, sourceLocalDate: string) => Promise<CopyableMeal[]>
+  createMeal: (
+    userId: string,
+    meal: CopyableMeal,
+    loggedAt: Date,
+    destinationLocalDate: string,
+    localTime: string,
+  ) => Promise<unknown>
+}
+
+type CopyDayDependencies = {
+  getSession: () => Promise<any>
+  loadDatabase: () => Promise<CopyDayDatabase>
+  now: () => Date
+}
+
+function validateCopyDayRequest(body: unknown): ValidCopyDayRequest | null {
+  if (!body || typeof body !== 'object') return null
+
+  const { daysAgo, sourceLocalDate, destinationLocalDate } = body as Record<string, unknown>
+  if (typeof daysAgo !== 'number' || !Number.isInteger(daysAgo) || daysAgo !== 1) return null
+  if (!isValidDayKey(sourceLocalDate) || !isValidDayKey(destinationLocalDate)) return null
   try {
-    const session = await auth0.getSession()
-    const user = await getUserFromSession(session)
+    if (sourceLocalDate !== shiftDayKey(destinationLocalDate, -1)) return null
+  } catch {
+    return null
+  }
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+  return { daysAgo, sourceLocalDate, destinationLocalDate }
+}
 
-    const body = await req.json()
-    const { daysAgo } = body as { daysAgo: number }
-
-    if (!daysAgo || daysAgo < 1) {
-      return NextResponse.json(
-        { error: 'Invalid daysAgo parameter' },
-        { status: 400 }
-      )
-    }
-
-    // Calculate target date (yesterday or X days ago)
-    const targetDate = new Date()
-    targetDate.setDate(targetDate.getDate() - daysAgo)
-    const year = targetDate.getFullYear()
-    const month = String(targetDate.getMonth() + 1).padStart(2, '0')
-    const day = String(targetDate.getDate()).padStart(2, '0')
-    const targetLocalDate = `${year}-${month}-${day}`
-
-    // Fetch meals from that day
-    const previousDayMeals = await prisma.foodLog.findMany({
-      where: {
-        userId: user.id,
-        localDate: targetLocalDate
-      },
-      orderBy: {
-        loggedAt: 'asc'
+// Exported dependency seam lets the contract test execute every branch with
+// fake sign-in and database spies. Production still supplies the real services.
+function createCopyDayPostHandler(dependencies: CopyDayDependencies) {
+  return async function copyDayPost(req: NextRequest) {
+    try {
+      const session = await dependencies.getSession()
+      if (!session?.user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
       }
-    })
 
-    if (previousDayMeals.length === 0) {
+      let body: unknown
+      try {
+        body = await req.json()
+      } catch {
+        return NextResponse.json({ error: 'Invalid copy-day request' }, { status: 400 })
+      }
+
+      const validated = validateCopyDayRequest(body)
+      if (!validated) {
+        return NextResponse.json({ error: 'Invalid copy-day request' }, { status: 400 })
+      }
+
+      const { daysAgo, sourceLocalDate, destinationLocalDate } = validated
+      const database = await dependencies.loadDatabase()
+      const userId = await database.getUserId(session)
+
+      if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      const previousDayMeals = await database.findMeals(userId, sourceLocalDate)
+
+      if (previousDayMeals.length === 0) {
+        return NextResponse.json({
+          ok: false,
+          error: `No meals found from ${daysAgo} day(s) ago`,
+        })
+      }
+
+      // Preserve existing copied timestamps and server-local time behavior. The
+      // server clock never discovers either calendar date.
+      const now = dependencies.now()
+      const todayHours = String(now.getHours()).padStart(2, '0')
+      const todayMinutes = String(now.getMinutes()).padStart(2, '0')
+      const todaySeconds = String(now.getSeconds()).padStart(2, '0')
+      const todayLocalTime = `${todayHours}:${todayMinutes}:${todaySeconds}`
+
+      const copiedMeals = await Promise.all(
+        previousDayMeals.map((meal) =>
+          database.createMeal(userId, meal, now, destinationLocalDate, todayLocalTime),
+        ),
+      )
+
       return NextResponse.json({
-        ok: false,
-        error: `No meals found from ${daysAgo} day(s) ago`
+        ok: true,
+        count: copiedMeals.length,
+        message: `Copied ${copiedMeals.length} meals from ${daysAgo} day(s) ago`,
       })
+    } catch (error) {
+      console.error('Copy day error:', error)
+      return NextResponse.json({ error: 'Failed to copy meals' }, { status: 500 })
     }
+  }
+}
 
-    // Create new entries for today
-    const now = new Date()
-    const todayYear = now.getFullYear()
-    const todayMonth = String(now.getMonth() + 1).padStart(2, '0')
-    const todayDay = String(now.getDate()).padStart(2, '0')
-    const todayHours = String(now.getHours()).padStart(2, '0')
-    const todayMinutes = String(now.getMinutes()).padStart(2, '0')
-    const todaySeconds = String(now.getSeconds()).padStart(2, '0')
-    const todayLocalDate = `${todayYear}-${todayMonth}-${todayDay}`
-    const todayLocalTime = `${todayHours}:${todayMinutes}:${todaySeconds}`
+const productionDependencies: CopyDayDependencies = {
+  getSession: () => auth0Edge.getSession(),
+  loadDatabase: async () => {
+    // Database-bearing modules load only after the signed session and complete
+    // browser-day contract have passed. Rejected input has a zero-DB path.
+    const [{ getUserFromSession }, { prisma }] = await Promise.all([
+      import('@/lib/getUserFromSession'),
+      import('@/lib/prisma'),
+    ])
 
-    const copiedMeals = await Promise.all(
-      previousDayMeals.map(async (meal) => {
-        return prisma.foodLog.create({
+    return {
+      getUserId: async (session) => (await getUserFromSession(session))?.id ?? null,
+      findMeals: (userId, sourceLocalDate) =>
+        prisma.foodLog.findMany({
+          where: { userId, localDate: sourceLocalDate },
+          orderBy: { loggedAt: 'asc' },
+        }),
+      createMeal: (userId, meal, loggedAt, destinationLocalDate, localTime) =>
+        prisma.foodLog.create({
           data: {
-            userId: user.id,
+            userId,
             source: meal.source,
             sourceId: meal.sourceId,
             itemName: meal.itemName,
@@ -74,24 +148,17 @@ export async function POST(req: NextRequest) {
             gramWeight: meal.gramWeight,
             nutrients: meal.nutrients || {},
             mealType: meal.mealType,
-            loggedAt: now,
-            localDate: todayLocalDate,
-            localTime: todayLocalTime
-          }
-        })
-      })
-    )
-
-    return NextResponse.json({
-      ok: true,
-      count: copiedMeals.length,
-      message: `Copied ${copiedMeals.length} meals from ${daysAgo} day(s) ago`
-    })
-  } catch (error) {
-    console.error('Copy day error:', error)
-    return NextResponse.json(
-      { error: 'Failed to copy meals' },
-      { status: 500 }
-    )
-  }
+            loggedAt,
+            localDate: destinationLocalDate,
+            localTime,
+          },
+        }),
+    }
+  },
+  now: () => new Date(),
 }
+
+// POST - Copy yesterday's meals to the authenticated member's browser-owned Today.
+export const POST = Object.assign(createCopyDayPostHandler(productionDependencies), {
+  testContract: { createCopyDayPostHandler, validateCopyDayRequest },
+})
