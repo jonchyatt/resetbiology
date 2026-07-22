@@ -12,6 +12,7 @@ import {
   visionProgramSessionForLocalDay,
 } from '@/lib/vision/localDayInput'
 import { localDayKey } from '@/lib/localDay'
+import { awardVisionPoints } from '@/lib/vision/visionPoints'
 
 // Tester allowlist for the "rip through the program" traversal bypass.
 // Gates isTester payload flag + the advance_day/reset_test_cursor PATCH actions.
@@ -202,21 +203,17 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      // Award gamification points for enrolling
-      await prisma.gamificationPoint.create({
-        data: {
-          userId: user.id,
-          pointType: 'vision_program_enrolled',
-          amount: 100,
-          activitySource: 'Enrolled in 12-week Vision Recovery Program'
-        }
+      const award = await awardVisionPoints({
+        userId: user.id,
+        dayKey: localDay.value.localDate,
+        awardType: 'vision_program_enrollment',
       })
 
       return NextResponse.json({
         success: true,
         message: 'Successfully enrolled in Vision Recovery Program',
         enrollment,
-        pointsAwarded: 100
+        pointsAwarded: award.points
       })
     }
 
@@ -280,21 +277,20 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      // Award reduced points for retroactive completion (15 instead of 25)
-      await prisma.gamificationPoint.create({
-        data: {
-          userId: user.id,
-          pointType: 'vision_session_completed',
-          amount: 15,
-          activitySource: `Marked ${sessionData.title} complete (Week ${week} Day ${day})`
-        }
+      const award = await awardVisionPoints({
+        userId: user.id,
+        dayKey: localDay.value.localDate,
+        awardType: 'vision_program_retro_session',
+        sessionTitle: sessionData.title,
+        week,
+        day,
       })
 
       return NextResponse.json({
         success: true,
         message: 'Past session marked as complete',
         dailySession,
-        pointsAwarded: 15
+        pointsAwarded: award.points
       })
     }
 
@@ -421,31 +417,21 @@ export async function POST(req: NextRequest) {
         }
       })
 
-      // Award gamification points (completion points are the floor;
-      // measured performance from the guided runner stacks on top)
-      let pointsAwarded = 25 // Base points for completing session
-      if (week === 2 && day === 5) pointsAwarded += 50 // Phase 1 bonus
-      if (week === 4 && day === 5) pointsAwarded += 75 // Phase 2 bonus
-      if (week === 6 && day === 5) pointsAwarded += 100 // Phase 3 bonus
-      if (week === 8 && day === 5) pointsAwarded += 125 // Phase 4 bonus
-      if (week === 10 && day === 5) pointsAwarded += 150 // Phase 5 bonus
-      if (week === 12 && day === 5) pointsAwarded += 500 // Graduation bonus!
-      pointsAwarded += performanceBonus
-
-      await prisma.gamificationPoint.create({
-        data: {
-          userId: user.id,
-          pointType: 'vision_session_completed',
-          amount: pointsAwarded,
-          activitySource: `Completed ${sessionData?.title || 'Vision Session'} - Week ${week} Day ${day}`
-        }
+      const award = await awardVisionPoints({
+        userId: user.id,
+        dayKey: localDay.value.localDate,
+        awardType: 'vision_program_current_session',
+        sessionTitle: sessionData?.title || 'Vision Session',
+        week,
+        day,
+        performanceBonus,
       })
 
       return NextResponse.json({
         success: true,
         message: 'Session completed!',
         dailySession,
-        pointsAwarded,
+        pointsAwarded: award.points,
         performanceBonus,
         newStreak: newStreakDays,
         phaseCompleted: Object.keys(phaseUpdates).length > 0 ? phaseUpdates : null
