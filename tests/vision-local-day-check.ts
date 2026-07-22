@@ -79,6 +79,17 @@ for (const [script, marker] of [
   const source = readFileSync(new URL(`../${script}`, import.meta.url), 'utf8')
   assert.ok(source.includes(marker), `${script} routes every Vision Program probe through its metadata helper`)
   assert.doesNotMatch(source, /fetch\(['"]\/api\/vision\/program/, `${script} has no unadorned Vision Program fetch`)
+  if (script !== 'scripts/abort-visibility-probe.mjs') {
+    assert.match(source, /const requestBody = method === 'GET' \|\| method === 'HEAD'\s*\? undefined/, `${script} omits a forbidden GET/HEAD request body`)
+  }
 }
+
+const programRoute = readFileSync(new URL('../app/api/vision/program/route.ts', import.meta.url), 'utf8')
+assert.match(programRoute, /async function parseRequestJson\(req: NextRequest\)/, 'program route has a local safe JSON parser')
+assert.equal(
+  (programRoute.match(/if \(!parsed\.ok\) return invalidJson\(\)/g) || []).length,
+  2,
+  'authenticated POST and PATCH reject malformed JSON with a 400 response',
+)
 
 console.log('Vision local-day checks passed.')

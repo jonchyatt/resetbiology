@@ -30,7 +30,9 @@ const api = (method, url, body) => page.evaluate(async ({ method, url, body }) =
   const requestUrl = isVisionProgram && method === 'GET'
     ? `${url}${url.includes('?') ? '&' : '?'}${new URLSearchParams({ localDate, timeZone }).toString()}`
     : url
-  const requestBody = isVisionProgram ? { localDate, timeZone, ...(body || {}) } : body
+  const requestBody = method === 'GET' || method === 'HEAD'
+    ? undefined
+    : isVisionProgram ? { localDate, timeZone, ...(body || {}) } : body
   const r = await fetch(requestUrl, { method, headers: { 'Content-Type': 'application/json' }, body: requestBody ? JSON.stringify(requestBody) : undefined })
   const t = await r.text(); try { return { status: r.status, json: JSON.parse(t) } } catch { return { status: r.status } }
 }, { method, url, body })

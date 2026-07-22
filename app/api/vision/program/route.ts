@@ -21,6 +21,18 @@ function invalidLocalDay(error: string) {
   return NextResponse.json({ error }, { status: 400 })
 }
 
+function invalidJson() {
+  return NextResponse.json({ error: 'Request body must be valid JSON' }, { status: 400 })
+}
+
+async function parseRequestJson(req: NextRequest): Promise<{ ok: true; body: any } | { ok: false }> {
+  try {
+    return { ok: true, body: await req.json() }
+  } catch {
+    return { ok: false }
+  }
+}
+
 // GET: Get user's program enrollment and today's session
 export async function GET(req: NextRequest) {
   try {
@@ -161,7 +173,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json()
+    const parsed = await parseRequestJson(req)
+    if (!parsed.ok) return invalidJson()
+    const body = parsed.body
     const localDay = validateVisionLocalDayInput(body)
     if (!localDay.ok) return invalidLocalDay(localDay.error)
     const { action, data } = body
@@ -459,7 +473,9 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json()
+    const parsed = await parseRequestJson(req)
+    if (!parsed.ok) return invalidJson()
+    const body = parsed.body
     const localDay = validateVisionLocalDayInput(body)
     if (!localDay.ok) return invalidLocalDay(localDay.error)
     const { action, data } = body

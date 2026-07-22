@@ -54,7 +54,9 @@ const api = async (method, url, body) => {
     const requestUrl = isVisionProgram && method === 'GET'
       ? `${url}${url.includes('?') ? '&' : '?'}${new URLSearchParams({ localDate, timeZone }).toString()}`
       : url
-    const requestBody = isVisionProgram ? { localDate, timeZone, ...(body || {}) } : body
+    const requestBody = method === 'GET' || method === 'HEAD'
+      ? undefined
+      : isVisionProgram ? { localDate, timeZone, ...(body || {}) } : body
     const r = await fetch(requestUrl, {
       method,
       headers: { 'Content-Type': 'application/json' },
