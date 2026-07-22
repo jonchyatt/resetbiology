@@ -1,18 +1,19 @@
 # Reset Biology Vision GODMODE — State
 
 last_updated: 2026-07-21
-status: P0_A_AUTHORIZED
+status: P0_B_FOREMAN_GATE
 foreman: gpt-5.6-sol at xhigh
 conduit_session: fe2b7091
 branch: vision-interactive-overhaul
-baseline: da65ec56
+baseline: add9dc29
 initial_scaffold_commit: d3ed8030
 candidate_binding: current clean HEAD; exact corrective SHA is recorded after commit in the Jarvis foreman ledger to avoid an impossible self-referential commit hash
 
 ## Current verdict
 
-- ACCEPT: control plane closed at product `7d405541` and Jarvis `676b2d159`; P0-A is authorized as the first serialized implementation ticket.
-- HOLD: P0-B through P0-D remain queued behind P0-A acceptance; Phase 8 remains held for Jon's persona ruling.
+- ACCEPT: P0-A is `VERIFIED + DEPLOYED + LIVE_PASS` at product `add9dc29`; production master, authenticated member-local API behavior, Chromium phone-width journey, real WebKit journey, tester cursor, and cleanup receipts all passed.
+- AUTHORIZE: P0-B DailyAward migration advances to the Sol foreman ticket gate as the next serialized implementation packet.
+- HOLD: P0-C and P0-D remain queued behind P0-B acceptance; Phase 8 remains held for Jon's persona ruling.
 - REJECT: stale camera parking, old WP0–WP8 as the complete roadmap, direct point creation, capped or CSS-resolution therapeutic stimuli, single-eye visual acceptance, Vercel CLI, and branch/spectacle work that shortchanges the adult trunk.
 
 ## Known risk map
@@ -22,7 +23,7 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 - Current product branch is clean after rebase; the exact mutable ahead/behind count is verified from Git at each ticket gate rather than frozen here.
 - Phase 8 persona identity is a recorded non-Phase-0 blocker: direct user text says inverse-Gil, while the separately saved rail copy says Inverse Yale. Do not build or blend either until Jon resolves it.
 
-## P0-A authorized write set
+## P0-A closed write set
 
 - `src/lib/vision/localDayInput.ts` — new vision-scoped validator.
 - `app/api/vision/program/route.ts`.
@@ -31,9 +32,22 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 - `src/components/Vision/Training/DailyPractice.tsx`.
 - `src/components/Vision/Training/SessionRunner.tsx`.
 - `tests/vision-local-day-check.ts`.
+- `src/lib/computeVisionReminders.ts`.
+- `scripts/oracle-vision-reminders.ts`.
+- `scripts/vision-journey-verify.mjs`.
+- `scripts/foreman-live-probe.mjs`.
+- `scripts/abort-visibility-probe.mjs`.
+- `scripts/vision-day-traversal-check.mjs`.
 
 `src/lib/localDay.ts` is read-only context. Any need to edit it returns `NEEDS_CONTEXT` and requires a separate CRITICAL-radius ticket.
 
+## P0-A closure evidence
+
+- Build exit 0 with TypeScript validity and 233/233 static pages.
+- Blind verifier PASS after one contained fix wave; local-day test PASS, reminder oracle 13/13, traversal 60/60 with six assessments and exact tester reset.
+- Production Chromium phone-width contract journey 18/18; canonical WebKit journey 13/13; canonical WebKit tester probe 6/6; WebKit abort/zero-persistence probe PASS.
+- Automated sessions created by proof were removed from both the tester identity and the initially mismatched non-tester identity; both finished unenrolled with no fake Vision progress.
+
 ## Next gate
 
-Refresh and rebase current `origin/master`, dispatch the exact P0-A ticket, build, run `npx tsx tests/vision-local-day-check.ts`, commit clean, blind-verify, deploy by the bound Git sequence, and prove the production member-local evening boundary.
+Sol classifies the current DailyAward sibling pattern, names the exact four direct Vision point writers, defines one transaction-safe helper and its idempotency key contract, and issues the seven-section P0-B ticket. No P0-B implementation begins before that foreman ruling.
