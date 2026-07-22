@@ -7,6 +7,7 @@ import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals, type Goals } from "./MacroGoals"
 import { useToast } from "@/components/ui/Toast"
+import { dayKeyToUtcMidnight, localDayKey, todayLocalKey } from "@/lib/localDay"
 
 interface FoodEntry {
   id: string
@@ -61,18 +62,11 @@ interface FoodHistoryEntry {
   } | null
   mealType?: string | null
   loggedAt: string
+  localDate?: string | null
 }
 
 const num = (v: any): number => (typeof v === "number" && Number.isFinite(v) ? v : 0)
 const round1 = (v: number) => Math.round((v + Number.EPSILON) * 10) / 10
-
-// User's local calendar day as YYYY-MM-DD — the same string the logger stores.
-function localDayString(d = new Date()): string {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, "0")
-  const day = String(d.getDate()).padStart(2, "0")
-  return `${y}-${m}-${day}`
-}
 
 export function NutritionTracker() {
   const toast = useToast()
@@ -279,11 +273,11 @@ export function NutritionTracker() {
   }
 
   // ---- Derived: today's foods (filtered by the stored local date, not browser toDateString) ----
-  const today = localDayString()
+  const today = todayLocalKey()
   const todaysFoods: FoodEntry[] = useMemo(() => {
     if (!recentLogs) return []
     return recentLogs
-      .filter((e) => (e.localDate || localDayString(new Date(e.loggedAt))) === today)
+      .filter((e) => (e.localDate || localDayKey(new Date(e.loggedAt))) === today)
       .map((e) => ({
         id: e.id,
         name: e.itemName,
@@ -356,22 +350,23 @@ export function NutritionTracker() {
       nutrients: e.nutrients ?? null,
       mealType: e.mealType ?? null,
       loggedAt: e.loggedAt,
+      localDate: e.localDate ?? null,
     }))
   }, [recentLogs])
 
   const groupedHistory = useMemo(() => {
     if (!historyItems || historyItems.length === 0) return []
     const groups = new Map<string, {
-      date: Date; label: string; entries: FoodHistoryEntry[]
+      label: string; dateLabel: string; entries: FoodHistoryEntry[]
       totals: { calories: number; protein: number; carbs: number; fats: number; fiber: number }
     }>()
     historyItems.forEach((entry) => {
-      const date = new Date(entry.loggedAt)
-      const key = date.toISOString().split('T')[0]
+      const key = entry.localDate || localDayKey(new Date(entry.loggedAt))
       if (!groups.has(key)) {
+        const date = dayKeyToUtcMidnight(key)
         groups.set(key, {
-          date,
-          label: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }),
+          label: date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }),
+          dateLabel: date.toLocaleDateString(undefined, { timeZone: 'UTC' }),
           entries: [],
           totals: { calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0 },
         })
@@ -387,7 +382,7 @@ export function NutritionTracker() {
     return Array.from(groups.entries())
       .sort((a, b) => (a[0] < b[0] ? 1 : -1))
       .map(([key, group]) => ({
-        key, date: group.date, label: group.label, totals: group.totals,
+        key, label: group.label, dateLabel: group.dateLabel, totals: group.totals,
         entries: group.entries.sort((a, b) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime()),
       }))
   }, [historyItems])
@@ -860,7 +855,7 @@ export function NutritionTracker() {
                         <div className="flex items-center justify-between gap-4 border-b border-secondary-400/20 pb-3">
                           <div>
                             <p className="text-lg font-semibold text-white">{group.label}</p>
-                            <p className="text-xs text-gray-400">{group.date.toLocaleDateString()}</p>
+                            <p className="text-xs text-gray-400">{group.dateLabel}</p>
                           </div>
                           <div className="text-right text-sm text-gray-300">
                             <p className="text-emerald-300 font-semibold">P {Math.round(totals.protein)}g</p>
