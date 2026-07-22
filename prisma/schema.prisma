@@ -324,6 +324,7 @@ model peptide_doses {
   createdAt              DateTime               @default(now())
   localDate              String? // User's local date YYYY-MM-DD for timezone-safe bucketing
   localTime              String? // User's local time HH:MM:SS
+  slotKey                String? // protocolId::YYYY-MM-DD::slotId; nullable for legacy/off-schedule logs
   user_peptide_protocols user_peptide_protocols @relation(fields: [protocolId], references: [id])
 }
 

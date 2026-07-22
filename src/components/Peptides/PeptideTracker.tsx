@@ -28,6 +28,7 @@ import {
   hasKnownSchedule,
   parseDoseTimes,
 } from "@/lib/peptide-frequency";
+import { buildPeptideDoseSlotKey } from "@/lib/peptide-dose-slot";
 
 // ---------------------------------------------------------------------------
 // H1 containment: the backend protocol shape (ProtocolInput/ApiProtocolShape
@@ -177,6 +178,176 @@ interface PeptideProtocol {
   administrationType?: string;
 }
 
+export type DoseSlot = {
+  id: string;
+  time: string;
+  period: "am" | "pm" | "any";
+};
+
+type DoseScheduleDecision = "scheduled" | "off_schedule" | "unknown";
+
+export type CalendarSlotRecord = {
+  protocolId: string;
+  protocolName: string;
+  localDay: string;
+  slotId: string;
+  slotKey: string;
+  scheduledTime: string | null;
+  status: "completed" | "pending";
+  sourceDose?: any;
+};
+
+// The product's only decision point for opening dose entry. It delegates all
+// frequency parsing to peptide-frequency.ts so unknown text never becomes an
+// invented schedule or an invented violation.
+export function doseScheduleDecision(
+  frequency: string,
+  protocolStartDate: Date,
+  localDay: Date,
+): DoseScheduleDecision {
+  if (!hasKnownSchedule(frequency)) return "unknown";
+  return isDoseDayForProtocol(frequency, protocolStartDate, localDay)
+    ? "scheduled"
+    : "off_schedule";
+}
+
+export function slotsForProtocol(protocol: PeptideProtocol): DoseSlot[] {
+  const lowerTiming = protocol.timing.toLowerCase();
+
+  if (protocol.timing.includes("/")) {
+    return protocol.timing.split("/").map((time, idx) => ({
+      id: `slot-${idx}`,
+      time: time.trim(),
+      period: "any" as const,
+    }));
+  }
+
+  if (
+    lowerTiming.includes("twice") ||
+    (lowerTiming.includes("am") && lowerTiming.includes("pm"))
+  ) {
+    return [
+      { id: "am", time: "08:00", period: "am" },
+      { id: "pm", time: "20:00", period: "pm" },
+    ];
+  }
+
+  const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/);
+  if (timeMatch) {
+    return [{
+      id: "0",
+      time: `${timeMatch[1].padStart(2, "0")}:${timeMatch[2]}`,
+      period: "any",
+    }];
+  }
+
+  const defaultTime = protocol.timing.includes("AM")
+    ? "08:00"
+    : protocol.timing.includes("PM")
+      ? "20:00"
+      : "12:00";
+  return [{ id: "0", time: defaultTime, period: "any" }];
+}
+
+export function matchCompletionSlot({
+  protocolId,
+  localDay,
+  slots,
+  existingSlotKey,
+}: {
+  protocolId: string;
+  localDay: string;
+  slots: DoseSlot[];
+  existingSlotKey?: string;
+}): DoseSlot | undefined {
+  // A canonical slot key is durable identity. Prefer it over all inference.
+  const durableMatch = slots.find(
+    (slot) => existingSlotKey === buildPeptideDoseSlotKey(protocolId, localDay, slot.id),
+  );
+  if (durableMatch) return durableMatch;
+  if (existingSlotKey) return undefined;
+  if (slots.length === 1) return slots[0];
+  // Multiple siblings require durable identity. Log time is the moment the
+  // member submitted, not proof of which scheduled slot they intended.
+  return undefined;
+}
+
+// Reconciliation is deliberately slot-key based. A historical dose that
+// cannot be assigned to one durable slot remains a separate completed record;
+// it never consumes an ambiguous sibling pending slot.
+export function reconcileCalendarSlotRecords(
+  scheduled: CalendarSlotRecord[],
+  completed: CalendarSlotRecord[],
+): CalendarSlotRecord[] {
+  const pending = new Map(scheduled.map((record) => [record.slotKey, record]));
+  completed.forEach((record) => pending.delete(record.slotKey));
+  // Every historical log remains visible. A matching pending slot is consumed
+  // at most once, so duplicate historical logs cannot overwrite each other.
+  return [...completed, ...pending.values()];
+}
+
+export function selectDoseEntrySlot<T extends { id: string; scheduledTime: string | null }>(
+  pendingSlots: T[],
+  requestedScheduledDoseId?: string,
+): T | undefined {
+  if (requestedScheduledDoseId) {
+    // A stale clicked row is not permission to switch the member to another
+    // slot. Fail closed and let the next render offer the currently valid row.
+    return pendingSlots.find((slot) => slot.id === requestedScheduledDoseId);
+  }
+  return [...pendingSlots].sort(
+    (a, b) => {
+      const asMinutes = (time: string | null) => {
+        if (!time) return 24 * 60;
+        const [hours, minutes] = time.split(":").map(Number);
+        return Number.isFinite(hours) && Number.isFinite(minutes)
+          ? hours * 60 + minutes
+          : 24 * 60;
+      };
+      return asMinutes(a.scheduledTime) - asMinutes(b.scheduledTime);
+    },
+  )[0];
+}
+
+type DoseEntryIntent =
+  | { kind: "abort" }
+  | { kind: "confirm_off_schedule" }
+  | { kind: "open"; scheduledDoseId?: string; hasNoScheduledRow: boolean };
+
+export function resolveDoseEntryIntent<T extends { id: string; scheduledTime: string | null }>(
+  scheduleDecision: DoseScheduleDecision,
+  pendingSlots: T[],
+  currentValidScheduledDoseIds: ReadonlySet<string>,
+  requestedScheduledDoseId?: string,
+): DoseEntryIntent {
+  // A freshly off-schedule/unknown protocol cannot inherit identity from a
+  // row rendered under its old schedule. Only the scheduled path may bind a
+  // click to a persisted slot key.
+  if (scheduleDecision === "off_schedule") return { kind: "confirm_off_schedule" };
+  if (scheduleDecision === "unknown") {
+    return { kind: "open", hasNoScheduledRow: true };
+  }
+
+  const currentPendingSlots = pendingSlots.filter((slot) =>
+    currentValidScheduledDoseIds.has(slot.id));
+  if (
+    requestedScheduledDoseId
+    && !currentValidScheduledDoseIds.has(requestedScheduledDoseId)
+  ) {
+    return { kind: "abort" };
+  }
+  const nextSlot = selectDoseEntrySlot(
+    currentPendingSlots,
+    requestedScheduledDoseId,
+  );
+  if (requestedScheduledDoseId && !nextSlot) return { kind: "abort" };
+  return {
+    kind: "open",
+    scheduledDoseId: nextSlot?.id,
+    hasNoScheduledRow: false,
+  };
+}
+
 interface DoseEntry {
   id: string;
   peptideId: string;
@@ -184,10 +355,12 @@ interface DoseEntry {
   // sourced from it (see fetchTodaysDoses) so it's genuinely nullable here.
   scheduledTime: string | null;
   actualTime?: string;
+  localTime?: string | null;
   completed: boolean;
   notes?: string;
   sideEffects?: string[];
   dateKey: string;
+  slotKey?: string;
 }
 
 export function PeptideTracker() {
@@ -226,54 +399,6 @@ export function PeptideTracker() {
     return `${h12}:${m.toString().padStart(2, "0")} ${period}`;
   };
 
-  // Derive today's dose slot(s) for a protocol from its timing string —
-  // canonical 24h "HH:MM", the protocol's own value, never the log moment
-  // (T1 R1/R5). Shared by generateTodaysDosesPreservingLogged (building
-  // pending rows) and logDose (recovering the slot a log satisfies).
-  const slotsForProtocol = (protocol: PeptideProtocol) => {
-    const lowerTiming = protocol.timing.toLowerCase();
-
-    // Check for explicit slash-separated times first (e.g., "08:00/20:00")
-    if (protocol.timing.includes("/")) {
-      const times = protocol.timing.split("/").map((t) => t.trim());
-      return times.map((time, idx) => ({
-        id: `slot-${idx}`,
-        time: time,
-        period: "any" as const,
-      }));
-    }
-
-    // Check for "twice daily" or "AM & PM"
-    if (
-      lowerTiming.includes("twice") ||
-      (lowerTiming.includes("am") && lowerTiming.includes("pm"))
-    ) {
-      return [
-        { id: "am", time: "08:00", period: "am" as const },
-        { id: "pm", time: "20:00", period: "pm" as const },
-      ];
-    }
-
-    // Check for single time in HH:MM format
-    const timeMatch = protocol.timing.match(/\b(\d{1,2}):(\d{2})\b/);
-    if (timeMatch) {
-      const hours = timeMatch[1].padStart(2, "0");
-      const minutes = timeMatch[2];
-      return [
-        { id: "0", time: `${hours}:${minutes}`, period: "any" as const },
-      ];
-    }
-
-    // Fall back to AM/PM keywords
-    const defaultTime = protocol.timing.includes("AM")
-      ? "08:00"
-      : protocol.timing.includes("PM")
-        ? "20:00"
-        : "12:00";
-
-    return [{ id: "0", time: defaultTime, period: "any" as const }];
-  };
-
   // Presentation-only header framing — "your daily protocol" greeting + date.
   // ponytail: computed once at mount, not re-derived on a tick; a header
   // greeting doesn't need live-clock precision.
@@ -304,9 +429,12 @@ export function PeptideTracker() {
   const [todayKey, setTodayKey] = useState<string>(getTodayKey);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [selectedProtocol, setSelectedProtocol] = useState<
-    (PeptideProtocol & { scheduledDoseId?: string }) | null
+    (PeptideProtocol & { scheduledDoseId?: string; hasNoScheduledRow?: boolean }) | null
   >(null);
   const [showDoseModal, setShowDoseModal] = useState(false);
+  const [offScheduleConfirmation, setOffScheduleConfirmation] = useState<
+    { protocol: PeptideProtocol } | null
+  >(null);
   const [showCalculatorModal, setShowCalculatorModal] = useState(false);
   const [showAddProtocolModal, setShowAddProtocolModal] = useState(false);
   const [showQuickAddOral, setShowQuickAddOral] = useState(false);
@@ -350,6 +478,8 @@ export function PeptideTracker() {
   // the skeleton.
   const [protocolsLoaded, setProtocolsLoaded] = useState(false);
   const bootstrapped = useRef(false);
+  const offScheduleCancelRef = useRef<HTMLButtonElement>(null);
+  const offScheduleTriggerRef = useRef<HTMLElement | null>(null);
 
   const fetchTodaysDoses = useCallback(
     async (dayKey: string = todayKey) => {
@@ -376,6 +506,7 @@ export function PeptideTracker() {
                 scheduledTime: dose.time,
                 completed: true,
                 actualTime: dose.doseDate,
+                localTime: dose.localTime || null,
                 notes: dose.notes || dose.sideEffects || "",
                 sideEffects: dose.sideEffects
                   ? String(dose.sideEffects)
@@ -384,6 +515,7 @@ export function PeptideTracker() {
                       .filter(Boolean)
                   : undefined,
                 dateKey: doseDateKey,
+                slotKey: typeof dose.slotKey === "string" ? dose.slotKey : undefined,
               } as DoseEntry | null;
             })
             .filter(Boolean) as DoseEntry[];
@@ -448,11 +580,7 @@ export function PeptideTracker() {
   // Generate future doses based on active protocols
   const generateFutureDoses = useCallback(
     (protocols: PeptideProtocol[], endDate: Date) => {
-      const futureDoses: Array<{
-        date: string;
-        protocolName: string;
-        completed: boolean;
-      }> = [];
+      const futureDoses: CalendarSlotRecord[] = [];
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -491,10 +619,17 @@ export function PeptideTracker() {
             );
 
             if (shouldSchedule) {
-              futureDoses.push({
-                date: dateToLocalKey(currentDate),
-                protocolName: protocol.name,
-                completed: false,
+              const localDay = dateToLocalKey(currentDate);
+              slotsForProtocol(protocol).forEach((slot) => {
+                futureDoses.push({
+                  protocolId: protocol.id,
+                  protocolName: protocol.name,
+                  localDay,
+                  slotId: slot.id,
+                  slotKey: buildPeptideDoseSlotKey(protocol.id, localDay, slot.id),
+                  scheduledTime: slot.time,
+                  status: "pending",
+                });
               });
             }
 
@@ -517,86 +652,56 @@ export function PeptideTracker() {
   );
 
   const doseHistoryByDate = useMemo(() => {
-    const map = new Map<
-      string,
-      { count: number; labels: Set<string>; completed: number; pending: number }
-    >();
-
-    // Add completed/historical doses
-    doseHistory.forEach((dose: any) => {
-      // Use localDate if available (timezone-safe), otherwise fall back to date conversion
-      let key: string;
-      if (dose?.localDate) {
-        key = dose.localDate;
-      } else {
-        const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
-        if (!rawDate) return;
-        key = dateToLocalKey(new Date(rawDate));
-      }
-
-      if (!map.has(key)) {
-        map.set(key, {
-          count: 0,
-          labels: new Set<string>(),
-          completed: 0,
-          pending: 0,
-        });
-      }
-
-      const entry = map.get(key)!;
-      entry.count += 1;
-      entry.completed += 1;
-      const protocolName =
-        dose?.user_peptide_protocols?.peptides?.name ??
-        dose?.protocolName ??
-        "";
-      if (protocolName) {
-        entry.labels.add(protocolName);
-      }
-    });
-
-    // Add future scheduled doses (60 days ahead)
+    // Calendar reconciliation is deliberately protocol+local-day+slot based.
+    // Names are display-only because same-name protocols and AM/PM siblings
+    // are independently actionable.
     const futureEndDate = new Date();
     futureEndDate.setDate(futureEndDate.getDate() + 60);
-    const futureDoses = generateFutureDoses(currentProtocols, futureEndDate);
+    const scheduled = generateFutureDoses(currentProtocols, futureEndDate);
+    const completed = doseHistory.flatMap((dose: any): CalendarSlotRecord[] => {
+      const rawDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
+      const localDay = dose?.localDate || (rawDate ? dateToLocalKey(new Date(rawDate)) : null);
+      if (!localDay) return [];
 
-    futureDoses.forEach((futureDose) => {
-      const key = futureDose.date;
+      const protocolId = dose?.protocolId || dose?.user_peptide_protocols?.id || `history-${dose?.id || localDay}`;
+      const protocol = currentProtocols.find((candidate) => candidate.id === protocolId);
+      const protocolName = protocol?.name || dose?.user_peptide_protocols?.peptides?.name || dose?.protocolName || "Unknown Protocol";
+      const slots = protocol ? slotsForProtocol(protocol) : [];
+      const matchedSlot = protocol
+        ? matchCompletionSlot({
+            protocolId,
+            localDay,
+            slots,
+            existingSlotKey: typeof dose?.slotKey === "string" ? dose.slotKey : undefined,
+          })
+        : undefined;
+      // Older rows without a durable, unambiguous slot ID remain visible but
+      // cannot consume an AM/PM or same-day sibling slot.
+      const slotId = matchedSlot?.id || `legacy-${dose?.id || "dose"}`;
+      const slotKey = matchedSlot
+        ? buildPeptideDoseSlotKey(protocolId, localDay, matchedSlot.id)
+        : `display-only::${protocolId}::${localDay}::${slotId}`;
 
-      if (!map.has(key)) {
-        map.set(key, {
-          count: 0,
-          labels: new Set<string>(),
-          completed: 0,
-          pending: 0,
-        });
-      }
+      return [{
+        protocolId,
+        protocolName,
+        localDay,
+        slotId,
+        slotKey,
+        scheduledTime: matchedSlot?.time || dose?.time || null,
+        status: "completed",
+        sourceDose: dose,
+      }];
+    });
 
-      const entry = map.get(key)!;
-
-      // Check if this dose is already completed
-      const alreadyCompleted = doseHistory.some((dose: any) => {
-        // Use localDate if available, otherwise convert doseDate
-        let doseDateKey: string;
-        if (dose?.localDate) {
-          doseDateKey = dose.localDate;
-        } else {
-          const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
-          if (!doseDate) return false;
-          doseDateKey = dateToLocalKey(new Date(doseDate));
-        }
-        const doseName =
-          dose?.user_peptide_protocols?.peptides?.name ??
-          dose?.protocolName ??
-          "";
-        return doseDateKey === key && doseName === futureDose.protocolName;
-      });
-
-      if (!alreadyCompleted) {
-        entry.count += 1;
-        entry.pending += 1;
-        entry.labels.add(futureDose.protocolName);
-      }
+    const records = reconcileCalendarSlotRecords(scheduled, completed);
+    const map = new Map<string, { count: number; completed: number; pending: number; records: CalendarSlotRecord[] }>();
+    records.forEach((record) => {
+      const entry = map.get(record.localDay) || { count: 0, completed: 0, pending: 0, records: [] };
+      entry.count += 1;
+      entry[record.status] += 1;
+      entry.records.push(record);
+      map.set(record.localDay, entry);
     });
 
     return map;
@@ -614,7 +719,6 @@ export function PeptideTracker() {
       count: number;
       completed: number;
       pending: number;
-      items: string[];
       date: Date;
     } | null> = [];
 
@@ -634,7 +738,6 @@ export function PeptideTracker() {
         count: summary?.count ?? 0,
         completed: summary?.completed ?? 0,
         pending: summary?.pending ?? 0,
-        items: summary ? Array.from(summary.labels) : [],
         date,
       });
     }
@@ -718,11 +821,7 @@ export function PeptideTracker() {
           if (!doseDate) return false;
           doseDateKey = dateToLocalKey(new Date(doseDate));
         }
-        const doseName =
-          dose?.user_peptide_protocols?.peptides?.name ??
-          dose?.protocolName ??
-          "";
-        return doseDateKey === todayKey && doseName === protocol.name;
+        return doseDateKey === todayKey && dose?.protocolId === protocol.id;
       });
 
       // Start from today if not completed, otherwise start from tomorrow
@@ -1330,16 +1429,19 @@ export function PeptideTracker() {
           const protocol = protocols.find((p) => p.id === dose.peptideId);
           if (!protocol) return dose;
           const slots = slotsForProtocol(protocol);
-          const loggedHour = dose.actualTime
-            ? new Date(dose.actualTime).getHours()
-            : null;
-          const matched =
-            slots.find((slot) => {
-              if (slot.period === "am") return loggedHour !== null && loggedHour < 12;
-              if (slot.period === "pm") return loggedHour !== null && loggedHour >= 12;
-              return true;
-            }) ?? slots[0];
-          return matched ? { ...dose, scheduledTime: matched.time } : dose;
+          const matched = matchCompletionSlot({
+            protocolId: protocol.id,
+            localDay: dayKey,
+            slots,
+            existingSlotKey: dose.slotKey,
+          });
+          return matched
+            ? {
+                ...dose,
+                scheduledTime: matched.time,
+                slotKey: buildPeptideDoseSlotKey(protocol.id, dayKey, matched.id),
+              }
+            : dose;
         });
 
       const pendingMap = new Map(
@@ -1355,22 +1457,27 @@ export function PeptideTracker() {
 
       const hasLoggedForSlot = (
         protocolId: string,
-        slot: { period: "am" | "pm" | "any"; time: string },
+        slot: DoseSlot,
       ) => {
-        return logged.some((dose) => {
-          if (dose.peptideId !== protocolId) return false;
-          if (!dose.actualTime) return slot.period === "any";
-
-          const loggedHour = new Date(dose.actualTime).getHours();
-          if (slot.period === "am") return loggedHour < 12;
-          if (slot.period === "pm") return loggedHour >= 12;
-          return true;
-        });
+        const slotKey = buildPeptideDoseSlotKey(protocolId, dayKey, slot.id);
+        return logged.some((dose) => dose.slotKey === slotKey);
       };
 
       activeProtocols.forEach((protocol) => {
+        const protocolStartDate = protocol.startDate
+          ? parseLocalDateKey(protocol.startDate)
+          : parseLocalDateKey(dayKey);
+        if (
+          doseScheduleDecision(
+            protocol.frequency,
+            protocolStartDate,
+            parseLocalDateKey(dayKey),
+          ) === "off_schedule"
+        ) {
+          return;
+        }
         slotsForProtocol(protocol).forEach((slot) => {
-          const pendingId = `${protocol.id}-${dayKey}-${slot.id}`;
+          const pendingId = buildPeptideDoseSlotKey(protocol.id, dayKey, slot.id);
           const alreadyLogged = hasLoggedForSlot(protocol.id, slot);
           const alreadyPending = pendingMap.has(pendingId);
 
@@ -1381,6 +1488,7 @@ export function PeptideTracker() {
               scheduledTime: slot.time,
               completed: false,
               dateKey: dayKey,
+              slotKey: pendingId,
             });
           }
         });
@@ -1424,24 +1532,68 @@ export function PeptideTracker() {
     setShowScheduleModal(true);
   };
 
-  const openDoseModal = (protocol: PeptideProtocol) => {
+  const openDoseEntry = (
+    protocol: PeptideProtocol,
+    scheduledDoseId?: string,
+    hasNoScheduledRow = false,
+  ) => {
+    setSelectedProtocol({ ...protocol, scheduledDoseId, hasNoScheduledRow });
+    setShowDoseModal(true);
+    setDoseNotes("");
+    setDoseSideEffects([]);
+  };
+
+  const cancelOffScheduleConfirmation = useCallback(() => {
+    setOffScheduleConfirmation(null);
+    window.setTimeout(() => offScheduleTriggerRef.current?.focus(), 0);
+  }, []);
+
+  useEffect(() => {
+    if (!offScheduleConfirmation) return;
+    const dialog = document.getElementById("off-schedule-dose-dialog");
+    offScheduleCancelRef.current?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        cancelOffScheduleConfirmation();
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+      const focusable = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [offScheduleConfirmation, cancelOffScheduleConfirmation]);
+
+  const openDoseModal = (
+    protocol: PeptideProtocol,
+    requestedScheduledDoseId?: string,
+  ) => {
     // Check if there are any scheduled doses for this protocol today
     const todaysScheduledDoses = todaysDoses.filter(
       (dose) =>
         dose.peptideId === protocol.id && !dose.id.includes("unscheduled"),
     );
 
-    // T2 mutation-arc row 33: `todaysScheduledDoses` is populated by
-    // generateTodaysDosesPreservingLogged, which only regenerates on a
-    // [currentProtocols, todayKey] effect and unconditionally seeds a slot
-    // for every active protocol (it never itself consults the frequency's
-    // day-of-week schedule). Right after a frequency PATCH, that regenerated
-    // slot made this array non-empty even on an off-schedule day, so the
-    // override warning was silently skipped on the FIRST off-schedule
-    // attempt — it only appeared after a delete+refetch left the array
-    // empty by coincidence. Derive "is today actually scheduled" fresh, on
-    // every call, from the same shared resolver generateFutureDoses/
-    // getNextDoseDate already use, instead of trusting that stale proxy.
+    // T2 mutation-arc row 33: derive whether today is scheduled fresh on
+    // every call from the same shared resolver generateFutureDoses/
+    // getNextDoseDate use. The today list is now also resolver-filtered, but
+    // the direct check keeps a just-edited protocol from relying on a stale
+    // render between its PATCH and the next regeneration.
     // Unknown-schedule frequencies (bare "3x per week", "as needed") are
     // never treated as an override — there's no chosen schedule to violate
     // (H2/H3 doctrine: unknown frequency never invents a violation).
@@ -1450,21 +1602,11 @@ export function PeptideTracker() {
     const protocolStartDate = protocol.startDate
       ? parseLocalDateKey(protocol.startDate)
       : today;
-    const isScheduledToday =
-      !hasKnownSchedule(protocol.frequency) ||
-      isDoseDayForProtocol(protocol.frequency, protocolStartDate, today);
-
-    if (!isScheduledToday) {
-      // No scheduled dose - show override warning
-      const shouldProceed = confirm(
-        `⚠️ OVERRIDE WARNING\n\n` +
-          `${protocol.name} is not scheduled for today according to your protocol.\n\n` +
-          `Frequency: ${protocol.frequency}\n` +
-          `Timing: ${protocol.timing}\n\n` +
-          `Do you want to proceed with an unscheduled dose? This will be logged in your journal with an override flag.`,
-      );
-      if (!shouldProceed) return;
-    }
+    const scheduleDecision = doseScheduleDecision(
+      protocol.frequency,
+      protocolStartDate,
+      today,
+    );
 
     // H6: a twice-daily (AM+PM) protocol has TWO independently-loggable
     // slots today (see generateTodaysDosesPreservingLogged/slotsForProtocol
@@ -1473,6 +1615,26 @@ export function PeptideTracker() {
     // one completed dose, which made the second (PM) dose unloggable once
     // the first (AM) was logged.
     const todaysPendingDoses = todaysScheduledDoses.filter((dose) => !dose.completed);
+    const currentLocalDay = dateToLocalKey(today);
+    const currentValidScheduledDoseIds = new Set(
+      slotsForProtocol(protocol).map((slot) =>
+        buildPeptideDoseSlotKey(protocol.id, currentLocalDay, slot.id)),
+    );
+
+    const entryIntent = resolveDoseEntryIntent(
+      scheduleDecision,
+      todaysPendingDoses,
+      currentValidScheduledDoseIds,
+      requestedScheduledDoseId,
+    );
+    if (entryIntent.kind === "abort") return;
+
+    if (entryIntent.kind === "confirm_off_schedule") {
+      offScheduleTriggerRef.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      setOffScheduleConfirmation({ protocol });
+      return;
+    }
 
     // Row 34 LOW (mutation-arc parity contract): the contract's literal
     // phrase is "…already logged today…" (no "for all doses"). Deliberately
@@ -1489,16 +1651,11 @@ export function PeptideTracker() {
       return;
     }
 
-    // Target the earliest still-pending slot so logDose (below) only clears
-    // that one slot instead of every pending slot for this protocol.
-    const nextSlot = [...todaysPendingDoses].sort(
-      (a, b) => parseTimeToMinutes(a.scheduledTime) - parseTimeToMinutes(b.scheduledTime),
-    )[0];
-
-    setSelectedProtocol({ ...protocol, scheduledDoseId: nextSlot?.id });
-    setShowDoseModal(true);
-    setDoseNotes("");
-    setDoseSideEffects([]);
+    openDoseEntry(
+      protocol,
+      entryIntent.scheduledDoseId,
+      entryIntent.hasNoScheduledRow,
+    );
   };
 
   const openCalculatorModal = (protocol: PeptideProtocol) => {
@@ -1646,6 +1803,15 @@ export function PeptideTracker() {
     const pendingSlot = todaysDoses.find(
       (dose) => dose.id === selectedProtocol.scheduledDoseId,
     );
+    // Scheduled writes require the exact clicked pending row. If it vanished
+    // or lost its canonical key, fail closed before the POST. A truly
+    // off-schedule entry has no row and intentionally omits slotKey.
+    if (
+      (!selectedProtocol.hasNoScheduledRow && !pendingSlot?.slotKey) ||
+      (selectedProtocol.scheduledDoseId && pendingSlot?.id !== selectedProtocol.scheduledDoseId)
+    ) {
+      return;
+    }
     const scheduledTime =
       pendingSlot?.scheduledTime ??
       slotsForProtocol(selectedProtocol)[0]?.time ??
@@ -1667,6 +1833,7 @@ export function PeptideTracker() {
           doseDate: now.toISOString(),
           localDate: `${year}-${month}-${day}`,
           localTime: `${hours}:${minutes}:${seconds}`,
+          slotKey: pendingSlot?.slotKey,
         }),
       });
 
@@ -1684,10 +1851,15 @@ export function PeptideTracker() {
           peptideId: selectedProtocol.id,
           scheduledTime,
           actualTime: now.toISOString(),
+          localTime: `${hours}:${minutes}:${seconds}`,
           completed: true,
           notes: doseNotes || undefined,
           sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined,
           dateKey: doseKey,
+          // The server is authoritative for persisted identity. Never
+          // reconstruct a completed slot from the client request/fallback.
+          slotKey:
+            typeof data.dose?.slotKey === "string" ? data.dose.slotKey : undefined,
         };
 
         // H6: remove only the SPECIFIC pending slot being completed (the
@@ -1897,11 +2069,7 @@ export function PeptideTracker() {
       const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
       if (!doseDate) return false;
       const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDate));
-      const doseName =
-        dose?.user_peptide_protocols?.peptides?.name ??
-        dose?.protocolName ??
-        "";
-      return doseDateKey === todayKey && doseName === protocol.name;
+      return doseDateKey === todayKey && dose?.protocolId === protocol.id;
     });
 
     // Extract next dose time from protocol timing
@@ -2270,7 +2438,7 @@ export function PeptideTracker() {
                             const protocol = currentProtocols.find(
                               (p) => p.id === dose.peptideId,
                             );
-                            if (protocol) openDoseModal(protocol);
+                            if (protocol) openDoseModal(protocol, dose.id);
                           }}
                         />
                       ))}
@@ -2517,108 +2685,72 @@ export function PeptideTracker() {
                     </div>
 
                     <div className="space-y-3">
-                      {doseHistory
-                        .filter((dose: any) => {
-                          const doseDateSource =
-                            dose?.doseDate ||
-                            dose?.createdAt ||
-                            dose?.updatedAt;
-                          if (!doseDateSource) return false;
-                          const doseDateKey =
-                            dose?.localDate ||
-                            dateToLocalKey(new Date(doseDateSource));
-                          return doseDateKey === selectedCalendarDay;
-                        })
-                        .map((dose: any) => {
-                          const doseDateSource =
-                            dose?.doseDate ||
-                            dose?.createdAt ||
-                            dose?.updatedAt ||
-                            new Date().toISOString();
-                          const doseDate = new Date(doseDateSource);
-                          const protocol = dose.user_peptide_protocols;
+                      {(doseHistoryByDate.get(selectedCalendarDay)?.records || [])
+                        .filter((record) => record.status === "completed")
+                        .map((record) => {
+                          const dose = record.sourceDose;
+                          const doseDateSource = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
+                          const doseDate = doseDateSource ? new Date(doseDateSource) : null;
                           return (
                             <div
-                              key={dose.id}
+                              key={record.sourceDose?.id ? `${record.slotKey}::${record.sourceDose.id}` : record.slotKey}
                               className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30"
                             >
                               <div className="flex justify-between items-start mb-2">
                                 <div className="flex-1">
                                   <h4 className="font-semibold text-white">
-                                    {dose.protocolName ||
-                                      protocol?.peptides?.name ||
-                                      "Unknown Protocol"}
+                                    {record.protocolName}
                                   </h4>
                                   <p className="text-sm text-gray-400">
-                                    {dose.dosage} - {dose.time}
+                                    {dose?.dosage || "Dose logged"} - {record.scheduledTime || "Time not recorded"}
                                   </p>
                                 </div>
                                 <div className="text-right flex items-start gap-2">
                                   <div>
                                     <p className="text-sm text-gray-300">
-                                      {doseDate.toLocaleDateString()}
+                                      {doseDate?.toLocaleDateString() || record.localDay}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                      {doseDate.toLocaleTimeString()}
+                                      {doseDate?.toLocaleTimeString() || ""}
                                     </p>
                                   </div>
-                                  <button
-                                    onClick={() => deleteDose(dose.id)}
-                                    className="text-red-400 hover:text-red-300 transition-colors"
-                                    title="Delete dose"
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </button>
+                                  {dose?.id && (
+                                    <button
+                                      onClick={() => deleteDose(dose.id)}
+                                      className="text-red-400 hover:text-red-300 transition-colors"
+                                      title="Delete dose"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  )}
                                 </div>
                               </div>
-                              {(dose.notes || dose.sideEffects) && (
+                              {(dose?.notes || dose?.sideEffects) && (
                                 <p className="text-sm text-gray-300 mt-2 italic">
                                   Notes/Side Effects:{" "}
-                                  {dose.notes || dose.sideEffects}
+                                  {dose?.notes || dose?.sideEffects}
                                 </p>
                               )}
                             </div>
                           );
                         })}
 
-                      {/* Show future scheduled doses for this day */}
-                      {doseHistoryByDate.get(selectedCalendarDay)?.labels &&
-                        Array.from(
-                          doseHistoryByDate.get(selectedCalendarDay)!.labels,
-                        )
-                          .filter((label) => {
-                            // Only show labels that don't have a completed dose
-                            return !doseHistory.some((dose: any) => {
-                              const doseDateSource =
-                                dose?.doseDate ||
-                                dose?.createdAt ||
-                                dose?.updatedAt;
-                              if (!doseDateSource) return false;
-                              const doseDateKey =
-                                dose?.localDate ||
-                                dateToLocalKey(new Date(doseDateSource));
-                              const doseName =
-                                dose?.user_peptide_protocols?.peptides?.name ??
-                                dose?.protocolName ??
-                                "";
-                              return (
-                                doseDateKey === selectedCalendarDay &&
-                                doseName === label
-                              );
-                            });
-                          })
-                          .map((label, idx) => (
+                      {/* Pending slots retain protocol and AM/PM identity; a
+                          completed sibling never hides them by matching a name. */}
+                      {(doseHistoryByDate.get(selectedCalendarDay)?.records || [])
+                        .filter((record) => record.status === "pending")
+                        .map((record) => (
                             <div
-                              key={`future-${idx}`}
+                              key={record.slotKey}
                               className="p-4 bg-blue-900/20 rounded-lg border border-blue-600/30"
                             >
                               <div className="flex justify-between items-start">
                                 <div className="flex-1">
                                   <h4 className="font-semibold text-blue-200">
-                                    {label}
+                                    {record.protocolName}
                                   </h4>
                                   <p className="text-sm text-blue-300 mt-1">
-                                    Scheduled
+                                    Scheduled {record.scheduledTime ? `at ${formatTime12h(record.scheduledTime)}` : ""}
                                   </p>
                                 </div>
                                 <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-400/40">
@@ -2628,15 +2760,7 @@ export function PeptideTracker() {
                             </div>
                           ))}
 
-                      {doseHistory.filter((dose: any) => {
-                        const doseDateSource =
-                          dose?.doseDate || dose?.createdAt || dose?.updatedAt;
-                        if (!doseDateSource) return false;
-                        const doseDateKey =
-                          dose?.localDate ||
-                          dateToLocalKey(new Date(doseDateSource));
-                        return doseDateKey === selectedCalendarDay;
-                      }).length === 0 && (
+                      {(doseHistoryByDate.get(selectedCalendarDay)?.records || []).length === 0 && (
                         <div className="text-center py-8 text-gray-400">
                           No doses logged for this day
                         </div>
@@ -2921,6 +3045,59 @@ export function PeptideTracker() {
                     setShowCalculatorModal(false);
                   }}
                 />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Off-schedule confirmation: this is a no-write gate. Continue only
+            opens the existing dose form; the form's submit remains the sole
+            dose POST. */}
+        {offScheduleConfirmation && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+            <div
+              id="off-schedule-dose-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="off-schedule-dose-title"
+              aria-describedby="off-schedule-dose-description"
+              className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl"
+            >
+              <h3 id="off-schedule-dose-title" className="text-xl font-bold text-white">
+                Off-schedule dose
+              </h3>
+              <div id="off-schedule-dose-description" className="mt-4 space-y-3 text-sm text-gray-300">
+                <p>
+                  {offScheduleConfirmation.protocol.name} is not scheduled for today based on your saved protocol.
+                </p>
+                <div className="rounded-lg border border-white/10 bg-white/5 p-3 space-y-1">
+                  <p>Frequency: {offScheduleConfirmation.protocol.frequency}</p>
+                  <p>Timing: {offScheduleConfirmation.protocol.timing}</p>
+                </div>
+                <p>
+                  Continuing opens the normal dose-entry form. Nothing is saved until you submit that form.
+                </p>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button
+                  ref={offScheduleCancelRef}
+                  type="button"
+                  onClick={cancelOffScheduleConfirmation}
+                  className="flex-1 bg-gray-600 hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const pending = offScheduleConfirmation;
+                    setOffScheduleConfirmation(null);
+                    openDoseEntry(pending.protocol, undefined, true);
+                  }}
+                  className="flex-1 bg-primary-600 hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Continue to dose entry
+                </button>
               </div>
             </div>
           </div>

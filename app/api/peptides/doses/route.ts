@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { validatePeptideDoseSlotKey } from '@/lib/peptide-dose-slot'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -94,7 +95,8 @@ export async function POST(request: Request) {
       sideEffects,
       doseDate,
       localDate,
-      localTime
+      localTime,
+      slotKey
     } = body
 
     if (!protocolId || !dosage) {
@@ -113,6 +115,14 @@ export async function POST(request: Request) {
       return NextResponse.json({
         error: 'Protocol not found or access denied'
       }, { status: 404 })
+    }
+
+    const slotValidation = validatePeptideDoseSlotKey(
+      { protocolId, localDate, slotKey },
+      protocol,
+    )
+    if (!slotValidation.ok) {
+      return NextResponse.json({ error: slotValidation.error }, { status: slotValidation.status })
     }
 
     // Create dose entry with protocol metadata for history preservation
@@ -135,14 +145,14 @@ export async function POST(request: Request) {
         notes: notes || null,
         sideEffects: sideEffects || null,
         doseDate: doseDate ? new Date(doseDate) : new Date(),
-        localDate: localDate || null,
+        localDate,
         localTime: localTime || null,
+        slotKey: slotValidation.slotKey,
       }
     })
 
     // Mark 'peptides' daily task as completed
     const today = startOfDay(new Date())
-
     await prisma.dailyTask.upsert({
       where: {
         userId_date_taskName: {
@@ -151,9 +161,7 @@ export async function POST(request: Request) {
           taskName: 'peptides'
         }
       },
-      update: {
-        completed: true
-      },
+      update: { completed: true },
       create: {
         userId: user.id,
         date: today,

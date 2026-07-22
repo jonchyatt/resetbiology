@@ -621,17 +621,18 @@ export function formatPeptideDoses(doses: Array<{
   time: string
   localDate: string
   notes?: string
+  slotKey?: string | null
 }>): string {
   if (doses.length === 0) return ''
 
   const date = doses[0].localDate
   let content = `# Peptide Doses - ${date}\n\n`
-  content += `| Time | Peptide | Dosage | Notes |\n`
-  content += `|------|---------|--------|-------|\n`
+  content += `| Time | Peptide | Dosage | Slot Key | Notes |\n`
+  content += `|------|---------|--------|----------|-------|\n`
 
   for (const dose of doses) {
     const notes = dose.notes || '-'
-    content += `| ${dose.time} | ${dose.peptideName} | ${dose.dosage}${dose.unit} | ${notes} |\n`
+    content += `| ${dose.time} | ${dose.peptideName} | ${dose.dosage}${dose.unit} | ${dose.slotKey || ''} | ${notes} |\n`
   }
 
   return content
@@ -1118,6 +1119,7 @@ async function syncDomainForDateWithResult(
           time: d.localTime || d.time || '',
           localDate: d.localDate || dateStr,
           notes: d.notes || undefined,
+          slotKey: d.slotKey || '',
         }))
       )
       const fileName = `peptides-${dateStr}.md`
@@ -1129,6 +1131,7 @@ async function syncDomainForDateWithResult(
         time: d.localTime || d.time || '',
         peptide: d.protocolName || 'Unknown',
         dosage: d.dosage,
+        slotKey: d.slotKey || '',
         notes: d.notes || '',
       }))
       const csvContent = generateTrackerCSV('peptides', csvData)
