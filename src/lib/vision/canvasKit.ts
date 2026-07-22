@@ -57,6 +57,11 @@ export type GaborOpts = {
   sigma?: number
   /** Raster/compositing identity. Defaults to the receiving context's current mode. */
   compositingMode?: GlobalCompositeOperation
+  /**
+   * Shared stimuli blend their Gaussian envelope into the receiving surface.
+   * Legacy training canvases retain their historical opaque raster instead.
+   */
+  rasterMode?: 'shared-transparent' | 'legacy-opaque'
   /** degrees */
   phase?: number
   /** Animation-only cache bucket. Threshold stimuli leave this unset for exact phase identity. */
@@ -73,6 +78,7 @@ type ResolvedGaborOpts = {
   contrast: number
   sigma: number
   compositingMode: GlobalCompositeOperation
+  rasterMode: 'shared-transparent' | 'legacy-opaque'
   phase: number
 }
 
@@ -103,6 +109,7 @@ function gaborKey(o: GaborRaster): string {
     o.contrast,
     o.sigma,
     o.compositingMode,
+    o.rasterMode,
     o.phase,
   ])
 }
@@ -135,8 +142,9 @@ function renderGaborTile(o: GaborRaster): HTMLCanvasElement {
       data[idx] = pixel
       data[idx + 1] = pixel
       data[idx + 2] = pixel
-      // Alpha follows the gaussian so the patch blends into ANY background
-      data[idx + 3] = Math.round(gaussian * 255)
+      // Shared patches blend into any receiving surface. The two legacy
+      // training canvases historically emitted an opaque raster instead.
+      data[idx + 3] = o.rasterMode === 'legacy-opaque' ? 255 : Math.round(gaussian * 255)
     }
   }
   tctx.putImageData(imageData, 0, 0)
@@ -174,6 +182,7 @@ export function drawGaborPatch(
     contrast: opts.contrast ?? 1,
     sigma: opts.sigma ?? opts.size / 4,
     compositingMode: opts.compositingMode ?? ctx.globalCompositeOperation ?? 'source-over',
+    rasterMode: opts.rasterMode ?? 'shared-transparent',
     phase,
     backingWidth,
     backingHeight,

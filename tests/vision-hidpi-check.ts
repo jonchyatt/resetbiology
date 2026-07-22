@@ -94,6 +94,41 @@ function pixel(snapshot: ImageSnapshot, x: number, y: number): number[] {
   return [...snapshot.data.slice(start, start + 4)]
 }
 
+function legacyOpaqueReference(opts: {
+  size: number
+  orientation: number
+  frequency: number
+  contrast: number
+  sigma: number
+  phase: number
+}): Uint8ClampedArray {
+  const data = new Uint8ClampedArray(opts.size * opts.size * 4)
+  const half = opts.size / 2
+  const theta = (opts.orientation * Math.PI) / 180
+  const cosTheta = Math.cos(theta)
+  const sinTheta = Math.sin(theta)
+  const phaseRad = (opts.phase * Math.PI) / 180
+  const normalizedFreq = (2 * Math.PI * opts.frequency) / opts.size
+
+  for (let y = 0; y < opts.size; y++) {
+    for (let x = 0; x < opts.size; x++) {
+      const xc = x - half
+      const yc = y - half
+      const xPrime = xc * cosTheta + yc * sinTheta
+      const yPrime = -xc * sinTheta + yc * cosTheta
+      const gaussian = Math.exp(-(xPrime * xPrime + yPrime * yPrime) / (2 * opts.sigma * opts.sigma))
+      const pixelValue = Math.max(0, Math.min(255, Math.round(128 + gaussian * Math.cos(normalizedFreq * xPrime + phaseRad) * opts.contrast * 127)))
+      const index = (y * opts.size + x) * 4
+      data[index] = pixelValue
+      data[index + 1] = pixelValue
+      data[index + 2] = pixelValue
+      data[index + 3] = 255
+    }
+  }
+
+  return data
+}
+
 function drawAt(dprValue: number, opts: Parameters<typeof drawGaborPatch>[3], reset = true) {
   if (reset) __resetGaborCacheForTest()
   dpr = dprValue
@@ -150,6 +185,30 @@ function run() {
     assert.deepEqual(pixel(dprOne.image, x, y), pixel(dprTwo.image, x * 2, y * 2), 'normalized Gabor cycles must survive DPR')
   }
   assert.equal(fingerprint(dprOne.image.data), '3c570cfd', 'shared transparent Gabor pixels changed')
+
+  for (const legacyOpts of [
+    { size: 25, orientation: 0, frequency: 4, contrast: 1, sigma: 6.25, phase: 0 },
+    { size: 40, orientation: 33, frequency: 4.5, contrast: 0.6, sigma: 10, phase: 27 },
+    { size: 45, orientation: 90, frequency: 6, contrast: 0.2, sigma: 11.25, phase: 180 },
+  ]) {
+    const legacy = drawAt(1, { ...legacyOpts, rasterMode: 'legacy-opaque' })
+    assert.deepEqual(legacy.image.data, legacyOpaqueReference(legacyOpts), `legacy DPR1 pixels must match the original ${legacyOpts.size}px raster`)
+    for (let index = 3; index < legacy.image.data.length; index += 4) assert.equal(legacy.image.data[index], 255, 'legacy rasters must remain opaque')
+  }
+
+  __resetGaborCacheForTest()
+  const modeCanvas = new FakeCanvas(80, 80)
+  dpr = 1
+  fitCanvasToElement(modeCanvas as unknown as HTMLCanvasElement)
+  const beforeModes = createdTiles.length
+  const modeOpts = { size: 40, orientation: 20, frequency: 4, contrast: 0.7, phase: 10 }
+  drawGaborPatch(modeCanvas.ctx as unknown as CanvasRenderingContext2D, 40, 40, modeOpts)
+  const sharedTile = modeCanvas.ctx.drawCalls.at(-1)!.tile
+  drawGaborPatch(modeCanvas.ctx as unknown as CanvasRenderingContext2D, 40, 40, { ...modeOpts, rasterMode: 'legacy-opaque' })
+  const legacyTile = modeCanvas.ctx.drawCalls.at(-1)!.tile
+  assert.equal(createdTiles.length - beforeModes, 2, 'shared and legacy raster modes must never alias in cache')
+  assert.deepEqual(sharedTile.ctx.imageData!.data.filter((_, index) => index % 4 !== 3), legacyTile.ctx.imageData!.data.filter((_, index) => index % 4 !== 3), 'raster modes share RGB calculation')
+  assert.notEqual(sharedTile.ctx.imageData!.data[3], legacyTile.ctx.imageData!.data[3], 'raster mode changes alpha semantics')
 
   __resetGaborCacheForTest()
   dpr = 1
@@ -213,10 +272,50 @@ function run() {
   drawGaborPatch(rasterCtx, 50, 50, { size: 40, orientation: 0, frequency: 4, contrast: 0.5, phase: 0 })
   assert.equal(createdTiles.length - beforeEviction, 66, 'evicted entries must no longer be cache hits')
 
+  for (const [name, logicalWidth, logicalHeight] of [
+    ['GaborPatch', 100, 100],
+    ['GuidedExercise', 400, 300],
+  ] as const) {
+    const therapeuticCanvas = new FakeCanvas(logicalWidth, logicalHeight)
+    for (const ratio of [1, 2, 3] as const) {
+      dpr = ratio
+      assert.deepEqual(
+        fitCanvasToElement(therapeuticCanvas as unknown as HTMLCanvasElement),
+        { width: logicalWidth, height: logicalHeight, dpr: ratio },
+        `${name} must preserve its logical CSS geometry at DPR ${ratio}`,
+      )
+      assert.equal(therapeuticCanvas.width, logicalWidth * ratio, `${name} backing width must follow DPR`)
+      assert.equal(therapeuticCanvas.height, logicalHeight * ratio, `${name} backing height must follow DPR`)
+    }
+    assert.equal(therapeuticCanvas.cssWrites, 0, `${name} DPR fitting must not alter CSS geometry`)
+  }
+
   const pursuit = readFileSync('src/components/Vision/Engines/PursuitEngine.tsx', 'utf8')
   const gaborAcuity = readFileSync('src/components/Vision/Engines/GaborAcuityEngine.tsx', 'utf8')
+  const canvasKit = readFileSync('src/lib/vision/canvasKit.ts', 'utf8')
+  const gaborPatch = readFileSync('src/components/Vision/Training/GaborPatch.tsx', 'utf8')
+  const guidedExercise = readFileSync('src/components/Vision/Training/GuidedExercise.tsx', 'utf8')
   assert.match(pursuit, /phaseQuantizationDegrees:\s*20/)
   assert.doesNotMatch(gaborAcuity, /phaseQuantizationDegrees/)
+  assert.match(canvasKit, /rasterMode\?: 'shared-transparent' \| 'legacy-opaque'/)
+  assert.match(canvasKit, /rasterMode: opts\.rasterMode \?\? 'shared-transparent'/)
+  assert.match(canvasKit, /o\.rasterMode === 'legacy-opaque' \? 255/)
+
+  for (const [name, source] of [['GaborPatch', gaborPatch], ['GuidedExercise', guidedExercise]] as const) {
+    assert.doesNotMatch(source, /createImageData|tempCanvas|document\.createElement\('canvas'\)/, `${name} must not own a private Gabor rasterizer`)
+    assert.match(source, /fitCanvasToElement/, `${name} must use the shared DPR fitter`)
+    assert.match(source, /draw(?:Shared)?GaborPatch/, `${name} must use the shared Gabor drawer`)
+    assert.match(source, /ResizeObserver/, `${name} must react to element resize`)
+    assert.match(source, /removeEventListener\('resize'/, `${name} must clean its DPR listener`)
+    assert.match(source, /disconnect\(\)/, `${name} must clean its resize observer`)
+    assert.match(source, /cancelAnimationFrame/, `${name} must clean its animation frame`)
+    assert.match(source, /phaseQuantizationDegrees: 20/, `${name} animation bucketing must be explicit`)
+  }
+  assert.match(gaborPatch, /width=\{size\}/)
+  assert.match(gaborPatch, /height=\{size\}/)
+  assert.match(gaborPatch, /style=\{\{ backgroundColor, width: size, height: size \}\}/)
+  assert.match(guidedExercise, /ctx\.scale\(width \/ 400, height \/ 300\)/)
+  assert.doesNotMatch(guidedExercise, /width=\{400\}|height=\{300\}/, 'GuidedExercise must not retain a CSS-resolution backing store')
 
   console.log('vision-hidpi-check: PASS')
 }

@@ -1,6 +1,7 @@
 'use client'
 
-import { useRef, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { drawGaborPatch, fitCanvasToElement } from '@/lib/vision/canvasKit'
 
 interface GaborPatchProps {
   // Size of the patch in pixels
@@ -25,13 +26,7 @@ interface GaborPatchProps {
 }
 
 /**
- * GaborPatch - A scientifically accurate Gabor patch for perceptual learning
- *
- * Gabor patches are the gold standard in vision science because they match
- * the receptive field properties of neurons in the primary visual cortex (V1).
- *
- * The formula: G(x,y) = exp(-(x'² + y'²)/(2σ²)) × cos(2πf × x' + φ)
- * Where x', y' are coordinates rotated by the orientation angle.
+ * GaborPatch - A scientifically accurate Gabor patch for perceptual learning.
  */
 export default function GaborPatch({
   size = 100,
@@ -48,9 +43,25 @@ export default function GaborPatch({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | undefined>(undefined)
   const phaseRef = useRef(phase)
+  const [layoutVersion, setLayoutVersion] = useState(0)
 
   // Default sigma to 1/4 of patch size for nice falloff
   const effectiveSigma = sigma ?? size / 4
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const refreshLayout = () => setLayoutVersion(version => version + 1)
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(refreshLayout)
+    observer?.observe(canvas)
+    window.addEventListener('resize', refreshLayout)
+
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener('resize', refreshLayout)
+    }
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -60,62 +71,18 @@ export default function GaborPatch({
     if (!ctx) return
 
     const renderGabor = (currentPhase: number) => {
-      const centerX = size / 2
-      const centerY = size / 2
-
-      // Convert orientation to radians
-      const theta = (orientation * Math.PI) / 180
-      const cosTheta = Math.cos(theta)
-      const sinTheta = Math.sin(theta)
-
-      // Convert phase to radians
-      const phaseRad = (currentPhase * Math.PI) / 180
-
-      // Create image data for pixel manipulation
-      const imageData = ctx.createImageData(size, size)
-      const data = imageData.data
-
-      // Parse background color to RGB
-      const bgGray = 128 // Mid-gray (0.5 in 0-1 range)
-
-      for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-          // Translate to center
-          const xc = x - centerX
-          const yc = y - centerY
-
-          // Rotate coordinates by orientation
-          const xPrime = xc * cosTheta + yc * sinTheta
-          const yPrime = -xc * sinTheta + yc * cosTheta
-
-          // Gaussian envelope: exp(-(x'² + y'²)/(2σ²))
-          const gaussian = Math.exp(-(xPrime * xPrime + yPrime * yPrime) / (2 * effectiveSigma * effectiveSigma))
-
-          // Sinusoidal grating: cos(2πf × x' + φ)
-          // frequency is cycles per patch width, so normalize
-          const normalizedFreq = (2 * Math.PI * frequency) / size
-          const sinusoid = Math.cos(normalizedFreq * xPrime + phaseRad)
-
-          // Gabor = Gaussian × Sinusoid × Contrast
-          const gabor = gaussian * sinusoid * contrast
-
-          // Convert to pixel value (gabor ranges from -contrast to +contrast)
-          // Map to 0-255 with mid-gray as center
-          const pixelValue = Math.round(bgGray + gabor * 127)
-
-          // Clamp to valid range
-          const clampedValue = Math.max(0, Math.min(255, pixelValue))
-
-          // Set RGBA values
-          const idx = (y * size + x) * 4
-          data[idx] = clampedValue     // R
-          data[idx + 1] = clampedValue // G
-          data[idx + 2] = clampedValue // B
-          data[idx + 3] = 255          // A (fully opaque)
-        }
-      }
-
-      ctx.putImageData(imageData, 0, 0)
+      fitCanvasToElement(canvas)
+      ctx.clearRect(0, 0, size, size)
+      drawGaborPatch(ctx, size / 2, size / 2, {
+        size,
+        orientation,
+        frequency,
+        contrast,
+        sigma: effectiveSigma,
+        phase: currentPhase,
+        rasterMode: 'legacy-opaque',
+        ...(animate ? { phaseQuantizationDegrees: 20 } : {}),
+      })
     }
 
     if (animate) {
@@ -143,7 +110,7 @@ export default function GaborPatch({
     } else {
       renderGabor(phase)
     }
-  }, [size, orientation, frequency, contrast, effectiveSigma, phase, animate, animationSpeed])
+  }, [size, orientation, frequency, contrast, effectiveSigma, phase, animate, animationSpeed, layoutVersion])
 
   return (
     <canvas
@@ -151,7 +118,7 @@ export default function GaborPatch({
       width={size}
       height={size}
       className={`rounded-full ${className}`}
-      style={{ backgroundColor }}
+      style={{ backgroundColor, width: size, height: size }}
     />
   )
 }

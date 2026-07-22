@@ -13,6 +13,7 @@ import {
   Target
 } from 'lucide-react'
 import { VisionExercise } from '@/data/visionExercises'
+import { drawGaborPatch as drawSharedGaborPatch, fitCanvasToElement } from '@/lib/vision/canvasKit'
 
 interface GuidedExerciseProps {
   exercise: VisionExercise
@@ -71,6 +72,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
   const animationRef = useRef<number | undefined>(undefined)
   const timerRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const audioContextRef = useRef<AudioContext | null>(null)
+  const [layoutVersion, setLayoutVersion] = useState(0)
 
   // Get exercise-specific pattern or default
   const pattern = AUDIO_PATTERNS[exercise.id as keyof typeof AUDIO_PATTERNS] || {
@@ -126,6 +128,21 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     }
   }, [isMuted])
 
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const refreshLayout = () => setLayoutVersion(version => version + 1)
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(refreshLayout)
+    observer?.observe(canvas)
+    window.addEventListener('resize', refreshLayout)
+
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener('resize', refreshLayout)
+    }
+  }, [])
+
   // Animation loop for visual guidance
   useEffect(() => {
     if (!isPlaying || !canvasRef.current) return
@@ -134,8 +151,10 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const centerX = canvas.width / 2
-    const centerY = canvas.height / 2
+    const { width, height } = fitCanvasToElement(canvas)
+    ctx.scale(width / 400, height / 300)
+    const centerX = 200
+    const centerY = 150
     let startTime = Date.now()
 
     const animate = () => {
@@ -144,7 +163,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
 
       // Clear canvas with dark background
       ctx.fillStyle = '#111827'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillRect(0, 0, 400, 300)
 
       // Draw based on pattern type
       switch (pattern.pattern) {
@@ -178,7 +197,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isPlaying, pattern])
+  }, [isPlaying, pattern, layoutVersion])
 
   // Timer and cue progression
   useEffect(() => {
@@ -222,11 +241,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
 
   // Drawing functions
 
-  /**
-   * Draw a Gabor patch on Canvas - scientifically accurate visual stimulus
-   * Used instead of simple dots for perceptual training
-   */
-  const drawGaborPatch = (
+  const drawLegacyGabor = (
     ctx: CanvasRenderingContext2D,
     x: number,
     y: number,
@@ -234,59 +249,26 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     orientation: number = 0,
     frequency: number = 4,
     contrast: number = 1,
-    phase: number = 0
+    phase: number = 0,
+    animatedPhase = false,
   ) => {
-    const sigma = size / 4
     const halfSize = size / 2
 
-    // Pre-calculate rotation values
-    const theta = (orientation * Math.PI) / 180
-    const cosTheta = Math.cos(theta)
-    const sinTheta = Math.sin(theta)
-    const phaseRad = (phase * Math.PI) / 180
-    const normalizedFreq = (2 * Math.PI * frequency) / size
-
-    // Create temporary canvas for Gabor patch
-    const tempCanvas = document.createElement('canvas')
-    tempCanvas.width = size
-    tempCanvas.height = size
-    const tempCtx = tempCanvas.getContext('2d')
-    if (!tempCtx) return
-
-    const imageData = tempCtx.createImageData(size, size)
-    const data = imageData.data
-    const bgGray = 128
-
-    for (let py = 0; py < size; py++) {
-      for (let px = 0; px < size; px++) {
-        const xc = px - halfSize
-        const yc = py - halfSize
-
-        const xPrime = xc * cosTheta + yc * sinTheta
-        const yPrime = -xc * sinTheta + yc * cosTheta
-
-        const gaussian = Math.exp(-(xPrime * xPrime + yPrime * yPrime) / (2 * sigma * sigma))
-        const sinusoid = Math.cos(normalizedFreq * xPrime + phaseRad)
-        const gabor = gaussian * sinusoid * contrast
-
-        const pixelValue = Math.max(0, Math.min(255, Math.round(bgGray + gabor * 127)))
-
-        const idx = (py * size + px) * 4
-        data[idx] = pixelValue
-        data[idx + 1] = pixelValue
-        data[idx + 2] = pixelValue
-        data[idx + 3] = 255
-      }
-    }
-
-    tempCtx.putImageData(imageData, 0, 0)
-
-    // Draw with circular clip
+    // Preserve the original circle clip and glow while the shared renderer
+    // owns all raster construction and DPR sizing.
     ctx.save()
     ctx.beginPath()
     ctx.arc(x, y, halfSize, 0, Math.PI * 2)
     ctx.clip()
-    ctx.drawImage(tempCanvas, x - halfSize, y - halfSize)
+    drawSharedGaborPatch(ctx, x, y, {
+      size,
+      orientation,
+      frequency,
+      contrast,
+      phase,
+      rasterMode: 'legacy-opaque',
+      ...(animatedPhase ? { phaseQuantizationDegrees: 20 } : {}),
+    })
     ctx.restore()
 
     // Add subtle glow
@@ -327,7 +309,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     const nextY = cy + b * Math.sin(nextT) * Math.cos(nextT) / (1 + Math.sin(nextT) * Math.sin(nextT))
     const angle = Math.atan2(nextY - dotY, nextX - dotX) * 180 / Math.PI
 
-    drawGaborPatch(ctx, dotX, dotY, 40, angle, 5, 0.9, progress * 360)
+    drawLegacyGabor(ctx, dotX, dotY, 40, angle, 5, 0.9, progress * 360, true)
   }
 
   const drawSaccadeTargets = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
@@ -342,7 +324,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     positions.forEach((pos, i) => {
       const activeIndex = Math.floor(progress * positions.length) % positions.length
       if (i !== activeIndex) {
-        drawGaborPatch(ctx, pos.x, pos.y, 35, pos.angle, 4, 0.2, 0)
+        drawLegacyGabor(ctx, pos.x, pos.y, 35, pos.angle, 4, 0.2, 0)
       }
     })
 
@@ -351,7 +333,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     const activePos = positions[activeIndex]
 
     // Animated phase for active target
-    drawGaborPatch(ctx, activePos.x, activePos.y, 45, activePos.angle, 5, 0.95, progress * 720)
+    drawLegacyGabor(ctx, activePos.x, activePos.y, 45, activePos.angle, 5, 0.95, progress * 720, true)
 
     // Center fixation cross
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
@@ -397,7 +379,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     }
 
     // Draw Gabor patch following the rectangle path
-    drawGaborPatch(ctx, x, y, 35, angle, 5, 0.9, progress * 360)
+    drawLegacyGabor(ctx, x, y, 35, angle, 5, 0.9, progress * 360, true)
   }
 
   const drawCrossPattern = (ctx: CanvasRenderingContext2D, cx: number, cy: number, progress: number) => {
@@ -459,7 +441,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     }
 
     // Center fixation Gabor patch - keep eyes here!
-    drawGaborPatch(ctx, cx, cy, 30, 0, 6, 0.8, progress * 180)
+    drawLegacyGabor(ctx, cx, cy, 30, 0, 6, 0.8, progress * 180, true)
 
     // Peripheral Gabor patches - different orientations for each position
     const numPatches = 8
@@ -472,7 +454,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
       // Contrast varies with time - some fade in/out
       const contrast = 0.3 + 0.4 * Math.sin(progress * Math.PI * 2 + i * 0.7)
 
-      drawGaborPatch(ctx, x, y, 25, orientation, 4, contrast, 0)
+      drawLegacyGabor(ctx, x, y, 25, orientation, 4, contrast, 0)
     }
   }
 
@@ -481,7 +463,7 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
     const baseSize = 40
     const sizeVariation = 8 * Math.sin(progress * Math.PI * 2)
 
-    drawGaborPatch(ctx, cx, cy, baseSize + sizeVariation, progress * 90, 5, 0.85, progress * 360)
+    drawLegacyGabor(ctx, cx, cy, baseSize + sizeVariation, progress * 90, 5, 0.85, progress * 360, true)
   }
 
   const formatTime = (seconds: number) => {
@@ -588,10 +570,8 @@ export default function GuidedExercise({ exercise, onComplete, onBack }: GuidedE
       <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl border border-primary-400/20 shadow-lg overflow-hidden">
         <canvas
           ref={canvasRef}
-          width={400}
-          height={300}
           className="w-full h-auto"
-          style={{ background: '#111827' }}
+          style={{ background: '#111827', aspectRatio: '4 / 3' }}
         />
       </div>
 
