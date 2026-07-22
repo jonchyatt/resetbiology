@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/Toast';
+import { localDayKey } from '@/lib/localDay';
 
 type RecentItem = {
   id: string;
@@ -64,9 +65,6 @@ export function RecentFoods({
     try {
       setReloggingId(item.id);
       const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
@@ -82,7 +80,7 @@ export function RecentFoods({
         nutrients: item.nutrients,
         mealType: item.mealType || 'snack',
         loggedAt: now.toISOString(),
-        localDate: `${year}-${month}-${day}`,
+        localDate: localDayKey(now),
         localTime: `${hours}:${minutes}:${seconds}`,
       };
 
