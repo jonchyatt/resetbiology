@@ -778,6 +778,7 @@ export interface GaborPendingPresentation {
 export interface GaborProductionTerminal {
   readonly reason: GaborStopReason
   readonly metrics: GaborProductionMetrics
+  readonly resultCompleted: boolean
   readonly scorePct: number
 }
 
@@ -936,8 +937,10 @@ export function applyGaborProductionResponse(
   }
 
   if (coordinator.pending.stage === 'localization') {
-    if (localization && classified.staircaseResponse) {
-      localization = updateGaborLocalization(localization, classified.staircaseResponse).state
+    const localizationResponse = classified.staircaseResponse
+      ?? (classified.lapse ? 'timeout' : null)
+    if (localization && localizationResponse) {
+      localization = updateGaborLocalization(localization, localizationResponse).state
       if (localization.responses === GABOR_THRESHOLD_PROTOCOL.localizationResponses) {
         measurement = startGaborMeasurementAfterLocalization(localization)
       }
@@ -1040,6 +1043,7 @@ function terminalizeGaborCoordinator(
     stopExposureCap: flags.stopExposureCap,
     stopTimeCap: flags.stopTimeCap,
   }
+  const resultCompleted = reason === 'valid' && estimate.valid
   return {
     ...coordinator,
     pending: null,
@@ -1047,7 +1051,8 @@ function terminalizeGaborCoordinator(
     terminal: {
       reason,
       metrics,
-      scorePct: progress.accuracyPct,
+      resultCompleted,
+      scorePct: resultCompleted ? progress.accuracyPct : 0,
     },
   }
 }

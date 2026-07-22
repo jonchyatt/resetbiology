@@ -186,6 +186,8 @@ assert.equal(GABOR_THRESHOLD_PROTOCOL.coldMeasurementResponseCap, 48)
 assert.equal(GABOR_THRESHOLD_PROTOCOL.warmMeasurementResponseCap, 60)
 assert.equal(GABOR_THRESHOLD_PROTOCOL.coldScheduledExposureCap, 88)
 assert.equal(GABOR_THRESHOLD_PROTOCOL.warmScheduledExposureCap, 100)
+// Foreman amendment: the frozen 60-total-exposure production composition
+// failed its 216/240 validity gate; the unchanged frozen bank passed at 100.
 assert.equal(GABOR_THRESHOLD_PROTOCOL.sessionExposureCap, 100)
 
 const compatiblePrior: GaborThresholdPrior = {
@@ -611,20 +613,50 @@ assert.equal(
   'duplicate response preserves exact coordinator identity',
 )
 
-// Timeout never mutates either controller. Repeated cold timeouts therefore
-// stop at exactly 100 localization exposures with no invented measurement.
+// Localization is a coarse, non-scored locator: every presentation consumes
+// one of its twelve responses, and a timeout safely moves brighter. The later
+// measurement controller still excludes lapses from its adaptive history.
+let timeoutLocalization = createGaborProductionCoordinator({ seed: 'timeout-localization', prior: null })
+const timeoutLocalizationContrasts: number[] = []
+for (let index = 0; index < GABOR_THRESHOLD_PROTOCOL.localizationResponses; index += 1) {
+  timeoutLocalization = presentNextGaborExposure(timeoutLocalization, { timeCapReached: false })
+  timeoutLocalizationContrasts.push(timeoutLocalization.localization!.contrastPct)
+  timeoutLocalization = applyGaborProductionResponse(
+    timeoutLocalization,
+    { type: 'timeout' },
+    { timeCapReached: false },
+  )
+  assert.equal(timeoutLocalization.localization?.responses, index + 1)
+}
+assert.ok(timeoutLocalizationContrasts[1] > timeoutLocalizationContrasts[0])
+for (let index = 1; index < timeoutLocalizationContrasts.length; index += 1) {
+  assert.ok(timeoutLocalizationContrasts[index] >= timeoutLocalizationContrasts[index - 1])
+}
+assert.equal(timeoutLocalization.localization?.responses, 12)
+assert.equal(timeoutLocalization.localization?.contrastPct, 100)
+assert.equal(timeoutLocalization.counters.localizationExposures, 12)
+assert.equal(timeoutLocalization.counters.lapses, 12)
+assert.ok(timeoutLocalization.measurement)
+assert.equal(timeoutLocalization.measurement?.adaptiveTrials, 0)
+assert.equal(timeoutLocalization.measurement?.consecutiveCorrect, 0)
+assert.equal(timeoutLocalization.measurement?.lastEffectiveDirection, null)
+assert.deepEqual(timeoutLocalization.measurement?.reversalContrastsPct, [])
+
 const allTimeout = driveCoordinator(
   createGaborProductionCoordinator({ seed: 'all-timeout', prior: null }),
   () => ({ type: 'timeout' }),
 )
 assert.equal(allTimeout.terminal?.reason, 'exposure-cap')
-assert.equal(allTimeout.counters.localizationExposures, 100)
-assert.equal(allTimeout.counters.scheduledExposures, 0)
-assert.equal(allTimeout.localization?.responses, 0)
-assert.equal(allTimeout.measurement, null)
+assert.equal(allTimeout.counters.localizationExposures, 12)
+assert.equal(allTimeout.counters.scheduledExposures, 88)
+assert.equal(allTimeout.localization?.responses, 12)
+assert.ok(allTimeout.measurement)
+assert.equal(allTimeout.measurement?.adaptiveTrials, 0)
 assert.equal(allTimeout.counters.lapses, 100)
 assert.equal(allTimeout.terminal?.metrics.thresholdValid, 0)
 assert.equal('contrastThresholdPct' in allTimeout.terminal!.metrics, false)
+assert.equal(allTimeout.terminal?.resultCompleted, false)
+assert.equal(allTimeout.terminal?.scorePct, 0)
 
 const timePending = presentNextGaborExposure(
   createGaborProductionCoordinator({ seed: 'time-cap', prior: null }),
@@ -650,6 +682,10 @@ assert.equal(coldAllCorrect.measurement?.adaptiveTrials, 48)
 assert.equal(coldAllIncorrect.measurement?.adaptiveTrials, 48)
 assert.equal(coldAllCorrect.counters.localizationExposures + coldAllCorrect.counters.scheduledExposures, 92)
 assert.equal(coldAllIncorrect.counters.localizationExposures + coldAllIncorrect.counters.scheduledExposures, 92)
+assert.equal(coldAllCorrect.terminal?.metrics.thresholdValid, 0)
+assert.equal(coldAllCorrect.terminal?.resultCompleted, false)
+assert.equal(coldAllCorrect.terminal?.scorePct, 0)
+assert.equal('contrastThresholdPct' in coldAllCorrect.terminal!.metrics, false)
 
 const cccI = driveCoordinator(
   createGaborProductionCoordinator({ seed: 0x51a7, prior: null }),
@@ -660,6 +696,8 @@ const cccI = driveCoordinator(
     : correctResponseForPending(coordinator),
 )
 assert.equal(cccI.terminal?.reason, 'valid')
+assert.equal(cccI.terminal?.resultCompleted, true)
+assert.ok(cccI.terminal!.scorePct > 0)
 assert.equal(cccI.measurement?.adaptiveTrials, 24)
 assert.equal(cccI.counters.localizationExposures + cccI.counters.scheduledExposures, 50)
 assert.equal(presentNextGaborExposure(cccI, { timeCapReached: false }), cccI)
@@ -750,7 +788,8 @@ const localizationTimeout = applyGaborProductionResponse(
 assert.equal(localizationNoPattern.lastResponse?.staircaseResponse, 'incorrect')
 assert.equal(localizationNoPattern.localization?.responses, 1)
 assert.equal(localizationTimeout.lastResponse?.lapse, true)
-assert.equal(localizationTimeout.localization, localizationNoPatternPending.localization)
+assert.equal(localizationTimeout.localization?.responses, 1)
+assert.ok(localizationTimeout.localization!.contrastPct > localizationNoPatternPending.localization!.contrastPct)
 
 let adaptivePending = createGaborProductionCoordinator({ seed: 'adaptive-matrix', prior: compatiblePrior })
 while (!adaptivePending.pending?.presentation.trial.adaptive) {
@@ -1049,6 +1088,11 @@ assert.doesNotMatch(engineSource, /Math\.max\(50,.*\* 2|Math\.max\(30,.*\* 1\.5/
 assert.doesNotMatch(engineSource, /tierForWeek|TIER_FREQUENCY|applyStaircase|2-down-1-up/)
 assert.match(engineSource, /presentNextGaborExposure\(coordinatorRef\.current/)
 assert.match(engineSource, /applyGaborProductionResponse\(coordinatorRef\.current/)
+assert.match(engineSource, /completed: terminal\.resultCompleted/)
+assert.match(engineSource, /score: terminal\.resultCompleted \? clampScore\(terminal\.scorePct\) : 0/)
+assert.match(engineSource, /if \(completedRef\.current\) return/)
+assert.match(engineSource, /completedRef\.current = true/)
+assert.match(engineSource, /onComplete\(result\)/)
 assert.doesNotMatch(engineSource, /classifyGaborResponse|updateGaborThreshold|resolveGaborStopReason|getGaborThresholdEstimate/)
 for (const metric of [
   'trials', 'accuracyPct', 'measurementAccuracyPct', 'totalExposures', 'localizationExposures',

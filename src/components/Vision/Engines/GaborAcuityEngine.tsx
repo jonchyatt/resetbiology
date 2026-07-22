@@ -194,8 +194,8 @@ export default function GaborAcuityEngine({ exercise, onProgress, onComplete, on
     const result: EngineResult = {
       exerciseId: exercise.id,
       durationSec: Math.round(elapsedSeconds()),
-      completed: true,
-      score: clampScore(terminal.scorePct),
+      completed: terminal.resultCompleted,
+      score: terminal.resultCompleted ? clampScore(terminal.scorePct) : 0,
       metrics: terminal.metrics,
     }
     const progress = getGaborProductionProgress(coordinatorRef.current)
