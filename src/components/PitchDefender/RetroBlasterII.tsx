@@ -1577,11 +1577,13 @@ export default function RetroBlasterII() {
 
   useEffect(() => {
     const answerMaskActive = displayView?.answerMaskActive === true
-    if (answerMaskActive && !previousAnswerMaskRef.current) {
+    const answerWindowOpened = displayView?.activeAttack?.phase === 'outbound' &&
+      displayView.activeAttack.outcome === null
+    if (answerMaskActive && (!previousAnswerMaskRef.current || answerWindowOpened)) {
       safeTryFocusRef.current?.focus({ preventScroll: true })
     }
     previousAnswerMaskRef.current = answerMaskActive
-  }, [displayView?.answerMaskActive])
+  }, [displayView?.answerMaskActive, displayView?.activeAttack?.phase, displayView?.activeAttack?.outcome])
 
   useEffect(() => {
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }

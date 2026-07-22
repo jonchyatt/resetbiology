@@ -214,7 +214,12 @@ async function main(): Promise<void> {
     },
   }))
   await add('R-27', 'shell-contract', 'safe-try entry moves focus to a distinct neutral tabindex target', 'RED', 'source-backed', () =>
-    passIf(source.shell, ['safeTryFocusRef', 'tabIndex={-1}', 'data-retro-safe-try-focus']))
+    passIf(source.shell, [
+      'safeTryFocusRef',
+      'tabIndex={-1}',
+      'data-retro-safe-try-focus',
+      "displayView?.activeAttack?.phase === 'outbound'",
+    ]))
   await add('R-28', 'shell-contract', 'one stable polite live region owns the atomic instruction', 'RED', 'source-backed', () =>
     passIf(source.shell, ['data-retro-safe-try-status', 'aria-live="polite"', 'liveChoiceNames']))
   await add('R-29', 'shell-contract', 'Tone Replay remains on Space R and pointer without changing help state', 'RED', 'source-backed', () =>
