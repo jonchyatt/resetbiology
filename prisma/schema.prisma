@@ -54,6 +54,7 @@ model User {
   affiliateTracking       AffiliateTracking[]
   breathSessions          BreathSession[]
   progress                ClientProgress[]
+  bodyMetrics             BodyMetric[]
   gamificationPoints      GamificationPoint[]
   moduleCompletions       ModuleCompletion[]
   peptide_orders          peptide_orders[]
@@ -110,6 +111,37 @@ model ClientProgress {
   user       User     @relation(fields: [userId], references: [id])
 
   @@map("client_progress")
+}
+
+enum BodyMetricStatus {
+  resolved
+  same_value_duplicates
+  conflict
+  unknown_unit
+  removed
+  invalid_source
+}
+
+model BodyMetric {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String           @db.ObjectId
+  dayKey         String
+  weightKg       Float?
+  source         String
+  sourceValue    Float?
+  sourceUnit     String?
+  status         BodyMetricStatus
+  sourceEntryIds String[]         @db.ObjectId
+  sourceRevision String
+  provenance     Json
+  migrationId    String?
+  reconciledAt   DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id])
+
+  @@unique([userId, dayKey])
+  @@map("body_metrics")
 }
 
 model ModuleCompletion {
