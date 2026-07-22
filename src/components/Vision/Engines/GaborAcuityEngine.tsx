@@ -1,30 +1,40 @@
 'use client'
 
 /**
- * GaborAcuityEngine — serves 'gabor-contrast'.
- * Forced-choice orientation identification on a single static Gabor patch
- * per trial, difficulty driven by a 2-down-1-up Michelson-contrast staircase
- * (Sol H4 rev 2). Fixed diamond answer pad (top=vertical, left=diagonal-left,
- * right=diagonal-right, bottom=horizontal) — positions/labels never move,
- * same accidental-saccade doctrine as SnellenChart's DirectionButtons.
- * Contract: src/components/Vision/Engines/types.ts
- * Ticket: jarvis data/rb-vision-interactive/runtime-logs/scratch-2026-07-15-adf3/ticket-T2.md
+ * GABOR_THRESHOLD_V1 runner. The psychophysical controller and presentation
+ * formulas live in gaborThreshold.ts; this component only schedules, renders,
+ * binds responses, and reports the locked result.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Pause, Play, ShieldAlert, Volume2, VolumeX, X } from 'lucide-react'
 import type { EngineProps, EngineResult } from './types'
 import { clampScore } from './types'
-import { fitCanvasToElement, drawGaborPatch, prefersReducedMotion } from '@/lib/vision/canvasKit'
-import { SpeechQueue, unlockAudio, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
+import { drawGaborPatch, fitCanvasToElement, prefersReducedMotion } from '@/lib/vision/canvasKit'
+import { SpeechQueue, getSharedMuted, subscribeSharedMuted, unlockAudio } from '@/lib/vision/audioKit'
+import {
+  GABOR_THRESHOLD_PROTOCOL,
+  buildGaborLocalizationTrial,
+  buildGaborThresholdBlock,
+  classifyGaborResponse,
+  createGaborLocalizationState,
+  gaborStopFlags,
+  getGaborThresholdEstimate,
+  prepareGaborThresholdSession,
+  resolveGaborPresentation,
+  resolveGaborStopReason,
+  startGaborMeasurementAfterLocalization,
+  updateGaborLocalization,
+  updateGaborThreshold,
+  type GaborPresentationResponse,
+  type GaborResolvedPresentation,
+  type GaborStopReason,
+  type GaborThresholdSessionStart,
+  type GaborThresholdState,
+  type GaborThresholdTrial,
+  type GaborTrialKind,
+} from '@/lib/vision/gaborThreshold'
 
-// ---------------------------------------------------------------------------
-// Orientations — 4 fixed choices, diamond answer pad (never reshuffled).
-// ---------------------------------------------------------------------------
-// Glyph derivation (canvasKit.ts:84, y-down canvas): stripes run along the
-// direction perpendicular to (cosT, sinT), i.e. (-sinT, cosT) in (xc,yc).
-// theta=45 -> dir (-0.71,0.71) -> screen line lower-left..upper-right = "/".
-// theta=135 -> dir (-0.71,-0.71) -> screen line upper-left..lower-right = "\".
 const ORIENTATIONS = {
   vertical: { angle: 0, label: 'Vertical', glyph: '|', ariaLabel: 'Vertical' },
   'diagonal-left': { angle: 45, label: 'Diagonal', glyph: '/', ariaLabel: 'Diagonal rising /' },
@@ -33,406 +43,539 @@ const ORIENTATIONS = {
 } as const
 type OrientationKey = keyof typeof ORIENTATIONS
 
-function shuffledBag(): OrientationKey[] {
-  const keys = Object.keys(ORIENTATIONS) as OrientationKey[]
-  for (let i = keys.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[keys[i], keys[j]] = [keys[j], keys[i]]
-  }
-  return keys
-}
-
-/**
- * Spatial-frequency ("texture tier") mapping — internal training difficulty,
- * NOT calibrated cycles-per-degree (never surfaced in UI copy as such).
- * Values are cycles-across-the-patch fed to canvasKit's drawGaborPatch,
- * chosen to render cleanly at PATCH_SIZE (~140-220px): tier 1 (weeks 1-4)
- * coarse bands, tier 2 (weeks 5-8) medium, tier 3 (weeks 9-12) fine.
- */
-function tierForWeek(week: number): 1 | 2 | 3 {
-  const w = week || 1
-  if (w <= 4) return 1
-  if (w <= 8) return 2
-  return 3
-}
-const TIER_FREQUENCY: Record<1 | 2 | 3, number> = { 1: 4, 2: 7, 3: 11 }
-
-// ---------------------------------------------------------------------------
-// Staircase constants (Sol H4 rev 2 — implement exactly)
-// ---------------------------------------------------------------------------
-const START_CONTRAST = 80
-const MIN_CONTRAST = 1
-const MAX_CONTRAST = 100
-const DOWN_STEP = 0.75
-const UP_STEP = 1.5
-const REVERSALS_TO_END = 8
-const TRIAL_TIMEOUT_MS = 10000
-const LAPSES_TO_PAUSE = 2
+const STIMULUS_TIMEOUT_MS = 10_000
+const CATCH_WINDOW_MS = 1_500
 const FEEDBACK_MS = 700
-const EARLY_FINISH_AFTER_SEC = 5
-
-function formatTime(totalSec: number): string {
-  const s = Math.max(0, Math.round(totalSec))
-  const m = Math.floor(s / 60)
-  const r = s % 60
-  return `${m}:${r.toString().padStart(2, '0')}`
-}
+const TIME_CAP_SECONDS = 180
+const LAPSES_TO_PAUSE = 2
+const NEUTRAL_FIELD = '#808080'
 
 type Phase = 'intro' | 'trial' | 'feedback' | 'paused' | 'complete'
 type PauseReason = 'manual' | 'lapse' | null
 type Feedback = 'correct' | 'wrong' | 'timeout' | null
+type CurrentPresentation = {
+  readonly stage: 'localization' | 'measurement'
+  readonly resolved: GaborResolvedPresentation
+}
+type Counters = {
+  trials: number
+  correct: number
+  measurementCorrect: number
+  localizationExposures: number
+  scheduledExposures: number
+  easyTrials: number
+  transferTrials: number
+  flankerTrials: number
+  catchTrials: number
+  catchFalseAlarms: number
+  lapses: number
+}
 
-export default function GaborAcuityEngine({ exercise, prescription, onProgress, onComplete, onExit }: EngineProps) {
-  const containerRef = useRef<HTMLDivElement>(null)
+const emptyCounters = (): Counters => ({
+  trials: 0,
+  correct: 0,
+  measurementCorrect: 0,
+  localizationExposures: 0,
+  scheduledExposures: 0,
+  easyTrials: 0,
+  transferTrials: 0,
+  flankerTrials: 0,
+  catchTrials: 0,
+  catchFalseAlarms: 0,
+  lapses: 0,
+})
+
+function formatTime(totalSec: number): string {
+  const seconds = Math.max(0, Math.round(totalSec))
+  return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}`
+}
+
+export default function GaborAcuityEngine({ exercise, onProgress, onComplete, onExit }: EngineProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const speechRef = useRef<SpeechQueue | null>(null)
   if (!speechRef.current) speechRef.current = new SpeechQueue()
 
   const reducedMotion = useMemo(() => prefersReducedMotion(), [])
-  const targetSeconds = Math.max(30, prescription.targetSeconds || 180)
-  const tier = tierForWeek(prescription.week)
-
-  const [phase, setPhase] = useState<Phase>('intro')
+  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
+  const [phase, setPhaseState] = useState<Phase>('intro')
+  const phaseRef = useRef<Phase>('intro')
   const [pauseReason, setPauseReason] = useState<PauseReason>(null)
   const [feedback, setFeedback] = useState<Feedback>(null)
-  // T7: read shared mute state directly — see DownshiftEngine.tsx.
-  const isMuted = useSyncExternalStore(subscribeSharedMuted, getSharedMuted, getSharedMuted)
   const [elapsedDisplay, setElapsedDisplay] = useState(0)
-  const [statsDisplay, setStatsDisplay] = useState({ trials: 0, correct: 0, reversals: 0 })
+  const [statsDisplay, setStatsDisplay] = useState({ exposures: 0, responses: 0, reversals: 0, accuracyPct: 0 })
 
-  // Trial / staircase state — refs so closures never go stale.
-  const bagRef = useRef<OrientationKey[]>([])
-  const currentOrientationRef = useRef<OrientationKey>('vertical')
-  const contrastRef = useRef(START_CONTRAST)
-  const consecutiveCorrectRef = useRef(0)
-  const lastDirectionRef = useRef<'up' | 'down' | null>(null)
-  const reversalsRef = useRef(0)
-  const reversalContrastsRef = useRef<number[]>([])
-  const lapseStreakRef = useRef(0)
-  const trialsRef = useRef(0)
-  const correctRef = useRef(0)
+  const setPhase = useCallback((next: Phase) => {
+    phaseRef.current = next
+    setPhaseState(next)
+  }, [])
+
+  const sessionRef = useRef<GaborThresholdSessionStart>(prepareGaborThresholdSession(null))
+  const localizationRef = useRef(createGaborLocalizationState())
+  const measurementRef = useRef<GaborThresholdState | null>(null)
+  const countersRef = useRef<Counters>(emptyCounters())
+  const currentRef = useRef<CurrentPresentation | null>(null)
+  const blockCacheRef = useRef(new Map<number, readonly GaborThresholdTrial[]>())
+  const seedRef = useRef<string>(GABOR_THRESHOLD_PROTOCOL.id)
+  const responseLockedRef = useRef(true)
   const completedRef = useRef(false)
+  const lapseStreakRef = useRef(0)
+  const resumeStartsNextRef = useRef(false)
 
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const trialTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const advanceTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const completeTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const tickIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
-
   const startWallRef = useRef<number | null>(null)
   const pausedAccumRef = useRef(0)
   const pauseStartRef = useRef<number | null>(null)
 
+  const finishRef = useRef<(reason: GaborStopReason) => void>(() => {})
+  const startNextRef = useRef<() => void>(() => {})
+  const finalizeResponseRef = useRef<(response: GaborPresentationResponse) => void>(() => {})
+
+  const clearTrialTimer = useCallback(() => {
+    if (trialTimeoutRef.current) clearTimeout(trialTimeoutRef.current)
+    trialTimeoutRef.current = undefined
+  }, [])
+
+  const clearAdvanceTimer = useCallback(() => {
+    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
+    advanceTimeoutRef.current = undefined
+  }, [])
+
   const elapsedSeconds = useCallback(() => {
-    if (!startWallRef.current) return 0
+    if (startWallRef.current === null) return 0
     const now = performance.now()
-    const pausedTotal = pausedAccumRef.current + (pauseStartRef.current ? now - pauseStartRef.current : 0)
-    return Math.max(0, (now - startWallRef.current - pausedTotal) / 1000)
+    const paused = pausedAccumRef.current + (pauseStartRef.current === null ? 0 : now - pauseStartRef.current)
+    return Math.max(0, (now - startWallRef.current - paused) / 1000)
   }, [])
 
-  const nextOrientation = useCallback((): OrientationKey => {
-    if (!bagRef.current.length) bagRef.current = shuffledBag()
-    return bagRef.current.pop()!
-  }, [])
-
-  const drawPatch = useCallback(() => {
+  const drawPresentation = useCallback((presentation: GaborResolvedPresentation | null) => {
     const canvas = canvasRef.current
     if (!canvas) return
     const { width, height } = fitCanvasToElement(canvas)
     const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.fillStyle = '#0b1220'
+    if (!ctx || width <= 0 || height <= 0) return
+    ctx.globalCompositeOperation = 'source-over'
+    ctx.fillStyle = NEUTRAL_FIELD
     ctx.fillRect(0, 0, width, height)
-    const size = Math.max(140, Math.min(220, Math.min(width, height) * 0.55))
-    const angle = ORIENTATIONS[currentOrientationRef.current].angle
-    drawGaborPatch(ctx, width / 2, height / 2, {
+    if (!presentation?.stimulusPresent
+      || presentation.orientationDegrees === null
+      || presentation.spatialFrequencyCyclesPerPatch === null) return
+
+    const size = Math.max(126, Math.min(196, Math.min(width, height) * 0.42))
+    const frequency = presentation.spatialFrequencyCyclesPerPatch
+    const sigma = size / frequency
+    const cx = width / 2
+    const cy = height / 2
+    const common = {
       size,
-      orientation: angle,
-      frequency: TIER_FREQUENCY[tier],
-      contrast: contrastRef.current / 100,
-    })
-  }, [tier])
-
-  const clearTrialTimer = useCallback(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    timeoutRef.current = undefined
-  }, [])
-
-  /** Reversal + step logic — lapses NEVER call this (Sol H4: don't feed the staircase). */
-  const applyStaircase = useCallback((correct: boolean) => {
-    let direction: 'up' | 'down'
-    if (correct) {
-      consecutiveCorrectRef.current += 1
-      if (consecutiveCorrectRef.current < 2) return
-      consecutiveCorrectRef.current = 0
-      direction = 'down'
-    } else {
-      consecutiveCorrectRef.current = 0
-      direction = 'up'
+      orientation: presentation.orientationDegrees,
+      frequency,
+      sigma,
+      phase: presentation.phaseDegrees ?? 0,
+      rasterMode: 'mean-matched-opaque' as const,
     }
-    const next = Math.max(
-      MIN_CONTRAST,
-      Math.min(MAX_CONTRAST, contrastRef.current * (direction === 'down' ? DOWN_STEP : UP_STEP)),
-    )
-    contrastRef.current = next
-    if (lastDirectionRef.current && lastDirectionRef.current !== direction) {
-      reversalsRef.current += 1
-      reversalContrastsRef.current.push(next)
-      if (reversalContrastsRef.current.length > 4) reversalContrastsRef.current.shift()
+
+    if (!presentation.flankers) {
+      drawGaborPatch(ctx, cx, cy, { ...common, contrast: presentation.contrastPct / 100 })
+      return
     }
-    lastDirectionRef.current = direction
-  }, [])
 
-  const finish = useCallback(
-    (completed: boolean) => {
-      if (completedRef.current) return
-      completedRef.current = true
-      clearTrialTimer()
-      if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
-      if (tickIntervalRef.current) clearInterval(tickIntervalRef.current)
-      setPhase('complete')
-      speechRef.current?.speak('Nice work. Exercise complete.', { interrupt: true })
-
-      const trials = trialsRef.current
-      const accuracyPct = trials > 0 ? Math.round((correctRef.current / trials) * 100) : 0
-      const durationSec = Math.round(elapsedSeconds())
-      const reversals = reversalsRef.current
-
-      /**
-       * Score formula: when >=4 reversals occurred, the mean contrast at the
-       * last 4 reversals IS the threshold — lower contrast = sharper vision,
-       * so score = 100 - threshold (e.g. a 12.5% threshold -> score ~88; a
-       * 60% threshold -> score 40). Below 4 reversals the threshold isn't
-       * statistically meaningful (Sol H4) so score falls back to a small
-       * participation floor instead of reporting a misleading number.
-       */
-      let thresholdValid = 0
-      let contrastThresholdPct: number | undefined
-      let score = 25
-      if (reversals >= 4) {
-        const values = reversalContrastsRef.current
-        const mean = values.reduce((a, b) => a + b, 0) / values.length
-        contrastThresholdPct = Math.round(mean * 10) / 10
-        thresholdValid = 1
-        score = clampScore(100 - contrastThresholdPct)
-      }
-
-      const result: EngineResult = {
-        exerciseId: exercise.id,
-        durationSec,
-        completed,
-        score,
-        metrics: {
-          trials,
-          accuracyPct,
-          reversals,
-          thresholdValid,
-          ...(thresholdValid ? { contrastThresholdPct: contrastThresholdPct! } : {}),
-        },
-      }
-      completeTimeoutRef.current = setTimeout(() => onComplete(result), 1400)
-    },
-    [clearTrialTimer, elapsedSeconds, exercise.id, onComplete],
-  )
-
-  /** Trial timeout = a lapse: counted wrong for accuracy/trials, but EXCLUDED
-   * from the staircase (Sol H4: lapses don't feed it). Shared by startTrial
-   * (new orientation) and resume (same orientation — "restarts CURRENT trial
-   * fresh", §4.9c) so the lapse/pause/target-seconds handling lives once. */
-  const armTrialTimeout = useCallback(() => {
-    clearTrialTimer()
-    timeoutRef.current = setTimeout(() => {
-      trialsRef.current += 1
-      lapseStreakRef.current += 1
-      setFeedback('timeout')
-      setPhase('feedback')
-      setStatsDisplay({ trials: trialsRef.current, correct: correctRef.current, reversals: reversalsRef.current })
-      onProgress?.({
-        trials: trialsRef.current,
-        accuracyPct: Math.round((correctRef.current / trialsRef.current) * 100),
-        reversals: reversalsRef.current,
+    // Opaque mean-matched tiles cannot alpha-stack. Partition the collinear
+    // axis at equal-distance boundaries; same-phase Gabors meet continuously
+    // there, so every patch remains visible without a square or double alpha.
+    const stripeAxis = ((presentation.orientationDegrees + 90) * Math.PI) / 180
+    const axisX = Math.cos(stripeAxis)
+    const axisY = Math.sin(stripeAxis)
+    const perpendicularX = -axisY
+    const perpendicularY = axisX
+    const distance = presentation.flankers.centerOffsetWavelengths * (size / frequency)
+    const extent = Math.max(width, height) * 2
+    const drawCell = (centerOffset: number, minAlongAxis: number, maxAlongAxis: number, contrast: number) => {
+      const point = (alongAxis: number, perpendicular: number) => ({
+        x: cx + axisX * alongAxis + perpendicularX * perpendicular,
+        y: cy + axisY * alongAxis + perpendicularY * perpendicular,
       })
-      if (elapsedSeconds() >= targetSeconds) {
-        advanceTimeoutRef.current = setTimeout(() => finish(true), FEEDBACK_MS)
-        return
-      }
-      advanceTimeoutRef.current = setTimeout(() => {
-        if (lapseStreakRef.current >= LAPSES_TO_PAUSE) {
-          pauseStartRef.current = performance.now()
-          setPauseReason('lapse')
-          setPhase('paused')
-          speechRef.current?.speak('Still with me? Tap resume when ready.', { interrupt: true })
-        } else {
-          startTrial()
-        }
-      }, FEEDBACK_MS)
-    }, TRIAL_TIMEOUT_MS)
-  }, [clearTrialTimer, elapsedSeconds, finish, onProgress, targetSeconds])
+      const corners = [
+        point(minAlongAxis, -extent),
+        point(maxAlongAxis, -extent),
+        point(maxAlongAxis, extent),
+        point(minAlongAxis, extent),
+      ]
+      ctx.save()
+      ctx.beginPath()
+      ctx.moveTo(corners[0].x, corners[0].y)
+      for (const corner of corners.slice(1)) ctx.lineTo(corner.x, corner.y)
+      ctx.closePath()
+      ctx.clip()
+      drawGaborPatch(ctx, cx + axisX * centerOffset, cy + axisY * centerOffset, { ...common, contrast })
+      ctx.restore()
+    }
+    drawCell(-distance, -extent, -distance / 2, presentation.flankers.contrastPct / 100)
+    drawCell(0, -distance / 2, distance / 2, presentation.contrastPct / 100)
+    drawCell(distance, distance / 2, extent, presentation.flankers.contrastPct / 100)
+  }, [])
 
-  const startTrial = useCallback(() => {
+  const currentStopReason = useCallback((): GaborStopReason | null => {
+    const counters = countersRef.current
+    const measurement = measurementRef.current
+    const session = sessionRef.current
+    return resolveGaborStopReason({
+      thresholdCompleted: measurement?.completed ?? false,
+      measurementResponses: measurement?.adaptiveTrials ?? 0,
+      measurementResponseCap: session.measurementResponseCap,
+      scheduledExposures: counters.scheduledExposures,
+      scheduledExposureCap: session.scheduledExposureCap,
+      totalExposures: counters.localizationExposures + counters.scheduledExposures,
+      sessionExposureCap: session.sessionExposureCap,
+      timeCapReached: elapsedSeconds() >= TIME_CAP_SECONDS,
+    })
+  }, [elapsedSeconds])
+
+  const finish = useCallback((reason: GaborStopReason) => {
     if (completedRef.current) return
-    currentOrientationRef.current = nextOrientation()
+    completedRef.current = true
+    responseLockedRef.current = true
+    clearTrialTimer()
+    clearAdvanceTimer()
+    if (tickIntervalRef.current) clearInterval(tickIntervalRef.current)
+    tickIntervalRef.current = undefined
+    speechRef.current?.stop()
+
+    const counters = countersRef.current
+    const measurement = measurementRef.current
+    const estimate = measurement ? getGaborThresholdEstimate(measurement) : { valid: false as const }
+    const measurementResponses = measurement?.adaptiveTrials ?? 0
+    const accuracyPct = counters.trials > 0 ? Math.round((counters.correct / counters.trials) * 100) : 0
+    const measurementAccuracyPct = measurementResponses > 0
+      ? Math.round((counters.measurementCorrect / measurementResponses) * 100)
+      : 0
+    const flags = gaborStopFlags(reason)
+    const metrics = {
+      trials: counters.trials,
+      accuracyPct,
+      measurementAccuracyPct,
+      totalExposures: counters.localizationExposures + counters.scheduledExposures,
+      localizationExposures: counters.localizationExposures,
+      scheduledExposures: counters.scheduledExposures,
+      measurementResponses,
+      adaptiveTrials: measurementResponses,
+      reversals: measurement?.reversalContrastsPct.length ?? 0,
+      thresholdValid: Number(estimate.valid),
+      ...(estimate.valid ? { contrastThresholdPct: estimate.contrastThresholdPct } : {}),
+      easyTrials: counters.easyTrials,
+      transferTrials: counters.transferTrials,
+      flankerTrials: counters.flankerTrials,
+      catchTrials: counters.catchTrials,
+      catchFalseAlarms: counters.catchFalseAlarms,
+      lapses: counters.lapses,
+      warmStarted: 0,
+      protocolVersion: 1,
+      anchorSpatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
+      stopValid: flags.stopValid,
+      stopMeasurementCap: flags.stopMeasurementCap,
+      stopExposureCap: flags.stopExposureCap,
+      stopTimeCap: flags.stopTimeCap,
+    }
+    const result: EngineResult = {
+      exerciseId: exercise.id,
+      durationSec: Math.round(elapsedSeconds()),
+      completed: true,
+      score: clampScore(measurementResponses > 0 ? measurementAccuracyPct : accuracyPct),
+      metrics,
+    }
+    setStatsDisplay({
+      exposures: metrics.totalExposures,
+      responses: measurementResponses,
+      reversals: metrics.reversals,
+      accuracyPct,
+    })
+    setPhase('complete')
+    onComplete(result)
+  }, [clearAdvanceTimer, clearTrialTimer, elapsedSeconds, exercise.id, onComplete, setPhase])
+  finishRef.current = finish
+
+  const publishProgress = useCallback(() => {
+    const counters = countersRef.current
+    const measurement = measurementRef.current
+    const measurementResponses = measurement?.adaptiveTrials ?? 0
+    const accuracyPct = counters.trials > 0 ? Math.round((counters.correct / counters.trials) * 100) : 0
+    setStatsDisplay({
+      exposures: counters.localizationExposures + counters.scheduledExposures,
+      responses: measurementResponses,
+      reversals: measurement?.reversalContrastsPct.length ?? 0,
+      accuracyPct,
+    })
+    onProgress?.({
+      trials: counters.trials,
+      accuracyPct,
+      totalExposures: counters.localizationExposures + counters.scheduledExposures,
+      localizationExposures: counters.localizationExposures,
+      scheduledExposures: counters.scheduledExposures,
+      measurementResponses,
+      adaptiveTrials: measurementResponses,
+      reversals: measurement?.reversalContrastsPct.length ?? 0,
+      catchFalseAlarms: counters.catchFalseAlarms,
+      lapses: counters.lapses,
+    })
+  }, [onProgress])
+
+  const armResponseWindow = useCallback((presentation: GaborResolvedPresentation) => {
+    clearTrialTimer()
+    trialTimeoutRef.current = setTimeout(
+      () => finalizeResponseRef.current({ type: 'timeout' }),
+      presentation.stimulusPresent ? STIMULUS_TIMEOUT_MS : CATCH_WINDOW_MS,
+    )
+  }, [clearTrialTimer])
+
+  const incrementKindCount = useCallback((kind: GaborTrialKind) => {
+    const counters = countersRef.current
+    if (kind === 'easy') counters.easyTrials += 1
+    else if (kind === 'transfer') counters.transferTrials += 1
+    else if (kind === 'flanker') counters.flankerTrials += 1
+    else if (kind === 'catch') counters.catchTrials += 1
+  }, [])
+
+  const startNextPresentation = useCallback(() => {
+    if (completedRef.current) return
+    const stop = currentStopReason()
+    if (stop) {
+      finishRef.current(stop)
+      return
+    }
+
+    let current: CurrentPresentation
+    if (localizationRef.current.responses < GABOR_THRESHOLD_PROTOCOL.localizationResponses) {
+      const exposureIndex = countersRef.current.localizationExposures
+      const trial = buildGaborLocalizationTrial(seedRef.current, exposureIndex)
+      current = {
+        stage: 'localization',
+        resolved: resolveGaborPresentation(trial, localizationRef.current.contrastPct),
+      }
+      countersRef.current.localizationExposures += 1
+    } else {
+      if (!measurementRef.current) {
+        measurementRef.current = startGaborMeasurementAfterLocalization(localizationRef.current)
+      }
+      const exposureIndex = countersRef.current.scheduledExposures
+      const blockIndex = Math.floor(exposureIndex / 10)
+      let block = blockCacheRef.current.get(blockIndex)
+      if (!block) {
+        block = buildGaborThresholdBlock({ seed: seedRef.current, blockIndex })
+        blockCacheRef.current.set(blockIndex, block)
+      }
+      const trial = block[exposureIndex % block.length]
+      current = {
+        stage: 'measurement',
+        resolved: resolveGaborPresentation(trial, measurementRef.current.contrastPct),
+      }
+      countersRef.current.scheduledExposures += 1
+      incrementKindCount(trial.kind)
+    }
+
+    currentRef.current = current
+    responseLockedRef.current = false
     setFeedback(null)
     setPhase('trial')
-    drawPatch()
-    armTrialTimeout()
-  }, [armTrialTimeout, drawPatch, nextOrientation])
+    drawPresentation(current.resolved)
+    publishProgress()
+    armResponseWindow(current.resolved)
+  }, [armResponseWindow, currentStopReason, drawPresentation, incrementKindCount, publishProgress, setPhase])
+  startNextRef.current = startNextPresentation
 
-  const answer = useCallback(
-    (choice: OrientationKey) => {
-      if (phase !== 'trial') return // debounce during feedback window (SnellenQuickCheck Leg idiom)
-      clearTrialTimer()
-      const correct = choice === currentOrientationRef.current
-      trialsRef.current += 1
+  const finalizeResponse = useCallback((response: GaborPresentationResponse) => {
+    const current = currentRef.current
+    if (!current || completedRef.current || phaseRef.current !== 'trial' || responseLockedRef.current) return
+    responseLockedRef.current = true
+    clearTrialTimer()
+
+    const classified = classifyGaborResponse(current.resolved, response)
+    const counters = countersRef.current
+    counters.trials += 1
+    if (classified.correct) counters.correct += 1
+    if (classified.falseAlarm) counters.catchFalseAlarms += 1
+    if (classified.lapse) {
+      counters.lapses += 1
+      lapseStreakRef.current += 1
+    } else {
       lapseStreakRef.current = 0
-      if (correct) correctRef.current += 1
-      applyStaircase(correct)
-      setFeedback(correct ? 'correct' : 'wrong')
-      setPhase('feedback')
-      setStatsDisplay({ trials: trialsRef.current, correct: correctRef.current, reversals: reversalsRef.current })
-      onProgress?.({
-        trials: trialsRef.current,
-        accuracyPct: Math.round((correctRef.current / trialsRef.current) * 100),
-        reversals: reversalsRef.current,
-      })
+    }
 
-      if (reversalsRef.current >= REVERSALS_TO_END || elapsedSeconds() >= targetSeconds) {
-        advanceTimeoutRef.current = setTimeout(() => finish(true), FEEDBACK_MS)
-        return
+    if (current.stage === 'localization') {
+      if (classified.staircaseResponse) {
+        localizationRef.current = updateGaborLocalization(
+          localizationRef.current,
+          classified.staircaseResponse,
+        ).state
       }
-      advanceTimeoutRef.current = setTimeout(() => startTrial(), FEEDBACK_MS)
-    },
-    [applyStaircase, clearTrialTimer, elapsedSeconds, finish, onProgress, phase, startTrial, targetSeconds],
-  )
+    } else if (current.resolved.trial.adaptive && classified.staircaseResponse && measurementRef.current) {
+      measurementRef.current = updateGaborThreshold(measurementRef.current, {
+        response: classified.staircaseResponse,
+        adaptive: true,
+      }).state
+      if (classified.correct) counters.measurementCorrect += 1
+    }
+
+    setFeedback(classified.lapse ? 'timeout' : classified.correct ? 'correct' : 'wrong')
+    setPhase('feedback')
+    publishProgress()
+
+    const stop = currentStopReason()
+    if (stop) {
+      finishRef.current(stop)
+      return
+    }
+    if (classified.lapse && lapseStreakRef.current >= LAPSES_TO_PAUSE) {
+      pauseStartRef.current = performance.now()
+      resumeStartsNextRef.current = true
+      setPauseReason('lapse')
+      setPhase('paused')
+      speechRef.current?.speak('Still with me? Tap resume when ready.', { interrupt: true })
+      return
+    }
+    clearAdvanceTimer()
+    advanceTimeoutRef.current = setTimeout(() => startNextRef.current(), FEEDBACK_MS)
+  }, [clearAdvanceTimer, clearTrialTimer, currentStopReason, publishProgress, setPhase])
+  finalizeResponseRef.current = finalizeResponse
 
   const start = useCallback(() => {
+    if (phaseRef.current !== 'intro') return
     unlockAudio()
+    sessionRef.current = prepareGaborThresholdSession(null)
+    localizationRef.current = createGaborLocalizationState()
+    measurementRef.current = null
+    countersRef.current = emptyCounters()
+    currentRef.current = null
+    blockCacheRef.current.clear()
+    completedRef.current = false
+    responseLockedRef.current = true
+    lapseStreakRef.current = 0
+    pausedAccumRef.current = 0
+    pauseStartRef.current = null
+    seedRef.current = `${GABOR_THRESHOLD_PROTOCOL.id}:${Date.now()}`
     startWallRef.current = performance.now()
-    bagRef.current = []
-    speechRef.current?.speak('Watch the pattern, then tap the matching direction.', { interrupt: true })
-    startTrial()
+    speechRef.current?.speak('Choose the stripe direction, or choose no pattern when the field is blank.', { interrupt: true })
+    startNextRef.current()
     tickIntervalRef.current = setInterval(() => {
       if (completedRef.current) return
-      setElapsedDisplay(elapsedSeconds())
-    }, 500)
-  }, [elapsedSeconds, startTrial])
+      const elapsed = elapsedSeconds()
+      setElapsedDisplay(elapsed)
+      if (elapsed >= TIME_CAP_SECONDS) finishRef.current('time-cap')
+    }, 250)
+  }, [elapsedSeconds])
 
   const pauseManual = useCallback(() => {
-    if (phase !== 'trial' && phase !== 'feedback') return
+    if (phaseRef.current !== 'trial' && phaseRef.current !== 'feedback') return
     clearTrialTimer()
-    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
+    clearAdvanceTimer()
     pauseStartRef.current = performance.now()
+    resumeStartsNextRef.current = phaseRef.current === 'feedback'
     setPauseReason('manual')
     setPhase('paused')
-  }, [clearTrialTimer, phase])
+  }, [clearAdvanceTimer, clearTrialTimer, setPhase])
 
   const resume = useCallback(() => {
-    if (pauseStartRef.current) {
+    if (pauseStartRef.current !== null) {
       pausedAccumRef.current += performance.now() - pauseStartRef.current
       pauseStartRef.current = null
     }
-    lapseStreakRef.current = 0
     setPauseReason(null)
-    // "resuming restarts the CURRENT trial fresh" (§4.9c) — same orientation/contrast, new timer.
+    if (resumeStartsNextRef.current) {
+      resumeStartsNextRef.current = false
+      startNextRef.current()
+      return
+    }
+    const current = currentRef.current
+    if (!current) {
+      startNextRef.current()
+      return
+    }
+    responseLockedRef.current = false
     setFeedback(null)
     setPhase('trial')
-    drawPatch()
-    armTrialTimeout()
-  }, [armTrialTimeout, drawPatch])
+    drawPresentation(current.resolved)
+    armResponseWindow(current.resolved)
+  }, [armResponseWindow, drawPresentation, setPhase])
 
   const handleAbort = useCallback(() => {
+    if (completedRef.current) return
+    completedRef.current = true
+    responseLockedRef.current = true
     clearTrialTimer()
-    if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
-    if (completeTimeoutRef.current) clearTimeout(completeTimeoutRef.current)
+    clearAdvanceTimer()
     if (tickIntervalRef.current) clearInterval(tickIntervalRef.current)
     speechRef.current?.stop()
     onExit()
-  }, [clearTrialTimer, onExit])
+  }, [clearAdvanceTimer, clearTrialTimer, onExit])
 
   useEffect(() => {
-    return () => {
-      clearTrialTimer()
-      if (advanceTimeoutRef.current) clearTimeout(advanceTimeoutRef.current)
-      if (completeTimeoutRef.current) clearTimeout(completeTimeoutRef.current)
-      if (tickIntervalRef.current) clearInterval(tickIntervalRef.current)
-      speechRef.current?.stop()
-    }
-  }, [clearTrialTimer])
-
-  useEffect(() => {
+    drawPresentation(currentRef.current?.resolved ?? null)
     const canvas = canvasRef.current
     if (!canvas || typeof ResizeObserver === 'undefined') return
-    const ro = new ResizeObserver(() => drawPatch())
-    if (canvas.parentElement) ro.observe(canvas.parentElement)
-    return () => ro.disconnect()
-  }, [drawPatch])
+    const observer = new ResizeObserver(() => drawPresentation(currentRef.current?.resolved ?? null))
+    if (canvas.parentElement) observer.observe(canvas.parentElement)
+    return () => observer.disconnect()
+  }, [drawPresentation])
 
-  const showEarlyFinish =
-    elapsedDisplay >= EARLY_FINISH_AFTER_SEC && (phase === 'trial' || phase === 'feedback' || (phase === 'paused' && pauseReason === 'manual'))
+  useEffect(() => () => {
+    clearTrialTimer()
+    clearAdvanceTimer()
+    if (tickIntervalRef.current) clearInterval(tickIntervalRef.current)
+    speechRef.current?.stop()
+  }, [clearAdvanceTimer, clearTrialTimer])
 
-  const feedbackText = feedback === 'correct' ? 'Correct' : feedback === 'timeout' ? "Time's up" : feedback === 'wrong' ? 'Not quite' : null
-  const feedbackClass = feedback === 'correct' ? 'text-secondary-400' : 'text-yellow-400'
+  const answerOrientation = useCallback((choice: OrientationKey) => {
+    finalizeResponseRef.current({ type: 'orientation', orientationDegrees: ORIENTATIONS[choice].angle })
+  }, [])
+  const answerNoPattern = useCallback(() => finalizeResponseRef.current({ type: 'no-pattern' }), [])
+
+  const feedbackText = feedback === 'correct' ? 'Correct' : feedback === 'timeout' ? 'No response recorded' : feedback === 'wrong' ? 'Not quite' : ''
+  const feedbackClass = feedback === 'correct' ? 'text-secondary-400' : feedback === 'timeout' ? 'text-gray-300' : 'text-yellow-300'
 
   return (
-    <div className="relative flex h-full min-h-[100dvh] w-full select-none flex-col overflow-hidden bg-gray-950">
-      {/* Top bar — mute + X/abort visible in EVERY state (§4.9b) */}
-      <div className="relative z-10 flex items-center justify-between bg-gradient-to-b from-gray-900/90 to-transparent px-4 py-3">
+    <div className="relative flex h-full min-h-[100dvh] w-full select-none flex-col overflow-hidden bg-[#808080]">
+      <div className="relative z-10 flex items-center justify-between bg-gradient-to-b from-gray-950/90 to-transparent px-4 py-3">
         <div>
           <p className="text-sm font-semibold text-white">{exercise.title}</p>
-          <p className="text-xs text-gray-400">
-            {statsDisplay.trials > 0 ? `${statsDisplay.trials} trials · ${statsDisplay.reversals} reversals` : 'Contrast-sensitivity training'}
+          <p className="text-xs text-gray-300">
+            {statsDisplay.exposures > 0
+              ? `${statsDisplay.exposures} presentations · ${statsDisplay.responses} measured responses`
+              : 'Contrast-processing training'}
           </p>
         </div>
         <div className="flex items-center gap-2">
           {(phase === 'trial' || phase === 'feedback') && (
-            <button
-              onClick={pauseManual}
-              className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-800/80 text-gray-400 backdrop-blur-sm hover:text-white"
-              aria-label="Pause exercise"
-            >
+            <button onClick={pauseManual} className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-900/80 text-gray-300 backdrop-blur-sm hover:text-white" aria-label="Pause exercise">
               <Pause className="h-5 w-5" />
             </button>
           )}
           <button
-            onClick={() => {
-              if (speechRef.current) speechRef.current.muted = !getSharedMuted()
-            }}
-            className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-800/80 text-gray-400 backdrop-blur-sm hover:text-white"
+            onClick={() => { if (speechRef.current) speechRef.current.muted = !getSharedMuted() }}
+            className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-900/80 text-gray-300 backdrop-blur-sm hover:text-white"
             aria-label="Toggle sound"
           >
             {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
           </button>
-          <button
-            onClick={handleAbort}
-            className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-800/80 text-gray-400 backdrop-blur-sm hover:text-white"
-            aria-label="Exit exercise"
-          >
+          <button onClick={handleAbort} className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-900/80 text-gray-300 backdrop-blur-sm hover:text-white" aria-label="Exit exercise">
             <X className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      {/* Canvas */}
-      <div ref={containerRef} className="relative min-h-0 w-full flex-1">
+      <div className="relative min-h-0 w-full flex-1">
         <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
 
         {phase === 'intro' && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-950/85 p-6 backdrop-blur-sm">
             <div className="w-full max-w-sm space-y-5 rounded-xl border border-primary-400/20 bg-gradient-to-br from-gray-800/80 to-gray-900/80 p-6 text-center shadow-2xl">
               <h2 className="text-2xl font-bold text-white">{exercise.title}</h2>
-              <p className="text-sm text-gray-400">{exercise.summary}</p>
+              <p className="text-sm text-gray-300">{exercise.summary}</p>
               <div className="flex items-start gap-2 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-left">
                 <ShieldAlert className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-300" />
-                <p className="text-xs text-red-200/90">
-                  Stop immediately if you feel pain, dizziness, double vision, or persistent blur. The X above ends this at any time.
-                </p>
+                <p className="text-xs text-red-200/90">Stop immediately for pain, dizziness, double vision, headache, or persistent blur. The X above ends the exercise at any time.</p>
               </div>
-              <p className="text-xs text-gray-500">
-                A faint striped patch will flash. Tap the arrow pad for the direction the stripes run — vertical, horizontal, or diagonal.
-              </p>
-              <button
-                onClick={start}
-                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-8 py-3 font-semibold text-white shadow-lg shadow-primary-500/20 hover:bg-primary-600"
-              >
+              <p className="text-xs text-gray-400">Choose the direction the stripes run. If the field is blank, choose No pattern. This trains visual processing; it is not a diagnosis or prescription.</p>
+              <button onClick={start} className="flex min-h-11 w-full items-center justify-center rounded-lg bg-primary-500 px-8 py-3 font-semibold text-white shadow-lg shadow-primary-500/20 hover:bg-primary-600">
                 Start
               </button>
             </div>
@@ -443,11 +586,8 @@ export default function GaborAcuityEngine({ exercise, prescription, onProgress, 
           <div className="absolute inset-0 flex items-center justify-center bg-gray-950/90 p-6 backdrop-blur-sm">
             <div className="w-full max-w-sm space-y-5 rounded-xl border border-primary-400/20 bg-gradient-to-br from-gray-800/80 to-gray-900/80 p-6 text-center shadow-2xl">
               <h2 className="text-lg font-semibold text-white">{pauseReason === 'lapse' ? 'Still with me?' : 'Paused'}</h2>
-              {pauseReason === 'lapse' && <p className="text-sm text-gray-400">No rush — tap resume whenever you&apos;re ready.</p>}
-              <button
-                onClick={resume}
-                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-8 py-3 font-semibold text-white hover:bg-primary-600"
-              >
+              <p className="text-sm text-gray-400">No rush. Resume when your eyes feel ready.</p>
+              <button onClick={resume} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary-500 px-8 py-3 font-semibold text-white hover:bg-primary-600">
                 <Play className="h-5 w-5" /> Resume
               </button>
             </div>
@@ -457,80 +597,70 @@ export default function GaborAcuityEngine({ exercise, prescription, onProgress, 
         {phase === 'complete' && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-950/85 p-6 backdrop-blur-sm">
             <div className="w-full max-w-sm space-y-2 rounded-xl border border-secondary-400/30 bg-gradient-to-r from-secondary-600/20 to-primary-600/20 p-8 text-center shadow-2xl">
-              <h2 className="text-2xl font-bold text-white">Exercise Complete!</h2>
-              <p className="text-gray-300">
-                {statsDisplay.trials > 0 ? Math.round((statsDisplay.correct / statsDisplay.trials) * 100) : 0}% accuracy · {statsDisplay.trials} trials
-              </p>
-              <p className="text-xs text-gray-500">Contrast-sensitivity training score — not a clinical measurement.</p>
-              {statsDisplay.reversals < 4 && <p className="text-xs text-amber-300">Keep training to establish your score.</p>}
+              <h2 className="text-2xl font-bold text-white">Exercise complete</h2>
+              <p className="text-gray-300">{statsDisplay.accuracyPct}% response accuracy · {statsDisplay.exposures} presentations</p>
+              <p className="text-xs text-gray-400">Your result reflects this contrast-processing task. It is not an eye exam, diagnosis, or prescription.</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Answer pad + feedback — fixed diamond layout, never reshuffled */}
       {(phase === 'trial' || phase === 'feedback') && (
-        <div className="relative z-10 flex flex-col items-center gap-3 px-4 pb-3">
-          {feedbackText && <p className={`text-lg font-bold ${feedbackClass}`}>{feedbackText}</p>}
-          <GaborAnswerPad onSelect={answer} disabled={phase !== 'trial'} reducedMotion={reducedMotion} />
+        <div className="relative z-10 flex flex-col items-center px-4 pb-3">
+          <p className={`flex h-7 items-center text-base font-bold ${feedbackClass}`} aria-live="polite">{feedbackText}</p>
+          <GaborAnswerPad
+            onSelect={answerOrientation}
+            onNoPattern={answerNoPattern}
+            disabled={phase !== 'trial'}
+            reducedMotion={reducedMotion}
+          />
         </div>
       )}
 
-      {/* Progress */}
-      <div className="relative z-10 space-y-2 px-4 pb-4">
+      <div className="relative z-10 space-y-2 bg-gradient-to-t from-gray-950/90 to-transparent px-4 pb-4 pt-2">
         <div className="h-2 overflow-hidden rounded-full bg-gray-700">
-          <div
-            className={reducedMotion ? 'h-full bg-primary-500' : 'h-full bg-primary-500 transition-all duration-300'}
-            style={{ width: `${Math.min(100, Math.round((elapsedDisplay / targetSeconds) * 100))}%` }}
-          />
+          <div className={reducedMotion ? 'h-full bg-primary-500' : 'h-full bg-primary-500 transition-all duration-300'} style={{ width: `${Math.min(100, (elapsedDisplay / TIME_CAP_SECONDS) * 100)}%` }} />
         </div>
-        <div className="flex items-center justify-between text-xs text-gray-400">
+        <div className="flex items-center justify-between text-xs text-gray-300">
           <span>{formatTime(elapsedDisplay)}</span>
-          {showEarlyFinish ? (
-            <button onClick={() => finish(true)} className="min-h-11 px-3 text-primary-300 underline">
-              Finish now
-            </button>
-          ) : (
-            <span>{formatTime(targetSeconds)}</span>
-          )}
+          <span>{formatTime(TIME_CAP_SECONDS)}</span>
         </div>
       </div>
     </div>
   )
 }
 
-// ---------------------------------------------------------------------------
-// Fixed diamond answer pad — top=vertical, left=diagonal-left, right=diagonal-right,
-// bottom=horizontal. Positions/labels NEVER move (accidental-saccade doctrine,
-// copies SnellenChart's exported DirectionButtons pattern).
-// ---------------------------------------------------------------------------
 function GaborAnswerPad({
   onSelect,
+  onNoPattern,
   disabled,
   reducedMotion,
 }: {
   onSelect: (key: OrientationKey) => void
+  onNoPattern: () => void
   disabled: boolean
   reducedMotion: boolean
 }) {
-  const transitionClass = reducedMotion ? '' : 'transition-transform active:scale-95'
-  const buttonBase = `flex min-h-11 min-w-[110px] flex-col items-center justify-center gap-1 rounded-xl bg-gray-900 px-6 py-3 font-bold text-white shadow-lg ${transitionClass} ${disabled ? 'opacity-50' : 'hover:bg-primary-500'}`
-
-  const Btn = ({ k }: { k: OrientationKey }) => (
-    <button onClick={() => onSelect(k)} disabled={disabled} className={buttonBase} aria-label={ORIENTATIONS[k].ariaLabel}>
-      <span className="text-2xl leading-none">{ORIENTATIONS[k].glyph}</span>
-      <span className="text-xs font-semibold">{ORIENTATIONS[k].label}</span>
+  const transition = reducedMotion ? '' : 'transition-transform active:scale-95'
+  const buttonBase = `flex min-h-11 min-w-[104px] flex-col items-center justify-center gap-1 rounded-xl bg-gray-950 px-5 py-2 font-bold text-white shadow-lg ${transition} ${disabled ? 'opacity-50' : 'hover:bg-primary-600'}`
+  const Button = ({ orientation }: { orientation: OrientationKey }) => (
+    <button onClick={() => onSelect(orientation)} disabled={disabled} className={buttonBase} aria-label={ORIENTATIONS[orientation].ariaLabel}>
+      <span className="text-2xl leading-none">{ORIENTATIONS[orientation].glyph}</span>
+      <span className="text-xs font-semibold">{ORIENTATIONS[orientation].label}</span>
     </button>
   )
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <Btn k="vertical" />
-      <div className="flex gap-6">
-        <Btn k="diagonal-left" />
-        <Btn k="diagonal-right" />
+    <div className="flex flex-col items-center gap-2">
+      <Button orientation="vertical" />
+      <div className="flex gap-4">
+        <Button orientation="diagonal-left" />
+        <Button orientation="diagonal-right" />
       </div>
-      <Btn k="horizontal" />
+      <Button orientation="horizontal" />
+      <button onClick={onNoPattern} disabled={disabled} className={`${buttonBase} min-w-[160px]`} aria-label="No pattern visible">
+        <span className="text-sm font-semibold">No pattern</span>
+      </button>
     </div>
   )
 }

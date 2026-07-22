@@ -67,7 +67,7 @@ export type GaborOpts = {
    * Shared stimuli blend their Gaussian envelope into the receiving surface.
    * Legacy training canvases retain their historical opaque raster instead.
    */
-  rasterMode?: 'shared-transparent' | 'legacy-opaque'
+  rasterMode?: 'shared-transparent' | 'legacy-opaque' | 'mean-matched-opaque'
   /** degrees */
   phase?: number
   /** Animation-only cache bucket. Threshold stimuli leave this unset for exact phase identity. */
@@ -84,7 +84,7 @@ type ResolvedGaborOpts = {
   contrast: number
   sigma: number
   compositingMode: GlobalCompositeOperation
-  rasterMode: 'shared-transparent' | 'legacy-opaque'
+  rasterMode: 'shared-transparent' | 'legacy-opaque' | 'mean-matched-opaque'
   phase: number
 }
 
@@ -135,6 +135,20 @@ function renderGaborTile(o: GaborRaster): HTMLCanvasElement {
   const phaseRad = (o.phase * Math.PI) / 180
   const freq = (2 * Math.PI * o.frequency) / o.size
   const bg = 128
+  let sampledWindowedCarrierMean = 0
+
+  if (o.rasterMode === 'mean-matched-opaque') {
+    for (let py = 0; py < o.backingHeight; py++) {
+      for (let px = 0; px < o.backingWidth; px++) {
+        const xc = px / o.rasterScaleX - half
+        const yc = py / o.rasterScaleY - half
+        const xp = xc * cosT + yc * sinT
+        const gaussian = Math.exp(-(xc * xc + yc * yc) / (2 * o.sigma * o.sigma))
+        sampledWindowedCarrierMean += gaussian * Math.cos(freq * xp + phaseRad)
+      }
+    }
+    sampledWindowedCarrierMean /= o.backingWidth * o.backingHeight
+  }
 
   for (let py = 0; py < o.backingHeight; py++) {
     for (let px = 0; px < o.backingWidth; px++) {
@@ -142,7 +156,9 @@ function renderGaborTile(o: GaborRaster): HTMLCanvasElement {
       const yc = py / o.rasterScaleY - half
       const xp = xc * cosT + yc * sinT
       const gaussian = Math.exp(-(xc * xc + yc * yc) / (2 * o.sigma * o.sigma))
-      const value = gaussian * Math.cos(freq * xp + phaseRad) * o.contrast
+      const value = o.rasterMode === 'mean-matched-opaque'
+        ? (gaussian * Math.cos(freq * xp + phaseRad) - sampledWindowedCarrierMean) * o.contrast
+        : gaussian * Math.cos(freq * xp + phaseRad) * o.contrast
       const pixel = Math.max(0, Math.min(255, Math.round(bg + value * 127)))
       const idx = (py * o.backingWidth + px) * 4
       data[idx] = pixel
@@ -150,7 +166,7 @@ function renderGaborTile(o: GaborRaster): HTMLCanvasElement {
       data[idx + 2] = pixel
       // Shared patches blend into any receiving surface. The two legacy
       // training canvases historically emitted an opaque raster instead.
-      data[idx + 3] = o.rasterMode === 'legacy-opaque' ? 255 : Math.round(gaussian * 255)
+      data[idx + 3] = o.rasterMode === 'shared-transparent' ? Math.round(gaussian * 255) : 255
     }
   }
   tctx.putImageData(imageData, 0, 0)

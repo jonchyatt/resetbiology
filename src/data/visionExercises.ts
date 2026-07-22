@@ -242,18 +242,18 @@ export const visionExercises: VisionExercise[] = [
     category: 'mechanics',
     duration: '3 min',
     intensity: 'moderate',
-    summary: 'Forced-choice orientation calls on a faint striped patch, adapting to find your contrast-sensitivity edge.',
+    summary: 'A calm forced-choice task that measures how faint a striped pattern your visual system can process reliably.',
     focus: ['contrast sensitivity', 'orientation discrimination'],
     checkpoints: [
-      'A single striped patch flashes at the center — call its direction before it fades from view.',
-      'Tap the matching arrow: up, left, right, or down on the fixed pad.',
-      'The patch gets fainter as you get calls right, and clearer after a miss.',
+      'Keep your gaze near the center and identify the stripe direction when a pattern is present.',
+      'Use the same four direction buttons every time; choose No pattern when the neutral field is blank.',
+      'Some easier, alternate-texture, and surrounded patterns support transfer without changing the measured threshold.',
     ],
     guidance: [
       { heading: 'Vision cue', detail: 'Let your eyes stay soft — don’t squint to force clarity, guess your best read.' },
-      { heading: 'Pacing cue', detail: 'No rush, but answer before the 10-second window closes.' },
+      { heading: 'Pacing cue', detail: 'Answer when you have your best read. A blank field has a shorter response window.' },
     ],
-    progression: 'Texture tier steps up with your program week (weeks 1-4 coarse, 5-8 medium, 9-12 fine).',
+    progression: 'The measured anchor stays fixed at seven cycles per patch while contrast adapts; transfer trials use alternate textures without entering the threshold.',
   },
 ];
 

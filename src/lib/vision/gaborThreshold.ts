@@ -26,9 +26,11 @@ export const GABOR_THRESHOLD_PROTOCOL = {
   localizationStepLog10: 0.3,
   localizedMeasurementOffsetLog10: 0.2,
   warmMeasurementOffsetLog10: 0.1,
-  measurementResponseCap: 48,
+  coldMeasurementResponseCap: 48,
   warmMeasurementResponseCap: 60,
-  combinedResponseCap: 60,
+  coldScheduledExposureCap: 88,
+  warmScheduledExposureCap: 100,
+  sessionExposureCap: 100,
 } as const
 
 /** The stationary target of a 3-down/1-up rule: p^3 = 0.5. */
@@ -139,6 +141,8 @@ export type GaborThresholdSessionStart =
       readonly localization: null
       readonly measurement: GaborThresholdState
       readonly measurementResponseCap: 60
+      readonly scheduledExposureCap: 100
+      readonly sessionExposureCap: 100
       readonly fallbackReason: null
     }
   | {
@@ -146,6 +150,8 @@ export type GaborThresholdSessionStart =
       readonly localization: GaborLocalizationState
       readonly measurement: null
       readonly measurementResponseCap: 48
+      readonly scheduledExposureCap: 88
+      readonly sessionExposureCap: 100
       readonly fallbackReason: 'missing' | 'invalid' | 'stale' | 'protocol-mismatch' | 'render-mismatch'
     }
 
@@ -253,6 +259,8 @@ export function prepareGaborThresholdSession(
         prior.contrastThresholdPct * Math.pow(10, GABOR_THRESHOLD_PROTOCOL.warmMeasurementOffsetLog10),
       ),
       measurementResponseCap: GABOR_THRESHOLD_PROTOCOL.warmMeasurementResponseCap,
+      scheduledExposureCap: GABOR_THRESHOLD_PROTOCOL.warmScheduledExposureCap,
+      sessionExposureCap: GABOR_THRESHOLD_PROTOCOL.sessionExposureCap,
       fallbackReason: null,
     }
   }
@@ -260,7 +268,9 @@ export function prepareGaborThresholdSession(
     mode: 'localization',
     localization: createGaborLocalizationState(),
     measurement: null,
-    measurementResponseCap: GABOR_THRESHOLD_PROTOCOL.measurementResponseCap,
+    measurementResponseCap: GABOR_THRESHOLD_PROTOCOL.coldMeasurementResponseCap,
+    scheduledExposureCap: GABOR_THRESHOLD_PROTOCOL.coldScheduledExposureCap,
+    sessionExposureCap: GABOR_THRESHOLD_PROTOCOL.sessionExposureCap,
     fallbackReason: fallbackReason ?? 'missing',
   }
 }
@@ -458,7 +468,8 @@ export interface GaborThresholdTrial {
   readonly stimulusPresent: boolean
   readonly adaptive: boolean
   readonly thresholdEligible: boolean
-  readonly contrastPct: number
+  readonly contrastRule: 'live' | 'easy-live' | 'transfer-live' | 'fixed' | 'blank'
+  readonly fixedContrastPct: number | null
   readonly orientationDegrees: number | null
   readonly spatialFrequencyCyclesPerPatch: number | null
   readonly phaseDegrees: 0 | null
@@ -471,17 +482,14 @@ export interface GaborThresholdTrial {
 export interface GaborThresholdBlockOptions {
   readonly seed: string | number
   readonly blockIndex: number
-  readonly currentContrastPct: number
 }
 
 /** Build one seeded ten-trial therapeutic block. */
 export function buildGaborThresholdBlock({
   seed,
   blockIndex,
-  currentContrastPct,
 }: GaborThresholdBlockOptions): readonly GaborThresholdTrial[] {
   assertBlockIndex(blockIndex)
-  const contrastPct = clampContrast(currentContrastPct)
   const trials: GaborThresholdTrial[] = []
 
   for (let anchorIndex = 0; anchorIndex < 6; anchorIndex += 1) {
@@ -490,7 +498,7 @@ export function buildGaborThresholdBlock({
       kind: 'anchor',
       condition: 'isolated-anchor',
       adaptive: true,
-      contrastPct,
+      contrastRule: 'live',
       orientationDegrees: balancedOrientation(seed, 'anchor', blockIndex * 6 + anchorIndex),
       spatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
     }))
@@ -501,7 +509,7 @@ export function buildGaborThresholdBlock({
     kind: 'easy',
     condition: 'easy-supplement',
     adaptive: false,
-    contrastPct: Math.min(100, Math.max(50, contrastPct * 2)),
+    contrastRule: 'easy-live',
     orientationDegrees: balancedOrientation(seed, 'easy', blockIndex),
     spatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
   }))
@@ -511,7 +519,7 @@ export function buildGaborThresholdBlock({
     kind: 'transfer',
     condition: 'spatial-frequency-transfer',
     adaptive: false,
-    contrastPct: Math.min(100, Math.max(30, contrastPct * 1.5)),
+    contrastRule: 'transfer-live',
     orientationDegrees: balancedOrientation(seed, 'transfer', blockIndex),
     spatialFrequencyCyclesPerPatch: balancedTransferFrequency(seed, blockIndex),
   }))
@@ -522,7 +530,7 @@ export function buildGaborThresholdBlock({
     kind: 'flanker',
     condition: 'collinear-flanker',
     adaptive: false,
-    contrastPct,
+    contrastRule: 'live',
     orientationDegrees: flankerOrientation,
     spatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
     flankers: {
@@ -536,7 +544,23 @@ export function buildGaborThresholdBlock({
   }))
 
   trials.push(catchTrial(`block-${blockIndex}-catch-0`))
-  return shuffleDeterministically(trials, `${String(seed)}:block-order:${blockIndex}`)
+  return orderWithOneSelectionDrawPerTrial(trials, `${String(seed)}:block-order:${blockIndex}`)
+}
+
+/** One deterministic localization target; response index and exposure index stay separate. */
+export function buildGaborLocalizationTrial(seed: string | number, exposureIndex: number): GaborThresholdTrial {
+  if (!Number.isSafeInteger(exposureIndex) || exposureIndex < 0) {
+    throw new RangeError('Gabor exposureIndex must be a non-negative safe integer.')
+  }
+  return stimulusTrial({
+    id: `localization-${exposureIndex}`,
+    kind: 'anchor',
+    condition: 'isolated-anchor',
+    adaptive: false,
+    contrastRule: 'live',
+    orientationDegrees: balancedOrientation(seed, 'localization', exposureIndex),
+    spatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
+  })
 }
 
 /** Build the non-therapeutic twelve-trial easy preview. */
@@ -548,7 +572,8 @@ export function buildGaborEasyPreview(seed: string | number): readonly GaborThre
       kind: 'anchor',
       condition: 'isolated-anchor',
       adaptive: false,
-      contrastPct: 60,
+      contrastRule: 'fixed',
+      fixedContrastPct: 60,
       orientationDegrees: balancedOrientation(seed, 'preview-anchor', anchorIndex),
       spatialFrequencyCyclesPerPatch: GABOR_THRESHOLD_PROTOCOL.anchorSpatialFrequencyCyclesPerPatch,
     }))
@@ -559,13 +584,126 @@ export function buildGaborEasyPreview(seed: string | number): readonly GaborThre
       kind: 'transfer',
       condition: 'spatial-frequency-transfer',
       adaptive: false,
-      contrastPct: 60,
+      contrastRule: 'fixed',
+      fixedContrastPct: 60,
       orientationDegrees: balancedOrientation(seed, 'preview-transfer', transferIndex),
       spatialFrequencyCyclesPerPatch: balancedTransferFrequency(seed, transferIndex),
     }))
   }
   trials.push(catchTrial('preview-catch-0'), catchTrial('preview-catch-1'))
-  return shuffleDeterministically(trials, `${String(seed)}:preview-order`)
+  return orderWithOneSelectionDrawPerTrial(trials, `${String(seed)}:preview-order`)
+}
+
+export interface GaborResolvedPresentation {
+  readonly trial: GaborThresholdTrial
+  readonly stimulusPresent: boolean
+  readonly contrastPct: number
+  readonly orientationDegrees: number | null
+  readonly spatialFrequencyCyclesPerPatch: number | null
+  readonly phaseDegrees: 0 | null
+  readonly sigmaWavelengthRatio: 1 | null
+  readonly flankers: GaborFlankerSpec | null
+}
+
+/** Resolve contrast from the live staircase only when the target is presented. */
+export function resolveGaborPresentation(
+  trial: GaborThresholdTrial,
+  liveContrastPct: number,
+): GaborResolvedPresentation {
+  const live = clampContrast(liveContrastPct)
+  const contrastPct = trial.contrastRule === 'blank'
+    ? 0
+    : trial.contrastRule === 'fixed'
+      ? trial.fixedContrastPct!
+      : trial.contrastRule === 'easy-live'
+        ? Math.min(100, Math.max(50, live * 2))
+        : trial.contrastRule === 'transfer-live'
+          ? Math.min(100, Math.max(30, live * 1.5))
+          : live
+  return {
+    trial,
+    stimulusPresent: trial.stimulusPresent,
+    contrastPct,
+    orientationDegrees: trial.orientationDegrees,
+    spatialFrequencyCyclesPerPatch: trial.spatialFrequencyCyclesPerPatch,
+    phaseDegrees: trial.phaseDegrees,
+    sigmaWavelengthRatio: trial.sigmaWavelengthRatio,
+    flankers: trial.flankers,
+  }
+}
+
+export type GaborPresentationResponse =
+  | { readonly type: 'orientation'; readonly orientationDegrees: number }
+  | { readonly type: 'no-pattern' }
+  | { readonly type: 'timeout' }
+
+export interface GaborClassifiedResponse {
+  readonly correct: boolean
+  readonly falseAlarm: boolean
+  readonly lapse: boolean
+  readonly staircaseResponse: 'correct' | 'incorrect' | null
+}
+
+/** The catch/no-pattern binding matrix, shared by localization and measurement. */
+export function classifyGaborResponse(
+  presentation: GaborResolvedPresentation,
+  response: GaborPresentationResponse,
+): GaborClassifiedResponse {
+  if (response.type === 'timeout') {
+    return { correct: false, falseAlarm: false, lapse: true, staircaseResponse: null }
+  }
+  if (!presentation.stimulusPresent) {
+    const correct = response.type === 'no-pattern'
+    return {
+      correct,
+      falseAlarm: !correct,
+      lapse: false,
+      staircaseResponse: null,
+    }
+  }
+  const correct = response.type === 'orientation'
+    && response.orientationDegrees === presentation.orientationDegrees
+  return {
+    correct,
+    falseAlarm: false,
+    lapse: false,
+    staircaseResponse: correct ? 'correct' : 'incorrect',
+  }
+}
+
+export type GaborStopReason = 'valid' | 'measurement-cap' | 'exposure-cap' | 'time-cap'
+
+/** Exact production stop order: valid, measurement, exposure, then time. */
+export function resolveGaborStopReason(input: {
+  readonly thresholdCompleted: boolean
+  readonly measurementResponses: number
+  readonly measurementResponseCap: number
+  readonly scheduledExposures: number
+  readonly scheduledExposureCap: number
+  readonly totalExposures: number
+  readonly sessionExposureCap: number
+  readonly timeCapReached: boolean
+}): GaborStopReason | null {
+  if (input.thresholdCompleted) return 'valid'
+  if (input.measurementResponses >= input.measurementResponseCap) return 'measurement-cap'
+  if (input.scheduledExposures >= input.scheduledExposureCap
+    || input.totalExposures >= input.sessionExposureCap) return 'exposure-cap'
+  if (input.timeCapReached) return 'time-cap'
+  return null
+}
+
+export function gaborStopFlags(reason: GaborStopReason): {
+  readonly stopValid: number
+  readonly stopMeasurementCap: number
+  readonly stopExposureCap: number
+  readonly stopTimeCap: number
+} {
+  return {
+    stopValid: Number(reason === 'valid'),
+    stopMeasurementCap: Number(reason === 'measurement-cap'),
+    stopExposureCap: Number(reason === 'exposure-cap'),
+    stopTimeCap: Number(reason === 'time-cap'),
+  }
 }
 
 function stimulusTrial({
@@ -573,7 +711,8 @@ function stimulusTrial({
   kind,
   condition,
   adaptive,
-  contrastPct,
+  contrastRule,
+  fixedContrastPct = null,
   orientationDegrees,
   spatialFrequencyCyclesPerPatch,
   flankers = null,
@@ -582,7 +721,8 @@ function stimulusTrial({
   readonly kind: Exclude<GaborTrialKind, 'catch'>
   readonly condition: Exclude<GaborTrialCondition, 'blank-catch'>
   readonly adaptive: boolean
-  readonly contrastPct: number
+  readonly contrastRule: Exclude<GaborThresholdTrial['contrastRule'], 'blank'>
+  readonly fixedContrastPct?: number | null
   readonly orientationDegrees: number
   readonly spatialFrequencyCyclesPerPatch: number
   readonly flankers?: GaborFlankerSpec | null
@@ -595,7 +735,8 @@ function stimulusTrial({
     stimulusPresent: true,
     adaptive,
     thresholdEligible: adaptive,
-    contrastPct,
+    contrastRule,
+    fixedContrastPct,
     orientationDegrees,
     spatialFrequencyCyclesPerPatch,
     phaseDegrees: GABOR_THRESHOLD_PROTOCOL.phaseDegrees,
@@ -615,7 +756,8 @@ function catchTrial(id: string): GaborThresholdTrial {
     stimulusPresent: false,
     adaptive: false,
     thresholdEligible: false,
-    contrastPct: 0,
+    contrastRule: 'blank',
+    fixedContrastPct: null,
     orientationDegrees: null,
     spatialFrequencyCyclesPerPatch: null,
     phaseDegrees: null,
@@ -682,6 +824,14 @@ function shuffleDeterministically<T>(values: T[], seed: string): T[] {
     ;[values[index], values[swapIndex]] = [values[swapIndex], values[index]]
   }
   return values
+}
+
+function orderWithOneSelectionDrawPerTrial<T>(values: T[], seed: string): T[] {
+  const random = mulberry32(fnv1a32(seed))
+  return values
+    .map((value, naturalIndex) => ({ value, naturalIndex, selectionDraw: random() }))
+    .sort((a, b) => a.selectionDraw - b.selectionDraw || a.naturalIndex - b.naturalIndex)
+    .map(({ value }) => value)
 }
 
 function fnv1a32(value: string): number {

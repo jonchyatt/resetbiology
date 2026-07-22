@@ -1,17 +1,23 @@
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import {
   GABOR_3_DOWN_1_UP_TARGET_CORRECT,
   GABOR_EASY_PREVIEW_POLICY,
   GABOR_ORIENTATIONS_DEGREES,
   GABOR_THRESHOLD_PROTOCOL,
   GABOR_THRESHOLD_RENDER_CONFIG,
+  buildGaborLocalizationTrial,
   buildGaborEasyPreview,
   buildGaborThresholdBlock,
+  classifyGaborResponse,
   createGaborLocalizationState,
   createGaborThresholdState,
   getGaborLocalizationEstimate,
   getGaborThresholdEstimate,
   prepareGaborThresholdSession,
+  gaborStopFlags,
+  resolveGaborPresentation,
+  resolveGaborStopReason,
   startGaborMeasurementAfterLocalization,
   updateGaborLocalization,
   updateGaborThreshold,
@@ -169,8 +175,12 @@ assert.deepEqual(getGaborThresholdEstimate(measurementAfterLocalization), {
   valid: false,
   reason: 'too-few-adaptive-trials',
 })
-assert.equal(GABOR_THRESHOLD_PROTOCOL.localizationResponses + GABOR_THRESHOLD_PROTOCOL.measurementResponseCap, 60)
-assert.equal(GABOR_THRESHOLD_PROTOCOL.combinedResponseCap, 60)
+assert.equal(GABOR_THRESHOLD_PROTOCOL.localizationResponses, 12)
+assert.equal(GABOR_THRESHOLD_PROTOCOL.coldMeasurementResponseCap, 48)
+assert.equal(GABOR_THRESHOLD_PROTOCOL.warmMeasurementResponseCap, 60)
+assert.equal(GABOR_THRESHOLD_PROTOCOL.coldScheduledExposureCap, 88)
+assert.equal(GABOR_THRESHOLD_PROTOCOL.warmScheduledExposureCap, 100)
+assert.equal(GABOR_THRESHOLD_PROTOCOL.sessionExposureCap, 100)
 
 const compatiblePrior: GaborThresholdPrior = {
   valid: true,
@@ -184,6 +194,8 @@ assert.equal(warmStart.mode, 'warm-start')
 if (warmStart.mode === 'warm-start') {
   close(warmStart.measurement.contrastPct, 10 * Math.pow(10, 0.1), 1e-12, 'warm-start offset')
   assert.equal(warmStart.measurementResponseCap, 60)
+  assert.equal(warmStart.scheduledExposureCap, 100)
+  assert.equal(warmStart.sessionExposureCap, 100)
   assert.equal(warmStart.measurement.adaptiveTrials, 0)
   assert.equal(warmStart.measurement.consecutiveCorrect, 0)
   assert.equal(warmStart.measurement.lastEffectiveDirection, null)
@@ -206,6 +218,8 @@ for (const [prior, reason] of [
   assert.equal(fallback.fallbackReason, reason)
   assert.equal(fallback.measurement, null)
   assert.equal(fallback.measurementResponseCap, 48)
+  assert.equal(fallback.scheduledExposureCap, 88)
+  assert.equal(fallback.sessionExposureCap, 100)
   assert.deepEqual(fallback.localization, createGaborLocalizationState())
 }
 
@@ -329,7 +343,7 @@ assert.equal(rejectedErrorOfMedian, 0)
 assert.notEqual(correctMedianPerRunError, rejectedErrorOfMedian, 'error-of-median substitution is detectably different')
 
 // The seeded therapeutic block has one and only one declared composition.
-const block = buildGaborThresholdBlock({ seed: 'p1-a1-proof', blockIndex: 0, currentContrastPct: 20 })
+const block = buildGaborThresholdBlock({ seed: 'p1-a1-proof', blockIndex: 0 })
 assert.equal(block.length, 10)
 assert.deepEqual(
   Object.fromEntries(count(block.map((trial) => trial.kind))),
@@ -337,12 +351,12 @@ assert.deepEqual(
 )
 assert.deepEqual(
   block,
-  buildGaborThresholdBlock({ seed: 'p1-a1-proof', blockIndex: 0, currentContrastPct: 20 }),
+  buildGaborThresholdBlock({ seed: 'p1-a1-proof', blockIndex: 0 }),
   'same seed produces the same schedule',
 )
 assert.notDeepEqual(
   block.map((trial) => trial.id),
-  buildGaborThresholdBlock({ seed: 'different-seed', blockIndex: 0, currentContrastPct: 20 }).map((trial) => trial.id),
+  buildGaborThresholdBlock({ seed: 'different-seed', blockIndex: 0 }).map((trial) => trial.id),
   'different seeds produce a different seeded order',
 )
 
@@ -360,8 +374,10 @@ const easy = block.find((trial) => trial.kind === 'easy')!
 const transfer = block.find((trial) => trial.kind === 'transfer')!
 const flanker = block.find((trial) => trial.kind === 'flanker')!
 const catchTrial = block.find((trial) => trial.kind === 'catch')!
-assert.equal(easy.contrastPct, 50, 'easy contrast is min(100,max(50,2x current))')
-assert.equal(transfer.contrastPct, 30, 'transfer contrast is min(100,max(30,1.5x current))')
+assert.equal(resolveGaborPresentation(easy, 20).contrastPct, 50, 'easy contrast resolves as min(100,max(50,2x live))')
+assert.equal(resolveGaborPresentation(transfer, 20).contrastPct, 30, 'transfer contrast resolves as min(100,max(30,1.5x live))')
+assert.equal(resolveGaborPresentation(anchors[0], 20).contrastPct, 20, 'anchor resolves the live contrast at presentation')
+assert.equal(resolveGaborPresentation(flanker, 20).contrastPct, 20, 'flanker center resolves the live contrast at presentation')
 assert.equal(flanker.adaptive, false)
 assert.equal(flanker.thresholdEligible, false)
 assert.equal(flanker.flankers?.centerOffsetWavelengths, 3)
@@ -375,14 +391,88 @@ assert.equal(catchTrial.responseSemantics, 'any-choice-is-false-alarm')
 assert.equal(catchTrial.adaptive, false)
 assert.equal(catchTrial.thresholdEligible, false)
 
-const highContrastBlock = buildGaborThresholdBlock({ seed: 42, blockIndex: 0, currentContrastPct: 80 })
-assert.equal(highContrastBlock.find((trial) => trial.kind === 'easy')?.contrastPct, 100)
-assert.equal(highContrastBlock.find((trial) => trial.kind === 'transfer')?.contrastPct, 100)
+const catchPresentation = resolveGaborPresentation(catchTrial, 20)
+assert.deepEqual(classifyGaborResponse(catchPresentation, { type: 'orientation', orientationDegrees: 0 }), {
+  correct: false,
+  falseAlarm: true,
+  lapse: false,
+  staircaseResponse: null,
+})
+assert.deepEqual(classifyGaborResponse(catchPresentation, { type: 'no-pattern' }), {
+  correct: true,
+  falseAlarm: false,
+  lapse: false,
+  staircaseResponse: null,
+})
+assert.deepEqual(classifyGaborResponse(catchPresentation, { type: 'timeout' }), {
+  correct: false,
+  falseAlarm: false,
+  lapse: true,
+  staircaseResponse: null,
+})
+const anchorPresentation = resolveGaborPresentation(anchors[0], 20)
+assert.equal(classifyGaborResponse(anchorPresentation, { type: 'no-pattern' }).staircaseResponse, 'incorrect')
+assert.equal(classifyGaborResponse(anchorPresentation, { type: 'timeout' }).staircaseResponse, null)
+assert.equal(
+  classifyGaborResponse(anchorPresentation, { type: 'orientation', orientationDegrees: anchorPresentation.orientationDegrees! }).staircaseResponse,
+  'correct',
+)
+
+const allStops = {
+  thresholdCompleted: true,
+  measurementResponses: 48,
+  measurementResponseCap: 48,
+  scheduledExposures: 88,
+  scheduledExposureCap: 88,
+  totalExposures: 100,
+  sessionExposureCap: 100,
+  timeCapReached: true,
+}
+assert.equal(resolveGaborStopReason(allStops), 'valid', 'validity wins the exact stop order')
+assert.equal(resolveGaborStopReason({ ...allStops, thresholdCompleted: false }), 'measurement-cap')
+assert.equal(resolveGaborStopReason({ ...allStops, thresholdCompleted: false, measurementResponses: 47 }), 'exposure-cap')
+assert.equal(resolveGaborStopReason({
+  ...allStops,
+  thresholdCompleted: false,
+  measurementResponses: 47,
+  scheduledExposures: 87,
+  totalExposures: 99,
+}), 'time-cap')
+for (const reason of ['valid', 'measurement-cap', 'exposure-cap', 'time-cap'] as const) {
+  assert.equal(Object.values(gaborStopFlags(reason)).reduce((sum, flag) => sum + flag, 0), 1, `${reason} is one-hot`)
+}
+
+const sequentialPrefix = Array.from({ length: 23 }, (_, exposureIndex) => {
+  const scheduledBlock = buildGaborThresholdBlock({
+    seed: 'sequential-prefix',
+    blockIndex: Math.floor(exposureIndex / 10),
+  })
+  return scheduledBlock[exposureIndex % 10].id
+})
+assert.deepEqual(
+  sequentialPrefix.slice(0, 10),
+  buildGaborThresholdBlock({ seed: 'sequential-prefix', blockIndex: 0 }).map((trial) => trial.id),
+  'the consumed schedule is the exact returned order',
+)
+assert.deepEqual(
+  sequentialPrefix.slice(20),
+  buildGaborThresholdBlock({ seed: 'sequential-prefix', blockIndex: 2 }).slice(0, 3).map((trial) => trial.id),
+  'a partial final block is its natural prefix with no reroll',
+)
+const localizationOrientations = Array.from({ length: 12 }, (_, exposureIndex) =>
+  buildGaborLocalizationTrial('localization-balance', exposureIndex).orientationDegrees!)
+for (const orientation of GABOR_ORIENTATIONS_DEGREES) {
+  assert.equal(count(localizationOrientations).get(orientation), 3)
+}
+
+const highContrastBlock = buildGaborThresholdBlock({ seed: 42, blockIndex: 0 })
+assert.equal(resolveGaborPresentation(highContrastBlock.find((trial) => trial.kind === 'easy')!, 80).contrastPct, 100)
+assert.equal(resolveGaborPresentation(highContrastBlock.find((trial) => trial.kind === 'transfer')!, 80).contrastPct, 100)
 
 // Adaptive anchors, transfer frequencies, and their orientations use separate
 // balanced bags, so adding one condition cannot perturb another condition.
 const fourBlocks = Array.from({ length: 4 }, (_, blockIndex) =>
-  buildGaborThresholdBlock({ seed: 'balance-proof', blockIndex, currentContrastPct: 12 }),
+  buildGaborThresholdBlock({ seed: 'balance-proof', blockIndex }),
 )
 const anchorOrientations = fourBlocks.flatMap((scheduled) => scheduled
   .filter((trial) => trial.kind === 'anchor')
@@ -416,7 +506,7 @@ assert.deepEqual(
 )
 assert.ok(preview.every((trial) => !trial.adaptive && !trial.thresholdEligible))
 assert.ok(preview.every((trial) => trial.kind !== 'flanker'))
-assert.ok(preview.filter((trial) => trial.kind === 'anchor').every((trial) => trial.contrastPct === 60))
+assert.ok(preview.filter((trial) => trial.kind === 'anchor').every((trial) => resolveGaborPresentation(trial, 10).contrastPct === 60))
 assert.deepEqual(
   [...count(preview.filter((trial) => trial.kind === 'transfer').map((trial) => trial.spatialFrequencyCyclesPerPatch!)).entries()].sort((a, b) => a[0] - b[0]),
   [[4, 1], [11, 1]],
@@ -472,6 +562,8 @@ interface SimulatedSession {
   readonly localizationResponses: number
   readonly measurementAdaptiveTrials: number
   readonly firstValidResponseIndex: number | null
+  readonly scheduledExposures: number
+  readonly stopReason: 'valid' | 'measurement-cap' | 'exposure-cap' | 'time-cap'
 }
 
 function runMeasurement(
@@ -479,22 +571,50 @@ function runMeasurement(
   thresholdPct: number,
   random: () => number,
   responseCap: number,
+  scheduledExposureCap: number,
+  sessionExposureCap: number,
+  localizationExposures: number,
+  scheduleSeed: number,
 ): SimulatedSession {
   let state = initialState
   const measurementResponses: boolean[] = []
   let estimatePct: number | null = null
   let firstValidResponseIndex: number | null = null
-  for (let trial = 0; trial < responseCap; trial += 1) {
-    const correct = random() < observerCorrectProbability(state.contrastPct, thresholdPct)
-    measurementResponses.push(correct)
-    state = updateGaborThreshold(state, {
-      response: correct ? 'correct' : 'incorrect',
-      adaptive: true,
-    }).state
+  let scheduledExposures = 0
+  let stopReason: SimulatedSession['stopReason'] | null = null
+  while (!stopReason) {
+    stopReason = resolveGaborStopReason({
+      thresholdCompleted: state.completed,
+      measurementResponses: state.adaptiveTrials,
+      measurementResponseCap: responseCap,
+      scheduledExposures,
+      scheduledExposureCap,
+      totalExposures: localizationExposures + scheduledExposures,
+      sessionExposureCap,
+      timeCapReached: false,
+    })
+    if (stopReason) break
+
+    const block = buildGaborThresholdBlock({
+      seed: scheduleSeed,
+      blockIndex: Math.floor(scheduledExposures / 10),
+    })
+    const scheduledTrial = block[scheduledExposures % 10]
+    const presentation = resolveGaborPresentation(scheduledTrial, state.contrastPct)
+    scheduledExposures += 1
+    if (scheduledTrial.adaptive) {
+      const correct = random() < observerCorrectProbability(presentation.contrastPct, thresholdPct)
+      measurementResponses.push(correct)
+      state = updateGaborThreshold(state, {
+        response: correct ? 'correct' : 'incorrect',
+        adaptive: true,
+      }).state
+    }
     const estimate = getGaborThresholdEstimate(state)
     if (estimate.valid) {
       estimatePct = estimate.contrastThresholdPct
-      firstValidResponseIndex = trial + 1
+      firstValidResponseIndex = state.adaptiveTrials
+      stopReason = 'valid'
       break
     }
   }
@@ -504,11 +624,14 @@ function runMeasurement(
     localizationResponses: 0,
     measurementAdaptiveTrials: state.adaptiveTrials,
     firstValidResponseIndex,
+    scheduledExposures,
+    stopReason: stopReason!,
   }
 }
 
 function simulateFirstRun(thresholdPct: number, thresholdIndex: number, run: number): SimulatedSession {
   const random = randomFor(0x51a7 + thresholdIndex * 10_000 + run)
+  const scheduleSeed = 0x51a7 + thresholdIndex * 10_000 + run
   let localization = createGaborLocalizationState()
   for (let trial = 0; trial < GABOR_THRESHOLD_PROTOCOL.localizationResponses; trial += 1) {
     const correct = random() < observerCorrectProbability(localization.contrastPct, thresholdPct)
@@ -518,7 +641,11 @@ function simulateFirstRun(thresholdPct: number, thresholdIndex: number, run: num
     startGaborMeasurementAfterLocalization(localization),
     thresholdPct,
     random,
-    GABOR_THRESHOLD_PROTOCOL.measurementResponseCap,
+    GABOR_THRESHOLD_PROTOCOL.coldMeasurementResponseCap,
+    GABOR_THRESHOLD_PROTOCOL.coldScheduledExposureCap,
+    GABOR_THRESHOLD_PROTOCOL.sessionExposureCap,
+    localization.responses,
+    scheduleSeed,
   )
   return { ...measurement, localizationResponses: localization.responses }
 }
@@ -541,6 +668,10 @@ function simulateWarmRun(
     thresholdPct,
     randomFor(0x51a7 + thresholdIndex * 10_000 + run),
     session.measurementResponseCap,
+    session.scheduledExposureCap,
+    session.sessionExposureCap,
+    0,
+    0x51a7 + thresholdIndex * 10_000 + run,
   )
 }
 
@@ -557,7 +688,8 @@ function evaluateBank(
   for (let run = 0; run < 240; run += 1) {
     const result = runSession(run)
     assert.equal(result.measurementAdaptiveTrials, result.measurementResponses.length)
-    assert.ok(result.localizationResponses + result.measurementAdaptiveTrials <= 60)
+    assert.ok(result.localizationResponses + result.scheduledExposures <= 100)
+    assert.equal(Object.values(gaborStopFlags(result.stopReason)).reduce((sum, flag) => sum + flag, 0), 1)
     if (result.estimatePct !== null) {
       assert.equal(
         result.measurementResponses.length,
@@ -587,6 +719,9 @@ function evaluateBank(
     terminalMeasurementAccuracyPct,
   })
   assert.ok(validRuns >= 216, `${lane} ${thresholdPct}% observer must have >=216/240 valid; got ${validRuns}/240`)
+  if (lane === 'first-run' && thresholdPct === 10) {
+    assert.ok(validRuns >= 216, `permanent cold 10% ratchet failed: ${validRuns}/240`)
+  }
   assert.ok(
     medianLog10Error <= 0.075,
     `${lane} ${thresholdPct}% observer median estimate must be within 0.075 log10; got ${medianLog10Error}`,
@@ -611,6 +746,29 @@ for (const [thresholdIndex, thresholdPct] of truths.entries()) {
 
 assert.deepEqual(simulateFirstRun(10, 2, 17), simulateFirstRun(10, 2, 17), 'first-run replay is deterministic')
 assert.deepEqual(simulateWarmRun(10, 2, 17, -0.15), simulateWarmRun(10, 2, 17, -0.15), 'warm replay is deterministic')
+
+const coreSource = readFileSync('src/lib/vision/gaborThreshold.ts', 'utf8')
+const engineSource = readFileSync('src/components/Vision/Engines/GaborAcuityEngine.tsx', 'utf8')
+assert.equal((coreSource.match(/selectionDraw: random\(\)/g) ?? []).length, 1, 'block ordering takes exactly one selection draw per exposure')
+assert.match(engineSource, /blockCacheRef\.current\.get\(blockIndex\)/, 'the engine builds each seeded block once')
+assert.match(engineSource, /resolveGaborPresentation\(trial, measurementRef\.current\.contrastPct\)/)
+assert.doesNotMatch(engineSource, /Math\.max\(50,.*\* 2|Math\.max\(30,.*\* 1\.5/, 'React cannot duplicate live contrast formulas')
+assert.doesNotMatch(engineSource, /tierForWeek|TIER_FREQUENCY|applyStaircase|2-down-1-up/)
+for (const metric of [
+  'trials', 'accuracyPct', 'measurementAccuracyPct', 'totalExposures', 'localizationExposures',
+  'scheduledExposures', 'measurementResponses', 'adaptiveTrials', 'reversals', 'thresholdValid',
+  'contrastThresholdPct', 'easyTrials', 'transferTrials', 'flankerTrials', 'catchTrials',
+  'catchFalseAlarms', 'lapses', 'warmStarted', 'protocolVersion',
+  'anchorSpatialFrequencyCyclesPerPatch', 'stopValid', 'stopMeasurementCap', 'stopExposureCap', 'stopTimeCap',
+] as const) {
+  assert.match(engineSource, new RegExp(`\\b${metric}\\b`), `engine emits ${metric}`)
+}
+assert.match(engineSource, /CATCH_WINDOW_MS = 1_500/)
+assert.match(engineSource, /responseLockedRef\.current = true/)
+assert.match(engineSource, /classifyGaborResponse\(current\.resolved, response\)/)
+assert.match(engineSource, /current\.resolved\.trial\.adaptive && classified\.staircaseResponse/)
+assert.match(engineSource, /flex h-7 items-center/, 'feedback owns fixed external space')
+assert.match(engineSource, /aria-label="No pattern visible"/)
 
 console.log('GABOR_THRESHOLD_V1 checks passed.')
 console.log('Observer: four-choice log10-logistic; guess=25%, lapse=2%, slope=8/decade; p(true threshold)=79.3700526%.')

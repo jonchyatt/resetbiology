@@ -100,6 +100,26 @@ function pixel(snapshot: ImageSnapshot, x: number, y: number): number[] {
   return [...snapshot.data.slice(start, start + 4)]
 }
 
+function channelMean(snapshot: ImageSnapshot, channel = 0): number {
+  let sum = 0
+  for (let index = channel; index < snapshot.data.length; index += 4) sum += snapshot.data[index]
+  return sum / (snapshot.width * snapshot.height)
+}
+
+function channelRange(snapshot: ImageSnapshot, channel = 0): { min: number; max: number } {
+  let min = 255
+  let max = 0
+  for (let index = channel; index < snapshot.data.length; index += 4) {
+    min = Math.min(min, snapshot.data[index])
+    max = Math.max(max, snapshot.data[index])
+  }
+  return { min, max }
+}
+
+function closeMean(actual: number, expected: number, tolerance: number, message: string): void {
+  assert.ok(Math.abs(actual - expected) <= tolerance, `${message}: expected ${expected} ± ${tolerance}, received ${actual}`)
+}
+
 function legacyOpaqueReference(opts: {
   size: number
   orientation: number
@@ -266,6 +286,51 @@ function run() {
     for (let index = 3; index < legacy.image.data.length; index += 4) assert.equal(legacy.image.data[index], 255, 'legacy rasters must remain opaque')
   }
 
+  const meanMatchedOpts = {
+    size: 140,
+    orientation: 45,
+    frequency: 7,
+    contrast: 0.6,
+    sigma: 20,
+    phase: 0,
+    rasterMode: 'mean-matched-opaque' as const,
+  }
+  const meanMatchedByDpr = [1, 2, 3].map((ratio) => drawAt(ratio, meanMatchedOpts))
+  for (const [index, rendered] of meanMatchedByDpr.entries()) {
+    const ratio = index + 1
+    assert.equal(rendered.image.width, meanMatchedOpts.size * ratio)
+    closeMean(channelMean(rendered.image), 128, 1, `mean-matched DPR${ratio} luminance`)
+    assert.ok(channelRange(rendered.image).max - channelRange(rendered.image).min > 100, `DPR${ratio} retains requested stimulus contrast`)
+    for (let alpha = 3; alpha < rendered.image.data.length; alpha += 4) {
+      assert.equal(rendered.image.data[alpha], 255, `mean-matched DPR${ratio} raster is opaque`)
+    }
+    for (const [x, y] of [[0, 0], [rendered.image.width - 1, 0], [0, rendered.image.height - 1], [rendered.image.width - 1, rendered.image.height - 1]] as const) {
+      assert.deepEqual(pixel(rendered.image, x, y), [128, 128, 128, 255], `DPR${ratio} neutral corners cannot expose a tile square`)
+    }
+  }
+
+  const lowMeanMatched = drawAt(1, { ...meanMatchedOpts, contrast: 0.2 })
+  const highMeanMatched = drawAt(1, { ...meanMatchedOpts, contrast: 0.6 })
+  const lowRange = channelRange(lowMeanMatched.image)
+  const highRange = channelRange(highMeanMatched.image)
+  closeMean(
+    (highRange.max - highRange.min) / (lowRange.max - lowRange.min),
+    3,
+    0.08,
+    'mean-matched carrier amplitude follows unquantized contrast',
+  )
+
+  __resetGaborCacheForTest()
+  const beforeMeanReuse = createdTiles.length
+  const meanReuseCanvas = new FakeCanvas(180, 180)
+  dpr = 2
+  fitCanvasToElement(meanReuseCanvas as unknown as HTMLCanvasElement)
+  drawGaborPatch(meanReuseCanvas.ctx as unknown as CanvasRenderingContext2D, 90, 90, meanMatchedOpts)
+  const firstMeanTile = meanReuseCanvas.ctx.drawCalls.at(-1)!.tile
+  drawGaborPatch(meanReuseCanvas.ctx as unknown as CanvasRenderingContext2D, 90, 90, meanMatchedOpts)
+  assert.equal(createdTiles.length - beforeMeanReuse, 1, 'identical mean-matched tuple reuses one exact cache tile')
+  assert.equal(meanReuseCanvas.ctx.drawCalls.at(-1)!.tile, firstMeanTile)
+
   __resetGaborCacheForTest()
   const modeCanvas = new FakeCanvas(80, 80)
   dpr = 1
@@ -276,9 +341,12 @@ function run() {
   const sharedTile = modeCanvas.ctx.drawCalls.at(-1)!.tile
   drawGaborPatch(modeCanvas.ctx as unknown as CanvasRenderingContext2D, 40, 40, { ...modeOpts, rasterMode: 'legacy-opaque' })
   const legacyTile = modeCanvas.ctx.drawCalls.at(-1)!.tile
-  assert.equal(createdTiles.length - beforeModes, 2, 'shared and legacy raster modes must never alias in cache')
+  drawGaborPatch(modeCanvas.ctx as unknown as CanvasRenderingContext2D, 40, 40, { ...modeOpts, rasterMode: 'mean-matched-opaque' })
+  const meanMatchedTile = modeCanvas.ctx.drawCalls.at(-1)!.tile
+  assert.equal(createdTiles.length - beforeModes, 3, 'all three raster modes have exact, non-aliasing cache identity')
   assert.deepEqual(sharedTile.ctx.imageData!.data.filter((_, index) => index % 4 !== 3), legacyTile.ctx.imageData!.data.filter((_, index) => index % 4 !== 3), 'raster modes share RGB calculation')
   assert.notEqual(sharedTile.ctx.imageData!.data[3], legacyTile.ctx.imageData!.data[3], 'raster mode changes alpha semantics')
+  assert.notEqual(meanMatchedTile, legacyTile)
 
   __resetGaborCacheForTest()
   dpr = 1
@@ -332,6 +400,12 @@ function run() {
   assert.equal(createdTiles.length - beforeExactPhase, 2, 'threshold calls must retain exact phases')
 
   __resetGaborCacheForTest()
+  const beforeExactMean = createdTiles.length
+  drawGaborPatch(rasterCtx, 50, 50, { ...meanMatchedOpts, contrast: 0.5 })
+  drawGaborPatch(rasterCtx, 50, 50, { ...meanMatchedOpts, contrast: 0.5001 })
+  assert.equal(createdTiles.length - beforeExactMean, 2, 'mean-matched therapeutic contrast remains unquantized in cache identity')
+
+  __resetGaborCacheForTest()
   const beforeEviction = createdTiles.length
   for (let phase = 0; phase <= 64; phase++) {
     drawGaborPatch(rasterCtx, 50, 50, { size: 40, orientation: 0, frequency: 4, contrast: 0.5, phase })
@@ -367,9 +441,17 @@ function run() {
   const guidedExercise = readFileSync('src/components/Vision/Training/GuidedExercise.tsx', 'utf8')
   assert.match(pursuit, /phaseQuantizationDegrees:\s*20/)
   assert.doesNotMatch(gaborAcuity, /phaseQuantizationDegrees/)
-  assert.match(canvasKit, /rasterMode\?: 'shared-transparent' \| 'legacy-opaque'/)
+  assert.match(canvasKit, /rasterMode\?: 'shared-transparent' \| 'legacy-opaque' \| 'mean-matched-opaque'/)
   assert.match(canvasKit, /rasterMode: opts\.rasterMode \?\? 'shared-transparent'/)
-  assert.match(canvasKit, /o\.rasterMode === 'legacy-opaque' \? 255/)
+  assert.match(canvasKit, /o\.rasterMode === 'shared-transparent' \? Math\.round\(gaussian \* 255\) : 255/)
+  assert.match(gaborAcuity, /rasterMode: 'mean-matched-opaque'/)
+  assert.match(gaborAcuity, /const NEUTRAL_FIELD = '#808080'/)
+  assert.match(gaborAcuity, /sigma = size \/ frequency/)
+  assert.doesNotMatch(gaborAcuity, /TIER_FREQUENCY|tierForWeek|DOWN_STEP|UP_STEP|applyStaircase/)
+  assert.match(gaborAcuity, /CATCH_WINDOW_MS = 1_500/)
+  assert.match(gaborAcuity, /No pattern/)
+  assert.match(gaborAcuity, /min-h-11/)
+  assert.match(gaborAcuity, /Stop immediately for pain, dizziness, double vision, headache/)
 
   for (const [name, source] of [['GaborPatch', gaborPatch], ['GuidedExercise', guidedExercise]] as const) {
     assert.doesNotMatch(source, /createImageData|tempCanvas|document\.createElement\('canvas'\)/, `${name} must not own a private Gabor rasterizer`)
