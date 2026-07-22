@@ -1,7 +1,7 @@
 # Reset Biology Vision GODMODE — State
 
 last_updated: 2026-07-21
-status: CONTROL_PLANE_CANDIDATE
+status: P0_A_AUTHORIZED
 foreman: gpt-5.6-sol at xhigh
 conduit_session: fe2b7091
 branch: vision-interactive-overhaul
@@ -11,8 +11,8 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 
 ## Current verdict
 
-- ACCEPT: true north, adult-trunk priority, Phase 0–9 ladder, exhaustive ATLAS coverage, and Phase-0 tickets P0-A through P0-D.
-- HOLD: every product-code ticket until this scoped scaffold, camera reversal, and product plan addendum are committed and blind-accepted.
+- ACCEPT: control plane closed at product `7d405541` and Jarvis `676b2d159`; P0-A is authorized as the first serialized implementation ticket.
+- HOLD: P0-B through P0-D remain queued behind P0-A acceptance; Phase 8 remains held for Jon's persona ruling.
 - REJECT: stale camera parking, old WP0–WP8 as the complete roadmap, direct point creation, capped or CSS-resolution therapeutic stimuli, single-eye visual acceptance, Vercel CLI, and branch/spectacle work that shortchanges the adult trunk.
 
 ## Known risk map
@@ -22,6 +22,18 @@ candidate_binding: current clean HEAD; exact corrective SHA is recorded after co
 - Current product branch is clean after rebase; the exact mutable ahead/behind count is verified from Git at each ticket gate rather than frozen here.
 - Phase 8 persona identity is a recorded non-Phase-0 blocker: direct user text says inverse-Gil, while the separately saved rail copy says Inverse Yale. Do not build or blend either until Jon resolves it.
 
+## P0-A authorized write set
+
+- `src/lib/vision/localDayInput.ts` — new vision-scoped validator.
+- `app/api/vision/program/route.ts`.
+- `src/components/Vision/VisionTraining.tsx`.
+- `src/components/Vision/VisionHealing.tsx`.
+- `src/components/Vision/Training/DailyPractice.tsx`.
+- `src/components/Vision/Training/SessionRunner.tsx`.
+- `tests/vision-local-day-check.ts`.
+
+`src/lib/localDay.ts` is read-only context. Any need to edit it returns `NEEDS_CONTEXT` and requires a separate CRITICAL-radius ticket.
+
 ## Next gate
 
-Commit the control-plane candidate, run a fresh blind document verifier against Jon's full directive, return the evidence to Sol, and obtain ACCEPT or HOLD-WITH-FIXES before dispatching P0-A.
+Refresh and rebase current `origin/master`, dispatch the exact P0-A ticket, build, run `npx tsx tests/vision-local-day-check.ts`, commit clean, blind-verify, deploy by the bound Git sequence, and prove the production member-local evening boundary.
