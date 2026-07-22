@@ -84,5 +84,9 @@ check(() => assert.doesNotMatch(component, /localStorage\.setItem\([^\n]*(?:freq
 check(() => assert.match(component, /const CONFIDENCE_FLOOR = 0\.75/))
 check(() => assert.match(component, /const MATCH_TOLERANCE_CENTS = 70/))
 check(() => assert.match(component, /const HOLD_MS = 300/))
+check(() => assert.match(component, /Sing one easy middle note—not your lowest or highest\. This is only the starting point/))
+check(() => assert.match(component, /Each comfortable YES moves one note lower\.[\s\S]*?your last YES becomes your LOW limit/))
+check(() => assert.match(component, /Each comfortable YES moves one note higher\.[\s\S]*?your last YES becomes your HIGH limit/))
+check(() => assert.match(component, /YES — TRY ONE NOTE \$\{rangeStep === 'lower' \? 'LOWER' : 'HIGHER'\}/))
 
 console.log(`pitchforks comfortable-range contract: ${checks}/${checks} PASS`)

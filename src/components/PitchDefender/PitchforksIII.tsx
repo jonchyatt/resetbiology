@@ -5188,7 +5188,12 @@ export default function PitchforksIII() {
       if (staffCtx) {
         staffCtx.setTransform(1, 0, 0, 1, 0, 0)
         staffCtx.clearRect(0, 0, staffCanvas.width, staffCanvas.height)
-        if (layoutModeRef.current === 'portrait' && view.staffNotationVisible && view.tuner.visible) {
+        if (
+          layoutModeRef.current === 'portrait' &&
+          inputModeRef.current !== 'buttons' &&
+          staffNotationRef.current &&
+          view.tuner.visible
+        ) {
           staffCtx.setTransform(
             STAFF_BAND_RENDER_SCALE,
             0,
@@ -6296,8 +6301,10 @@ export default function PitchforksIII() {
             <>
               <p className="mb-5 text-sm leading-relaxed text-gray-300">
                 {rangeStep === 'anchor'
-                  ? 'Hum one relaxed note and hold it steady. Do not reach, stretch, or push.'
-                  : `Hear the exact ${direction} note, then sing it only if it feels relaxed. Stop before any strain.`}
+                  ? 'Sing one easy middle note—not your lowest or highest. This is only the starting point; next we will walk down, then up, one note at a time.'
+                  : rangeStep === 'lower'
+                    ? 'Each comfortable YES moves one note lower. Hear this exact note, then sing it only if relaxed. At the first uncomfortable note, choose NOT YET; your last YES becomes your LOW limit.'
+                    : 'Each comfortable YES moves one note higher. Hear this exact note, then sing it only if relaxed. At the first uncomfortable note, choose NOT YET; your last YES becomes your HIGH limit.'}
               </p>
 
               <div aria-live="polite" className="mb-5 border border-gray-700 bg-[#0b1020] p-4 text-center">
@@ -6341,7 +6348,9 @@ export default function PitchforksIII() {
                 data-testid="pf3-range-comfortable"
                 className="min-h-12 w-full border-2 border-green-200 bg-green-300 px-4 py-3 text-sm font-black tracking-widest text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
               >
-                YES, THIS FEELS COMFORTABLE
+                {rangeStep === 'anchor'
+                  ? 'YES, THIS FEELS COMFORTABLE'
+                  : `YES — TRY ONE NOTE ${rangeStep === 'lower' ? 'LOWER' : 'HIGHER'}`}
               </button>
 
               {rangeStep !== 'anchor' && (

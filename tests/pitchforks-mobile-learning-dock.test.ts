@@ -19,5 +19,8 @@ assert.match(dock, /if \(layoutMode === 'portrait' && value\) setPortraitDockPan
 assert.match(dock, /touchSized=\{layoutMode === 'portrait'\}/)
 assert.match(source, /const controlSize = props\.touchSized \? 'min-h-12' : ''/)
 assert.match(source, /Math\.min\(containerWidth - 32, 360\)/)
+assert.match(source, /staffNotationVisible: inputMode === 'buttons' \? false : staffNotationRef\.current && layoutModeRef\.current !== 'portrait'/)
+assert.match(source, /layoutModeRef\.current === 'portrait' &&[\s\S]*?inputModeRef\.current !== 'buttons' &&[\s\S]*?staffNotationRef\.current &&[\s\S]*?view\.tuner\.visible[\s\S]*?drawStaffNotationView\(staffCtx, view\)/)
+assert.doesNotMatch(source, /layoutModeRef\.current === 'portrait' && view\.staffNotationVisible/)
 
-console.log('pitchforks mobile learning dock: 12/12 PASS')
+console.log('pitchforks mobile learning dock: 15/15 PASS')
