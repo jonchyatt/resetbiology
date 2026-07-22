@@ -20,12 +20,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** Members can act on an honest, evidence-cited daily plan without a marketer, paywall, or opaque score standing between them and their own data.
-**Current focus:** Phase 7 — design, freeze, build, and prove the separate 07-03C2 browser journal synchronization slice on top of the production-proven event route.
+**Current focus:** Phase 7 — build and prove the frozen 07-03C2 foreground browser synchronization slice on top of the production-proven event route.
 
 ## Current Position
 
 Phase: 7 of 13 — Repeat-Safe Logging & Event Spine
-Plan: 07-03C1 complete; 07-03C2 browser journal drain, retry, acknowledgment persistence, and foreground synchronization next
+Plan: 07-03C1 complete; 07-03C2 frozen after mandatory ADHD divergence and Sol revision; implementation next
 Status: C1 is live at `3c5c8da8b254d14ec4fe0cbc060bd86bee89e354`. Candidate, bridge, foreman, exact-commit production proof, exact cleanup, and blind production receipt all passed. The accepted server event route remains disconnected from member UI until C2 independently passes.
 Last activity: 2026-07-22 — C1 deployed and proved on production; first/replay/concurrency/conflict/lost-response cases passed; exact row removed; baseline restored; vault locked; zero private proof residue
 
@@ -131,8 +131,8 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Run mandatory ADHD divergence for the open 07-03C2 synchronization architecture, then obtain a separate critic trap list and Sol freeze.
-- Build browser drain, retry, acknowledgment persistence, and foreground synchronization only inside the frozen 07-03C2 write set.
+- Build browser drain, bounded retry, atomic receipt custody, and foreground synchronization only inside the frozen 07-03C2 four-file write set.
+- Preserve runtime dormancy while proving migration, response loss, multi-tab convergence, account closure, poison ordering, receipt pruning, storage denial, and zero browser residue.
 - Keep the accepted event writer unreachable from member UI until C1 production proof and C2 browser synchronization independently pass.
 - Continue qualified protocol review as a parallel human evidence track; do not invent clinical approval.
 
@@ -146,7 +146,7 @@ Recent decisions affecting current work:
 
 ## Milestone Operating Boundary
 
-Roadmap creation is complete. The Phase 7 event spine, production uniqueness boundary, and authenticated server intake are proven. Member UI remains deliberately disconnected while 07-03C2 browser synchronization is designed and proved separately.
+Roadmap creation is complete. The Phase 7 event spine, production uniqueness boundary, and authenticated server intake are proven. The 07-03C2 browser synchronization contract is frozen; member UI remains deliberately disconnected while it is built and proved separately.
 
 - Preserve all v1 phase directories and history.
 - Plan and execute v2.0 sequentially from Phase 6 through Phase 13 unless an explicit dependency decision changes the order.
@@ -157,5 +157,5 @@ Roadmap creation is complete. The Phase 7 event spine, production uniqueness bou
 ## Session Continuity
 
 Last session: 2026-07-22
-Stopped at: 07-03C1 complete; mandatory ADHD divergence and foreman freeze for 07-03C2 are next.
+Stopped at: 07-03C2 frozen with the asynchronous-verification correction incorporated; clean-worktree implementation is next.
 Resume files: `.planning/phases/07-repeat-safe-logging-event-spine/07-03C1-PLAN.md`; `.planning/research/ARCHITECTURE.md`; `.planning/research/PITFALLS.md`
