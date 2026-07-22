@@ -92,6 +92,28 @@ for (const retained of [
 assert.match(trackerSource, /disabled=\{copyingDay\}/)
 assert.match(trackerSource, /\{copyingDay \? 'Copying\.\.\.' : 'Copy Yesterday'\}/)
 
+// Cancel and Confirm both restore keyboard focus to the exact Copy Yesterday
+// trigger via a page-local ref + next-frame null-safe focus helper. The
+// shared confirm primitive (Toast.tsx) is never touched for this.
+assert.match(trackerSource, /const copyTriggerRef = useRef<HTMLButtonElement \| null>\(null\)/,
+  'a page-local button ref must exist for the Copy Yesterday trigger')
+assert.match(trackerSource,
+  /const focusCopyTrigger = \(\) => \{\s*window\.requestAnimationFrame\(\(\) => \{\s*copyTriggerRef\.current\?\.focus\(\)\s*\}\)\s*\}/,
+  'the restoration helper must be a next-frame null-safe focus call')
+assert.match(trackerSource, /ref=\{copyTriggerRef\}\s+onClick=\{copyPreviousDay\}/,
+  'the ref must be attached to the exact Copy Yesterday trigger button')
+assert.match(trackerSource, /focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300/,
+  'the trigger must keep an explicit page-local focus-visible ring using the existing primary ring idiom')
+
+const cancelFocusIndex = copyHandler.indexOf('if (!ok) return focusCopyTrigger()')
+assert.ok(cancelFocusIndex >= 0 && cancelFocusIndex < destinationIndex,
+  'Cancel must restore focus before returning and before any date/request work begins')
+
+const pendingClearIndex = copyHandler.lastIndexOf('setCopyingDay(false)')
+const confirmFocusIndex = copyHandler.indexOf('focusCopyTrigger()', pendingClearIndex)
+assert.ok(pendingClearIndex >= 0 && confirmFocusIndex > pendingClearIndex,
+  'Confirm must restore focus only after pending state is cleared, never while the trigger is disabled')
+
 // The endpoint uses database-free session inspection. Authentication happens
 // before JSON parsing; complete validation happens before database imports.
 assert.match(routeSource, /import \{ auth0Edge \} from '@\/lib\/auth0-edge'/)

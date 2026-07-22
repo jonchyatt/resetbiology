@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import Link from "next/link"
 import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2, Star, Check } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
@@ -82,6 +82,7 @@ export function NutritionTracker() {
   const [selectedMealType, setSelectedMealType] = useState<string>('breakfast')
   const [logSuccess, setLogSuccess] = useState<FoodQuickAddResult | null>(null)
   const [copyingDay, setCopyingDay] = useState(false)
+  const copyTriggerRef = useRef<HTMLButtonElement | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingEntry, setEditingEntry] = useState<FoodHistoryEntry | null>(null)
 
@@ -406,9 +407,15 @@ export function NutritionTracker() {
     }
   }
 
+  const focusCopyTrigger = () => {
+    window.requestAnimationFrame(() => {
+      copyTriggerRef.current?.focus()
+    })
+  }
+
   const copyPreviousDay = async () => {
     const ok = await toast.confirm({ title: "Copy yesterday's meals to today?", confirmLabel: 'Copy' })
-    if (!ok) return
+    if (!ok) return focusCopyTrigger()
     const destinationLocalDate = todayLocalKey()
     const sourceLocalDate = shiftDayKey(destinationLocalDate, -1)
     try {
@@ -430,6 +437,7 @@ export function NutritionTracker() {
       toast.error('Failed to copy meals')
     } finally {
       setCopyingDay(false)
+      focusCopyTrigger()
     }
   }
 
@@ -719,9 +727,10 @@ export function NutritionTracker() {
                       <Utensils className="h-5 w-5 mr-2 text-secondary-400"/>Today's Meals
                     </h3>
                     <button
+                      ref={copyTriggerRef}
                       onClick={copyPreviousDay}
                       disabled={copyingDay}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 rounded-lg text-xs font-medium text-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 rounded-lg text-xs font-medium text-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300"
                       title="Copy yesterday's meals"
                     >
                       <Copy className="w-3.5 h-3.5" />
