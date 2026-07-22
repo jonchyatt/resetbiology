@@ -13,10 +13,13 @@
 // script-runner quirk only — it doesn't affect the real Next.js build,
 // which bundles these modules normally.
 import * as trackerMod from "../src/components/Peptides/PeptideTracker.tsx";
+import * as calculatorMod from "../src/components/Peptides/DosageCalculator.tsx";
 import * as freqMod from "../src/lib/peptide-frequency.ts";
 import * as schedMod from "../src/lib/scheduleNotifications.ts";
+import { readFileSync } from "node:fs";
 
 const { computeSyringeUnitsFromPrep, readPrepForProtocol } = trackerMod.default ?? trackerMod;
+const { getPreparationState } = calculatorMod.default ?? calculatorMod;
 const { resolveFrequency, isDoseDayForProtocol, hasKnownSchedule } = freqMod.default ?? freqMod;
 const { shouldScheduleOnDate, parseDoseTimes } = schedMod.default ?? schedMod;
 
@@ -40,6 +43,33 @@ function assertTrue(cond, label) {
   } else {
     console.log(`PASS ${label}`);
   }
+}
+
+console.log("--- P0-03: Add Protocol preparation states stay member-confirmed ---");
+{
+  // These are the exact state classifications DosageCalculator uses before
+  // it enables preparation-dependent results or emits callback prep strings.
+  // Catalog selection, deep links, peptide changes, and reset all use the
+  // same empty pair; only two explicit values make preparation complete.
+  assertEqual(getPreparationState("", ""), "absent", "P0-03 untouched: preparation starts absent");
+  assertEqual(getPreparationState("", ""), "absent", "P0-03 card-selected: catalog metadata does not become preparation");
+  assertEqual(getPreparationState("5", "2"), "complete", "P0-03 explicit-complete: two positive member values enable conversion");
+  assertEqual(getPreparationState("3", "1.5"), "complete", "P0-03 persisted-complete: complete imported values remain usable");
+  assertEqual(getPreparationState("5", ""), "invalid", "P0-03 partial: vial alone blocks save");
+  assertEqual(getPreparationState("", "2"), "invalid", "P0-03 partial: volume alone blocks save");
+  assertEqual(getPreparationState("0", "2"), "invalid", "P0-03 invalid: zero vial amount blocks save");
+  assertEqual(getPreparationState("5", "not-a-number"), "invalid", "P0-03 invalid: non-numeric volume blocks save");
+  assertEqual(getPreparationState("", ""), "absent", "P0-03 peptide-change: preparation resets instead of inheriting prior values");
+  assertEqual(getPreparationState("", ""), "absent", "P0-03 reset: preparation returns to the valid no-prep state");
+
+  const calculatorSource = readFileSync(new URL("../src/components/Peptides/DosageCalculator.tsx", import.meta.url), "utf8");
+  const saveHandler = calculatorSource.slice(calculatorSource.indexOf("const handleProtocolSave"));
+  const preparationGuard = saveHandler.indexOf("if (preparationState === 'invalid') return;");
+  const saveLatch = saveHandler.indexOf("savingInFlightRef.current = true;");
+  assertTrue(
+    preparationGuard >= 0 && saveLatch >= 0 && preparationGuard < saveLatch,
+    "P0-03 invalid preparation returns before the save latch can be set",
+  );
 }
 
 console.log("--- H1: no fabricated prep for a protocol with no persisted input ---");
