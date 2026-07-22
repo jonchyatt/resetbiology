@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Muscle-Preservation Engine
-status: 07_03b_deployed_premutation_hold
-last_updated: "2026-07-22T12:14:22.7009496-06:00"
+status: 07_03b_index_live_contention_proof_hold
+last_updated: "2026-07-22T12:47:00-06:00"
 last_activity: 2026-07-22
 progress:
   total_phases: 8
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-07-21)
 ## Current Position
 
 Phase: 7 of 13 — Repeat-Safe Logging & Event Spine
-Plan: 07-03B isolated Atlas uniqueness relay deployed; production census and mutation receipt pending
-Status: Product `2ba442e7` is blind-accepted, production-deployed, runtime-dormant, and canonical `/workout` HTTP 200. `LOG-03` remains open because the secured credential vault is locked; no Atlas connection or write occurred.
-Last activity: 2026-07-22 — six-candidate blind ratchet PASS, byte-identical nutrition-only bridge PASS, exact Vercel deployment PASS, premutation HOLD recorded
+Plan: 07-03B intended Atlas index installed; contention-proof classifier diagnosis pending
+Status: Product `2ba442e7` is blind-accepted, production-deployed, runtime-dormant, and canonical `/workout` HTTP 200. Sol authorized one apply. The exact intended uniqueness index is live, cleanup passed, and a post-run census plus blind verifier proved zero residue. `LOG-03` remains open because the 32-way contention proof stopped with an honest HOLD.
+Last activity: 2026-07-22 — secured census PASS; Sol premutation PASS; one apply returned `HOLD_CONTENTION_UNEXPECTED`; cleanup PASS; zero-residue census PASS; blind aftermath verifier PASS
 
 Progress: [----------] 0%
 
@@ -131,16 +131,17 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Jon unlocks Bitwarden locally without pasting a password or database URL into chat.
-- From exact clean deployed product commit `2ba442e7`, freeze only the credential-free target fingerprint and run the read-only production census in a fresh absolute state directory.
-- Sol issues a new premutation PASS or HOLD from the redacted census. Only an explicit PASS permits one isolated apply and exact cleanup proof.
-- After a blind production-receipt PASS credits `LOG-03`, freeze 07-03C1 for the authenticated store adapter, route, and one-way browser-journal drain.
+- Complete the required ADHD divergence for the fuzzy production collision-classification bug when machine load permits; keep generators isolated from the critic and publish a trap list.
+- Build and hostile-test the smallest exact collision proof without accepting every duplicate error, parsing human error text, or rerunning unchanged.
+- Obtain fresh blind code verification, a new read-only census, and a new Sol premutation PASS before any additional production proof run.
+- After a fully passing production receipt credits `LOG-03`, freeze 07-03C1 for the authenticated store adapter, route, and one-way browser-journal drain.
 - Continue qualified protocol review as a parallel human evidence track; do not invent clinical approval.
 
 ### Blockers/Concerns
 
 - No blocker to 07-03C1 research or ticket drafting.
-- Production uniqueness completion is blocked only by the locked secured credential vault and its required operator unlock.
+- Production member data is clean and the intended uniqueness index is live. Uniqueness completion is blocked by the relay's exact duplicate-collision classifier, not by the vault or cleanup.
+- The attempted five-way Claude Sonnet divergence timed out and its four exact orphaned generator processes were stopped; retry only after CPU and free-memory gates pass.
 - Jon's 2026-07-21 authority transfer supersedes the older workout implementation ownership holds; deterministic, clinical, security, production-identity, and blind-verification gates remain.
 - Live production protocol shapes, Atlas indexes, transaction support, and deployment commit identity remain execution-time evidence gates; repository declarations are not proof.
 - Phase 8 REHIT content, Phase 10 movement taxonomy, Phase 11 strength formula and nutrition contract, and Phase 12-13 provider/privacy decisions require the named reviews identified in research.
@@ -159,5 +160,5 @@ Roadmap creation is complete. Runtime implementation, production writes, credent
 ## Session Continuity
 
 Last session: 2026-07-22T12:14:22.7009496-06:00
-Stopped at: 07-03B exact deployment proven; waiting for Bitwarden unlock before read-only production census.
+Stopped at: 07-03B intended index live and member data clean; diagnosing the safe exact collision-classification boundary before any new production proof authority.
 Resume files: `.planning/ROADMAP.md`; `C:/Users/jonch/Projects/jarvis/data/rb-muscle-preservation-engine-v2/runtime-logs/receipts/07-03b-deployment-premutation-hold.md`
