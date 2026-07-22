@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Muscle-Preservation Engine
-status: control_plan_accepted_runtime_hold
-last_updated: "2026-07-21T19:00:18.5538069-06:00"
-last_activity: 2026-07-21
+status: 07_03b_deployed_premutation_hold
+last_updated: "2026-07-22T12:14:22.7009496-06:00"
+last_activity: 2026-07-22
 progress:
   total_phases: 8
   completed_phases: 0
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-21)
 
 **Core value:** Members can act on an honest, evidence-cited daily plan without a marketer, paywall, or opaque score standing between them and their own data.
-**Current focus:** Phase 6 — reconcile production protocol truth and freeze the identities, contracts, and reviewed metadata required by the v2.0 engine.
+**Current focus:** Phase 7 — finish the production uniqueness proof, then connect the accepted event spine to one authenticated one-tap logging slice.
 
 ## Current Position
 
-Phase: 6 of 13 — Production Reconciliation & Contract Foundation
-Plan: 06-01 control-plane establishment accepted; runtime plans remain held
-Status: Blind plan check passed at `e37d808f`; no FND requirement credit and no runtime authorization
-Last activity: 2026-07-21 — 06-01 blind PASS after executor, write-set, coverage, and FND verification hardening
+Phase: 7 of 13 — Repeat-Safe Logging & Event Spine
+Plan: 07-03B isolated Atlas uniqueness relay deployed; production census and mutation receipt pending
+Status: Product `2ba442e7` is blind-accepted, production-deployed, runtime-dormant, and canonical `/workout` HTTP 200. `LOG-03` remains open because the secured credential vault is locked; no Atlas connection or write occurred.
+Last activity: 2026-07-22 — six-candidate blind ratchet PASS, byte-identical nutrition-only bridge PASS, exact Vercel deployment PASS, premutation HOLD recorded
 
 Progress: [----------] 0%
 
@@ -131,13 +131,17 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- After ownership release, plan separate Phase 6 runtime slices from all FND-01 through FND-12 acceptance cases.
-- Keep runtime source held until the workout-content, nutrition-scorecard, security, and Hawkeye ownership boundaries are transferred or serialized.
+- Jon unlocks Bitwarden locally without pasting a password or database URL into chat.
+- From exact clean deployed product commit `2ba442e7`, freeze only the credential-free target fingerprint and run the read-only production census in a fresh absolute state directory.
+- Sol issues a new premutation PASS or HOLD from the redacted census. Only an explicit PASS permits one isolated apply and exact cleanup proof.
+- After a blind production-receipt PASS credits `LOG-03`, freeze 07-03C1 for the authenticated store adapter, route, and one-way browser-journal drain.
+- Continue qualified protocol review as a parallel human evidence track; do not invent clinical approval.
 
 ### Blockers/Concerns
 
-- No blocker to phase planning.
-- Runtime implementation is held by the milestone operating boundary until named ownership transfers are complete.
+- No blocker to 07-03C1 research or ticket drafting.
+- Production uniqueness completion is blocked only by the locked secured credential vault and its required operator unlock.
+- Jon's 2026-07-21 authority transfer supersedes the older workout implementation ownership holds; deterministic, clinical, security, production-identity, and blind-verification gates remain.
 - Live production protocol shapes, Atlas indexes, transaction support, and deployment commit identity remain execution-time evidence gates; repository declarations are not proof.
 - Phase 8 REHIT content, Phase 10 movement taxonomy, Phase 11 strength formula and nutrition contract, and Phase 12-13 provider/privacy decisions require the named reviews identified in research.
 - Duplicate route structure remains live: use `app/workout` and `src/components/Workout`; never edit the dead `src/app/workout` shadow.
@@ -154,6 +158,6 @@ Roadmap creation is complete. Runtime implementation, production writes, credent
 
 ## Session Continuity
 
-Last session: 2026-07-21T19:00:18.5538069-06:00
-Stopped at: v2.0 roadmap complete; 105/105 requirements mapped exactly once across Phases 6-13; ready to plan Phase 6.
-Resume file: .planning/ROADMAP.md
+Last session: 2026-07-22T12:14:22.7009496-06:00
+Stopped at: 07-03B exact deployment proven; waiting for Bitwarden unlock before read-only production census.
+Resume files: `.planning/ROADMAP.md`; `C:/Users/jonch/Projects/jarvis/data/rb-muscle-preservation-engine-v2/runtime-logs/receipts/07-03b-deployment-premutation-hold.md`
