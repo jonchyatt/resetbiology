@@ -263,8 +263,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
       }
 
       setResetConfirming(false)
-      await loadProgram()
-      toast.success('Tester run cleared. You can start again at Week 1, Day 1.')
+      window.location.reload()
     } catch (error) {
       console.error('Failed to reset program:', error)
       toast.error("We couldn't restart this test run yet. Your progress is still safe. Please try again.")

@@ -101,8 +101,8 @@ assert.match(
 )
 assert.match(
   source,
-  /const handleResetProgram = async \(\) =>[\s\S]*!response\.ok \|\| !data\?\.success[\s\S]*await loadProgram\(\)/,
-  'the tester reset only reports success and reloads after the server confirms the deletion',
+  /const handleResetProgram = async \(\) =>[\s\S]*!response\.ok \|\| !data\?\.success[\s\S]*window\.location\.reload\(\)/,
+  'the tester reset only refreshes the full enrollment surface after the server confirms the deletion',
 )
 
 console.log('Vision tester day-advance state checks passed.')
