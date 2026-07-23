@@ -1,35 +1,24 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ShieldAlert, X, RotateCcw, ArrowRight, Eye, MoveHorizontal } from 'lucide-react'
-import {
-  CHART_LINES,
-  CHART_LINE_TO_SNELLEN,
-  TumblingE,
-  DirectionButtons,
-  generateLineDirections,
-  type EDirection,
-} from './SnellenChart'
+import { ArrowRight, Eye, RotateCcw, ShieldAlert, X } from 'lucide-react'
+import { DirectionButtons, TumblingE } from './SnellenChart'
 import { prefersReducedMotion } from '@/lib/vision/canvasKit'
-import { SpeechQueue, unlockAudio } from '@/lib/vision/audioKit'
-
-/**
- * SnellenQuickCheck (Chunk B, Q1b+Q4 = ONE component) — a short, measured,
- * fully-abortable self-test replacing the old open-ended trainer diversion.
- * Reuses SnellenChart's optotype sizing (CHART_LINES) + fixed directional
- * answer pad (DirectionButtons) — no new sizing/answer mechanic invented.
- *
- * Safety (plan §4.8 / fix-package amendment 1): stop-rule copy shown before
- * either leg, X/Exit visible on every screen, zero persistence on abort —
- * onComplete fires ONLY from the confirm screen's "Use these" button.
- * Copy (plan §4.9 / amendment 1): proxy language — "your self-measured
- * reading", never a claim of measured acuity improvement.
- * Plan: jarvis data/rb-vision-interactive/runtime-logs/plan-2026-07-13-baseline-fix-package.md
- */
+import { unlockAudio } from '@/lib/vision/audioKit'
+import {
+  SCREEN_E_CORRECT_TO_PASS,
+  SCREEN_E_LINE_MULTIPLIERS,
+  SCREEN_E_TRIALS_PER_LINE,
+  balancedScreenEDirections,
+  createScreenDirectionalEEvidence,
+  screenELineSize,
+  type ScreenDirectionalEEvidence,
+  type ScreenEDirection,
+  type ScreenEInputMethod,
+} from '@/lib/vision/screenDirectionalE'
 
 export interface SnellenQuickCheckResult {
-  nearSnellen?: string
-  farSnellen?: string
+  evidence: ScreenDirectionalEEvidence
   durationSec: number
 }
 
@@ -40,227 +29,195 @@ export interface SnellenQuickCheckProps {
   onExit: () => void
 }
 
-type Stage = 'intro' | 'near' | 'reposition' | 'far' | 'confirm'
+type Stage = 'intro' | 'check' | 'result'
 
-function buildLegChart() {
-  return CHART_LINES.map(line => ({ ...line, directions: generateLineDirections(line.letterCount) }))
+interface RunResult {
+  bestLine: number
+  trialCount: number
+  correctCount: number
+  inputMethod: ScreenEInputMethod
 }
 
-// ---------------------------------------------------------------------------
-// Leg — runs one distance's tumbling-E rounds. Line passes at >=3/4 correct;
-// fail stops at the last passed line; ONE retry offered per leg (amendment 2).
-// ---------------------------------------------------------------------------
-function Leg({
-  distanceLabel,
+function ScreenELineCheck({
+  viewportWidth,
   reducedMotion,
   onDone,
 }: {
-  distanceLabel: 'near' | 'far'
+  viewportWidth: number
   reducedMotion: boolean
-  onDone: (snellen: string | undefined) => void
+  onDone: (result: RunResult) => void
 }) {
-  const [chart, setChart] = useState(buildLegChart)
-  const [lineIdx, setLineIdx] = useState(0)
-  const [letterIdx, setLetterIdx] = useState(0)
+  const [directions, setDirections] = useState(balancedScreenEDirections)
+  const [lineIndex, setLineIndex] = useState(0)
+  const [trialIndex, setTrialIndex] = useState(0)
   const [lineCorrect, setLineCorrect] = useState(0)
-  const [lineTotal, setLineTotal] = useState(0)
-  const [bestPassedIdx, setBestPassedIdx] = useState(-1)
-  const [retryUsed, setRetryUsed] = useState(false)
+  const [trialCount, setTrialCount] = useState(0)
+  const [correctCount, setCorrectCount] = useState(0)
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
-  const [phase, setPhase] = useState<'running' | 'result'>('running')
+  const inputMethodRef = useRef<ScreenEInputMethod>('pointer')
+  const acceptingInputRef = useRef(true)
+  const feedbackTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const currentLine = chart[lineIdx]
+  useEffect(() => () => {
+    if (feedbackTimerRef.current) clearTimeout(feedbackTimerRef.current)
+  }, [])
 
-  const handleSelect = (dir: EDirection) => {
-    if (feedback) return // debounce while feedback is showing
-    const correct = dir === currentLine.directions[letterIdx]
+  const handleSelect = (direction: ScreenEDirection) => {
+    if (feedback || !acceptingInputRef.current) return
+    acceptingInputRef.current = false
+
+    const correct = direction === directions[trialIndex]
+    const nextLineCorrect = lineCorrect + (correct ? 1 : 0)
+    const nextTrialCount = trialCount + 1
+    const nextCorrectCount = correctCount + (correct ? 1 : 0)
     setFeedback(correct ? 'correct' : 'incorrect')
-    const newCorrect = lineCorrect + (correct ? 1 : 0)
-    const newTotal = lineTotal + 1
-    setLineCorrect(newCorrect)
-    setLineTotal(newTotal)
+    setLineCorrect(nextLineCorrect)
+    setTrialCount(nextTrialCount)
+    setCorrectCount(nextCorrectCount)
 
-    setTimeout(() => {
+    feedbackTimerRef.current = setTimeout(() => {
       setFeedback(null)
-      if (letterIdx < currentLine.letterCount - 1) {
-        setLetterIdx(prev => prev + 1)
+      if (trialIndex < SCREEN_E_TRIALS_PER_LINE - 1) {
+        setTrialIndex(index => index + 1)
+        acceptingInputRef.current = true
         return
       }
-      // Line complete — evaluate against the 3/4 pass threshold
-      const linePassed = newCorrect / newTotal >= 0.75
-      if (linePassed) {
-        setBestPassedIdx(lineIdx)
-        if (lineIdx >= CHART_LINES.length - 1) {
-          setPhase('result')
-        } else {
-          setLineIdx(prev => prev + 1)
-          setLetterIdx(0)
-          setLineCorrect(0)
-          setLineTotal(0)
-        }
-      } else {
-        setPhase('result')
+
+      const passed = nextLineCorrect >= SCREEN_E_CORRECT_TO_PASS
+      if (!passed || lineIndex >= SCREEN_E_LINE_MULTIPLIERS.length - 1) {
+        onDone({
+          bestLine: passed ? lineIndex + 1 : lineIndex,
+          trialCount: nextTrialCount,
+          correctCount: nextCorrectCount,
+          inputMethod: inputMethodRef.current,
+        })
+        return
       }
-    }, reducedMotion ? 500 : 300)
-  }
 
-  const retry = () => {
-    setChart(buildLegChart())
-    setLineIdx(0)
-    setLetterIdx(0)
-    setLineCorrect(0)
-    setLineTotal(0)
-    setBestPassedIdx(-1)
-    setRetryUsed(true)
-    setFeedback(null)
-    setPhase('running')
-  }
-
-  if (phase === 'result') {
-    const snellen = bestPassedIdx >= 0 ? CHART_LINE_TO_SNELLEN[bestPassedIdx] : undefined
-    return (
-      <div className="text-center space-y-5 py-6">
-        <p className="text-gray-300 text-sm">
-          {distanceLabel === 'near' ? 'Near' : 'Far'} self-measured reading
-        </p>
-        <p className="text-white text-3xl font-bold">{snellen || 'Below chart range'}</p>
-        <div className="flex gap-3 justify-center pt-2">
-          {!retryUsed && (
-            <button
-              onClick={retry}
-              className="min-h-11 px-5 py-3 bg-gray-700/80 hover:bg-gray-600/80 text-white rounded-lg font-semibold flex items-center gap-2 transition-all"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Retry
-            </button>
-          )}
-          <button
-            onClick={() => onDone(snellen)}
-            className="min-h-11 px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-lg font-semibold flex items-center gap-2 transition-all"
-          >
-            Continue
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    )
+      setLineIndex(index => index + 1)
+      setTrialIndex(0)
+      setLineCorrect(0)
+      setDirections(balancedScreenEDirections())
+      acceptingInputRef.current = true
+    }, reducedMotion ? 450 : 280)
   }
 
   const feedbackRingClass =
     feedback === 'correct'
-      ? `ring-4 ring-green-500 ${reducedMotion ? '' : 'animate-pulse'}`
+      ? 'ring-4 ring-secondary-400'
       : feedback === 'incorrect'
-        ? `ring-4 ring-red-500 ${reducedMotion ? '' : 'animate-pulse'}`
+        ? 'ring-4 ring-amber-400'
         : 'ring-2 ring-primary-400'
 
   return (
-    <div className="space-y-6">
-      <p className="text-gray-500 text-xs text-center">
-        Line {lineIdx + 1}/{CHART_LINES.length}
-      </p>
+    <div
+      className="space-y-6"
+      onPointerDownCapture={event => {
+        inputMethodRef.current = event.pointerType === 'touch' ? 'touch' : 'pointer'
+      }}
+      onKeyDownCapture={() => {
+        inputMethodRef.current = 'keyboard'
+      }}
+    >
+      <div className="text-center">
+        <p className="text-gray-300 text-sm font-semibold">
+          Screen-based directional-E check
+        </p>
+        <p className="text-gray-500 text-xs mt-1">
+          Line {lineIndex + 1}/{SCREEN_E_LINE_MULTIPLIERS.length} · Trial {trialIndex + 1}/{SCREEN_E_TRIALS_PER_LINE}
+        </p>
+      </div>
+
       <div className="flex justify-center">
         <div className={`bg-white rounded-lg p-4 ${feedbackRingClass}`}>
-          {/* Acuity staircase comes from SIZE ONLY (SnellenChart's baseSize × line.scale
-              formula, base 55 ≈ phone single-E display) — constant stroke so line
-              difficulty isn't double-penalized (FLW H2 measurement validity). */}
           <TumblingE
-            direction={currentLine.directions[letterIdx]}
-            size={Math.round(55 * currentLine.scale)}
+            direction={directions[trialIndex]}
+            size={screenELineSize(viewportWidth, lineIndex)}
             strokeWeight="normal"
             animate={false}
           />
         </div>
       </div>
+
+      <p className="text-gray-400 text-xs text-center">
+        Which way is the E pointing?
+      </p>
       <DirectionButtons onSelect={handleSelect} compact />
     </div>
   )
 }
 
-// ---------------------------------------------------------------------------
-// SnellenQuickCheck
-// ---------------------------------------------------------------------------
-export default function SnellenQuickCheck({ legs, nightMode = false, onComplete, onExit }: SnellenQuickCheckProps) {
+export default function SnellenQuickCheck({
+  legs,
+  nightMode = false,
+  onComplete,
+  onExit,
+}: SnellenQuickCheckProps) {
   const [stage, setStage] = useState<Stage>('intro')
-  const cardRef = useRef<HTMLDivElement | null>(null)
-  const [nearResult, setNearResult] = useState<string | undefined>(undefined)
-  const [farResult, setFarResult] = useState<string | undefined>(undefined)
+  const [runResult, setRunResult] = useState<RunResult | null>(null)
   const [flowKey, setFlowKey] = useState(0)
-
+  const [viewport, setViewport] = useState({ width: 390, height: 844, devicePixelRatio: 1 })
+  const cardRef = useRef<HTMLDivElement | null>(null)
   const startRef = useRef<number | null>(null)
-  const speechRef = useRef<SpeechQueue | null>(null)
   const reducedMotion = prefersReducedMotion()
 
   useEffect(() => {
-    speechRef.current = new SpeechQueue()
-    return () => speechRef.current?.stop()
-  }, [])
-
-  // Bring the card fully into view on mount — at 390×844 the Day-1 mount opens
-  // mid-page with the Start button below the fold (dual-eye Argus finding,
-  // 2026-07-13). Instant, not smooth: reduced-motion safe.
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => {
-      cardRef.current?.scrollIntoView({ block: 'start' })
-    })
-    return () => cancelAnimationFrame(raf)
-  }, [])
-
-  useEffect(() => {
-    if (stage === 'reposition') {
-      speechRef.current?.speak(
-        "Nice. Now let's check your far vision. Stand back — arm's length from your screen, or across the room if you're on a monitor.",
-        { interrupt: true }
-      )
+    const syncViewport = () => {
+      setViewport({
+        width: window.innerWidth,
+        height: window.innerHeight,
+        devicePixelRatio: window.devicePixelRatio || 1,
+      })
     }
-  }, [stage])
+    syncViewport()
+    window.addEventListener('resize', syncViewport)
+    return () => window.removeEventListener('resize', syncViewport)
+  }, [])
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => cardRef.current?.scrollIntoView({ block: 'start' }))
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   const handleStart = () => {
     unlockAudio()
     startRef.current = Date.now()
-    setStage('near')
+    setStage('check')
   }
 
-  const handleNearDone = (snellen: string | undefined) => {
-    setNearResult(snellen)
-    setStage(legs === 'both' ? 'reposition' : 'confirm')
-  }
-
-  const handleFarDone = (snellen: string | undefined) => {
-    setFarResult(snellen)
-    setStage('confirm')
-  }
-
-  const handleUseThese = () => {
+  const handleKeep = () => {
+    if (!runResult) return
     const durationSec = startRef.current ? Math.round((Date.now() - startRef.current) / 1000) : 0
     onComplete({
-      nearSnellen: nearResult,
-      farSnellen: legs === 'both' ? farResult : undefined,
+      evidence: createScreenDirectionalEEvidence({
+        ...runResult,
+        viewportCssWidth: viewport.width,
+        viewportCssHeight: viewport.height,
+        devicePixelRatio: viewport.devicePixelRatio,
+      }),
       durationSec,
     })
   }
 
-  const handleRetryAll = () => {
-    setNearResult(undefined)
-    setFarResult(undefined)
-    setFlowKey(k => k + 1)
-    setStage('intro')
+  const retry = () => {
+    setRunResult(null)
+    setFlowKey(key => key + 1)
+    startRef.current = Date.now()
+    setStage('check')
   }
 
   const cardClass = nightMode
     ? 'bg-gradient-to-br from-[#17100a]/90 to-[#0c0906]/90 border border-amber-900/40'
     : 'bg-gradient-to-br from-gray-800/90 to-gray-900/90 border border-primary-400/30'
 
-  // scroll-mt must clear the fixed Header+breadcrumb stack (~126px) or the
-  // mount-scroll buries the abort X under it (FLW declare-complete HIGH).
   return (
     <div ref={cardRef} className="max-w-md mx-auto w-full scroll-mt-36">
       <div className={`${cardClass} backdrop-blur-sm rounded-xl p-6 shadow-2xl`}>
-        {/* X/Exit — visible on every screen, zero persistence (amendment 1) */}
         <div className="flex justify-end mb-2">
           <button
             onClick={onExit}
-            aria-label="Exit measurement"
-            className="p-2 rounded-lg bg-gray-800/60 hover:bg-gray-700/60 text-gray-300 hover:text-red-300 transition-colors"
+            aria-label="Exit screen-based directional-E check"
+            className="min-h-11 min-w-11 p-2 rounded-lg bg-gray-800/60 hover:bg-gray-700/60 text-gray-300 transition-colors flex items-center justify-center"
           >
             <X className="w-5 h-5" />
           </button>
@@ -269,91 +226,76 @@ export default function SnellenQuickCheck({ legs, nightMode = false, onComplete,
         {stage === 'intro' && (
           <div className="text-center space-y-4">
             <Eye className="w-9 h-9 text-primary-400 mx-auto" />
-            <h3 className="text-xl font-bold text-white">Guided self-measure</h3>
+            <h3 className="text-xl font-bold text-white">Screen-based directional-E check</h3>
+            <p className="text-gray-300 text-sm">
+              Hold this screen about 25 cm away. We&apos;ll record the smallest line you can
+              identify on this device—not a medical acuity score.
+            </p>
 
-            <div className="bg-red-500/10 border border-red-400/30 rounded-lg p-3 flex items-start gap-2 text-left">
-              <ShieldAlert className="w-4 h-4 text-red-300 mt-0.5 flex-shrink-0" />
-              <p className="text-red-200/90 text-xs">
-                Stop immediately if you feel pain, dizziness, double vision, or persistent blur.
-                The X above ends this at any time.
+            <div className="bg-amber-500/10 border border-amber-300/30 rounded-lg p-3 flex items-start gap-2 text-left">
+              <ShieldAlert className="w-4 h-4 text-amber-200 mt-0.5 flex-shrink-0" />
+              <p className="text-amber-50/90 text-xs leading-5">
+                You&apos;re in control. Tired eyes are useful feedback—pause or stop. Pain,
+                headache, dizziness, or new double vision ends the check; seek appropriate
+                professional care.
               </p>
             </div>
 
-            <p className="text-gray-300 text-sm">
-              Hold your phone about 25cm away — a bit closer than normal reading distance.
-              {legs === 'both' && " We'll check far vision after."}
-            </p>
-            <p className="text-gray-500 text-xs">
-              You&apos;ll see a letter &quot;E&quot; pointing a direction. Tap the matching arrow.
-            </p>
+            {legs === 'both' && (
+              <p className="text-gray-500 text-xs">
+                Far testing stays unavailable until measured distance and a remote, voice,
+                keyboard, or helper response are ready.
+              </p>
+            )}
 
             <button
               onClick={handleStart}
               className="w-full min-h-11 px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary-500/30"
             >
-              Start
+              Start near-screen check
             </button>
           </div>
         )}
 
-        {stage === 'near' && (
-          <Leg key={`near-${flowKey}`} distanceLabel="near" reducedMotion={reducedMotion} onDone={handleNearDone} />
+        {stage === 'check' && (
+          <ScreenELineCheck
+            key={flowKey}
+            viewportWidth={viewport.width}
+            reducedMotion={reducedMotion}
+            onDone={result => {
+              setRunResult(result)
+              setStage('result')
+            }}
+          />
         )}
 
-        {stage === 'reposition' && (
-          <div className="text-center space-y-5 py-6">
-            <MoveHorizontal className="w-9 h-9 text-primary-400 mx-auto" />
-            <h3 className="text-lg font-bold text-white">Reposition for far vision</h3>
-            <p className="text-gray-300 text-sm">
-              Stand back — arm&apos;s length from your screen, or across the room if you&apos;re on a monitor.
-              Take your time, no rush.
-            </p>
-            <button
-              onClick={() => setStage('far')}
-              className="min-h-11 px-6 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold rounded-xl transition-all"
-            >
-              Ready — Continue
-            </button>
-          </div>
-        )}
-
-        {stage === 'far' && (
-          <Leg key={`far-${flowKey}`} distanceLabel="far" reducedMotion={reducedMotion} onDone={handleFarDone} />
-        )}
-
-        {stage === 'confirm' && (
-          <div className="space-y-5">
-            <div className="text-center">
-              <h3 className="text-lg font-bold text-white">Your self-measured reading</h3>
-              <p className="text-gray-500 text-xs mt-1">Training-performance proxy, not a clinical measurement.</p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3">
-              <div className="bg-gray-900/50 rounded-lg p-4 border border-primary-400/20 flex items-center justify-between">
-                <span className="text-gray-400 text-sm">Near vision</span>
-                <span className="text-white font-bold text-lg">{nearResult || '—'}</span>
-              </div>
-              {legs === 'both' && (
-                <div className="bg-gray-900/50 rounded-lg p-4 border border-primary-400/20 flex items-center justify-between">
-                  <span className="text-gray-400 text-sm">Far vision</span>
-                  <span className="text-white font-bold text-lg">{farResult || '—'}</span>
-                </div>
-              )}
+        {stage === 'result' && runResult && (
+          <div className="text-center space-y-5 py-4">
+            <div>
+              <p className="text-gray-400 text-sm">Your reference on this screen</p>
+              <p className="text-white text-3xl font-bold mt-2">
+                Line {runResult.bestLine}/{SCREEN_E_LINE_MULTIPLIERS.length}
+              </p>
+              <p className="text-gray-500 text-xs mt-2">
+                Screen-based training reference at the stated setup distance—not an eye exam
+                or diagnosis.
+              </p>
             </div>
 
             <div className="flex gap-3">
               <button
-                onClick={handleRetryAll}
+                onClick={retry}
                 className="flex-1 min-h-11 px-5 py-3 bg-gray-700/80 hover:bg-gray-600/80 text-white rounded-lg font-semibold flex items-center justify-center gap-2 transition-all"
               >
                 <RotateCcw className="w-4 h-4" />
                 Retry
               </button>
               <button
-                onClick={handleUseThese}
-                className="flex-1 min-h-11 px-5 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-lg font-semibold transition-all"
+                onClick={handleKeep}
+                className="flex-1 min-h-11 px-5 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-lg font-semibold flex items-center justify-center gap-2 transition-all"
               >
-                Use these
+                Keep this check
+                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>

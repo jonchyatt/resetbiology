@@ -4,9 +4,14 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 import { SpeechQueue } from '@/lib/vision/audioKit'
+import {
+  SCREEN_E_DIRECTIONS,
+  screenELineSize,
+  type ScreenEDirection,
+} from '@/lib/vision/screenDirectionalE'
 
 interface SnellenChartProps {
-  chartSize: string // "20/20", "20/40", etc.
+  chartSize: string
   exerciseType: 'letters' | 'e-directional'
   onAnswer: (correct: boolean) => void
   resetTrigger?: number // Changes when parent wants to generate new letter
@@ -31,13 +36,6 @@ export const CHART_LINES = [
   { level: 7, label: 'Ultra', scale: 0.45, letterCount: 8 },
 ]
 
-// Line→20/xx vocabulary mapping (SnellenQuickCheck, Chunk B). CHART_LINES already
-// starts at "Moderate" — the top two rows (would-be 20/200, 20/100) were removed
-// as "too big to be useful" (see comment above), so index 0 maps to the next
-// value down. Uses the SAME 9-value 20/xx vocabulary as WeeklyAssessment.tsx's
-// SNELLEN_OPTIONS and DailyPractice.tsx's baseline dropdowns — no new notation.
-export const CHART_LINE_TO_SNELLEN = ['20/70', '20/50', '20/40', '20/30', '20/25', '20/20', '20/15']
-
 // Confusable letters for letter chart mode - letters that look similar and challenge focus
 // Groups: O/Q/C/D, H/M/N, K/X, R/B, S/Z, V/W
 const CONFUSABLE_LETTERS = ['O', 'Q', 'C', 'D', 'H', 'M', 'N', 'K', 'X', 'R', 'S', 'Z', 'V']
@@ -54,8 +52,8 @@ const getLetterChoices = (correctLetter: string): string[] => {
   return [correctLetter, ...distractors].sort(() => Math.random() - 0.5)
 }
 
-export const E_DIRECTIONS = ['up', 'down', 'left', 'right'] as const
-export type EDirection = typeof E_DIRECTIONS[number]
+export const E_DIRECTIONS = SCREEN_E_DIRECTIONS
+export type EDirection = ScreenEDirection
 
 // SVG Tumbling E with proper Snellen proportions (5x5 grid with extended horizontal bars)
 // The horizontal bars (legs) are longer than standard font E
@@ -159,6 +157,7 @@ export default function SnellenChart({
   const [currentLetterIndex, setCurrentLetterIndex] = useState(0)
   const [consecutiveFailures, setConsecutiveFailures] = useState(0)
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
+  const [viewportWidth, setViewportWidth] = useState(390)
 
   // Visual feedback state - blinks green (correct) or red (incorrect)
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
@@ -192,6 +191,13 @@ export default function SnellenChart({
   useEffect(() => {
     speechRef.current = new SpeechQueue()
     return () => speechRef.current?.stop()
+  }, [])
+
+  useEffect(() => {
+    const syncViewport = () => setViewportWidth(window.innerWidth)
+    syncViewport()
+    window.addEventListener('resize', syncViewport)
+    return () => window.removeEventListener('resize', syncViewport)
   }, [])
 
   // Reset chart when resetTrigger or exerciseType changes
@@ -534,7 +540,7 @@ export default function SnellenChart({
                     } ${isCurrentLetter ? getFeedbackClass() + ' rounded-sm' : ''}`}>
                       <TumblingE
                         direction={dir}
-                        size={baseSize * line.scale * (deviceMode === 'phone' ? 0.4 : 0.65)}
+                        size={screenELineSize(viewportWidth, lineIdx)}
                         strokeWeight={getLineStrokeWeight(lineIdx)}
                       />
                     </div>

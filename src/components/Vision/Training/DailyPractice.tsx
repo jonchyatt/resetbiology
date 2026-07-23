@@ -26,6 +26,11 @@ import type { EngineResult } from '@/components/Vision/Engines/types'
 import type { GaborThresholdPrior } from '@/lib/vision/gaborThreshold'
 import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
 import { useToast } from '@/components/ui/Toast'
+import {
+  SCREEN_DIRECTIONAL_E_PROTOCOL,
+  mergeResultsPreservingOpeningScreenCheck,
+  screenDirectionalEMetrics,
+} from '@/lib/vision/screenDirectionalE'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
 const BREATH_WARMUP_MINUTES_KEY = 'visionTraining.breathWarmupMinutes'
@@ -122,10 +127,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [completedExercises, setCompletedExercises] = useState<string[]>([])
   const [showSnellenTrainer, setShowSnellenTrainer] = useState(false)
   const [showQuickCheck, setShowQuickCheck] = useState(false)
-  const [savingBaselines, setSavingBaselines] = useState(false)
   const [sessionNotes, setSessionNotes] = useState('')
-  const [nearSnellenResult, setNearSnellenResult] = useState('')
-  const [farSnellenResult, setFarSnellenResult] = useState('')
   const [enrolling, setEnrolling] = useState(false)
   const [breathWarmupEnabled, setBreathWarmupEnabled] = useState(true)
   const [breathWarmupMinutes, setBreathWarmupMinutes] = useState(1)
@@ -163,8 +165,6 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
           ...currentVisionLocalDayInput(),
           action: 'update_baselines',
           data: {
-            nearSnellen: results.nearSnellen,
-            farSnellen: results.farSnellen,
             nearPointCm: results.npcCm
           }
         })
@@ -180,32 +180,22 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     loadProgram()
   }
 
-  // Day-1 baseline (amendment 5): guided measure lands on a result-confirm state
-  // inside SnellenQuickCheck; onComplete only fires from "Use these" there, so
-  // persistence + dropdown prefill only happen on explicit confirm, never on abort.
-  const handleQuickCheckComplete = async (result: SnellenQuickCheckResult) => {
-    setSavingBaselines(true)
-    try {
-      await fetch('/api/vision/program', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...currentVisionLocalDayInput(),
-          action: 'update_baselines',
-          data: {
-            nearSnellen: result.nearSnellen,
-            farSnellen: result.farSnellen
-          }
-        })
-      })
-    } catch (error) {
-      console.error('Failed to save quick-check baselines:', error)
+  // The screen-only check is immutable, score-neutral session evidence. It never
+  // overwrites the member's legacy near/far acuity fields.
+  const handleQuickCheckComplete = (result: SnellenQuickCheckResult) => {
+    const evidence: EngineResult = {
+      exerciseId: SCREEN_DIRECTIONAL_E_PROTOCOL,
+      durationSec: result.durationSec,
+      completed: true,
+      score: 0,
+      metrics: screenDirectionalEMetrics(result.evidence),
     }
-    if (result.nearSnellen) setNearSnellenResult(result.nearSnellen)
-    if (result.farSnellen) setFarSnellenResult(result.farSnellen)
-    setSavingBaselines(false)
+    setEngineResults(current => [
+      ...current.filter(item => item.exerciseId !== SCREEN_DIRECTIONAL_E_PROTOCOL),
+      evidence,
+    ])
     setShowQuickCheck(false)
-    loadProgram()
+    setBaselineComplete(true)
   }
 
   useEffect(() => {
@@ -315,8 +305,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
           ...currentVisionLocalDayInput(),
           action: 'enroll',
           data: {
-            initialNearSnellen: nearSnellenResult || null,
-            initialFarSnellen: farSnellenResult || null
+            initialNearSnellen: null,
+            initialFarSnellen: null
           }
         })
       })
@@ -380,7 +370,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   }
 
   const handleRunnerFinish = (payload: SessionRunnerFinishPayload) => {
-    setEngineResults(payload.results)
+    setEngineResults(current => mergeResultsPreservingOpeningScreenCheck(current, payload.results))
     setCompletedExercises(prev => {
       const merged = new Set([...prev, ...payload.performedExerciseIds])
       return Array.from(merged)
@@ -409,8 +399,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
             exerciseMinutes: todaySession.session.exerciseMinutes,
             breathWarmupMinutes: breathWarmupStatus === 'complete' ? breathWarmupMinutes : 0,
             exercisesCompleted: completedCurrentExerciseIds,
-            nearSnellenResult: nearSnellenResult || null,
-            farSnellenResult: farSnellenResult || null,
+            nearSnellenResult: null,
+            farSnellenResult: null,
             notes: sessionNotes || null,
             engineResults: engineResults.length > 0 ? engineResults : undefined
           }
@@ -469,7 +459,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
               </div>
               <div className="flex items-center gap-2 text-gray-300">
                 <CheckCircle className="w-4 h-4 text-secondary-400" />
-                Daily Snellen baseline tracking
+                Daily screen-direction reference
               </div>
               <div className="flex items-center gap-2 text-gray-300">
                 <CheckCircle className="w-4 h-4 text-secondary-400" />
@@ -490,51 +480,12 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
             </div>
           </div>
 
-          {/* Optional baseline inputs */}
           <div className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-xl p-6 mb-8 border border-primary-400/20">
-            <h3 className="text-white font-bold mb-4">Record Your Starting Baselines (Optional):</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-gray-300 text-sm block mb-2">Near Vision Snellen</label>
-                <select
-                  value={nearSnellenResult}
-                  onChange={(e) => setNearSnellenResult(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white"
-                >
-                  <option value="">Select...</option>
-                  <option value="20/200">20/200</option>
-                  <option value="20/100">20/100</option>
-                  <option value="20/70">20/70</option>
-                  <option value="20/50">20/50</option>
-                  <option value="20/40">20/40</option>
-                  <option value="20/30">20/30</option>
-                  <option value="20/25">20/25</option>
-                  <option value="20/20">20/20</option>
-                  <option value="20/15">20/15</option>
-                </select>
-              </div>
-              <div>
-                <label className="text-gray-300 text-sm block mb-2">Far Vision Snellen</label>
-                <select
-                  value={farSnellenResult}
-                  onChange={(e) => setFarSnellenResult(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white"
-                >
-                  <option value="">Select...</option>
-                  <option value="20/200">20/200</option>
-                  <option value="20/100">20/100</option>
-                  <option value="20/70">20/70</option>
-                  <option value="20/50">20/50</option>
-                  <option value="20/40">20/40</option>
-                  <option value="20/30">20/30</option>
-                  <option value="20/25">20/25</option>
-                  <option value="20/20">20/20</option>
-                  <option value="20/15">20/15</option>
-                </select>
-              </div>
-            </div>
-            <p className="text-gray-500 text-xs mt-2">
-              You can test your baselines using the Snellen trainer before enrolling, or skip and test on Day 1.
+            <h3 className="text-white font-bold mb-2">Your first honest reference happens on Day 1</h3>
+            <p className="text-gray-300 text-sm leading-6">
+              The program begins with a screen-based directional-E check. It records the
+              smallest line you identify on this device without pretending CSS pixels are a
+              clinical acuity measurement.
             </p>
           </div>
 
@@ -616,7 +567,6 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
           }}
           onComplete={completeWeeklyAssessment}
           onSkip={() => setShowWeeklyAssessment(false)}
-          onOpenTrainer={() => { setShowWeeklyAssessment(false); setShowSnellenTrainer(true) }}
         />
       )
     }
@@ -901,7 +851,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                       <Eye className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <div className="text-white font-semibold">Snellen Baseline</div>
+                      <div className="text-white font-semibold">Screen Direction Check</div>
                       <div className="text-gray-400 text-sm">{session.baselineMinutes} minutes</div>
                     </div>
                   </div>
@@ -909,7 +859,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                     onClick={() => setShowSnellenTrainer(true)}
                     className="text-primary-400 hover:text-primary-300 text-sm"
                   >
-                    Open Trainer
+                    Practice directions
                   </button>
                 </div>
 
@@ -1087,72 +1037,34 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                         onExit={() => setShowQuickCheck(false)}
                       />
                     ) : (
-                    <>
-                    <h4 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
-                      <Eye className="w-5 h-5 text-blue-400" />
-                      Step 1: Snellen Baseline ({session.baselineMinutes} min)
-                    </h4>
-                    <p className="text-gray-300 text-sm mb-4">
-                      Test your current vision levels. Record your results below.
-                    </p>
+                      <>
+                        <h4 className="text-white font-bold text-lg mb-2 flex items-center gap-2">
+                          <Eye className="w-5 h-5 text-blue-400" />
+                          Step 1: Screen Direction Check ({session.baselineMinutes} min)
+                        </h4>
+                        <p className="text-gray-300 text-sm mb-2">
+                          Find the smallest directional-E line you can identify on this screen.
+                          This creates a device-specific training reference, not a medical acuity score.
+                        </p>
+                        <p className="text-gray-500 text-xs mb-4">
+                          Near-screen only. Far testing waits for measured distance and remote input.
+                        </p>
 
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="text-gray-400 text-xs block mb-1">Near Vision</label>
-                        <select
-                          value={nearSnellenResult}
-                          onChange={(e) => setNearSnellenResult(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
-                        >
-                          <option value="">Select...</option>
-                          <option value="20/200">20/200</option>
-                          <option value="20/100">20/100</option>
-                          <option value="20/70">20/70</option>
-                          <option value="20/50">20/50</option>
-                          <option value="20/40">20/40</option>
-                          <option value="20/30">20/30</option>
-                          <option value="20/25">20/25</option>
-                          <option value="20/20">20/20</option>
-                          <option value="20/15">20/15</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-gray-400 text-xs block mb-1">Far Vision</label>
-                        <select
-                          value={farSnellenResult}
-                          onChange={(e) => setFarSnellenResult(e.target.value)}
-                          className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
-                        >
-                          <option value="">Select...</option>
-                          <option value="20/200">20/200</option>
-                          <option value="20/100">20/100</option>
-                          <option value="20/70">20/70</option>
-                          <option value="20/50">20/50</option>
-                          <option value="20/40">20/40</option>
-                          <option value="20/30">20/30</option>
-                          <option value="20/25">20/25</option>
-                          <option value="20/20">20/20</option>
-                          <option value="20/15">20/15</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => setShowQuickCheck(true)}
-                        disabled={savingBaselines}
-                        className="flex-1 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm disabled:opacity-50"
-                      >
-                        Measure now (guided, ~3 min)
-                      </button>
-                      <button
-                        onClick={() => setBaselineComplete(true)}
-                        className="flex-1 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold"
-                      >
-                        Continue to Exercises
-                      </button>
-                    </div>
-                    </>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <button
+                            onClick={() => setShowQuickCheck(true)}
+                            className="min-h-11 px-4 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-lg text-sm font-semibold"
+                          >
+                            Run screen check
+                          </button>
+                          <button
+                            onClick={() => setBaselineComplete(true)}
+                            className="min-h-11 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-semibold"
+                          >
+                            Continue without check
+                          </button>
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
@@ -1200,6 +1112,9 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                       sessionsCompleted={enrollment.sessionsCompleted}
                       lastSessionDate={enrollment.lastSessionDate ?? null}
                       gaborThresholdPrior={gaborThresholdPrior}
+                      screenCheckAlreadyCompleted={engineResults.some(
+                        result => result.exerciseId === SCREEN_DIRECTIONAL_E_PROTOCOL,
+                      )}
                       onFinish={handleRunnerFinish}
                       onExit={() => setShowGuidedRunner(false)}
                     />

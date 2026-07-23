@@ -20,12 +20,16 @@ import { resolvePrescription, findSession } from '@/lib/vision/prescription'
 import { prefersReducedMotion } from '@/lib/vision/canvasKit'
 import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
 import { getEngine } from '@/components/Vision/Engines'
-import { clampScore, type EngineResult } from '@/components/Vision/Engines/types'
+import type { EngineResult } from '@/components/Vision/Engines/types'
 import type { GaborThresholdPrior } from '@/lib/vision/gaborThreshold'
 import { localDayKey } from '@/lib/localDay'
+import {
+  SCREEN_DIRECTIONAL_E_PROTOCOL,
+  screenDirectionalEMetrics,
+  shouldOfferScreenDirectionalEAfterExercises,
+} from '@/lib/vision/screenDirectionalE'
 import GuidedExercise from './GuidedExercise'
 import SnellenQuickCheck, { type SnellenQuickCheckResult } from './SnellenQuickCheck'
-import { CHART_LINE_TO_SNELLEN } from './SnellenChart'
 
 /**
  * SessionRunner v2 (W0.5 / WP4) — the guided daily session experience.
@@ -97,6 +101,8 @@ interface SessionRunnerProps {
   lastSessionDate?: string | null
   /** Server-owned warm-start snapshot; forwarded only to the gabor-contrast engine */
   gaborThresholdPrior?: GaborThresholdPrior | null
+  /** True when the opening Day-1 check already produced the session evidence capsule. */
+  screenCheckAlreadyCompleted?: boolean
   onFinish: (payload: SessionRunnerFinishPayload) => void
   onExit: () => void
 }
@@ -154,6 +160,7 @@ export default function SessionRunner({
   sessionsCompleted = 0,
   lastSessionDate = null,
   gaborThresholdPrior = null,
+  screenCheckAlreadyCompleted = false,
   onFinish,
   onExit,
 }: SessionRunnerProps) {
@@ -248,24 +255,28 @@ export default function SessionRunner({
 
   const advanceFrom = useCallback((index: number) => {
     if (index >= exercises.length - 1) {
+      if (!shouldOfferScreenDirectionalEAfterExercises(screenCheckAlreadyCompleted)) {
+        speak('Last one down. Your screen check is already saved. Here is your report.', true)
+        goToReport()
+        return
+      }
       speak('Last one down. One quick vision check, then your report.', true)
       setStage({ kind: 'proof' })
     } else {
       speak(interludeMomentum(index + 1, exercises.length))
       setStage({ kind: 'interlude', nextIndex: index + 1 })
     }
-  }, [exercises.length, speak])
+  }, [exercises.length, goToReport, screenCheckAlreadyCompleted, speak])
 
   // Amendment 8: skippable, never blocks report. Amendment 1: only a completed
   // + confirmed SnellenQuickCheck run persists anything (skip = proofResultRef stays null).
   const handleProofComplete = useCallback((result: SnellenQuickCheckResult) => {
-    const lineIdx = result.nearSnellen ? CHART_LINE_TO_SNELLEN.indexOf(result.nearSnellen) : -1
     proofResultRef.current = {
-      exerciseId: 'snellen-proof',
+      exerciseId: SCREEN_DIRECTIONAL_E_PROTOCOL,
       durationSec: result.durationSec,
       completed: true,
-      score: lineIdx >= 0 ? clampScore(((lineIdx + 1) / CHART_LINE_TO_SNELLEN.length) * 100) : 0,
-      metrics: lineIdx >= 0 ? { nearSnellenLine: lineIdx + 1 } : {},
+      score: 0,
+      metrics: screenDirectionalEMetrics(result.evidence),
     }
     goToReport()
   }, [goToReport])
@@ -560,8 +571,8 @@ export default function SessionRunner({
               </button>
             </div>
             <p className="text-gray-500 text-xs text-center max-w-sm mb-3">
-              One quick self-check before your report — your own near-vision self-measured
-              reading. Optional, never required.
+              One screen-based directional-E check before your report. It records a line
+              reference for this device—not a medical acuity score. Optional, never required.
             </p>
             <SnellenQuickCheck
               legs="near-only"
