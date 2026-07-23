@@ -19,24 +19,35 @@ import {
 } from 'lucide-react'
 import { visionMasterProgram } from '@/data/visionProtocols'
 import { visionExercises } from '@/data/visionExercises'
-import FirstSessionPreview from './FirstSessionPreview'
+import FirstSessionPreview, { visionEnrollmentActionLabel } from './FirstSessionPreview'
 
 interface CurriculumOverviewProps {
   onEnroll: () => void
   enrolling?: boolean
+  requiresSignIn?: boolean
+  enrollmentError?: string | null
 }
 
 // Phase colors and icons
 const PHASE_CONFIG = {
-  'Foundation': { color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-600', icon: Eye, description: 'Build neural pathways' },
-  'Integration': { color: 'from-cyan-500 to-teal-500', bgColor: 'bg-cyan-600', icon: Brain, description: 'Connect vision & movement' },
-  'Speed & Resilience': { color: 'from-teal-500 to-green-500', bgColor: 'bg-teal-600', icon: Zap, description: 'Build speed & endurance' },
-  'Advanced': { color: 'from-green-500 to-yellow-500', bgColor: 'bg-green-600', icon: Target, description: 'Peak performance' },
-  'Distance Mastery': { color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-600', icon: TrendingUp, description: 'Maximize range' },
-  'Integration & Maintenance': { color: 'from-orange-500 to-red-500', bgColor: 'bg-orange-600', icon: Award, description: 'Lock in gains' },
+  'Foundation': { label: 'Foundation', color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-600', icon: Eye, description: 'Build steady practice' },
+  'Integration': { label: 'Integration', color: 'from-cyan-500 to-teal-500', bgColor: 'bg-cyan-600', icon: Brain, description: 'Coordinate visual inputs' },
+  'Speed & Resilience': { label: 'Pace & Variety', color: 'from-teal-500 to-green-500', bgColor: 'bg-teal-600', icon: Zap, description: 'Practice paced visual decisions' },
+  'Advanced': { label: 'Varied Practice', color: 'from-green-500 to-yellow-500', bgColor: 'bg-green-600', icon: Target, description: 'Work across visual tasks' },
+  'Distance Mastery': { label: 'Distance Practice', color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-600', icon: TrendingUp, description: 'Practice near and far detail' },
+  'Integration & Maintenance': { label: 'Transfer & Maintenance', color: 'from-orange-500 to-red-500', bgColor: 'bg-orange-600', icon: Award, description: 'Keep skills in rotation' },
 }
 
-export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOverviewProps) {
+export function visionPhaseDisplayName(phaseName: string): string {
+  return PHASE_CONFIG[phaseName as keyof typeof PHASE_CONFIG]?.label || phaseName
+}
+
+export default function CurriculumOverview({
+  onEnroll,
+  enrolling,
+  requiresSignIn,
+  enrollmentError,
+}: CurriculumOverviewProps) {
   const [expandedWeek, setExpandedWeek] = useState<number | null>(1)
   const [showAllExercises, setShowAllExercises] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
@@ -49,6 +60,8 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
       <FirstSessionPreview
         onEnroll={onEnroll}
         enrolling={enrolling}
+        requiresSignIn={requiresSignIn}
+        enrollmentError={enrollmentError}
         onExit={() => {
           setShowPreview(false)
           setPreviewDone(true)
@@ -92,10 +105,10 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                 </span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
-                {program.name}
+                12-Week Visual Skills Program
               </h1>
               <p className="text-gray-300 max-w-2xl text-lg">
-                {program.description}
+                Guided practice for visual processing, contrast sensitivity, eye teaming, and everyday clarity.
               </p>
             </div>
             <div className="flex-shrink-0">
@@ -147,7 +160,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
                           <PhaseIcon className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-white">Phase {phaseIdx + 1}: {phaseName}</h3>
+                          <h3 className="text-lg font-bold text-white">Phase {phaseIdx + 1}: {visionPhaseDisplayName(phaseName)}</h3>
                           <p className="text-sm text-gray-400">
                             Weeks {weeks[0].week}-{weeks[weeks.length - 1].week} • {config.description}
                           </p>
@@ -291,7 +304,7 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
             { icon: Calendar, text: '60 guided daily sessions over 12 weeks' },
             { icon: Eye, text: 'Daily Snellen baseline tracking (near + far)' },
             { icon: Zap, text: '11 progressive exercises with coaching cues' },
-            { icon: TrendingUp, text: 'Reader glasses progression system' },
+            { icon: TrendingUp, text: 'Near-vision comfort and clarity tracking' },
             { icon: Brain, text: 'Audio-guided eye movement exercises' },
             { icon: Target, text: 'Peripheral vision expansion drills' },
             { icon: Timer, text: 'Speed & saccade training with metronome' },
@@ -343,13 +356,15 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
         </h2>
         <p className="text-gray-300 mb-6 max-w-xl mx-auto">
           {previewDone
-            ? 'You already felt the first move. 59 more sessions, same coached format, real progress.'
-            : 'Join the 12-week program and follow a proven methodology for improving your eyesight naturally.'}
+            ? 'You have tried the first move. Continue with the same guided format and build your visual skills over time.'
+            : 'Join the 12-week program to train visual processing, contrast sensitivity, and everyday clarity through guided practice.'}
         </p>
         <button
+          type="button"
           onClick={onEnroll}
           disabled={enrolling}
-          className="px-8 py-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg shadow-primary-500/30 flex items-center gap-2 mx-auto"
+          aria-busy={enrolling}
+          className="min-h-11 px-8 py-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg shadow-primary-500/30 flex items-center gap-2 mx-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
         >
           {enrolling ? (
             <>
@@ -359,10 +374,27 @@ export default function CurriculumOverview({ onEnroll, enrolling }: CurriculumOv
           ) : (
             <>
               <Play className="w-5 h-5" />
-              {previewDone ? 'Claim Your Journey' : 'Start 12-Week Program'}
+              {visionEnrollmentActionLabel(Boolean(requiresSignIn), previewDone)}
             </>
           )}
         </button>
+        {enrollmentError && (
+          <div
+            role="alert"
+            className="mt-5 mx-auto max-w-xl rounded-xl border border-secondary-400/30 bg-secondary-500/10 p-4 text-secondary-100"
+          >
+            <p className="text-sm leading-relaxed">{enrollmentError}</p>
+            <button
+              type="button"
+              onClick={onEnroll}
+              disabled={enrolling}
+              aria-busy={enrolling}
+              className="mt-3 min-h-11 rounded-lg border border-secondary-300/40 bg-secondary-500/20 px-5 py-2 font-semibold text-white transition hover:bg-secondary-500/30 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              Try again
+            </button>
+          </div>
+        )}
         <p className="text-gray-500 text-sm mt-4">
           Earn 100 points for enrolling + points for every completed session
         </p>

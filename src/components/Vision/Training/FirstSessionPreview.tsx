@@ -15,10 +15,26 @@ const PREVIEW_EXERCISE = visionExercises.find(e => e.id === 'palming-reset')!
 interface FirstSessionPreviewProps {
   onEnroll: () => void
   enrolling?: boolean
+  requiresSignIn?: boolean
+  enrollmentError?: string | null
   onExit: () => void
 }
 
-export default function FirstSessionPreview({ onEnroll, enrolling, onExit }: FirstSessionPreviewProps) {
+export function visionEnrollmentActionLabel(
+  requiresSignIn: boolean,
+  completedPreview: boolean,
+): string {
+  if (requiresSignIn) return completedPreview ? 'Sign In to Continue' : 'Sign In to Start'
+  return completedPreview ? 'Continue into the Program' : 'Start 12-Week Program'
+}
+
+export default function FirstSessionPreview({
+  onEnroll,
+  enrolling,
+  requiresSignIn = false,
+  enrollmentError,
+  onExit,
+}: FirstSessionPreviewProps) {
   const [done, setDone] = useState(false)
 
   if (!done) {
@@ -48,9 +64,11 @@ export default function FirstSessionPreview({ onEnroll, enrolling, onExit }: Fir
         same way — timed, guided, measured. Claim the rest of the journey.
       </p>
       <button
+        type="button"
         onClick={onEnroll}
         disabled={enrolling}
-        className="px-8 py-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg shadow-primary-500/30 flex items-center gap-2 mx-auto"
+        aria-busy={enrolling}
+        className="min-h-11 px-8 py-4 bg-primary-500 hover:bg-primary-600 disabled:opacity-50 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 shadow-lg shadow-primary-500/30 flex items-center gap-2 mx-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
       >
         {enrolling ? (
           <>
@@ -60,11 +78,28 @@ export default function FirstSessionPreview({ onEnroll, enrolling, onExit }: Fir
         ) : (
           <>
             <Play className="w-5 h-5" />
-            Claim Your Journey
+            {visionEnrollmentActionLabel(requiresSignIn, true)}
           </>
         )}
       </button>
-      <button onClick={onExit} className="block mx-auto text-sm text-gray-500 hover:text-gray-300 transition-colors">
+      {enrollmentError && (
+        <div
+          role="alert"
+          className="mx-auto max-w-xl rounded-xl border border-secondary-400/30 bg-secondary-500/10 p-4 text-secondary-100"
+        >
+          <p className="text-sm leading-relaxed">{enrollmentError}</p>
+          <button
+            type="button"
+            onClick={onEnroll}
+            disabled={enrolling}
+            aria-busy={enrolling}
+            className="mt-3 min-h-11 rounded-lg border border-secondary-300/40 bg-secondary-500/20 px-5 py-2 font-semibold text-white transition hover:bg-secondary-500/30 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+      <button type="button" onClick={onExit} className="min-h-11 block mx-auto text-sm text-gray-500 hover:text-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
         Not yet — let me look around first
       </button>
     </div>

@@ -127,7 +127,7 @@ export const visionWaves: VisionWave[] = [
         description: 'Finish with mirror scan or Snellen walks to prove control under fatigue.',
         duration: '8 min',
         exerciseIds: ['mirror-scan', 'snellen-layering-walks'],
-        intent: 'Lock in gains with real-world motion.',
+        intent: 'Practice visual coordination during real-world motion.',
         cues: ['Film yourself weekly', 'Log furthest clear line'],
       },
     ],
@@ -199,9 +199,9 @@ export type VisionMasterProgram = {
 
 export const visionMasterProgram: VisionMasterProgram = {
   id: 'vision-12week',
-  name: 'Vision Recovery Program',
+  name: '12-Week Vision Training Program',
   totalWeeks: 12,
-  description: 'Complete 12-week vision restoration program combining daily Snellen baseline measurements with progressive eye exercises.',
+  description: 'A 12-week guided visual-skills program combining self-recorded Snellen checks with progressive practice.',
   weeklyPlans: [
     // PHASE 1: FOUNDATION (Weeks 1-2)
     {
@@ -293,7 +293,7 @@ export const visionMasterProgram: VisionMasterProgram = {
         {
           day: 3,
           title: 'Distance Work',
-          focus: 'Challenge far focus',
+          focus: 'Practice distance viewing',
           baselineMinutes: 5,
           exerciseMinutes: 12,
           exerciseIds: ['palming-reset', 'focus-trombone'],
@@ -361,7 +361,7 @@ export const visionMasterProgram: VisionMasterProgram = {
         {
           day: 4,
           title: 'Distance Toggle',
-          focus: 'Rapid accommodation shifts',
+          focus: 'Near-far switching practice',
           baselineMinutes: 3,
           exerciseMinutes: 21,
           exerciseIds: ['focus-trombone', 'peripheral-pointing', 'gabor-contrast'],
@@ -418,12 +418,12 @@ export const visionMasterProgram: VisionMasterProgram = {
         },
         {
           day: 4,
-          title: 'Distance Mastery',
-          focus: 'Far vision development',
+          title: 'Distance Practice',
+          focus: 'Far-viewing practice',
           baselineMinutes: 5,
           exerciseMinutes: 21,
           exerciseIds: ['palming-reset', 'focus-trombone', 'mirror-scan', 'gabor-contrast'],
-          coachingCues: ['Push far distance', 'Step back when clear']
+          coachingCues: ['Work at the farthest comfortable clear distance', 'Step back only while the target remains clear and comfortable']
         },
         {
           day: 5,
@@ -560,7 +560,7 @@ export const visionMasterProgram: VisionMasterProgram = {
       title: 'Advanced Peripheral',
       phase: 'Advanced',
       goals: [
-        'Maximize peripheral range',
+        'Practice peripheral awareness',
         'Add cognitive load',
         'Dual-task mastery'
       ],
@@ -674,36 +674,36 @@ export const visionMasterProgram: VisionMasterProgram = {
     // PHASE 5: DISTANCE MASTERY (Weeks 9-10)
     {
       week: 9,
-      title: 'Far Vision Focus',
+      title: 'Near-Far Practice',
       phase: 'Distance Mastery',
       goals: [
-        'Push far vision limits',
-        'Distance progression with readers',
-        'Outdoor distance work'
+        'Practice clear viewing at varied distances',
+        'Practice near viewing with your usual correction',
+        'Practice comfortable distance viewing outdoors'
       ],
       sessions: [
         {
           day: 1,
-          title: 'Distance Baseline',
-          focus: 'Far vision assessment',
+          title: 'Distance Check-In',
+          focus: 'Record a far-viewing check-in',
           baselineMinutes: 8,
           exerciseMinutes: 21,
           exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
-          coachingCues: ['Full far Snellen test', 'Record max clear distance']
+          coachingCues: ['Complete a self-recorded far Snellen check', 'Record the farthest line you can clearly identify today']
         },
         {
           day: 2,
-          title: 'Reader Progression',
-          focus: 'Near + readers training',
+          title: 'Near-Viewing Practice',
+          focus: 'Near viewing with your usual correction',
           baselineMinutes: 5,
           exerciseMinutes: 22,
           exerciseIds: ['focus-pushups', 'focus-trombone'],
-          coachingCues: ['Use reader glasses if available', 'Track distance progression']
+          coachingCues: ['Use your usual correction if needed', 'Record the clearest comfortable viewing distance today']
         },
         {
           day: 3,
           title: 'Distance Challenge',
-          focus: 'Push far limits',
+          focus: 'Practice at a comfortable distance edge',
           baselineMinutes: 5,
           exerciseMinutes: 25,
           exerciseIds: ['box-breath-vision', 'focus-trombone', 'snellen-layering-walks', 'gabor-contrast'],
@@ -712,56 +712,56 @@ export const visionMasterProgram: VisionMasterProgram = {
         {
           day: 4,
           title: 'Near-Far Toggle',
-          focus: 'Rapid accommodation',
+          focus: 'Near-far switching practice',
           baselineMinutes: 5,
           exerciseMinutes: 24,
           exerciseIds: ['focus-pushups', 'focus-trombone', 'eye-jumps'],
-          coachingCues: ['Speed up toggles', 'Maintain clarity both ends']
+          coachingCues: ['Keep toggles smooth and comfortable', 'Record what appears clear at each distance']
         },
         {
           day: 5,
           title: 'Week 9 Review',
-          focus: 'Distance progress',
+          focus: 'Distance-practice review',
           baselineMinutes: 8,
           exerciseMinutes: 21,
           exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
-          coachingCues: ['Record new far max', 'Log reader glasses stage']
+          coachingCues: ["Record today's far-viewing result", 'Note which correction you used']
         }
       ],
       weekendRecovery: ['Outdoor distance viewing', 'No close screens', 'Nature walks']
     },
     {
       week: 10,
-      title: 'Vision Range',
+      title: 'Near-Far Coordination',
       phase: 'Distance Mastery',
       goals: [
-        'Maximize total vision range',
-        'Near point optimization',
-        'Full spectrum clarity'
+        'Practice comfortable near-and-far switching',
+        'Record a self-reported near-point check',
+        'Practice clear viewing across chosen distances'
       ],
       sessions: [
         {
           day: 1,
-          title: 'Near Point Push',
-          focus: 'Minimize near point',
+          title: 'Near-Point Check',
+          focus: 'Record a comfortable near point',
           baselineMinutes: 5,
           exerciseMinutes: 25,
           exerciseIds: ['palming-reset', 'focus-pushups', 'gabor-contrast'],
-          coachingCues: ['Push closer in 0.5cm increments', 'Exhale on approach']
+          coachingCues: ['Move closer only while the target remains clear and comfortable', 'Exhale on approach']
         },
         {
           day: 2,
-          title: 'Range Expansion',
-          focus: 'Both ends simultaneously',
+          title: 'Near-Far Practice',
+          focus: 'Alternate near and far viewing',
           baselineMinutes: 5,
           exerciseMinutes: 24,
           exerciseIds: ['focus-trombone', 'focus-pushups', 'snellen-layering-walks'],
-          coachingCues: ['Alternate near and far', 'Track both improvements']
+          coachingCues: ['Alternate near and far', 'Record both results']
         },
         {
           day: 3,
-          title: 'Sustained Clarity',
-          focus: 'Hold focus longer',
+          title: 'Sustained Viewing',
+          focus: 'Practice steady viewing',
           baselineMinutes: 5,
           exerciseMinutes: 27,
           exerciseIds: ['figure8-fixation', 'focus-trombone', 'smooth-tracking', 'gabor-contrast'],
@@ -769,21 +769,21 @@ export const visionMasterProgram: VisionMasterProgram = {
         },
         {
           day: 4,
-          title: 'Peak Range',
-          focus: 'Maximum range test',
+          title: 'Range Check-In',
+          focus: 'Near-and-far self-check',
           baselineMinutes: 5,
           exerciseMinutes: 26,
           exerciseIds: ['focus-pushups', 'focus-trombone', 'snellen-layering-walks'],
-          coachingCues: ['Personal best near + far', 'Record all metrics']
+          coachingCues: ["Record today's near-and-far results", 'Record all conditions']
         },
         {
           day: 5,
           title: 'Phase 5 Complete',
-          focus: 'Distance mastery assessment',
+          focus: 'Phase 5 check-in',
           baselineMinutes: 8,
           exerciseMinutes: 21,
           exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
-          coachingCues: ['Full range test', 'Compare to Week 1 baselines']
+          coachingCues: ['Near-and-far self-check', 'Compare to Week 1 baselines']
         }
       ],
       weekendRecovery: ['Distance viewing all day', 'Minimize close work', 'Outdoor activities']

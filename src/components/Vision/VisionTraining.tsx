@@ -20,9 +20,16 @@ import DailyPractice from './Training/DailyPractice'
 import QuickPractice from './Training/QuickPractice'
 import TrainingSession from './Training/TrainingSession'
 import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
+import { useToast } from '@/components/ui/Toast'
 
 type TabMode = 'today' | 'trainer' | 'exercises'
 const NIGHT_MODE_KEY = 'visionTraining.nightMode'
+
+export function visionTrainingFocusCopy(visionType: 'near' | 'far'): string {
+  return visionType === 'near'
+    ? 'Near-viewing practice: use a comfortable starting distance.'
+    : 'Far-viewing practice: use a comfortable starting distance.'
+}
 
 interface EnrollmentData {
   currentWeek: number
@@ -53,11 +60,83 @@ interface TodaySessionData {
   } | null
 }
 
+type EnrollmentHttpResponse = {
+  ok: boolean
+  status: number
+  json: () => Promise<unknown>
+}
+
+export const VISION_SIGN_IN_URL = '/auth/login?returnTo=%2Fvision-training'
+
+export type VisionEnrollmentAttempt =
+  | { kind: 'enrolled' }
+  | { kind: 'sign-in' }
+  | { kind: 'already-enrolled' }
+  | { kind: 'retry'; message: string }
+
+function responseRecord(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === 'object'
+    ? value as Record<string, unknown>
+    : null
+}
+
+export async function runVisionEnrollmentAttempt(
+  request: () => Promise<EnrollmentHttpResponse>,
+  setBusy: (busy: boolean) => void,
+  reconcile: () => Promise<boolean>,
+): Promise<VisionEnrollmentAttempt> {
+  setBusy(true)
+  try {
+    const response = await request()
+    if (response.status === 401) return { kind: 'sign-in' }
+
+    let data: Record<string, unknown> | null = null
+    try {
+      data = responseRecord(await response.json())
+    } catch {
+      return {
+        kind: 'retry',
+        message: 'We could not start your program just yet. Your preview is still here—please try again.',
+      }
+    }
+
+    const error = typeof data?.error === 'string' ? data.error.toLowerCase() : ''
+    const outcome: VisionEnrollmentAttempt | null = response.ok && data?.success === true
+      ? { kind: 'enrolled' }
+      : response.status === 400 && error.includes('already enrolled')
+        ? { kind: 'already-enrolled' }
+        : null
+
+    if (outcome) {
+      if (await reconcile()) return outcome
+      return {
+        kind: 'retry',
+        message: 'Your program is saved, but we could not reopen it yet. Please try once more.',
+      }
+    }
+
+    return {
+      kind: 'retry',
+      message: 'We could not start your program just yet. Your preview is still here—please try again.',
+    }
+  } catch {
+    return {
+      kind: 'retry',
+      message: 'We could not reach the program service. Your preview is still here—please try again.',
+    }
+  } finally {
+    setBusy(false)
+  }
+}
+
 export function VisionTraining() {
+  const toast = useToast()
   const [activeTab, setActiveTab] = useState<TabMode>('today')
   const [isEnrolled, setIsEnrolled] = useState(false)
   const [enrolling, setEnrolling] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [requiresSignIn, setRequiresSignIn] = useState(false)
+  const [enrollmentError, setEnrollmentError] = useState<string | null>(null)
   const [enrollmentData, setEnrollmentData] = useState<EnrollmentData | null>(null)
   const [todaySession, setTodaySession] = useState<TodaySessionData | null>(null)
   const [nightMode, setNightMode] = useState(false)
@@ -97,50 +176,92 @@ export function VisionTraining() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isTrainingActive, binocularMode])
 
-  const checkEnrollment = async () => {
+  const checkEnrollment = async (): Promise<boolean> => {
     try {
       const response = await fetch(`/api/vision/program?${new URLSearchParams(currentVisionLocalDayInput()).toString()}`)
-      const data = await response.json()
+      if (response.status === 401) {
+        setRequiresSignIn(true)
+        setIsEnrolled(false)
+        setEnrollmentError(null)
+        return false
+      }
+
+      let data: Record<string, unknown> | null = null
+      try {
+        data = responseRecord(await response.json())
+      } catch {
+        setEnrollmentError('We could not check your program right now. Your free preview is still available.')
+        return false
+      }
+
+      if (!response.ok || data?.success !== true) {
+        setEnrollmentError('We could not check your program right now. Your free preview is still available.')
+        return false
+      }
+
+      setRequiresSignIn(false)
+      setEnrollmentError(null)
       if (data.success && data.enrolled) {
+        const enrollment = responseRecord(data.enrollment)
+        const session = responseRecord(data.todaySession)
         setIsEnrolled(true)
         setEnrollmentData({
-          currentWeek: data.enrollment.currentWeek || data.todaySession?.week || 1,
-          currentDay: data.enrollment.currentDay || data.todaySession?.day || 1,
-          sessionsCompleted: data.enrollment.sessionsCompleted || 0,
-          totalPracticeMinutes: data.enrollment.totalPracticeMinutes || 0,
-          streakDays: data.enrollment.streakDays || 0,
-          phaseProgress: data.enrollment.phaseProgress || {
+          currentWeek: Number(enrollment?.currentWeek || session?.week || 1),
+          currentDay: Number(enrollment?.currentDay || session?.day || 1),
+          sessionsCompleted: Number(enrollment?.sessionsCompleted || 0),
+          totalPracticeMinutes: Number(enrollment?.totalPracticeMinutes || 0),
+          streakDays: Number(enrollment?.streakDays || 0),
+          phaseProgress: responseRecord(enrollment?.phaseProgress) as EnrollmentData['phaseProgress'] || {
             phase1: false, phase2: false, phase3: false,
             phase4: false, phase5: false, phase6: false
           }
         })
-        setTodaySession(data.todaySession)
+        setTodaySession(data.todaySession as TodaySessionData)
+        return true
       }
+      setIsEnrolled(false)
+      setEnrollmentData(null)
+      setTodaySession(null)
+      return false
     } catch (error) {
       console.error('Failed to check enrollment:', error)
+      setEnrollmentError('We could not reach the program service. Your free preview is still available.')
+      return false
     } finally {
       setLoading(false)
     }
   }
 
   const handleEnroll = async () => {
-    setEnrolling(true)
-    try {
-      const response = await fetch('/api/vision/program', {
+    setEnrollmentError(null)
+    if (requiresSignIn) {
+      window.location.assign(VISION_SIGN_IN_URL)
+      return
+    }
+
+    const outcome = await runVisionEnrollmentAttempt(
+      () => fetch('/api/vision/program', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'enroll', data: {} })
-      })
-      const data = await response.json()
-      if (data.success) {
-        setIsEnrolled(true)
-        checkEnrollment()
-      }
-    } catch (error) {
-      console.error('Failed to enroll:', error)
-    } finally {
-      setEnrolling(false)
+      }),
+      setEnrolling,
+      checkEnrollment,
+    )
+
+    if (outcome.kind === 'sign-in') {
+      window.location.assign(VISION_SIGN_IN_URL)
+      return
     }
+
+    if (outcome.kind === 'enrolled' || outcome.kind === 'already-enrolled') {
+      setActiveTab('today')
+      toast.success('Your 12-week vision practice is ready.')
+      return
+    }
+
+    setEnrollmentError(outcome.message)
+    toast.info(outcome.message)
   }
 
   const toggleNightMode = () => {
@@ -306,7 +427,12 @@ export function VisionTraining() {
                   </>
                 ) : (
                   /* Not Enrolled - Show Curriculum Overview with enrollment */
-                  <CurriculumOverview onEnroll={handleEnroll} enrolling={enrolling} />
+                  <CurriculumOverview
+                    onEnroll={handleEnroll}
+                    enrolling={enrolling}
+                    requiresSignIn={requiresSignIn}
+                    enrollmentError={enrollmentError}
+                  />
                 )}
               </div>
             )}
@@ -385,8 +511,7 @@ export function VisionTraining() {
                             }`}
                           >
                             <Eye className="w-4 h-4 shrink-0" />
-                            <span className="sm:hidden">Near</span>
-                            <span className="hidden sm:inline">Nearsighted</span>
+                            <span>Near</span>
                           </button>
                           <button
                             onClick={() => setTrainerVisionType('far')}
@@ -397,8 +522,7 @@ export function VisionTraining() {
                             }`}
                           >
                             <Eye className="w-4 h-4 shrink-0" />
-                            <span className="sm:hidden">Far</span>
-                            <span className="hidden sm:inline">Farsighted</span>
+                            <span>Far</span>
                           </button>
                         </div>
                       </div>
@@ -433,7 +557,7 @@ export function VisionTraining() {
 
                     {/* Dynamic info text */}
                     <p className="text-xs sm:text-sm text-gray-400 mb-3">
-                      {trainerVisionType === 'near' ? 'Myopic: push clarity outward' : 'Hyperopic: pull clarity inward'}
+                      {visionTrainingFocusCopy(trainerVisionType)}
                     </p>
 
                     {/* Binocular Training Mode */}
