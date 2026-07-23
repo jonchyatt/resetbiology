@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, HeartPulse, type LucideIcon } from "lucide-react"
+import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, Check, Flame, Sparkles, X, Eye, Zap, Music, HeartPulse, type LucideIcon } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
@@ -86,8 +86,17 @@ interface DailyJournalData {
   moduleNotes: string
 }
 
-export function EnhancedDashboard() {
+export function EnhancedDashboard({ intakeName }: { intakeName?: string | null } = {}) {
   const { user } = useUser()
+  // Preferred name from the /get-started intake wins; Auth0 fields are the
+  // fallback (email signups get name === email, never show a raw address).
+  const displayName =
+    intakeName
+    || (user as any)?.given_name
+    || user?.nickname
+    || (user?.email ? user.email.split('@')[0] : null)
+    || (user?.name && !user.name.includes('@') ? user.name : null)
+    || "Wellness Warrior"
   const router = useRouter()
   const toast = useToast()
   const [currentStreak, setCurrentStreak] = useState(0)
@@ -586,31 +595,16 @@ export function EnhancedDashboard() {
                   checked in before" signal avoids a second history query.
                   ponytail: an old, streak-broken returning member reads as
                   "new" too — acceptable, this is greeting copy not a claim. */}
+              {/* The intake at /get-started asks "what should we call you?" —
+                  that answer (passed down from the server page) outranks every
+                  Auth0 profile field. Auth0's default for email signups is
+                  name === email, so the chain below never shows a raw email:
+                  it falls through given_name → nickname → email-prefix and
+                  only then the generic label. */}
               {currentStreak > 0 ? 'Welcome back' : 'Welcome'}, <span
                 className="text-primary-400 inline-block max-w-[60vw] sm:max-w-md align-bottom truncate"
-                title={
-                  (user as any)?.given_name
-                    || user?.nickname
-                    || (user?.email ? user.email.split('@')[0] : null)
-                    || (user?.name && !user.name.includes('@') ? user.name : null)
-                    || "Wellness Warrior"
-                }
-              >{
-                // Auth0 default for email/password signups is name === email,
-                // which makes this headline read as the user's full email
-                // address — not what we want plastered across /portal in 6xl.
-                // Prefer real first name, then nickname, then email-prefix
-                // (jonchyatt@gmail.com → "jonchyatt"), and only fall back to
-                // the generic label if nothing identifying is available.
-                // The email-prefix fallback can still be long (test aliases,
-                // "+tag" addresses) so the span above also truncates with an
-                // ellipsis rather than overflowing the viewport.
-                (user as any)?.given_name
-                  || user?.nickname
-                  || (user?.email ? user.email.split('@')[0] : null)
-                  || (user?.name && !user.name.includes('@') ? user.name : null)
-                  || "Wellness Warrior"
-              }</span>
+                title={displayName}
+              >{displayName}</span>
             </h1>
             {currentStreak > 0 && (
               <div className="mt-3 inline-flex items-center px-4 py-2 bg-secondary-600/20 rounded-full border border-secondary-400/30">
@@ -716,13 +710,7 @@ export function EnhancedDashboard() {
           {onboardingStatus && !onboardingStatus.onboardingComplete && !onboardingStatus.grandfatherEligible && (
             <OnboardingGuide
               reason={reason}
-              firstName={
-                (user as any)?.given_name
-                  || user?.nickname
-                  || (user?.email ? user.email.split('@')[0] : null)
-                  || (user?.name && !user.name.includes('@') ? user.name : null)
-                  || "Wellness Warrior"
-              }
+              firstName={displayName}
               taskCount={Object.keys(dailyTasks).length}
               status={onboardingStatus}
               onComplete={() => setOnboardingStatus((prev) => (prev ? { ...prev, onboardingComplete: true } : prev))}
@@ -764,15 +752,18 @@ export function EnhancedDashboard() {
 
             {/* Secondary Action */}
             <div className="mt-6 pt-6 border-t border-gray-600/30">
+              {/* Co-op framing, not commerce: Reset Biology sells nothing.
+                  This links to the member-owned co-op page for members whose
+                  path includes peptides — quiet, last, and honest. */}
               <Link href="/order"
-                className="flex items-center p-4 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors"
+                className="flex items-center p-4 bg-teal-600/15 rounded-lg border border-teal-400/25 hover:bg-teal-600/25 transition-colors"
               >
-                <ShoppingBag className="w-5 h-5 text-purple-300 mr-3" />
+                <HeartPulse className="w-5 h-5 text-teal-300 mr-3" />
                 <div className="flex-1">
-                  <span className="font-medium text-white">Order Peptides</span>
-                  <p className="text-sm text-gray-300">Browse and order wellness peptides</p>
+                  <span className="font-medium text-white">Co-op connection</span>
+                  <p className="text-sm text-teal-100/80">If your path includes peptides, we connect you to a member-owned co-op. Reset Biology sells nothing.</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-purple-300" />
+                <ChevronRight className="w-5 h-5 text-teal-300" />
               </Link>
             </div>
 
