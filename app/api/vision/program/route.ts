@@ -47,7 +47,16 @@ export async function GET(req: NextRequest) {
     const user = await getUserFromSession(session)
 
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json(
+        { success: true, authenticated: false, enrolled: false },
+        {
+          status: 200,
+          headers: {
+            'Cache-Control': 'private, no-store',
+            Vary: 'Cookie',
+          },
+        },
+      )
     }
 
     const localDay = validateVisionLocalDayInput({
@@ -70,6 +79,7 @@ export async function GET(req: NextRequest) {
       // User not enrolled - return program info for enrollment
       return NextResponse.json({
         success: true,
+        authenticated: true,
         enrolled: false,
         gaborThresholdPrior: null,
         program: {
@@ -144,6 +154,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      authenticated: true,
       enrolled: true,
       isTester,
       gaborThresholdPrior,

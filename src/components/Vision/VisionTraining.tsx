@@ -179,13 +179,6 @@ export function VisionTraining() {
   const checkEnrollment = async (): Promise<boolean> => {
     try {
       const response = await fetch(`/api/vision/program?${new URLSearchParams(currentVisionLocalDayInput()).toString()}`)
-      if (response.status === 401) {
-        setRequiresSignIn(true)
-        setIsEnrolled(false)
-        setEnrollmentError(null)
-        return false
-      }
-
       let data: Record<string, unknown> | null = null
       try {
         data = responseRecord(await response.json())
@@ -196,6 +189,15 @@ export function VisionTraining() {
 
       if (!response.ok || data?.success !== true) {
         setEnrollmentError('We could not check your program right now. Your free preview is still available.')
+        return false
+      }
+
+      if (data.authenticated === false) {
+        setRequiresSignIn(true)
+        setIsEnrolled(false)
+        setEnrollmentData(null)
+        setTodaySession(null)
+        setEnrollmentError(null)
         return false
       }
 

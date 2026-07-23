@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import {
   runVisionEnrollmentAttempt,
   visionTrainingFocusCopy,
@@ -106,6 +108,38 @@ async function main() {
     /rapid accommodation/i,
   ]) {
     assert.doesNotMatch(memberFacingProgramCopy, banned, `member-facing copy must exclude ${banned}`)
+  }
+
+  const routeSource = readFileSync(resolve('app/api/vision/program/route.ts'), 'utf8')
+  const getStart = routeSource.indexOf('export async function GET')
+  const postStart = routeSource.indexOf('export async function POST')
+  const patchStart = routeSource.indexOf('export async function PATCH')
+  const getSource = routeSource.slice(getStart, postStart)
+  const postSource = routeSource.slice(postStart, patchStart)
+  const patchSource = routeSource.slice(patchStart)
+  const anonymousBody = "{ success: true, authenticated: false, enrolled: false }"
+  const anonymousReturn = getSource.indexOf(anonymousBody)
+  assert.ok(anonymousReturn >= 0, 'anonymous GET must return the exact no-data status body')
+  assert.ok(
+    anonymousReturn < getSource.indexOf('validateVisionLocalDayInput'),
+    'anonymous GET must return before local-day validation',
+  )
+  assert.ok(
+    anonymousReturn < getSource.indexOf('prisma.visionProgramEnrollment.findUnique'),
+    'anonymous GET must return before any enrollment database read',
+  )
+  assert.match(getSource, /'Cache-Control': 'private, no-store'/)
+  assert.match(getSource, /Vary: 'Cookie'/)
+  assert.equal(
+    (getSource.match(/authenticated: true/g) || []).length,
+    2,
+    'both authenticated GET response shapes must explicitly identify authenticated state',
+  )
+  for (const [method, source] of [['POST', postSource], ['PATCH', patchSource]] as const) {
+    const unauthorized = source.indexOf("return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })")
+    assert.ok(unauthorized >= 0, `${method} must retain its auth-first 401`)
+    const bodyParse = source.indexOf('parseRequestJson')
+    assert.ok(bodyParse < 0 || unauthorized < bodyParse, `${method} must reject anonymous writes before parsing the body`)
   }
 
   assert.deepEqual(
