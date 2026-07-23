@@ -94,5 +94,15 @@ assert.match(
   /const completedCurrentExerciseIds = completedExerciseIdsForSession\([\s\S]*?completedExercises,[\s\S]*?todaySession\.session/,
   'submission derives its completion evidence from the active session',
 )
+assert.match(
+  source,
+  /TESTER · Reset this run to Day 1[\s\S]*Clear & restart at Day 1/,
+  'the tester can deliberately return an active run to Week 1 Day 1',
+)
+assert.match(
+  source,
+  /const handleResetProgram = async \(\) =>[\s\S]*!response\.ok \|\| !data\?\.success[\s\S]*await loadProgram\(\)/,
+  'the tester reset only reports success and reloads after the server confirms the deletion',
+)
 
 console.log('Vision tester day-advance state checks passed.')

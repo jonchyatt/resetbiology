@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   Clock,
   CheckCircle,
@@ -25,6 +25,7 @@ import SessionRemindersCard from './SessionRemindersCard'
 import type { EngineResult } from '@/components/Vision/Engines/types'
 import type { GaborThresholdPrior } from '@/lib/vision/gaborThreshold'
 import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
+import { useToast } from '@/components/ui/Toast'
 
 const BREATH_WARMUP_ENABLED_KEY = 'visionTraining.breathWarmupEnabled'
 const BREATH_WARMUP_MINUTES_KEY = 'visionTraining.breathWarmupMinutes'
@@ -109,6 +110,7 @@ export function completedExerciseIdsForSession(
 }
 
 export default function DailyPractice({ nightMode = false }: DailyPracticeProps) {
+  const toast = useToast()
   const [loading, setLoading] = useState(true)
   const [enrolled, setEnrolled] = useState(false)
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null)
@@ -138,6 +140,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [isTester, setIsTester] = useState(false)
   const [advancingDay, setAdvancingDay] = useState(false)
   const [gaborThresholdPrior, setGaborThresholdPrior] = useState<GaborThresholdPrior | null>(null)
+  const resetTriggerRef = useRef<HTMLButtonElement>(null)
+  const resetConfirmationRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -145,6 +149,10 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
       if (stored) setAssessmentDoneWeek(Number(stored))
     }
   }, [])
+
+  useEffect(() => {
+    if (resetConfirming) resetConfirmationRef.current?.focus()
+  }, [resetConfirming])
 
   const completeWeeklyAssessment = async (results: WeeklyAssessmentResult) => {
     try {
@@ -244,17 +252,25 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const handleResetProgram = async () => {
     setResetting(true)
     try {
-      await fetch('/api/vision/program', {
+      const response = await fetch('/api/vision/program', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'reset_program' })
       })
+      const data = await response.json().catch(() => null)
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.error || 'Reset request failed')
+      }
+
+      setResetConfirming(false)
+      await loadProgram()
+      toast.success('Tester run cleared. You can start again at Week 1, Day 1.')
     } catch (error) {
       console.error('Failed to reset program:', error)
+      toast.error("We couldn't restart this test run yet. Your progress is still safe. Please try again.")
+    } finally {
+      setResetting(false)
     }
-    setResetConfirming(false)
-    setResetting(false)
-    loadProgram()
   }
 
   // Tester-only "rip through the program" bypass — advances the traversal
@@ -996,6 +1012,64 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                 <Play className="w-5 h-5" />
                 Start Session
               </button>
+
+              {isTester && (
+                <div className="space-y-3">
+                  <button
+                    id="vision-tester-reset-trigger"
+                    ref={resetTriggerRef}
+                    type="button"
+                    aria-expanded={resetConfirming}
+                    aria-controls="vision-tester-reset-confirmation"
+                    disabled={resetting}
+                    onClick={() => setResetConfirming(true)}
+                    className="min-h-11 w-full rounded-xl border border-amber-300/70 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-100 transition-colors hover:bg-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 disabled:opacity-50"
+                  >
+                    TESTER · Reset this run to Day 1
+                  </button>
+
+                  {resetConfirming && (
+                    <div
+                      id="vision-tester-reset-confirmation"
+                      ref={resetConfirmationRef}
+                      role="region"
+                      aria-labelledby="vision-tester-reset-trigger"
+                      tabIndex={-1}
+                      className="rounded-xl border border-amber-300/40 bg-amber-500/10 p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+                    >
+                      <p className="text-sm leading-6 text-amber-50/90">
+                        This clears only this tester account&apos;s vision-program progress and session history.
+                        You&apos;ll return to program setup, and your next run will begin at Week 1, Day 1.
+                        It won&apos;t affect anyone else. This can&apos;t be undone.
+                      </p>
+                      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                        <button
+                          type="button"
+                          disabled={resetting}
+                          onClick={() => {
+                            setResetConfirming(false)
+                            requestAnimationFrame(() => resetTriggerRef.current?.focus())
+                          }}
+                          className="min-h-11 rounded-lg border border-white/20 bg-gray-800/70 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          disabled={resetting}
+                          onClick={handleResetProgram}
+                          className="min-h-11 rounded-lg border border-amber-200 bg-amber-400 px-4 py-3 text-sm font-bold text-gray-950 transition-colors hover:bg-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-100 disabled:opacity-50"
+                        >
+                          {resetting ? 'Resetting tester run…' : 'Clear & restart at Day 1'}
+                        </button>
+                      </div>
+                      <span className="sr-only" aria-live="polite">
+                        {resetting ? 'Resetting tester run…' : ''}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
 
