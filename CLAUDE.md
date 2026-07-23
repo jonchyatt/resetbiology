@@ -649,3 +649,4 @@ DATABASE_URL="mongodb+srv://resetbiology-app:_DN8QDEm.XK.J8P@cluster0.weld7bm.mo
 ---
 
 *This file is the source of truth for how Claude Code should behave. Update it regularly to improve future interactions.*
+Code intelligence: ask CodeGraph (`codegraph_*` tools) — this repo's living map
