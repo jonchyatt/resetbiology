@@ -26,7 +26,7 @@ export const visionWaves: VisionWave[] = [
     goals: [
       'Downshift sympathetic tone before every drill',
       'Re-teach convergence/divergence with conscious pace',
-      'Collect near/far Snellen baselines inside the trainer',
+      'Collect a repeatable screen-direction reference inside the trainer',
     ],
     recovery: ['Micro eye massages hourly', 'Blue-light breaks every 45 minutes'],
     blocks: [
@@ -48,7 +48,7 @@ export const visionWaves: VisionWave[] = [
       },
       {
         title: 'Calibration moment',
-        description: 'Use Snellen trainer + figure-eight fixation to log clarity.',
+        description: 'Use the directional-E trainer + figure-eight fixation to log clarity.',
         duration: '6 min',
         exerciseIds: ['figure8-fixation'],
         intent: 'Finish with focus that sticks.',
@@ -102,7 +102,7 @@ export const visionWaves: VisionWave[] = [
     goals: [
       'Increase saccade speed without sacrificing clarity',
       'Sharpen laterality & depth perception for sport/work',
-      'Stress test long-distance Snellen targets under fatigue',
+      'Stress-test distance-focus targets under fatigue',
     ],
     recovery: ['Cool towel on eyes post-session', 'Extra palming between high-speed sets'],
     blocks: [
@@ -124,7 +124,7 @@ export const visionWaves: VisionWave[] = [
       },
       {
         title: 'Integration & proof',
-        description: 'Finish with mirror scan or Snellen walks to prove control under fatigue.',
+        description: 'Finish with mirror scan or distance-focus walks to practice control under fatigue.',
         duration: '8 min',
         exerciseIds: ['mirror-scan', 'snellen-layering-walks'],
         intent: 'Practice visual coordination during real-world motion.',
@@ -141,9 +141,9 @@ export const visionMetrics = [
     howTo: 'Use focus pushups and record the closest distance before blur or diplopia.',
   },
   {
-    label: 'Far Snellen distance',
-    target: '3 m clear 20/20 line',
-    howTo: 'Use the Snellen trainer or printed chart and log the furthest clean line.',
+    label: 'Distance clarity reference',
+    target: 'Repeatable target at one consistent setup distance',
+    howTo: 'Use the directional-E trainer at the same setup distance; treat it as training evidence, not clinical acuity.',
   },
   {
     label: 'Smooth pursuit stability',
@@ -160,7 +160,7 @@ export const visionMetrics = [
 export const readinessPrompts = [
   "How gritty or hydrated do your eyes feel before today's work?",
   'Any neck/upper-trap tightness that might limit ocular range?',
-  'What was the furthest clear Snellen line yesterday (near + far)?',
+  'What was your clearest repeatable screen-reference line yesterday?',
   "Rate today's screen load (low / medium / brutal).",
 ];
 
@@ -174,7 +174,7 @@ export type DailySession = {
   day: number; // 1-5 (Mon-Fri)
   title: string;
   focus: string;
-  baselineMinutes: number; // Snellen baseline check
+  baselineMinutes: number; // Screen-direction reference
   exerciseMinutes: number; // Progressive exercises
   exerciseIds: string[]; // From visionExercises
   coachingCues: string[];
@@ -201,7 +201,7 @@ export const visionMasterProgram: VisionMasterProgram = {
   id: 'vision-12week',
   name: '12-Week Vision Training Program',
   totalWeeks: 12,
-  description: 'A 12-week guided visual-skills program combining self-recorded Snellen checks with progressive practice.',
+  description: 'A 12-week guided visual-skills program combining screen-direction checks with progressive practice.',
   weeklyPlans: [
     // PHASE 1: FOUNDATION (Weeks 1-2)
     {
@@ -209,7 +209,7 @@ export const visionMasterProgram: VisionMasterProgram = {
       title: 'Neural Reset',
       phase: 'Foundation',
       goals: [
-        'Establish baseline Snellen measurements (near + far)',
+        'Establish a repeatable screen-direction reference',
         'Learn parasympathetic downshift techniques',
         'Build awareness of eye tension patterns'
       ],
@@ -221,7 +221,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 5,
           exerciseMinutes: 10,
           exerciseIds: ['palming-reset', 'box-breath-vision'],
-          coachingCues: ['Record both near and far Snellen scores', 'Note any blur patterns']
+          coachingCues: ['Record your screen-direction reference', 'Note any blur patterns']
         },
         {
           day: 2,
@@ -361,7 +361,7 @@ export const visionMasterProgram: VisionMasterProgram = {
         {
           day: 4,
           title: 'Distance Toggle',
-          focus: 'Near-far switching practice',
+          focus: 'Comfortable distance-switching practice',
           baselineMinutes: 3,
           exerciseMinutes: 21,
           exerciseIds: ['focus-trombone', 'peripheral-pointing', 'gabor-contrast'],
@@ -374,7 +374,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 5,
           exerciseMinutes: 15,
           exerciseIds: ['palming-reset', 'snellen-layering-walks'],
-          coachingCues: ['Test peripheral count', 'Log Snellen progress']
+          coachingCues: ['Test peripheral count', 'Log your screen-direction reference']
         }
       ],
       weekendRecovery: ['Walking in nature (eyes relaxed)', 'No close-up screens for 4+ hours', 'Peripheral games outdoors']
@@ -432,7 +432,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 5,
           exerciseMinutes: 15,
           exerciseIds: ['peripheral-pointing', 'snellen-layering-walks'],
-          coachingCues: ['Record peripheral score', 'Full Snellen assessment']
+          coachingCues: ['Record peripheral score', 'Run the full screen-direction check']
         }
       ],
       weekendRecovery: ['Outdoor sports/activities', 'Distance viewing practice', 'Screen break day']
@@ -549,7 +549,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 5,
           exerciseMinutes: 18,
           exerciseIds: ['palming-reset', 'eye-jumps', 'snellen-layering-walks'],
-          coachingCues: ['Record best bpm', 'Full Snellen test']
+          coachingCues: ['Record best bpm', 'Run the full screen-direction check']
         }
       ],
       weekendRecovery: ['Extra rest', 'Massage around eyes', 'Hydration focus']
@@ -608,7 +608,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 5,
           exerciseMinutes: 20,
           exerciseIds: ['palming-reset', 'peripheral-pointing', 'snellen-layering-walks'],
-          coachingCues: ['Record peripheral max', 'Log Snellen progress']
+          coachingCues: ['Record peripheral max', 'Log your screen-direction reference']
         }
       ],
       weekendRecovery: ['Sport with peripheral focus', 'Driving awareness practice', 'Natural vision time']
@@ -674,7 +674,7 @@ export const visionMasterProgram: VisionMasterProgram = {
     // PHASE 5: DISTANCE MASTERY (Weeks 9-10)
     {
       week: 9,
-      title: 'Near-Far Practice',
+      title: 'Distance Practice',
       phase: 'Distance Mastery',
       goals: [
         'Practice clear viewing at varied distances',
@@ -689,7 +689,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 8,
           exerciseMinutes: 21,
           exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
-          coachingCues: ['Complete a self-recorded far Snellen check', 'Record the farthest line you can clearly identify today']
+          coachingCues: ['Practice distance focus without assigning a medical acuity score', 'Keep the setup distance consistent']
         },
         {
           day: 2,
@@ -711,8 +711,8 @@ export const visionMasterProgram: VisionMasterProgram = {
         },
         {
           day: 4,
-          title: 'Near-Far Toggle',
-          focus: 'Near-far switching practice',
+          title: 'Distance Switching',
+          focus: 'Comfortable distance-switching practice',
           baselineMinutes: 5,
           exerciseMinutes: 24,
           exerciseIds: ['focus-pushups', 'focus-trombone', 'eye-jumps'],
@@ -732,10 +732,10 @@ export const visionMasterProgram: VisionMasterProgram = {
     },
     {
       week: 10,
-      title: 'Near-Far Coordination',
+      title: 'Distance Coordination',
       phase: 'Distance Mastery',
       goals: [
-        'Practice comfortable near-and-far switching',
+        'Practice comfortable distance switching',
         'Record a self-reported near-point check',
         'Practice clear viewing across chosen distances'
       ],
@@ -751,12 +751,12 @@ export const visionMasterProgram: VisionMasterProgram = {
         },
         {
           day: 2,
-          title: 'Near-Far Practice',
-          focus: 'Alternate near and far viewing',
+          title: 'Distance Switching Practice',
+          focus: 'Alternate chosen viewing distances',
           baselineMinutes: 5,
           exerciseMinutes: 24,
           exerciseIds: ['focus-trombone', 'focus-pushups', 'snellen-layering-walks'],
-          coachingCues: ['Alternate near and far', 'Record both results']
+          coachingCues: ['Alternate chosen viewing distances', 'Note comfort and clarity without assigning a score']
         },
         {
           day: 3,
@@ -770,11 +770,11 @@ export const visionMasterProgram: VisionMasterProgram = {
         {
           day: 4,
           title: 'Range Check-In',
-          focus: 'Near-and-far self-check',
+          focus: 'Comfortable distance-switching practice',
           baselineMinutes: 5,
           exerciseMinutes: 26,
           exerciseIds: ['focus-pushups', 'focus-trombone', 'snellen-layering-walks'],
-          coachingCues: ["Record today's near-and-far results", 'Record all conditions']
+          coachingCues: ['Note comfort at each chosen distance', 'Record all conditions']
         },
         {
           day: 5,
@@ -783,7 +783,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 8,
           exerciseMinutes: 21,
           exerciseIds: ['palming-reset', 'focus-trombone', 'gabor-contrast'],
-          coachingCues: ['Near-and-far self-check', 'Compare to Week 1 baselines']
+          coachingCues: ['Distance-switching check-in', 'Compare training notes to Week 1']
         }
       ],
       weekendRecovery: ['Distance viewing all day', 'Minimize close work', 'Outdoor activities']
@@ -873,7 +873,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 10,
           exerciseMinutes: 18,
           exerciseIds: ['focus-trombone', 'smooth-tracking', 'figure8-fixation'],
-          coachingCues: ['Record all baselines', 'Near + far Snellen']
+          coachingCues: ['Record all training references', 'Screen direction + measured near point']
         },
         {
           day: 3,
@@ -900,7 +900,7 @@ export const visionMasterProgram: VisionMasterProgram = {
           baselineMinutes: 10,
           exerciseMinutes: 15,
           exerciseIds: ['palming-reset', 'focus-trombone'],
-          coachingCues: ['Final Snellen comparison', 'Design maintenance routine', 'Celebrate your progress!']
+          coachingCues: ['Final screen-direction comparison', 'Design maintenance routine', 'Celebrate your progress!']
         }
       ],
       weekendRecovery: ['Celebrate completion', 'Begin maintenance protocol', 'Share results']

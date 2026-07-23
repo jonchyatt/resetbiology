@@ -1046,7 +1046,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                           Find the smallest directional-E line you can identify on this screen.
                           This creates a device-specific training reference, not a medical acuity score.
                         </p>
-                        <p className="text-gray-500 text-xs mb-4">
+                        <p className="text-gray-300 text-xs mb-4">
                           Near-screen only. Far testing waits for measured distance and remote input.
                         </p>
 

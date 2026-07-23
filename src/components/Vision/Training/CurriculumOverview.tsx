@@ -34,7 +34,7 @@ const PHASE_CONFIG = {
   'Integration': { label: 'Integration', color: 'from-cyan-500 to-teal-500', bgColor: 'bg-cyan-600', icon: Brain, description: 'Coordinate visual inputs' },
   'Speed & Resilience': { label: 'Pace & Variety', color: 'from-teal-500 to-green-500', bgColor: 'bg-teal-600', icon: Zap, description: 'Practice paced visual decisions' },
   'Advanced': { label: 'Varied Practice', color: 'from-green-500 to-yellow-500', bgColor: 'bg-green-600', icon: Target, description: 'Work across visual tasks' },
-  'Distance Mastery': { label: 'Distance Practice', color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-600', icon: TrendingUp, description: 'Practice near and far detail' },
+  'Distance Mastery': { label: 'Distance Practice', color: 'from-yellow-500 to-orange-500', bgColor: 'bg-yellow-600', icon: TrendingUp, description: 'Practice comfortable distance switching' },
   'Integration & Maintenance': { label: 'Transfer & Maintenance', color: 'from-orange-500 to-red-500', bgColor: 'bg-orange-600', icon: Award, description: 'Keep skills in rotation' },
 }
 
@@ -302,7 +302,7 @@ export default function CurriculumOverview({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
             { icon: Calendar, text: '60 guided daily sessions over 12 weeks' },
-            { icon: Eye, text: 'Daily Snellen baseline tracking (near + far)' },
+            { icon: Eye, text: 'Daily screen-direction reference tracking' },
             { icon: Zap, text: '11 progressive exercises with coaching cues' },
             { icon: TrendingUp, text: 'Near-vision comfort and clarity tracking' },
             { icon: Brain, text: 'Audio-guided eye movement exercises' },
@@ -328,7 +328,7 @@ export default function CurriculumOverview({
 
         <div className="space-y-4">
           {[
-            { phase: 'Baseline', time: '3-5 min', desc: 'Quick Snellen test to track your starting point for the day', color: 'blue' },
+            { phase: 'Reference', time: '3-5 min', desc: 'Screen-direction check to track a repeatable starting point', color: 'blue' },
             { phase: 'Downshift', time: '3-4 min', desc: 'Palming reset and breathing to calm the nervous system', color: 'cyan' },
             { phase: 'Exercises', time: '10-15 min', desc: 'Guided drills with coaching cues and audio guidance', color: 'green' },
             { phase: 'Integration', time: '3-5 min', desc: 'Apply skills to real-world scenarios', color: 'purple' },

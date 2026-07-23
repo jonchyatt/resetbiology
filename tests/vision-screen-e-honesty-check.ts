@@ -148,6 +148,8 @@ const sources = {
   daily: readFileSync(new URL('../src/components/Vision/Training/DailyPractice.tsx', import.meta.url), 'utf8'),
   weekly: readFileSync(new URL('../src/components/Vision/Training/WeeklyAssessment.tsx', import.meta.url), 'utf8'),
   runner: readFileSync(new URL('../src/components/Vision/Training/SessionRunner.tsx', import.meta.url), 'utf8'),
+  protocols: readFileSync(new URL('../src/data/visionProtocols.ts', import.meta.url), 'utf8'),
+  curriculum: readFileSync(new URL('../src/components/Vision/Training/CurriculumOverview.tsx', import.meta.url), 'utf8'),
 }
 
 for (const [name, source] of Object.entries(sources)) {
@@ -159,11 +161,24 @@ assert.match(sources.quick, /screenELineSize\(viewportWidth, lineIndex\)/)
 assert.match(sources.chart, /screenELineSize\(viewportWidth, lineIdx\)/)
 assert.match(sources.quick, /SCREEN_E_TRIALS_PER_LINE/)
 assert.match(sources.quick, /SCREEN_E_CORRECT_TO_PASS/)
+assert.match(sources.quick, /\[flowKey, stage\]/, 'each check stage recenters the optotype on screen')
 assert.match(sources.quick, /Far testing stays unavailable/)
 assert.doesNotMatch(sources.quick, /stage === 'far'|across the room|Reposition for far/)
 assert.match(sources.chart, /export const E_DIRECTIONS = SCREEN_E_DIRECTIONS/)
 assert.match(sources.weekly, /aria-label="Measured near-point distance"/)
 assert.match(sources.weekly, /aria-valuetext=/)
+assert.doesNotMatch(sources.protocols, /Snellen/, 'program copy contains no legacy false-acuity promise')
+assert.doesNotMatch(sources.curriculum, /Snellen/, 'curriculum copy contains no legacy false-acuity promise')
+assert.doesNotMatch(
+  sources.protocols,
+  /(?:record|log)[^'"\n]*(?:near|far)[^'"\n]*(?:result|score)|(?:near|far)[^'"\n]*self-check/i,
+  'program copy cannot promise unsupported near/far results',
+)
+assert.doesNotMatch(
+  sources.curriculum,
+  /practice near and far detail/i,
+  'curriculum frames this lane as distance switching, not a far-acuity result',
+)
 assert.equal(
   (sources.quick.match(/onComplete\(/g) || []).length,
   1,

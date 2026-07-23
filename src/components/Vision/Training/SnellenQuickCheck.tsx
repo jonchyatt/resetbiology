@@ -177,7 +177,7 @@ export default function SnellenQuickCheck({
   useEffect(() => {
     const frame = requestAnimationFrame(() => cardRef.current?.scrollIntoView({ block: 'start' }))
     return () => cancelAnimationFrame(frame)
-  }, [])
+  }, [flowKey, stage])
 
   const handleStart = () => {
     unlockAudio()
