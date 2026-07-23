@@ -93,6 +93,21 @@ interface ProgramInfo {
   phases: { name: string; weeks: string; focus: string }[]
 }
 
+function currentSessionExerciseIds(session: DailySession): string[] {
+  const ids = session.exerciseIds?.length
+    ? session.exerciseIds
+    : session.exercises.map(exercise => exercise.id)
+  return Array.from(new Set(ids))
+}
+
+export function completedExerciseIdsForSession(
+  completedExerciseIds: readonly string[],
+  session: DailySession,
+): string[] {
+  const completedIds = new Set(completedExerciseIds)
+  return currentSessionExerciseIds(session).filter(exerciseId => completedIds.has(exerciseId))
+}
+
 export default function DailyPractice({ nightMode = false }: DailyPracticeProps) {
   const [loading, setLoading] = useState(true)
   const [enrolled, setEnrolled] = useState(false)
@@ -247,16 +262,32 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const handleAdvanceDay = async () => {
     setAdvancingDay(true)
     try {
-      await fetch('/api/vision/program', {
+      const response = await fetch('/api/vision/program', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'advance_day' })
       })
+      const data = await response.json()
+      if (!response.ok || !data.success) return
+
+      setSessionStarted(false)
+      setBaselineComplete(false)
+      setCompletedExercises([])
+      setActiveExercise(0)
+      setEngineResults([])
+      setShowGuidedRunner(false)
+      setShowBreathWarmup(false)
+      setBreathWarmupStatus('pending')
+      setShowQuickCheck(false)
+      setShowSnellenTrainer(false)
+      setShowWeeklyAssessment(false)
+      setSessionNotes('')
+      await loadProgram()
     } catch (error) {
       console.error('Failed to advance test day:', error)
+    } finally {
+      setAdvancingDay(false)
     }
-    setAdvancingDay(false)
-    loadProgram()
   }
 
   const handleEnroll = async () => {
@@ -344,6 +375,10 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
   const completeSession = async () => {
     if (!todaySession?.session || !enrollment) return
+    const completedCurrentExerciseIds = completedExerciseIdsForSession(
+      completedExercises,
+      todaySession.session,
+    )
 
     try {
       const response = await fetch('/api/vision/program', {
@@ -358,7 +393,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
             baselineMinutes: todaySession.session.baselineMinutes,
             exerciseMinutes: todaySession.session.exerciseMinutes,
             breathWarmupMinutes: breathWarmupStatus === 'complete' ? breathWarmupMinutes : 0,
-            exercisesCompleted: completedExercises,
+            exercisesCompleted: completedCurrentExerciseIds,
             nearSnellenResult: nearSnellenResult || null,
             farSnellenResult: farSnellenResult || null,
             notes: sessionNotes || null,
@@ -733,6 +768,8 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
     )
   }
 
+  const currentExerciseIds = currentSessionExerciseIds(session)
+  const completedCurrentExerciseIds = completedExerciseIdsForSession(completedExercises, session)
   const plannedWarmupMinutes = breathWarmupEnabled ? breathWarmupMinutes : 0
   const plannedTotalMinutes = session.totalMinutes + plannedWarmupMinutes
   const warmupExercise = {
@@ -1057,12 +1094,12 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                       Step 2: Exercises
                     </h4>
                     <span className="text-sm text-gray-400">
-                      {completedExercises.length}/{session.exercises.length} complete
+                      {completedCurrentExerciseIds.length}/{currentExerciseIds.length} complete
                     </span>
                   </div>
 
                   {/* Guided session — the primary path */}
-                  {completedExercises.length < session.exercises.length && (
+                  {completedCurrentExerciseIds.length < currentExerciseIds.length && (
                     <button
                       onClick={() => setShowGuidedRunner(true)}
                       className="w-full py-5 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-xl transition-all shadow-lg shadow-primary-500/30 hover:scale-[1.01] active:scale-[0.99]"
@@ -1079,7 +1116,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
                   {showGuidedRunner && (
                     <SessionRunner
-                      exerciseIds={session.exerciseIds?.length ? session.exerciseIds : session.exercises.map((e: any) => e.id)}
+                      exerciseIds={currentExerciseIds}
                       week={todaySession.week}
                       day={todaySession.day}
                       phase={todaySession.phase}
@@ -1102,7 +1139,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                   {/* Exercise list */}
                   <div className="space-y-3">
                     {session.exercises.map((exercise: any, idx: number) => {
-                      const isCompleted = completedExercises.includes(exercise.id)
+                      const isCompleted = completedCurrentExerciseIds.includes(exercise.id)
                       const isActive = idx === activeExercise
 
                       return (
@@ -1181,7 +1218,7 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
                   </div>
 
                   {/* Complete session button */}
-                  {completedExercises.length === session.exercises.length && (
+                  {completedCurrentExerciseIds.length === currentExerciseIds.length && (
                     <button
                       onClick={completeSession}
                       className="w-full py-4 bg-gradient-to-r from-secondary-500 to-primary-500 hover:from-secondary-600 hover:to-primary-600 text-white font-bold text-lg rounded-xl transition-all flex items-center justify-center gap-2 mt-4"
