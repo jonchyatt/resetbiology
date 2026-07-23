@@ -248,10 +248,17 @@ export default function SessionRunner({
   }, [speak, sessionTitle, exercises.length, isComeback])
 
   const goToReport = useCallback(() => {
-    playVictoryMotif()
-    speak('Session complete. Look at what you just did.', true)
+    const performedCount = resultsRef.current.length
+    if (performedCount === 0) {
+      speak(`You listened to your eyes. Day ${day} is ready whenever you return.`, true)
+    } else if (performedCount < exercises.length) {
+      speak(`You completed ${performedCount} of ${exercises.length} exercises. Keep what you did and return when you are ready.`, true)
+    } else {
+      playVictoryMotif()
+      speak('Guided work complete. Look at what you just did.', true)
+    }
     setStage({ kind: 'report' })
-  }, [speak])
+  }, [day, exercises.length, speak])
 
   const advanceFrom = useCallback((index: number) => {
     if (index >= exercises.length - 1) {
@@ -585,6 +592,13 @@ export default function SessionRunner({
         {stage.kind === 'report' && (() => {
           // Identity first, then ONE meaningful signal, then the promise (consult 2 #5).
           // Exclude ALL Gabor results — valid or invalid — from best/personal-best pool.
+          const performedCount = results.length
+          const reportKind =
+            performedCount === 0
+              ? 'none'
+              : performedCount < exercises.length
+                ? 'partial'
+                : 'complete'
           const best = results.filter(result => !isGaborResult(result)).reduce<EngineResult | null>(
             (acc, r) => (acc === null || r.score > acc.score ? r : acc), null)
           const bestExercise = best ? visionExerciseMap[best.exerciseId] : null
@@ -593,19 +607,43 @@ export default function SessionRunner({
           const tomorrow = day < 5 ? findSession(week, day + 1) : findSession(week + 1, 1)
           return (
           <div className="min-h-full flex flex-col items-center justify-center px-6 py-10">
-            <Trophy className="w-16 h-16 text-secondary-400 mb-4" />
-            <h2 className="text-3xl font-bold text-white mb-1">You showed up.</h2>
-            <p className="text-gray-300 mb-1">
-              That&apos;s <span className="text-secondary-300 font-bold">{sessionsCompleted + 1} sessions</span> of training banked.
-            </p>
+            {reportKind === 'complete' ? (
+              <Trophy className="w-16 h-16 text-secondary-400 mb-4" />
+            ) : reportKind === 'partial' ? (
+              <Target className="w-16 h-16 text-primary-300 mb-4" />
+            ) : (
+              <Wind className="w-16 h-16 text-primary-300 mb-4" />
+            )}
+            <h2 className="text-3xl font-bold text-white mb-1 text-center">
+              {reportKind === 'complete'
+                ? 'You showed up.'
+                : reportKind === 'partial'
+                  ? 'You adapted well.'
+                  : 'You listened to your eyes.'}
+            </h2>
+            {reportKind === 'complete' ? (
+              <p className="text-gray-300 mb-1 text-center">
+                All {exercises.length} exercises are ready to add to today.
+              </p>
+            ) : reportKind === 'partial' ? (
+              <p className="text-gray-300 mb-1 text-center">
+                {performedCount} of {exercises.length} exercises are ready to keep. Finish the rest when you&apos;re ready.
+              </p>
+            ) : (
+              <p className="text-gray-300 mb-1 text-center">
+                Nothing was added to your training total. Day {day} is ready whenever you return.
+              </p>
+            )}
             <p className="text-gray-500 text-sm mb-6">{sessionTitle} — Week {week}, Day {day}</p>
 
-            <div className="text-center mb-4">
-              <div className="text-6xl font-black text-secondary-400">
-                {totalScore}
+            {reportKind !== 'none' && (
+              <div className="text-center mb-4">
+                <div className="text-6xl font-black text-secondary-400">
+                  {totalScore}
+                </div>
+                <div className="text-gray-500 text-sm uppercase tracking-wider mt-1">Session score</div>
               </div>
-              <div className="text-gray-500 text-sm uppercase tracking-wider mt-1">Session score</div>
-            </div>
+            )}
 
             {best && bestExercise && (
               <div className="flex items-center gap-2 mb-6 px-4 py-2 bg-secondary-500/10 border border-secondary-400/30 rounded-full">
@@ -651,7 +689,7 @@ export default function SessionRunner({
               })}
             </div>
 
-            {tomorrow && (
+            {reportKind === 'complete' && tomorrow && (
               <p className="text-gray-500 text-sm mb-6">
                 Tomorrow: <span className="text-gray-300">{tomorrow.title}</span> — {tomorrow.focus}
               </p>
@@ -662,7 +700,11 @@ export default function SessionRunner({
               className="px-12 py-4 bg-gradient-to-r from-secondary-500 to-primary-500 hover:from-secondary-600 hover:to-primary-600 text-white font-bold text-lg rounded-2xl shadow-lg shadow-secondary-500/30 transition-all flex items-center gap-2"
             >
               <ChevronRight className="w-5 h-5" />
-              Log &amp; Finish
+              {reportKind === 'none'
+                ? `Return to Day ${day}`
+                : reportKind === 'partial'
+                  ? 'Keep My Progress'
+                  : 'Use These Results'}
             </button>
           </div>
           )

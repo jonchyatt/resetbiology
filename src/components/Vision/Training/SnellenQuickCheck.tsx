@@ -282,7 +282,7 @@ export default function SnellenQuickCheck({
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               <button
                 onClick={retry}
                 className="flex-1 min-h-11 px-5 py-3 bg-gray-700/80 hover:bg-gray-600/80 text-white rounded-lg font-semibold flex items-center justify-center gap-2 transition-all"

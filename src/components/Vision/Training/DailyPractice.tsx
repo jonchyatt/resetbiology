@@ -144,6 +144,14 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   const [gaborThresholdPrior, setGaborThresholdPrior] = useState<GaborThresholdPrior | null>(null)
   const resetTriggerRef = useRef<HTMLButtonElement>(null)
   const resetConfirmationRef = useRef<HTMLDivElement>(null)
+  const activeStageRef = useRef<HTMLDivElement>(null)
+  const activeStageKey = showBreathWarmup
+    ? 'warmup'
+    : !sessionStarted
+      ? 'overview'
+      : !baselineComplete
+        ? showQuickCheck ? 'screen-check' : 'screen-check-intro'
+        : 'exercises'
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -155,6 +163,15 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
   useEffect(() => {
     if (resetConfirming) resetConfirmationRef.current?.focus()
   }, [resetConfirming])
+
+  useEffect(() => {
+    if (activeStageKey === 'overview') return
+    const frame = requestAnimationFrame(() => {
+      activeStageRef.current?.scrollIntoView({ block: 'start' })
+      activeStageRef.current?.focus({ preventScroll: true })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [activeStageKey])
 
   const completeWeeklyAssessment = async (results: WeeklyAssessmentResult) => {
     try {
@@ -755,7 +772,12 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
   if (showBreathWarmup) {
     return (
-      <div className="space-y-6">
+      <div
+        ref={activeStageRef}
+        tabIndex={-1}
+        aria-label="Breathing warm-up"
+        className="space-y-6 scroll-mt-36 focus:outline-none"
+      >
         <button
           onClick={skipBreathWarmup}
           className="text-primary-400 hover:text-primary-300 flex items-center gap-2"
@@ -1027,7 +1049,12 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
             <>
               {/* Phase 1: Baseline */}
               {!baselineComplete && (
-                <div className="space-y-4">
+                <div
+                  ref={activeStageRef}
+                  tabIndex={-1}
+                  aria-label="Screen direction check"
+                  className="space-y-4 scroll-mt-36 focus:outline-none"
+                >
                   <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-xl p-6">
                     {showQuickCheck ? (
                       <SnellenQuickCheck
@@ -1072,7 +1099,12 @@ export default function DailyPractice({ nightMode = false }: DailyPracticeProps)
 
               {/* Phase 2: Exercises */}
               {baselineComplete && (
-                <div className="space-y-4">
+                <div
+                  ref={activeStageRef}
+                  tabIndex={-1}
+                  aria-label="Guided exercises"
+                  className="space-y-4 scroll-mt-36 focus:outline-none"
+                >
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-white font-bold text-lg flex items-center gap-2">
                       <Zap className="w-5 h-5 text-secondary-400" />
