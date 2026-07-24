@@ -25,6 +25,7 @@ import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
+import PitchforksChargeBar from './PitchforksChargeBar'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -1508,21 +1509,7 @@ export default function RetroBlaster() {
               SING {matchTargetNote.replace(/\d/, '')}
             </span>
           )}
-          <div className="h-3 w-48 rounded-full overflow-hidden border"
-            style={{
-              background: 'rgba(20,20,35,0.85)',
-              borderColor: 'rgba(80,80,120,0.6)',
-            }}>
-            <div className="h-full rounded-full"
-              style={{
-                width: `${matchProgress * 100}%`,
-                background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
-                boxShadow: matchProgress >= 0.8
-                  ? '0 0 10px #4ade80, 0 0 20px rgba(74,222,128,0.4)'
-                  : '0 0 8px rgba(251,191,36,0.45)',
-                transition: 'width 0.05s linear',
-              }} />
-          </div>
+          <PitchforksChargeBar progress={matchProgress} width={192} height={12} />
         </div>
       )}
 

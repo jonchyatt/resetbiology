@@ -31,6 +31,7 @@ import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { initAudio, loadPianoSamples, playPianoNote, markToneEmitted, setPianoVolume } from './audioEngine'
 import { extractMelodyFromComposition, type ExtractedNote, compositionHasNotes } from './composerExtract'
 import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
+import PitchforksChargeBar from './PitchforksChargeBar'
 
 // ─── Layout constants (logical pixels) ─────────────────────────────────────
 
@@ -55,6 +56,9 @@ const TRAIL_LENGTH_BEATS = 1.6     // seconds-equivalent of trail behind the pla
 
 // Mic match tolerance — looser than the games (sing-along forgiveness)
 const SING_TOLERANCE_CENTS = 90
+const V1_CHARGE_TOLERANCE_CENTS = 70
+const V1_CHARGE_MS = 300
+const V1_CONFIDENCE_FLOOR = 0.75
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -202,6 +206,7 @@ export default function SimplySing() {
   const [score, setScore] = useState(0)
   const [progress, setProgress] = useState(0)            // 0..1 fraction of song
   const [finalScore, setFinalScore] = useState(0)
+  const [chargeProgress, setChargeProgress] = useState(0)
 
   // Refs
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -212,6 +217,8 @@ export default function SimplySing() {
   const nextNoteIdxRef = useRef(0)                       // next note index to schedule audio for
   const trailRef = useRef<PitchTrailPoint[]>([])
   const ribbonStatsRef = useRef<Map<number, RibbonStats>>(new Map())  // key = note index in song.notes
+  const chargeStartRef = useRef(0)
+  const chargeRibbonIdxRef = useRef(-1)
   const rafRef = useRef(0)
   const lastTickRef = useRef(0)
 
@@ -259,7 +266,10 @@ export default function SimplySing() {
     nextNoteIdxRef.current = 0
     trailRef.current = []
     ribbonStatsRef.current.clear()
+    chargeStartRef.current = 0
+    chargeRibbonIdxRef.current = -1
     pausedAtBeatRef.current = 0
+    setChargeProgress(0)
     startPerfRef.current = performance.now()
     setPlaying(true)
     if (micEnabled) await startMic()
@@ -291,6 +301,9 @@ export default function SimplySing() {
   const stopSong = useCallback(() => {
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
     setPlaying(false)
+    chargeStartRef.current = 0
+    chargeRibbonIdxRef.current = -1
+    setChargeProgress(0)
     stopMic()
     setPhase('menu')
   }, [stopMic])
@@ -358,8 +371,26 @@ export default function SimplySing() {
           trailRef.current.shift()
         }
         if (onPitch) stats.onMs += dt
+
+        if (chargeRibbonIdxRef.current !== currentRibbonIdx) {
+          chargeRibbonIdxRef.current = currentRibbonIdx
+          chargeStartRef.current = 0
+          setChargeProgress(0)
+        }
+
+        if (p.confidence >= V1_CONFIDENCE_FLOOR && Math.abs(cents) <= V1_CHARGE_TOLERANCE_CENTS) {
+          if (chargeStartRef.current === 0) chargeStartRef.current = now
+          setChargeProgress(Math.min(1, (now - chargeStartRef.current) / V1_CHARGE_MS))
+        } else if (p.confidence >= V1_CONFIDENCE_FLOOR) {
+          chargeStartRef.current = 0
+          setChargeProgress(0)
+        }
       }
       ribbonStatsRef.current.set(currentRibbonIdx, stats)
+    } else {
+      chargeStartRef.current = 0
+      chargeRibbonIdxRef.current = -1
+      setChargeProgress(0)
     }
 
     // ── Update score (running average across all touched ribbons)
@@ -738,6 +769,7 @@ export default function SimplySing() {
         className="max-w-full max-h-[80vh]"
         style={{ aspectRatio: `${W} / ${H}` }}
       />
+      <PitchforksChargeBar progress={chargeProgress} width={180} height={8} className="mt-3" />
 
       {/* Bottom controls */}
       <div className="mt-4 flex items-center gap-4">
