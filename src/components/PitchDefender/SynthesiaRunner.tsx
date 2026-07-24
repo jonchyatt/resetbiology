@@ -24,6 +24,7 @@ import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote, loadPianoSamples, setPianoVolume } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
 import { extractMelodyFromComposition } from './composerExtract'
+import { usePitchScoreSync } from './scoreSync'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -164,7 +165,7 @@ export default function SynthesiaRunner() {
   // Uses the shared composerExtract module so every consumer reads the same
   // way (handles both new measures format AND legacy flat-notes fallback).
   const [composedSongs, setComposedSongs] = useState<{ name: string; notes: SongNote[]; description: string }[]>([])
-  useEffect(() => {
+  const refreshComposedSongs = useCallback(() => {
     const clampToKeyboard = (semi: number): number => {
       let v = semi
       while (v < KEYBOARD_LOW) v += 12
@@ -192,6 +193,12 @@ export default function SynthesiaRunner() {
       setComposedSongs(out)
     } catch {}
   }, [])
+  usePitchScoreSync({
+    keys: [],
+    includeCompositions: true,
+    onHydrate: refreshComposedSongs,
+  })
+  useEffect(() => { refreshComposedSongs() }, [refreshComposedSongs])
 
   const allSongs = [...SONGS, ...composedSongs, ...customSongs]
 

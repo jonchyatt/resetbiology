@@ -14,6 +14,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote, loadPianoSamples } from './audioEngine'
+import { savePitchScore, usePitchScoreSync } from './scoreSync'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -50,6 +51,16 @@ export default function NoteEntry() {
   const [showSaved, setShowSaved] = useState(false)
   const [lastTapped, setLastTapped] = useState<string | null>(null)
   const audioInitRef = useRef(false)
+
+  usePitchScoreSync({
+    keys: [STORAGE_KEY],
+    onHydrate: (scores) => {
+      const payload = scores[STORAGE_KEY]?.payload
+      if (Array.isArray(payload)) {
+        setSavedSongs(payload as { name: string; notes: number[] }[])
+      }
+    },
+  })
 
   // Load saved songs
   useEffect(() => {
@@ -120,14 +131,14 @@ export default function NoteEntry() {
     }
     const updated = [...savedSongs, songData]
     setSavedSongs(updated)
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)) } catch {}
+    savePitchScore(STORAGE_KEY, updated)
   }, [notes, songName, savedSongs])
 
   // ─── Delete Saved Song ────────────────────────────────────────────────
   const deleteSong = useCallback((idx: number) => {
     const updated = savedSongs.filter((_, i) => i !== idx)
     setSavedSongs(updated)
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)) } catch {}
+    savePitchScore(STORAGE_KEY, updated)
   }, [savedSongs])
 
   // ─── Playback ─────────────────────────────────────────────────────────
