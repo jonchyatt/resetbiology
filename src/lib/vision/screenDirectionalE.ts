@@ -1,12 +1,45 @@
 export const SCREEN_DIRECTIONAL_E_PROTOCOL = 'screen-directional-e-v1' as const
-export const SCREEN_DIRECTIONAL_E_VERSION = 1
-export const SCREEN_E_LINE_MULTIPLIERS = [1, 0.82, 0.68, 0.56, 0.46, 0.37, 0.29] as const
+// The exercise id remains stable for score-neutral storage; this numeric version
+// distinguishes the original seven-row geometry from the additive fourteen-row rail.
+export const SCREEN_DIRECTIONAL_E_VERSION = 2
+// Fourteen log-spaced steps, rounded to keep every DPR-1 row visibly distinct
+// while reaching the old near-pixel end without row consolidation.
+export const SCREEN_E_LINE_MULTIPLIERS = [
+  1, 0.83, 0.69, 0.57, 0.475, 0.39, 0.33, 0.275, 0.22, 0.185, 0.15, 0.13, 0.11, 0.09,
+] as const
+export const SCREEN_E_LINE_LETTER_COUNTS = [3, 4, 5, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8] as const
 export const SCREEN_E_DIRECTIONS = ['up', 'right', 'down', 'left'] as const
 export const SCREEN_E_TRIALS_PER_LINE = SCREEN_E_DIRECTIONS.length
 export const SCREEN_E_CORRECT_TO_PASS = 3
+export const SCREEN_E_MIN_LEGIBLE_PHYSICAL_PX = 5
+export const SCREEN_E_QUICK_CHECK_STIMULUS_STAGE_HEIGHT = 80
+export const SCREEN_E_RESPONSE_BUTTON_SIZE = 48
+export const SCREEN_E_RESPONSE_BUTTON_GAP = 8
+export const SCREEN_E_CHART_STAGE_HEIGHT = 260
 
 export type ScreenEDirection = typeof SCREEN_E_DIRECTIONS[number]
 export type ScreenEInputMethod = 'touch' | 'pointer' | 'keyboard' | 'voice' | 'helper'
+export type ScreenEDistanceChoice = 'stay' | 'further'
+
+export function parseScreenEDistanceChoice(rawTranscript: string): ScreenEDistanceChoice | null {
+  const normalized = rawTranscript
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!normalized) return null
+
+  const words = normalized.split(' ')
+  const hasStayWord = words.includes('stay')
+  const hasFurtherWord = words.includes('further') || words.includes('farther')
+  const hasSameDistance = /(?:^|\s)same distance(?:$|\s)/.test(normalized)
+
+  if ((hasStayWord || hasSameDistance) && hasFurtherWord) return null
+  if (hasFurtherWord) return 'further'
+  if (normalized === 'stay' || normalized === 'stay put' || hasSameDistance) return 'stay'
+  return null
+}
 
 export interface ScreenDirectionalEEvidence {
   readonly protocolVersion: typeof SCREEN_DIRECTIONAL_E_PROTOCOL
@@ -26,10 +59,121 @@ export function screenEBaseSize(viewportCssWidth: number): number {
   return Math.min(64, Math.max(48, viewportCssWidth * 0.14))
 }
 
-export function screenELineSize(viewportCssWidth: number, lineIndex: number): number {
+export function screenEPixelSnap(cssPixels: number, devicePixelRatio = 1): number {
+  const safeDevicePixelRatio = Number.isFinite(devicePixelRatio) && devicePixelRatio > 0
+    ? devicePixelRatio
+    : 1
+  return Math.round(cssPixels * safeDevicePixelRatio) / safeDevicePixelRatio
+}
+
+export function screenELineSize(
+  viewportCssWidth: number,
+  lineIndex: number,
+  devicePixelRatio = 1,
+): number {
   const multiplier = SCREEN_E_LINE_MULTIPLIERS[lineIndex]
   if (multiplier === undefined) throw new RangeError(`Unknown screen-E line ${lineIndex + 1}`)
-  return screenEBaseSize(viewportCssWidth) * multiplier
+  const safeDevicePixelRatio = Number.isFinite(devicePixelRatio) && devicePixelRatio > 0
+    ? devicePixelRatio
+    : 1
+  // Reserve one physical pixel between each trailing row on a DPR-1 display.
+  // That keeps all fourteen rows distinct while the actual safety floor remains five physical pixels.
+  const distinctPhysicalFloor = SCREEN_E_MIN_LEGIBLE_PHYSICAL_PX +
+    (SCREEN_E_LINE_MULTIPLIERS.length - lineIndex - 1)
+  return screenEPixelSnap(
+    Math.max(
+      distinctPhysicalFloor / safeDevicePixelRatio,
+      screenEBaseSize(viewportCssWidth) * multiplier,
+    ),
+    safeDevicePixelRatio,
+  )
+}
+
+export interface ScreenEChartTravel {
+  readonly phase: 'opening' | 'tracking' | 'closing'
+  readonly openingLineCount: number
+  readonly closingStartLineIndex: number
+  readonly stripAnchorLineIndex: number
+}
+
+/**
+ * The strip only moves upward during tracking. Opening and closing positions
+ * are expressed independently so any number of additive rows keeps the same
+ * motion contract.
+ */
+export function screenEChartTravel(totalLines: number, lineIndex: number): ScreenEChartTravel {
+  if (!Number.isInteger(totalLines) || totalLines < 1) {
+    throw new RangeError('Screen-E chart requires at least one line')
+  }
+  if (!Number.isInteger(lineIndex) || lineIndex < 0 || lineIndex >= totalLines) {
+    throw new RangeError(`Unknown screen-E chart line ${lineIndex + 1}`)
+  }
+
+  const openingLineCount = Math.min(3, totalLines)
+  const trackingStartLineIndex = openingLineCount - 1
+  const closingLineCount = totalLines > openingLineCount ? Math.min(3, totalLines - openingLineCount) : 0
+  const closingStartLineIndex = totalLines - closingLineCount
+  const finalTrackingLineIndex = Math.max(trackingStartLineIndex, closingStartLineIndex - 1)
+
+  if (lineIndex < trackingStartLineIndex) {
+    return { phase: 'opening', openingLineCount, closingStartLineIndex, stripAnchorLineIndex: 0 }
+  }
+  if (lineIndex <= finalTrackingLineIndex) {
+    return { phase: 'tracking', openingLineCount, closingStartLineIndex, stripAnchorLineIndex: lineIndex }
+  }
+  return {
+    phase: 'closing',
+    openingLineCount,
+    closingStartLineIndex,
+    stripAnchorLineIndex: finalTrackingLineIndex,
+  }
+}
+
+export interface ScreenEChartPosition extends ScreenEChartTravel {
+  readonly markerY: number
+  readonly stripOffsetY: number
+  readonly rowCenters: readonly number[]
+  readonly rowHeights: readonly number[]
+}
+
+export function screenEChartPosition(
+  viewportCssWidth: number,
+  devicePixelRatio: number,
+  lineIndex: number,
+  totalLines: number = SCREEN_E_LINE_MULTIPLIERS.length,
+): ScreenEChartPosition {
+  const travel = screenEChartTravel(totalLines, lineIndex)
+  const rowHeights = Array.from({ length: totalLines }, (_, index) =>
+    Math.max(28, Math.ceil(screenELineSize(viewportCssWidth, index, devicePixelRatio) + 10)),
+  )
+  const rowCenters = rowHeights.reduce<number[]>((centers, height, index) => {
+    const previousCenter = centers[index - 1]
+    const previousHeight = rowHeights[index - 1]
+    centers.push(index === 0 ? height / 2 : previousCenter + (previousHeight + height) / 2)
+    return centers
+  }, [])
+  const trackingMarkerY = rowCenters[travel.openingLineCount - 1]
+
+  if (travel.phase === 'opening') {
+    return { ...travel, markerY: rowCenters[lineIndex], stripOffsetY: 0, rowCenters, rowHeights }
+  }
+
+  const stripOffsetY = trackingMarkerY - rowCenters[travel.stripAnchorLineIndex]
+  return {
+    ...travel,
+    markerY: travel.phase === 'closing' ? rowCenters[lineIndex] + stripOffsetY : trackingMarkerY,
+    stripOffsetY,
+    rowCenters,
+    rowHeights,
+  }
+}
+
+export function screenEResponsePadLayout() {
+  return Object.freeze({
+    buttonSize: SCREEN_E_RESPONSE_BUTTON_SIZE,
+    buttonGap: SCREEN_E_RESPONSE_BUTTON_GAP,
+    padHeight: SCREEN_E_RESPONSE_BUTTON_SIZE * 3 + SCREEN_E_RESPONSE_BUTTON_GAP * 2,
+  })
 }
 
 export function balancedScreenEDirections(random: () => number = Math.random): ScreenEDirection[] {
@@ -92,19 +236,33 @@ export function shouldOfferScreenDirectionalEAfterExercises(
   return !openingCheckCompleted
 }
 
-export function mergeResultsPreservingOpeningScreenCheck<T extends { exerciseId: string }>(
+type ScreenEResultLike = {
+  exerciseId: string
+  metrics?: Record<string, unknown>
+}
+
+function isCurrentScreenDirectionalEResult(result: ScreenEResultLike): boolean {
+  if (result.exerciseId !== SCREEN_DIRECTIONAL_E_PROTOCOL) return false
+  // Tiny test/caller markers without metrics retain the historical generic behavior.
+  if (!result.metrics) return true
+  return result.metrics.protocolVersion === SCREEN_DIRECTIONAL_E_VERSION &&
+    result.metrics.totalLines === SCREEN_E_LINE_MULTIPLIERS.length
+}
+
+export function mergeResultsPreservingOpeningScreenCheck<T extends ScreenEResultLike>(
   current: T[],
   incoming: T[],
 ): T[] {
-  const hasOpeningScreenCheck = current.some(
-    result => result.exerciseId === SCREEN_DIRECTIONAL_E_PROTOCOL,
-  )
+  const hasOpeningScreenCheck = current.some(isCurrentScreenDirectionalEResult)
   const acceptedIncoming = hasOpeningScreenCheck
     ? incoming.filter(result => result.exerciseId !== SCREEN_DIRECTIONAL_E_PROTOCOL)
     : incoming
   const incomingExerciseIds = new Set(acceptedIncoming.map(result => result.exerciseId))
   return [
-    ...current.filter(result => !incomingExerciseIds.has(result.exerciseId)),
+    ...current.filter(result =>
+      !incomingExerciseIds.has(result.exerciseId) &&
+      (result.exerciseId !== SCREEN_DIRECTIONAL_E_PROTOCOL || isCurrentScreenDirectionalEResult(result)),
+    ),
     ...acceptedIncoming,
   ]
 }

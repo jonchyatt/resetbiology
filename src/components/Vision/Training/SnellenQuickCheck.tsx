@@ -8,6 +8,7 @@ import { unlockAudio } from '@/lib/vision/audioKit'
 import {
   SCREEN_E_CORRECT_TO_PASS,
   SCREEN_E_LINE_MULTIPLIERS,
+  SCREEN_E_QUICK_CHECK_STIMULUS_STAGE_HEIGHT,
   SCREEN_E_TRIALS_PER_LINE,
   balancedScreenEDirections,
   createScreenDirectionalEEvidence,
@@ -40,10 +41,12 @@ interface RunResult {
 
 function ScreenELineCheck({
   viewportWidth,
+  devicePixelRatio,
   reducedMotion,
   onDone,
 }: {
   viewportWidth: number
+  devicePixelRatio: number
   reducedMotion: boolean
   onDone: (result: RunResult) => void
 }) {
@@ -128,11 +131,14 @@ function ScreenELineCheck({
         </p>
       </div>
 
-      <div className="flex justify-center">
-        <div className={`bg-white rounded-lg p-4 ${feedbackRingClass}`}>
+      <div
+        className="flex items-center justify-center"
+        style={{ height: SCREEN_E_QUICK_CHECK_STIMULUS_STAGE_HEIGHT }}
+      >
+        <div className={`bg-white rounded-lg p-2 ${feedbackRingClass}`}>
           <TumblingE
             direction={directions[trialIndex]}
-            size={screenELineSize(viewportWidth, lineIndex)}
+            size={screenELineSize(viewportWidth, lineIndex, devicePixelRatio)}
             strokeWeight="normal"
             animate={false}
           />
@@ -261,6 +267,7 @@ export default function SnellenQuickCheck({
           <ScreenELineCheck
             key={flowKey}
             viewportWidth={viewport.width}
+            devicePixelRatio={viewport.devicePixelRatio}
             reducedMotion={reducedMotion}
             onDone={result => {
               setRunResult(result)

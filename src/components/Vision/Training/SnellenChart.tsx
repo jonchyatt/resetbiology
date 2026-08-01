@@ -5,8 +5,15 @@ import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal,
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 import { SpeechQueue } from '@/lib/vision/audioKit'
 import {
+  SCREEN_E_CHART_STAGE_HEIGHT,
   SCREEN_E_DIRECTIONS,
+  SCREEN_E_LINE_LETTER_COUNTS,
+  SCREEN_E_LINE_MULTIPLIERS,
+  parseScreenEDistanceChoice,
+  screenEChartPosition,
   screenELineSize,
+  screenEResponsePadLayout,
+  type ScreenEDistanceChoice,
   type ScreenEDirection,
 } from '@/lib/vision/screenDirectionalE'
 
@@ -22,19 +29,14 @@ interface SnellenChartProps {
   onDistanceAdjust?: (direction: 'closer' | 'further') => void
 }
 
-// Chart lines - REMOVED top 2 rows (too big to be useful)
-// Starting at Moderate level, progressing to finer lines
-// NO medical notation - this is training, not diagnosis
-// Extra-small lines (Elite, Ultra) for high-resolution phone screens
-export const CHART_LINES = [
-  { level: 1, label: 'Moderate', scale: 2.0, letterCount: 3 },
-  { level: 2, label: 'Building', scale: 1.6, letterCount: 4 },
-  { level: 3, label: 'Challenge', scale: 1.3, letterCount: 5 },
-  { level: 4, label: 'Advanced', scale: 1.0, letterCount: 5 },
-  { level: 5, label: 'Peak', scale: 0.8, letterCount: 6 },
-  { level: 6, label: 'Elite', scale: 0.6, letterCount: 7 },
-  { level: 7, label: 'Ultra', scale: 0.45, letterCount: 8 },
-]
+// Each row remains an additive part of the long chart. The shared scale is
+// intentionally the same source used by the single-E reference check.
+export const CHART_LINES = SCREEN_E_LINE_MULTIPLIERS.map((scale, index) => ({
+  level: index + 1,
+  label: `Detail ${index + 1}`,
+  scale,
+  letterCount: SCREEN_E_LINE_LETTER_COUNTS[index],
+}))
 
 // Confusable letters for letter chart mode - letters that look similar and challenge focus
 // Groups: O/Q/C/D, H/M/N, K/X, R/B, S/Z, V/W
@@ -79,6 +81,7 @@ export const TumblingE = ({ direction, size, strokeWeight = 'normal', animate = 
       width={size}
       height={size}
       viewBox="0 0 50 50"
+      shapeRendering="crispEdges"
       style={{ transform: `rotate(${rotationMap[direction]}deg)` }}
       className={animate ? 'transition-transform duration-200' : undefined}
     >
@@ -141,6 +144,8 @@ const generateChartData = (exerciseType: 'letters' | 'e-directional') => {
   }))
 }
 
+const RESPONSE_PAD_LAYOUT = screenEResponsePadLayout()
+
 export default function SnellenChart({
   chartSize,
   exerciseType,
@@ -158,6 +163,7 @@ export default function SnellenChart({
   const [consecutiveFailures, setConsecutiveFailures] = useState(0)
   const [showDistancePrompt, setShowDistancePrompt] = useState(false)
   const [viewportWidth, setViewportWidth] = useState(390)
+  const [viewportDevicePixelRatio, setViewportDevicePixelRatio] = useState(1)
 
   // Visual feedback state - blinks green (correct) or red (incorrect)
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
@@ -184,6 +190,12 @@ export default function SnellenChart({
   const [singleLetterChoices, setSingleLetterChoices] = useState<string[]>(() =>
     getLetterChoices(CONFUSABLE_LETTERS[Math.floor(Math.random() * CONFUSABLE_LETTERS.length)])
   )
+  const acceptingAnswerRef = useRef(true)
+  const motionSettleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const showDistancePromptRef = useRef(false)
+  const distanceChoiceClaimedRef = useRef(false)
+  const distanceChoiceActionRef = useRef<(choice: ScreenEDistanceChoice) => void>(() => {})
+  showDistancePromptRef.current = showDistancePrompt
 
   // Voice-out seam (T5b) — same SpeechQueue instance SessionRunner/engines use,
   // so this legacy trainer speaks with the one educator voice.
@@ -194,10 +206,17 @@ export default function SnellenChart({
   }, [])
 
   useEffect(() => {
-    const syncViewport = () => setViewportWidth(window.innerWidth)
+    const syncViewport = () => {
+      setViewportWidth(window.innerWidth)
+      setViewportDevicePixelRatio(window.devicePixelRatio || 1)
+    }
     syncViewport()
     window.addEventListener('resize', syncViewport)
     return () => window.removeEventListener('resize', syncViewport)
+  }, [])
+
+  useEffect(() => () => {
+    if (motionSettleTimerRef.current) clearTimeout(motionSettleTimerRef.current)
   }, [])
 
   // Reset chart when resetTrigger or exerciseType changes
@@ -252,6 +271,11 @@ export default function SnellenChart({
     WhisperService.start(mode, {
       onResult: (answer, rawTranscript) => {
         setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
+        if (showDistancePromptRef.current) {
+          const distanceChoice = parseScreenEDistanceChoice(rawTranscript)
+          if (distanceChoice) distanceChoiceActionRef.current(distanceChoice)
+          return
+        }
         if (!answer) return
 
         if (answer.type === 'direction' && exerciseType === 'e-directional') {
@@ -316,12 +340,33 @@ export default function SnellenChart({
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
     setConsecutiveFailures(0)
+    acceptingAnswerRef.current = true
   }, [exerciseType])
 
-  // Handle answer in line-by-line mode
+  const openDistancePrompt = useCallback(() => {
+    distanceChoiceClaimedRef.current = false
+    showDistancePromptRef.current = true
+    setShowDistancePrompt(true)
+    if (onChartComplete) onChartComplete()
+  }, [onChartComplete])
+
+  const settleChartMotion = (afterFeedback: () => boolean | void) => {
+    motionSettleTimerRef.current = setTimeout(() => {
+      const holdInputUntilReset = afterFeedback()
+      if (holdInputUntilReset) return
+      motionSettleTimerRef.current = setTimeout(() => {
+        acceptingAnswerRef.current = true
+      }, 320)
+    }, 360)
+  }
+
+  // A single gate covers touch, keyboard, pointer, and the existing voice event
+  // path. A new answer is accepted only after the marker/strip transition settles.
   const handleLineByLineAnswer = (selectedDirection: EDirection) => {
+    if (!acceptingAnswerRef.current) return
     const currentLine = chartData[currentLineIndex]
     if (!currentLine) return
+    acceptingAnswerRef.current = false
 
     const correctDirection = currentLine.directions[currentLetterIndex]
     const isCorrect = selectedDirection === correctDirection
@@ -333,39 +378,44 @@ export default function SnellenChart({
     if (isCorrect) {
       setConsecutiveFailures(0)
 
-      // Delay briefly to show feedback, then advance
-      setTimeout(() => {
+      settleChartMotion(() => {
         // Move to next letter in line
         if (currentLetterIndex < currentLine.letterCount - 1) {
           setCurrentLetterIndex(prev => prev + 1)
         } else {
           // Completed this line! Auto-advance to next line
           if (currentLineIndex >= CHART_LINES.length - 1) {
-            setShowDistancePrompt(true)
-            if (onChartComplete) onChartComplete()
+            openDistancePrompt()
           } else {
             setCurrentLineIndex(prev => prev + 1)
             setCurrentLetterIndex(0)
           }
         }
-      }, 300)
+      })
     } else {
       // Wrong answer
+      const shouldRegenerate = consecutiveFailures >= 2
       setConsecutiveFailures(prev => prev + 1)
 
       // After 3 consecutive failures, reset to new chart
-      if (consecutiveFailures >= 2) {
-        // Audio disabled for now - using visual feedback instead
-        setTimeout(() => {
+      settleChartMotion(() => {
+        if (!shouldRegenerate) return
+        acceptingAnswerRef.current = false
+        motionSettleTimerRef.current = setTimeout(() => {
           regenerateChart()
-        }, 1500)
-      }
+          acceptingAnswerRef.current = true
+        }, 1100)
+        return true
+      })
     }
   }
 
   // Handle answer for letter mode
   const handleLetterAnswer = (selectedLetter: string) => {
+    if (!acceptingAnswerRef.current) return
     const currentLine = chartData[currentLineIndex]
+    if (!currentLine) return
+    acceptingAnswerRef.current = false
     const correctLetter = currentLine.letters[currentLetterIndex]
     const isCorrect = selectedLetter.toUpperCase() === correctLetter.toUpperCase()
 
@@ -376,33 +426,35 @@ export default function SnellenChart({
     if (isCorrect) {
       setConsecutiveFailures(0)
 
-      // Delay briefly to show feedback, then advance
-      setTimeout(() => {
+      settleChartMotion(() => {
         // Move to next letter in line
         if (currentLetterIndex < currentLine.letterCount - 1) {
           setCurrentLetterIndex(prev => prev + 1)
         } else {
           // Completed this line! Auto-advance to next line
           if (currentLineIndex >= CHART_LINES.length - 1) {
-            setShowDistancePrompt(true)
-            if (onChartComplete) onChartComplete()
+            openDistancePrompt()
           } else {
             setCurrentLineIndex(prev => prev + 1)
             setCurrentLetterIndex(0)
           }
         }
-      }, 300)
+      })
     } else {
       // Wrong answer
+      const shouldRegenerate = consecutiveFailures >= 2
       setConsecutiveFailures(prev => prev + 1)
 
       // After 3 consecutive failures, reset to new chart
-      if (consecutiveFailures >= 2) {
-        // Audio disabled for now - using visual feedback instead
-        setTimeout(() => {
+      settleChartMotion(() => {
+        if (!shouldRegenerate) return
+        acceptingAnswerRef.current = false
+        motionSettleTimerRef.current = setTimeout(() => {
           regenerateChart()
-        }, 1500)
-      }
+          acceptingAnswerRef.current = true
+        }, 1100)
+        return true
+      })
     }
   }
 
@@ -419,6 +471,20 @@ export default function SnellenChart({
       ? 'Move your screen just a finger-width further. Tiny steps build strength!'
       : 'Move your screen slightly closer.')
   }
+
+  const handleDistanceChoice = (choice: ScreenEDistanceChoice) => {
+    if (!showDistancePromptRef.current || distanceChoiceClaimedRef.current) return
+    distanceChoiceClaimedRef.current = true
+    showDistancePromptRef.current = false
+
+    if (choice === 'further') {
+      handleDistanceAdjust('further')
+      return
+    }
+    setShowDistancePrompt(false)
+    regenerateChart()
+  }
+  distanceChoiceActionRef.current = handleDistanceChoice
 
   const speak = (text: string) => {
     // interrupt: true preserves the old cancel-then-speak semantics
@@ -493,93 +559,102 @@ export default function SnellenChart({
 
   // Line-by-line progression mode
   const currentLine = chartData[currentLineIndex]
-  const baseSize = getBaseSize()
+  const chartPosition = screenEChartPosition(
+    viewportWidth,
+    viewportDevicePixelRatio,
+    currentLineIndex,
+    chartData.length,
+  )
+  const activeLineSize = screenELineSize(
+    viewportWidth,
+    currentLineIndex,
+    viewportDevicePixelRatio,
+  )
+  const activeMarkerOffsetX = currentLine
+    ? (currentLetterIndex - (currentLine.letterCount - 1) / 2) * (activeLineSize + 8)
+    : 0
 
-  // Determine stroke weight based on progression (gets thinner as you advance)
+  // Keep every directional E at the same sturdy vector stroke so small rows
+  // retain an open, recognizable direction rather than closing into a blob.
   const getLineStrokeWeight = (lineIdx: number): 'bold' | 'normal' | 'thin' => {
-    if (lineIdx <= 1) return 'normal'
-    if (lineIdx <= 3) return 'normal'
-    return 'thin' // Peak lines have thin strokes for extra challenge
+    void lineIdx
+    return 'normal'
   }
 
   return (
     <div className="flex flex-col items-center bg-white rounded-lg p-2">
-      {/* Compact chart display */}
-      <div className="w-full max-w-xl space-y-1 mb-2">
-        {chartData.map((line, lineIdx) => (
-          <div
-            key={lineIdx}
-            className={`flex items-center justify-center gap-1 md:gap-2 transition-all duration-300 ${
-              lineIdx < currentLineIndex
-                ? 'opacity-20' // Completed lines fade more
-                : lineIdx === currentLineIndex
-                  ? 'opacity-100' // Current line highlighted
-                  : 'opacity-40' // Future lines dimmed
-            }`}
-          >
-            {exerciseType === 'e-directional' ? (
-              // E chart mode
-              line.directions.map((dir, letterIdx) => {
-                const isCurrentLetter = lineIdx === currentLineIndex && letterIdx === currentLetterIndex
-                const isPastLetter = lineIdx === currentLineIndex && letterIdx < currentLetterIndex
+      {/* The complete strip stays mounted; the clipped viewport only hides rows outside view. */}
+      <div
+        className="relative w-full max-w-xl overflow-hidden mb-2"
+        style={{ height: SCREEN_E_CHART_STAGE_HEIGHT }}
+        aria-label="Long directional-E chart"
+      >
+        <div
+          className="absolute inset-x-0 top-0 transition-transform duration-300 ease-out"
+          style={{ transform: `translateY(${chartPosition.stripOffsetY}px)` }}
+        >
+          {chartData.map((line, lineIdx) => {
+            const lineSize = screenELineSize(viewportWidth, lineIdx, viewportDevicePixelRatio)
+            const isCurrentLine = lineIdx === currentLineIndex
 
-                return (
-                  <div
-                    key={letterIdx}
-                    className="relative flex flex-col items-center"
-                  >
-                    {/* Arrow pointer ABOVE current letter */}
-                    {isCurrentLetter && (
-                      <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 z-10">
-                        <ChevronDown className="w-5 h-5 text-primary-500 animate-bounce" strokeWidth={3} />
-                      </div>
-                    )}
-                    {/* The E optotype */}
-                    <div className={`transition-all duration-200 ${
-                      isPastLetter ? 'opacity-20' : ''
-                    } ${isCurrentLetter ? getFeedbackClass() + ' rounded-sm' : ''}`}>
-                      <TumblingE
-                        direction={dir}
-                        size={screenELineSize(viewportWidth, lineIdx)}
-                        strokeWeight={getLineStrokeWeight(lineIdx)}
-                      />
-                    </div>
-                  </div>
-                )
-              })
-            ) : (
-              // Letter chart mode
-              line.letters.map((letter, letterIdx) => {
-                const isCurrentLetter = lineIdx === currentLineIndex && letterIdx === currentLetterIndex
-                const isPastLetter = lineIdx === currentLineIndex && letterIdx < currentLetterIndex
+            return (
+              <div
+                key={lineIdx}
+                className={`flex items-center justify-center gap-2 ${
+                  lineIdx < currentLineIndex ? 'opacity-30' : isCurrentLine ? 'opacity-100' : 'opacity-55'
+                }`}
+                style={{ height: chartPosition.rowHeights[lineIdx] }}
+              >
+                {exerciseType === 'e-directional' ? (
+                  line.directions.map((dir, letterIdx) => {
+                    const isCurrentLetter = isCurrentLine && letterIdx === currentLetterIndex
+                    const isPastLetter = isCurrentLine && letterIdx < currentLetterIndex
 
-                return (
-                  <div
-                    key={letterIdx}
-                    className="relative flex flex-col items-center"
-                  >
-                    {/* Arrow pointer ABOVE current letter */}
-                    {isCurrentLetter && (
-                      <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 z-10">
-                        <ChevronDown className="w-5 h-5 text-primary-500 animate-bounce" strokeWidth={3} />
+                    return (
+                      <div key={letterIdx} className="flex items-center justify-center">
+                        <div className={`${isPastLetter ? 'opacity-30' : ''} ${isCurrentLetter ? getFeedbackClass() + ' rounded-sm' : ''}`}>
+                          <TumblingE
+                            direction={dir}
+                            size={lineSize}
+                            strokeWeight={getLineStrokeWeight(lineIdx)}
+                          />
+                        </div>
                       </div>
-                    )}
-                    {/* The letter */}
-                    <div className={`transition-all duration-200 ${
-                      isPastLetter ? 'opacity-20' : ''
-                    } ${isCurrentLetter ? getFeedbackClass() + ' rounded-sm px-1' : ''}`}>
-                      <SnellenLetter
-                        letter={letter}
-                        size={baseSize * line.scale * (deviceMode === 'phone' ? 0.4 : 0.65)}
-                        strokeWeight={getLineStrokeWeight(lineIdx)}
-                      />
-                    </div>
-                  </div>
-                )
-              })
-            )}
-          </div>
-        ))}
+                    )
+                  })
+                ) : (
+                  line.letters.map((letter, letterIdx) => {
+                    const isCurrentLetter = isCurrentLine && letterIdx === currentLetterIndex
+                    const isPastLetter = isCurrentLine && letterIdx < currentLetterIndex
+
+                    return (
+                      <div key={letterIdx} className={`${isPastLetter ? 'opacity-30' : ''} ${isCurrentLetter ? getFeedbackClass() + ' rounded-sm px-1' : ''}`}>
+                        <SnellenLetter
+                          letter={letter}
+                          size={lineSize}
+                          strokeWeight={getLineStrokeWeight(lineIdx)}
+                        />
+                      </div>
+                    )
+                  })
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* This marker descends only at opening/closing; it holds centrally while the strip moves upward. */}
+        <div
+          className="absolute z-10 transition-[top,left] duration-300 ease-out pointer-events-none"
+          style={{
+            top: Math.max(0, chartPosition.markerY - 28),
+            left: `calc(50% + ${activeMarkerOffsetX}px)`,
+            transform: 'translateX(-50%)',
+          }}
+          aria-hidden="true"
+        >
+          <ChevronDown className="w-5 h-5 text-primary-500" strokeWidth={3} />
+        </div>
       </div>
 
       {/* Distance adjustment prompt after completing chart - COMPACT */}
@@ -592,19 +667,21 @@ export default function SnellenChart({
           <p className="text-gray-600 text-xs mb-2">
             Move screen a finger-width further away
           </p>
+          {voiceEnabled && (
+            <p role="status" className="text-gray-700 text-xs font-semibold mb-2">
+              Listening — say Stay or Further
+            </p>
+          )}
           <div className="flex gap-2 justify-center">
             <button
-              onClick={() => handleDistanceAdjust('further')}
-              className="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm"
+              onClick={() => handleDistanceChoice('further')}
+              className="min-h-11 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold text-sm"
             >
               Move Further
             </button>
             <button
-              onClick={() => {
-                setShowDistancePrompt(false)
-                regenerateChart()
-              }}
-              className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm"
+              onClick={() => handleDistanceChoice('stay')}
+              className="min-h-11 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm"
             >
               Stay
             </button>
@@ -614,7 +691,7 @@ export default function SnellenChart({
 
       {/* Input buttons - COMPACT and always visible */}
       {!showDistancePrompt && (
-        <div className="mt-1">
+        <div className="mt-1" data-screen-e-response-dock>
           <p className="text-gray-500 text-xs text-center mb-2">
             {exerciseType === 'e-directional' ? 'Which way?' : 'Which letter?'} (Line {currentLineIndex + 1}/{CHART_LINES.length})
           </p>
@@ -696,30 +773,39 @@ export function DirectionButtons({
   onSelect: (dir: EDirection) => void
   compact?: boolean
 }) {
-  // MUCH bigger buttons - user emphasized buttons must be larger than test letters
-  // Increased vertical height (py-6/py-7) for better tap targets
-  const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-xl transition-all transform active:scale-95 flex items-center justify-center shadow-lg"
+  // One fixed dock: stimulus size never participates in these button dimensions.
+  const buttonBase = "bg-gray-900 hover:bg-primary-500 active:bg-primary-600 text-white font-bold rounded-xl transition-colors active:scale-95 flex items-center justify-center shadow-lg flex-shrink-0"
   const buttonSize = compact
-    ? "py-6 px-10 text-2xl min-w-[130px] min-h-[72px] gap-2"
-    : "py-7 px-12 text-3xl min-w-[160px] min-h-[84px] gap-3"
-  const iconSize = compact ? "w-7 h-7" : "w-9 h-9"
+    ? "w-28 h-12 text-base gap-1.5"
+    : "w-36 h-16 text-lg gap-2"
+  const iconSize = compact ? "w-5 h-5" : "w-6 h-6"
+  const buttonStyle = {
+    minHeight: RESPONSE_PAD_LAYOUT.buttonSize,
+    minWidth: compact ? 112 : 144,
+  }
 
   return (
-    <div className={`flex flex-col items-center ${compact ? 'gap-3' : 'gap-4'}`}>
+    <div
+      className="flex flex-col items-center gap-2"
+      data-screen-e-response-pad
+      style={{ minHeight: RESPONSE_PAD_LAYOUT.padHeight }}
+    >
       {/* Up button */}
       <button
         onClick={() => onSelect('up')}
         className={`${buttonBase} ${buttonSize}`}
+        style={buttonStyle}
       >
         <ArrowUp className={iconSize} strokeWidth={2.5} />
         Up
       </button>
 
       {/* Left and Right buttons */}
-      <div className={`flex ${compact ? 'gap-4' : 'gap-6'}`}>
+      <div className="flex gap-2">
         <button
           onClick={() => onSelect('left')}
           className={`${buttonBase} ${buttonSize}`}
+          style={buttonStyle}
         >
           <ArrowLeft className={iconSize} strokeWidth={2.5} />
           Left
@@ -727,6 +813,7 @@ export function DirectionButtons({
         <button
           onClick={() => onSelect('right')}
           className={`${buttonBase} ${buttonSize}`}
+          style={buttonStyle}
         >
           Right
           <ArrowRight className={iconSize} strokeWidth={2.5} />
@@ -737,6 +824,7 @@ export function DirectionButtons({
       <button
         onClick={() => onSelect('down')}
         className={`${buttonBase} ${buttonSize}`}
+        style={buttonStyle}
       >
         <ArrowDown className={iconSize} strokeWidth={2.5} />
         Down

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import SnellenChart from './SnellenChart'
 import BinocularChart from './BinocularChart'
 import type { BinocularMode } from './BinocularChart'
@@ -75,6 +75,7 @@ export default function TrainingSession({
   const [distanceProgressionMode, setDistanceProgressionMode] = useState(visionType === 'near')
   const [showGlassesPrompt, setShowGlassesPrompt] = useState(false)
   const [consecutiveSuccessAtMax, setConsecutiveSuccessAtMax] = useState(0)
+  const activeShellRef = useRef<HTMLDivElement | null>(null)
 
   const difficulty = DIFFICULTY_LEVELS[currentLevel - 1] || DIFFICULTY_LEVELS[0]
   const accuracy = attempts > 0 ? (correct / attempts) * 100 : 0
@@ -83,8 +84,8 @@ export default function TrainingSession({
     ? 'relative rounded-xl overflow-hidden bg-[#050403] ring-1 ring-amber-900/40'
     : 'relative'
   const statsBarClass = nightMode
-    ? 'bg-[#0d0905]/95 backdrop-blur-sm border-b border-amber-900/40 px-4 py-2 flex items-center justify-between'
-    : 'bg-gray-900/80 backdrop-blur-sm px-4 py-2 flex items-center justify-between'
+    ? 'bg-[#0d0905]/95 backdrop-blur-sm border-b border-amber-900/40 px-2 sm:px-4 py-2 flex items-center justify-between'
+    : 'bg-gray-900/80 backdrop-blur-sm px-2 sm:px-4 py-2 flex items-center justify-between'
   const inactivePanelClass = nightMode
     ? 'bg-[#100b07]/80 border border-amber-900/40 rounded-lg p-6 shadow-inner'
     : 'bg-gray-900/40 border border-primary-400/30 rounded-lg p-6 shadow-inner'
@@ -114,7 +115,31 @@ export default function TrainingSession({
     }
   }, [isActive, onActiveChange])
 
+  // Active practice temporarily yields the two fixed site headers so the local
+  // Exit and response dock own the usable viewport; cleanup restores both.
+  useEffect(() => {
+    if (!isActive || sessionComplete) return
+    const root = document.documentElement
+    const previousValue = root.getAttribute('data-rb-vision-training-active')
+    root.setAttribute('data-rb-vision-training-active', 'true')
+    return () => {
+      if (previousValue === null) root.removeAttribute('data-rb-vision-training-active')
+      else root.setAttribute('data-rb-vision-training-active', previousValue)
+    }
+  }, [isActive, sessionComplete])
+
+  useEffect(() => {
+    if (!isActive || sessionComplete) return
+    const frame = requestAnimationFrame(() => {
+      activeShellRef.current?.scrollIntoView({ block: 'start' })
+      activeShellRef.current?.focus({ preventScroll: true })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [isActive, sessionComplete])
+
   const handleAnswer = (isCorrect: boolean) => {
+    // SnellenChart and BinocularChart own row progression and their completion
+    // prompt. This outer shell records the session without running a second game clock.
     setAttempts(prev => prev + 1)
     if (isCorrect) {
       setCorrect(prev => prev + 1)
@@ -133,47 +158,10 @@ export default function TrainingSession({
       // If struggling, visual feedback is shown (audio disabled)
     }
 
-    // Clear feedback after 1 second and generate new letter
+    // Clear only the outer feedback; the chart advances its own current target.
     setTimeout(() => {
       setFeedback(null)
-      setResetTrigger(prev => prev + 1) // Triggers new random letter
     }, 1000)
-
-    // In untimed mode, just count stats — no forced level changes
-    if (untimed) return
-
-    // Check if should level up or complete session
-    const newAttempts = attempts + 1
-    const newCorrect = isCorrect ? correct + 1 : correct
-    const newAccuracy = (newCorrect / newAttempts) * 100
-
-    if (newAttempts >= 10) {
-      if (newAccuracy >= difficulty.requiredAccuracy) {
-        if (currentLevel < 10) {
-          // Level up!
-          setTimeout(() => {
-            setCurrentLevel(prev => prev + 1)
-            setAttempts(0)
-            setCorrect(0)
-            setResetTrigger(prev => prev + 1) // Generate new letter for new level
-          }, 1500)
-        } else {
-          // Completed all levels!
-          setTimeout(() => {
-            setSessionComplete(true)
-            setIsActive(false)
-            saveSession(true)
-          }, 1500)
-        }
-      } else {
-        // Failed level - try again
-        setTimeout(() => {
-          setAttempts(0)
-          setCorrect(0)
-          setResetTrigger(prev => prev + 1) // Generate new letter for retry
-        }, 1500)
-      }
-    }
   }
 
   // Handle distance progression - the "barbell" concept
@@ -265,25 +253,33 @@ export default function TrainingSession({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-rb-vision-target-distance-cm={targetDistanceCm}>
+      {isActive && !sessionComplete && (
+        <style>{`
+          html[data-rb-vision-training-active="true"] [data-rb-site-header],
+          html[data-rb-vision-training-active="true"] [data-rb-portal-header] {
+            display: none !important;
+          }
+        `}</style>
+      )}
       {/* CHART FIRST when active - this is the main focus! */}
       {isActive && !sessionComplete && (
-        <div className={chartShellClass}>
+        <div ref={activeShellRef} tabIndex={-1} className={`${chartShellClass} scroll-mt-2`}>
           {/* Unified stats bar — matches mockup: stats left, controls right */}
           <div className={statsBarClass}>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-white font-semibold">{difficulty.label}</span>
+            <div className="flex min-w-0 items-center gap-2 text-xs sm:text-sm">
+              <span className="whitespace-nowrap text-white font-semibold">{difficulty.label}</span>
               <span className="text-gray-600">|</span>
               <span className="text-gray-300">{formatTime(sessionDuration)}</span>
               <span className="text-gray-600">|</span>
               <span className={accuracy >= difficulty.requiredAccuracy ? 'text-secondary-400' : 'text-yellow-400'}>
-                {accuracy.toFixed(0)}% ({attempts}/10)
+                {accuracy.toFixed(0)}% ({correct}/{attempts})
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={onExit || (() => setIsActive(false))}
-                className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
+                className="min-h-11 px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold flex items-center gap-1.5 transition-all"
                 title="Exit training (ESC)"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -316,7 +312,9 @@ export default function TrainingSession({
               resetTrigger={resetTrigger}
               deviceMode={deviceMode}
               onChartComplete={() => {
-                // Audio disabled - visual feedback shows chart completion
+                // One complete chart is the honest saved unit. The chart keeps
+                // control so its Stay/Further prompt cannot be cut off by this shell.
+                if (!untimed) void saveSession(accuracy >= difficulty.requiredAccuracy)
               }}
               onDistanceAdjust={(direction) => {
                 if (direction === 'further') {
@@ -335,7 +333,8 @@ export default function TrainingSession({
               deviceMode={deviceMode}
               progressionMode="line-by-line"
               onChartComplete={() => {
-                // Audio disabled - visual feedback shows chart completion
+                // Free Practice stays continuous without adding formal session rows.
+                if (!untimed) void saveSession(accuracy >= difficulty.requiredAccuracy)
               }}
               onDistanceAdjust={(direction) => {
                 if (direction === 'further') {
@@ -405,8 +404,8 @@ export default function TrainingSession({
             </p>
           </div>
           <div className={`${statTileClass} rounded-lg p-3`}>
-            <p className={`${mutedTextClass} text-xs mb-1`}>Attempts</p>
-            <p className="text-white text-xl font-bold">{attempts}/10</p>
+            <p className={`${mutedTextClass} text-xs mb-1`}>Correct / Attempts</p>
+            <p className="text-white text-xl font-bold">{correct}/{attempts}</p>
           </div>
           <div className={`${statTileClass} rounded-lg p-3`}>
             <p className={`${mutedTextClass} text-xs mb-1`}>Required</p>
@@ -553,9 +552,9 @@ export default function TrainingSession({
             <li>• Press Start to begin your training session</li>
             <li>• Position yourself at the target distance shown</li>
             <li>• Identify the letter or direction of the "E"</li>
-            <li>• You need {difficulty.requiredAccuracy}% accuracy to advance (10 attempts per level)</li>
+            <li>• Work through each chart row from largest to smallest</li>
             <li>• Listen for verbal feedback after each answer</li>
-            <li>• Complete all 10 levels to finish the session</li>
+            <li>• Complete the chart to choose Stay or Further</li>
           </ul>
         </div>
       )}

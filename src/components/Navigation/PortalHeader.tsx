@@ -17,6 +17,7 @@ export function PortalHeader({
 }: PortalHeaderProps) {
   return (
     <div
+      data-rb-portal-header
       className="fixed left-0 right-0 z-40 bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30"
       style={{ top: "calc(64px + env(safe-area-inset-top, 0px))" }}
     >

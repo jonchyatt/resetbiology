@@ -41,6 +41,7 @@ export function Header() {
 
   return (
     <header
+      data-rb-site-header
       className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
