@@ -35,6 +35,31 @@ export function screenEStyleThickness(value: unknown): number {
   return SCREEN_E_STYLE_REGISTRY[resolveScreenEStyle(value)].thickness
 }
 
+export function screenEStyleRenderThickness(
+  value: unknown,
+  cssSize: number,
+  devicePixelRatio = 1,
+): number {
+  const style = resolveScreenEStyle(value)
+  const nominalThickness = SCREEN_E_STYLE_REGISTRY[style].thickness
+
+  // Crisp is the protected existing presentation. Thin alone is quantized so
+  // every bar occupies the same whole number of physical pixels at small rows.
+  if (style !== 'thin') return nominalThickness
+
+  const safeCssSize = Number.isFinite(cssSize) && cssSize > 0 ? cssSize : 50
+  const safeDevicePixelRatio = Number.isFinite(devicePixelRatio) && devicePixelRatio > 0
+    ? devicePixelRatio
+    : 1
+  const physicalPixelsPerViewBoxUnit = safeCssSize * safeDevicePixelRatio / 50
+  const physicalThickness = Math.max(
+    1,
+    Math.round(nominalThickness * physicalPixelsPerViewBoxUnit),
+  )
+
+  return physicalThickness / physicalPixelsPerViewBoxUnit
+}
+
 export type ScreenEDirection = typeof SCREEN_E_DIRECTIONS[number]
 export type ScreenEInputMethod = 'touch' | 'pointer' | 'keyboard' | 'voice' | 'helper'
 export type ScreenEDistanceChoice = 'stay' | 'further'

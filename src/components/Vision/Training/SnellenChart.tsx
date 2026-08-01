@@ -14,6 +14,7 @@ import {
   screenEChartPosition,
   screenELineSize,
   screenEResponsePadLayout,
+  screenEStyleRenderThickness,
   screenEStyleThickness,
   type ScreenEDistanceChoice,
   type ScreenEDirection,
@@ -66,7 +67,7 @@ export type EDirection = ScreenEDirection
 // strokeWeight: 'bold' (default) or 'thin' for finer lines = better focus workout
 // animate=false for measurement contexts (SnellenQuickCheck): the 200ms rotation
 // tween briefly shows ambiguous diagonal orientations and ignores reduced-motion.
-export const TumblingE = ({ direction, size, strokeWeight = 'normal', screenEStyle, animate = true }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin'; screenEStyle?: ScreenEStyle; animate?: boolean }) => {
+export const TumblingE = ({ direction, size, strokeWeight = 'normal', screenEStyle, devicePixelRatio = 1, animate = true }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin'; screenEStyle?: ScreenEStyle; devicePixelRatio?: number; animate?: boolean }) => {
   const rotationMap: Record<EDirection, number> = {
     right: 0,
     down: 90,
@@ -77,7 +78,7 @@ export const TumblingE = ({ direction, size, strokeWeight = 'normal', screenESty
   // Stroke thickness based on weight - thinner = more challenging focus
   const thickness = screenEStyle === undefined
     ? strokeWeight === 'bold' ? 10 : strokeWeight === 'thin' ? screenEStyleThickness('thin') : screenEStyleThickness(DEFAULT_SCREEN_E_STYLE)
-    : screenEStyleThickness(screenEStyle)
+    : screenEStyleRenderThickness(screenEStyle, size, devicePixelRatio)
 
   // The E is designed on a 5x5 grid for proper Snellen proportions
   // Horizontal bars are full width (5 units), vertical bar is 1 unit wide
@@ -533,7 +534,7 @@ export default function SnellenChart({
 
         <div className="mb-4 select-none">
           {exerciseType === 'e-directional' ? (
-            <TumblingE direction={singleDirection} size={baseSize * sizeMultiplier} screenEStyle={screenEStyle} />
+            <TumblingE direction={singleDirection} size={baseSize * sizeMultiplier} screenEStyle={screenEStyle} devicePixelRatio={viewportDevicePixelRatio} />
           ) : (
             <SnellenLetter letter={singleLetter} size={baseSize * sizeMultiplier} strokeWeight={strokeWeight} />
           )}
@@ -624,6 +625,7 @@ export default function SnellenChart({
                             direction={dir}
                             size={lineSize}
                             screenEStyle={screenEStyle}
+                            devicePixelRatio={viewportDevicePixelRatio}
                           />
                         </div>
                       </div>

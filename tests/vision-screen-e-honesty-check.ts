@@ -23,6 +23,7 @@ import {
   screenDirectionalEMetrics,
   screenELineSize,
   screenEResponsePadLayout,
+  screenEStyleRenderThickness,
   screenEStyleThickness,
   shouldOfferScreenDirectionalEAfterExercises,
 } from '../src/lib/vision/screenDirectionalE'
@@ -37,6 +38,34 @@ assert.equal(screenEStyleThickness('crisp'), 7, 'Crisp retains the existing norm
 assert.equal(screenEStyleThickness('thin'), 5, 'Thin is the only additive practice thickness')
 assert.equal(resolveScreenEStyle('unknown'), 'crisp', 'unknown styles fail closed to Crisp')
 assert.equal(screenEStyleThickness('unknown'), 7, 'unknown style thickness fails closed to Crisp')
+
+for (const devicePixelRatio of [1, 2, 3]) {
+  for (const cssSize of [55, 45.5, 38, 31.5, 26, 21.5, 18, 15, 12, 10, 8.5, 7, 6, 5]) {
+    assert.equal(
+      screenEStyleRenderThickness('crisp', cssSize, devicePixelRatio),
+      7,
+      'Crisp geometry must remain byte-for-byte at its protected seven-unit thickness',
+    )
+
+    const thinThickness = screenEStyleRenderThickness('thin', cssSize, devicePixelRatio)
+    const physicalScale = cssSize * devicePixelRatio / 50
+    const physicalSpans = [
+      5,
+      25 - thinThickness / 2,
+      45 - thinThickness,
+    ].map(start => (
+      Math.round((start + thinThickness) * physicalScale)
+      - Math.round(start * physicalScale)
+    ))
+
+    assert.ok(physicalSpans[0] >= 1, 'Thin bars retain at least one physical pixel')
+    assert.deepEqual(
+      physicalSpans,
+      [physicalSpans[0], physicalSpans[0], physicalSpans[0]],
+      `Thin top, middle, and bottom bars stay equally thick at ${cssSize}px DPR ${devicePixelRatio}`,
+    )
+  }
+}
 
 const sizesAt390 = SCREEN_E_LINE_MULTIPLIERS.map((_, index) => screenELineSize(390, index))
 assert.equal(SCREEN_E_LINE_MULTIPLIERS.length, 14, 'the shared scale contains fourteen additive rows')
