@@ -74,13 +74,13 @@ assert.deepEqual(
   'the selected marker descends through opening rows before central tracking',
 )
 assert.deepEqual(
-  chartPositions.slice(2, 11).map(position => position.phase),
-  Array(9).fill('tracking'),
+  chartPositions.slice(2, 9).map(position => position.phase),
+  Array(7).fill('tracking'),
   'the middle rows retain a central marker while the complete strip travels',
 )
 assert.deepEqual(
-  chartPositions.slice(11).map(position => position.phase),
-  Array(3).fill('closing'),
+  chartPositions.slice(9).map(position => position.phase),
+  Array(5).fill('closing'),
   'the selected marker descends again through the final rows',
 )
 for (let index = 1; index < chartPositions.length; index += 1) {
@@ -90,11 +90,21 @@ for (let index = 1; index < chartPositions.length; index += 1) {
   )
 }
 assert.ok(chartPositions[1].markerY > chartPositions[0].markerY, 'opening marker descends')
-assert.equal(chartPositions[2].markerY, chartPositions[10].markerY, 'tracking marker stays centered')
-for (let index = 12; index < chartPositions.length; index += 1) {
+assert.equal(chartPositions[2].markerY, chartPositions[8].markerY, 'tracking marker stays centered')
+for (let index = 9; index < chartPositions.length; index += 1) {
   assert.ok(chartPositions[index].markerY > chartPositions[index - 1].markerY, 'every closing marker transition descends')
 }
-assert.equal(chartPositions[10].stripOffsetY, chartPositions[11].stripOffsetY, 'strip stops before final descent')
+assert.equal(chartPositions[8].stripOffsetY, chartPositions[9].stripOffsetY, 'strip stops before final descent')
+for (let index = 9; index < chartPositions.length; index += 1) {
+  assert.ok(
+    chartPositions[index].rowCenters[index] - chartPositions[index].rowCenters[index - 1] <= 19,
+    'fine rows remain a continuous visual ladder without oversized empty bands',
+  )
+}
+assert.ok(
+  chartPositions.at(-1)!.markerY > 200 && chartPositions.at(-1)!.markerY < SCREEN_E_CHART_STAGE_HEIGHT,
+  'the compact fine-row ladder still ends near the controls',
+)
 assert.equal(SCREEN_E_CHART_STAGE_HEIGHT, 260, 'the chart viewport is a stable clipped stage')
 const responsePad = screenEResponsePadLayout()
 assert.equal(responsePad.buttonSize, SCREEN_E_RESPONSE_BUTTON_SIZE)

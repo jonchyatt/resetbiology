@@ -111,7 +111,9 @@ export function screenEChartTravel(totalLines: number, lineIndex: number): Scree
 
   const openingLineCount = Math.min(3, totalLines)
   const trackingStartLineIndex = openingLineCount - 1
-  const closingLineCount = totalLines > openingLineCount ? Math.min(3, totalLines - openingLineCount) : 0
+  // Spread the final descent across five fine rows. Tiny optotypes no longer
+  // need oversized empty slots just to carry the marker toward the controls.
+  const closingLineCount = totalLines > openingLineCount ? Math.min(5, totalLines - openingLineCount) : 0
   const closingStartLineIndex = totalLines - closingLineCount
   const finalTrackingLineIndex = Math.max(trackingStartLineIndex, closingStartLineIndex - 1)
 
@@ -144,7 +146,7 @@ export function screenEChartPosition(
 ): ScreenEChartPosition {
   const travel = screenEChartTravel(totalLines, lineIndex)
   const rowHeights = Array.from({ length: totalLines }, (_, index) =>
-    Math.max(28, Math.ceil(screenELineSize(viewportCssWidth, index, devicePixelRatio) + 10)),
+    Math.max(14, Math.ceil(screenELineSize(viewportCssWidth, index, devicePixelRatio) + 8)),
   )
   const rowCenters = rowHeights.reduce<number[]>((centers, height, index) => {
     const previousCenter = centers[index - 1]
