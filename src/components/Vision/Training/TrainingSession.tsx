@@ -2,11 +2,17 @@
 
 import { useState, useEffect, useRef } from 'react'
 import SnellenChart from './SnellenChart'
+import ScreenEStylePicker from './ScreenEStylePicker'
 import BinocularChart from './BinocularChart'
 import type { BinocularMode } from './BinocularChart'
 import DistanceGuidance from './DistanceGuidance'
 import { Play, Pause, RotateCcw, CheckCircle, XCircle, Glasses, MoveHorizontal, Trophy, ArrowRight } from 'lucide-react'
 import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
+import {
+  DEFAULT_SCREEN_E_STYLE,
+  resolveScreenEStyle,
+  type ScreenEStyle,
+} from '@/lib/vision/screenDirectionalE'
 
 interface TrainingSessionProps {
   visionType: 'near' | 'far'
@@ -18,6 +24,8 @@ interface TrainingSessionProps {
   nightMode?: boolean
   /** false = mount on the intro/settings screen with explicit Start (default true preserves Focus Training tab auto-start). */
   autoStart?: boolean
+  screenEStyle?: ScreenEStyle
+  onScreenEStyleChange?: (style: ScreenEStyle) => void
   onActiveChange?: (isActive: boolean) => void
   onExit?: () => void
 }
@@ -55,6 +63,8 @@ export default function TrainingSession({
   untimed = false,
   nightMode = false,
   autoStart = true,
+  screenEStyle,
+  onScreenEStyleChange,
   onActiveChange,
   onExit
 }: TrainingSessionProps) {
@@ -62,12 +72,21 @@ export default function TrainingSession({
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
   // Auto-start when component mounts unless caller wants an intro/settings screen first (autoStart=false)
   const [isActive, setIsActive] = useState(autoStart)
+  const [localScreenEStyle, setLocalScreenEStyle] = useState<ScreenEStyle>(DEFAULT_SCREEN_E_STYLE)
   const [attempts, setAttempts] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [sessionDuration, setSessionDuration] = useState(0)
   const [resetTrigger, setResetTrigger] = useState(0) // Increments to trigger new letter
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [sessionComplete, setSessionComplete] = useState(false)
+  const activeScreenEStyle = screenEStyle === undefined
+    ? localScreenEStyle
+    : resolveScreenEStyle(screenEStyle)
+
+  const handleScreenEStyleChange = (nextStyle: ScreenEStyle) => {
+    if (screenEStyle === undefined) setLocalScreenEStyle(nextStyle)
+    onScreenEStyleChange?.(nextStyle)
+  }
 
   // Distance progression state for nearsightedness training
   const [targetDistanceCm, setTargetDistanceCm] = useState(deviceMode === 'desktop' ? 80 : 25) // Start close for phone, farther for desktop
@@ -332,6 +351,7 @@ export default function TrainingSession({
               resetTrigger={resetTrigger}
               deviceMode={deviceMode}
               progressionMode="line-by-line"
+              screenEStyle={activeScreenEStyle}
               onChartComplete={() => {
                 // Free Practice stays continuous without adding formal session rows.
                 if (!untimed) void saveSession(accuracy >= difficulty.requiredAccuracy)
@@ -413,6 +433,16 @@ export default function TrainingSession({
           </div>
         </div>
       </div>
+      )}
+
+      {!isActive && !sessionComplete && exerciseType === 'e-directional' && !isBinocular && (
+        <div className={inactivePanelClass}>
+          <ScreenEStylePicker
+            value={activeScreenEStyle}
+            onChange={handleScreenEStyleChange}
+            nightMode={nightMode}
+          />
+        </div>
       )}
 
       {/* Distance Progression Panel - for near vision training - hide when active */}

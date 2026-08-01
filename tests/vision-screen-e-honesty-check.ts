@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
+  DEFAULT_SCREEN_E_STYLE,
   SCREEN_DIRECTIONAL_E_PROTOCOL,
   SCREEN_DIRECTIONAL_E_VERSION,
   SCREEN_E_CORRECT_TO_PASS,
@@ -11,21 +12,31 @@ import {
   SCREEN_E_MIN_LEGIBLE_PHYSICAL_PX,
   SCREEN_E_QUICK_CHECK_STIMULUS_STAGE_HEIGHT,
   SCREEN_E_RESPONSE_BUTTON_SIZE,
+  SCREEN_E_STYLE_REGISTRY,
   SCREEN_E_TRIALS_PER_LINE,
   balancedScreenEDirections,
   createScreenDirectionalEEvidence,
   mergeResultsPreservingOpeningScreenCheck,
   parseScreenEDistanceChoice,
+  resolveScreenEStyle,
   screenEChartPosition,
   screenDirectionalEMetrics,
   screenELineSize,
   screenEResponsePadLayout,
+  screenEStyleThickness,
   shouldOfferScreenDirectionalEAfterExercises,
 } from '../src/lib/vision/screenDirectionalE'
 import {
   parseEngineResults,
   performanceBonusFor,
 } from '../src/lib/vision/engineResultsPayload'
+
+assert.deepEqual(Object.keys(SCREEN_E_STYLE_REGISTRY), ['crisp', 'thin'], 'the practice registry exposes exactly two styles')
+assert.equal(DEFAULT_SCREEN_E_STYLE, 'crisp', 'Crisp remains the protected default')
+assert.equal(screenEStyleThickness('crisp'), 7, 'Crisp retains the existing normal thickness')
+assert.equal(screenEStyleThickness('thin'), 5, 'Thin is the only additive practice thickness')
+assert.equal(resolveScreenEStyle('unknown'), 'crisp', 'unknown styles fail closed to Crisp')
+assert.equal(screenEStyleThickness('unknown'), 7, 'unknown style thickness fails closed to Crisp')
 
 const sizesAt390 = SCREEN_E_LINE_MULTIPLIERS.map((_, index) => screenELineSize(390, index))
 assert.equal(SCREEN_E_LINE_MULTIPLIERS.length, 14, 'the shared scale contains fourteen additive rows')
@@ -61,6 +72,11 @@ for (let index = 1; index < SCREEN_E_LINE_LETTER_COUNTS.length; index += 1) {
 assert.ok(
   SCREEN_E_LINE_LETTER_COUNTS.slice(7).every(count => count === 8),
   'every added fine row preserves eight optotypes',
+)
+assert.equal(
+  SCREEN_E_LINE_LETTER_COUNTS.reduce((total, count) => total + count, 0),
+  94,
+  'Crisp and Thin share the complete fourteen-row, ninety-four-optotype workout',
 )
 
 assert.equal(screenELineSize(200, 0), 48, 'small screens clamp line 1 to 48 CSS pixels')
@@ -280,6 +296,8 @@ const sources = {
   weekly: readFileSync(new URL('../src/components/Vision/Training/WeeklyAssessment.tsx', import.meta.url), 'utf8'),
   runner: readFileSync(new URL('../src/components/Vision/Training/SessionRunner.tsx', import.meta.url), 'utf8'),
   training: readFileSync(new URL('../src/components/Vision/Training/TrainingSession.tsx', import.meta.url), 'utf8'),
+  picker: readFileSync(new URL('../src/components/Vision/Training/ScreenEStylePicker.tsx', import.meta.url), 'utf8'),
+  vision: readFileSync(new URL('../src/components/Vision/VisionTraining.tsx', import.meta.url), 'utf8'),
   header: readFileSync(new URL('../src/components/Navigation/Header.tsx', import.meta.url), 'utf8'),
   portalHeader: readFileSync(new URL('../src/components/Navigation/PortalHeader.tsx', import.meta.url), 'utf8'),
   protocols: readFileSync(new URL('../src/data/visionProtocols.ts', import.meta.url), 'utf8'),
@@ -292,7 +310,25 @@ for (const [name, source] of Object.entries(sources)) {
 }
 
 assert.match(sources.quick, /screenELineSize\(viewportWidth, lineIndex, devicePixelRatio\)/)
+assert.match(sources.quick, /strokeWeight="normal"/, 'baseline and retake checks stay explicitly normal, which is Crisp')
 assert.match(sources.chart, /screenELineSize\(viewportWidth, lineIdx, viewportDevicePixelRatio\)/)
+assert.match(sources.chart, /screenEStyle = DEFAULT_SCREEN_E_STYLE/)
+assert.match(sources.chart, /screenEStyle=\{screenEStyle\}/)
+assert.doesNotMatch(sources.chart, /<SnellenLetter[\s\S]{0,160}screenEStyle=/, 'letter rendering never receives the E-only style')
+assert.match(sources.picker, /import \{ TumblingE \} from '\.\/SnellenChart'/, 'the selector uses the production vector optotype')
+assert.equal((sources.picker.match(/<TumblingE/g) || []).length, 1, 'both style cards are generated through one production specimen seam')
+assert.match(sources.picker, /role="radiogroup"/)
+assert.match(sources.picker, /role="radio"/)
+assert.match(sources.picker, /aria-checked=\{selected\}/)
+assert.match(sources.picker, /min-h-11/)
+assert.match(sources.picker, /grid grid-cols-2/)
+assert.match(sources.picker, /same 14-row workout\. Only the line weight changes\./)
+assert.match(sources.picker, /Baseline checks stay Crisp so results remain comparable\./)
+assert.doesNotMatch(sources.picker, /Whisper|voiceDirection|voiceEnabled|Mic/)
+assert.match(sources.training, /!isActive && !sessionComplete && exerciseType === 'e-directional' && !isBinocular/)
+assert.match(sources.training, /screenEStyle=\{activeScreenEStyle\}/)
+assert.match(sources.vision, /trainerExerciseType === 'e-directional' && binocularMode === 'off'/)
+assert.match(sources.vision, /screenEStyle=\{screenEStyle\}/)
 assert.match(sources.quick, /SCREEN_E_TRIALS_PER_LINE/)
 assert.match(sources.quick, /SCREEN_E_CORRECT_TO_PASS/)
 assert.match(sources.quick, /SCREEN_E_QUICK_CHECK_STIMULUS_STAGE_HEIGHT/)

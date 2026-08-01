@@ -19,7 +19,12 @@ import CurriculumOverview from './Training/CurriculumOverview'
 import DailyPractice from './Training/DailyPractice'
 import QuickPractice from './Training/QuickPractice'
 import TrainingSession from './Training/TrainingSession'
+import ScreenEStylePicker from './Training/ScreenEStylePicker'
 import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
+import {
+  DEFAULT_SCREEN_E_STYLE,
+  type ScreenEStyle,
+} from '@/lib/vision/screenDirectionalE'
 import { useToast } from '@/components/ui/Toast'
 
 type TabMode = 'today' | 'trainer' | 'exercises'
@@ -147,6 +152,7 @@ export function VisionTraining() {
   const [trainerDeviceMode, setTrainerDeviceMode] = useState<'phone' | 'desktop'>('phone')
   const [binocularMode, setBinocularMode] = useState<'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'>('off')
   const [untimedMode, setUntimedMode] = useState(false)
+  const [screenEStyle, setScreenEStyle] = useState<ScreenEStyle>(DEFAULT_SCREEN_E_STYLE)
   const [isTrainingActive, setIsTrainingActive] = useState(false)
 
   useEffect(() => {
@@ -557,6 +563,16 @@ export function VisionTraining() {
                       </div>
                     </div>
 
+                    {trainerExerciseType === 'e-directional' && binocularMode === 'off' && (
+                      <div className="border-t border-gray-700/30 pt-3">
+                        <ScreenEStylePicker
+                          value={screenEStyle}
+                          onChange={setScreenEStyle}
+                          nightMode={nightMode}
+                        />
+                      </div>
+                    )}
+
                     {/* Dynamic info text */}
                     <p className="text-xs sm:text-sm text-gray-400 mb-3">
                       {visionTrainingFocusCopy(trainerVisionType)}
@@ -628,6 +644,7 @@ export function VisionTraining() {
                           binocularMode={binocularMode}
                           untimed={untimedMode}
                           nightMode={nightMode}
+                          screenEStyle={screenEStyle}
                           onExit={() => setIsTrainingActive(false)}
                           onActiveChange={(active) => {
                             if (!active) setIsTrainingActive(false)
@@ -653,6 +670,7 @@ export function VisionTraining() {
                       binocularMode={binocularMode}
                       untimed={untimedMode}
                       nightMode={nightMode}
+                      screenEStyle={screenEStyle}
                       onActiveChange={(active) => {
                         if (!active) setIsTrainingActive(false)
                       }}

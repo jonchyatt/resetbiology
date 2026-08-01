@@ -5,6 +5,7 @@ import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal,
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 import { SpeechQueue } from '@/lib/vision/audioKit'
 import {
+  DEFAULT_SCREEN_E_STYLE,
   SCREEN_E_CHART_STAGE_HEIGHT,
   SCREEN_E_DIRECTIONS,
   SCREEN_E_LINE_LETTER_COUNTS,
@@ -13,8 +14,10 @@ import {
   screenEChartPosition,
   screenELineSize,
   screenEResponsePadLayout,
+  screenEStyleThickness,
   type ScreenEDistanceChoice,
   type ScreenEDirection,
+  type ScreenEStyle,
 } from '@/lib/vision/screenDirectionalE'
 
 interface SnellenChartProps {
@@ -27,6 +30,7 @@ interface SnellenChartProps {
   progressionMode?: 'single' | 'line-by-line'
   onChartComplete?: () => void
   onDistanceAdjust?: (direction: 'closer' | 'further') => void
+  screenEStyle?: ScreenEStyle
 }
 
 // Each row remains an additive part of the long chart. The shared scale is
@@ -62,7 +66,7 @@ export type EDirection = ScreenEDirection
 // strokeWeight: 'bold' (default) or 'thin' for finer lines = better focus workout
 // animate=false for measurement contexts (SnellenQuickCheck): the 200ms rotation
 // tween briefly shows ambiguous diagonal orientations and ignores reduced-motion.
-export const TumblingE = ({ direction, size, strokeWeight = 'normal', animate = true }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin'; animate?: boolean }) => {
+export const TumblingE = ({ direction, size, strokeWeight = 'normal', screenEStyle, animate = true }: { direction: EDirection; size: number; strokeWeight?: 'bold' | 'normal' | 'thin'; screenEStyle?: ScreenEStyle; animate?: boolean }) => {
   const rotationMap: Record<EDirection, number> = {
     right: 0,
     down: 90,
@@ -71,7 +75,9 @@ export const TumblingE = ({ direction, size, strokeWeight = 'normal', animate = 
   }
 
   // Stroke thickness based on weight - thinner = more challenging focus
-  const thickness = strokeWeight === 'bold' ? 10 : strokeWeight === 'thin' ? 5 : 7
+  const thickness = screenEStyle === undefined
+    ? strokeWeight === 'bold' ? 10 : strokeWeight === 'thin' ? screenEStyleThickness('thin') : screenEStyleThickness(DEFAULT_SCREEN_E_STYLE)
+    : screenEStyleThickness(screenEStyle)
 
   // The E is designed on a 5x5 grid for proper Snellen proportions
   // Horizontal bars are full width (5 units), vertical bar is 1 unit wide
@@ -154,7 +160,8 @@ export default function SnellenChart({
   deviceMode = 'phone',
   progressionMode = 'line-by-line',
   onChartComplete,
-  onDistanceAdjust
+  onDistanceAdjust,
+  screenEStyle = DEFAULT_SCREEN_E_STYLE,
 }: SnellenChartProps) {
   // Chart state
   const [chartData, setChartData] = useState(() => generateChartData(exerciseType))
@@ -526,7 +533,7 @@ export default function SnellenChart({
 
         <div className="mb-4 select-none">
           {exerciseType === 'e-directional' ? (
-            <TumblingE direction={singleDirection} size={baseSize * sizeMultiplier} strokeWeight={strokeWeight} />
+            <TumblingE direction={singleDirection} size={baseSize * sizeMultiplier} screenEStyle={screenEStyle} />
           ) : (
             <SnellenLetter letter={singleLetter} size={baseSize * sizeMultiplier} strokeWeight={strokeWeight} />
           )}
@@ -616,7 +623,7 @@ export default function SnellenChart({
                           <TumblingE
                             direction={dir}
                             size={lineSize}
-                            strokeWeight={getLineStrokeWeight(lineIdx)}
+                            screenEStyle={screenEStyle}
                           />
                         </div>
                       </div>

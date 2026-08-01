@@ -17,6 +17,24 @@ export const SCREEN_E_RESPONSE_BUTTON_SIZE = 48
 export const SCREEN_E_RESPONSE_BUTTON_GAP = 8
 export const SCREEN_E_CHART_STAGE_HEIGHT = 260
 
+export const SCREEN_E_STYLE_REGISTRY = {
+  crisp: { label: 'Crisp', thickness: 7 },
+  thin: { label: 'Thin', thickness: 5 },
+} as const
+
+export type ScreenEStyle = keyof typeof SCREEN_E_STYLE_REGISTRY
+export const DEFAULT_SCREEN_E_STYLE: ScreenEStyle = 'crisp'
+
+export function resolveScreenEStyle(value: unknown): ScreenEStyle {
+  return typeof value === 'string' && Object.hasOwn(SCREEN_E_STYLE_REGISTRY, value)
+    ? value as ScreenEStyle
+    : DEFAULT_SCREEN_E_STYLE
+}
+
+export function screenEStyleThickness(value: unknown): number {
+  return SCREEN_E_STYLE_REGISTRY[resolveScreenEStyle(value)].thickness
+}
+
 export type ScreenEDirection = typeof SCREEN_E_DIRECTIONS[number]
 export type ScreenEInputMethod = 'touch' | 'pointer' | 'keyboard' | 'voice' | 'helper'
 export type ScreenEDistanceChoice = 'stay' | 'further'
