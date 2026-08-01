@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { drawGaborPatch, fitCanvasToElement } from '@/lib/vision/canvasKit'
+import { drawGaborPatch, fitCanvasToElement, type GaborOpts } from '@/lib/vision/canvasKit'
 
 interface GaborPatchProps {
   // Size of the patch in pixels
@@ -18,6 +18,8 @@ interface GaborPatchProps {
   phase?: number
   // Background color (gray for best contrast perception)
   backgroundColor?: string
+  // Keep legacy callers unchanged; controlled charts opt into mean matching.
+  rasterMode?: GaborOpts['rasterMode']
   // Optional className for positioning
   className?: string
   // Animation - for attention/tracking exercises
@@ -36,6 +38,7 @@ export default function GaborPatch({
   sigma,
   phase = 0,
   backgroundColor = '#808080', // Mid-gray for optimal contrast perception
+  rasterMode = 'legacy-opaque',
   className = '',
   animate = false,
   animationSpeed = 0.5
@@ -80,7 +83,7 @@ export default function GaborPatch({
         contrast,
         sigma: effectiveSigma,
         phase: currentPhase,
-        rasterMode: 'legacy-opaque',
+        rasterMode,
         ...(animate ? { phaseQuantizationDegrees: 20 } : {}),
       })
     }
@@ -110,7 +113,7 @@ export default function GaborPatch({
     } else {
       renderGabor(phase)
     }
-  }, [size, orientation, frequency, contrast, effectiveSigma, phase, animate, animationSpeed, layoutVersion])
+  }, [size, orientation, frequency, contrast, effectiveSigma, phase, animate, animationSpeed, layoutVersion, rasterMode])
 
   return (
     <canvas

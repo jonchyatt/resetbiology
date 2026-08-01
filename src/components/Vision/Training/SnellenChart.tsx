@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 import { SpeechQueue } from '@/lib/vision/audioKit'
+import GaborPatch from './GaborPatch'
+import GaborResponseCompass from './GaborResponseCompass'
 import {
   DEFAULT_SCREEN_E_STYLE,
   SCREEN_E_CHART_STAGE_HEIGHT,
@@ -20,6 +22,21 @@ import {
   type ScreenEDirection,
   type ScreenEStyle,
 } from '@/lib/vision/screenDirectionalE'
+import {
+  DEFAULT_SCREEN_PRACTICE_MODE,
+  SCREEN_GABOR_CONTRAST,
+  SCREEN_GABOR_FREQUENCY_CYCLES,
+  SCREEN_GABOR_MEAN_GRAY,
+  SCREEN_GABOR_RASTER_MODE,
+  SCREEN_GABOR_SIGMA_RATIO,
+  balancedScreenGaborChoices,
+  parseScreenGaborChoice,
+  resolveScreenPracticeMode,
+  screenGaborLineSize,
+  screenGaborManifestEntry,
+  type ScreenGaborChoice,
+  type ScreenPracticeMode,
+} from '@/lib/vision/screenGaborPractice'
 
 interface SnellenChartProps {
   chartSize: string
@@ -31,6 +48,7 @@ interface SnellenChartProps {
   progressionMode?: 'single' | 'line-by-line'
   onChartComplete?: () => void
   onDistanceAdjust?: (direction: 'closer' | 'further') => void
+  practiceMode?: ScreenPracticeMode
   screenEStyle?: ScreenEStyle
 }
 
@@ -147,7 +165,8 @@ const generateChartData = (exerciseType: 'letters' | 'e-directional') => {
   return CHART_LINES.map(line => ({
     ...line,
     directions: generateLineDirections(line.letterCount),
-    letters: generateLineLetters(line.letterCount)
+    letters: generateLineLetters(line.letterCount),
+    gaborChoices: balancedScreenGaborChoices(line.letterCount),
   }))
 }
 
@@ -162,8 +181,11 @@ export default function SnellenChart({
   progressionMode = 'line-by-line',
   onChartComplete,
   onDistanceAdjust,
+  practiceMode = DEFAULT_SCREEN_PRACTICE_MODE,
   screenEStyle = DEFAULT_SCREEN_E_STYLE,
 }: SnellenChartProps) {
+  const activePracticeMode = resolveScreenPracticeMode(practiceMode)
+  const isGaborPractice = exerciseType === 'e-directional' && activePracticeMode === 'gabor'
   // Chart state
   const [chartData, setChartData] = useState(() => generateChartData(exerciseType))
   const [currentLineIndex, setCurrentLineIndex] = useState(0)
@@ -237,12 +259,12 @@ export default function SnellenChart({
     }
   }, [resetTrigger, progressionMode])
 
-  // Regenerate chart when exerciseType changes
+  // Regenerate chart when the exercise or its practice presentation changes.
   useEffect(() => {
     setChartData(generateChartData(exerciseType))
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
-  }, [exerciseType])
+  }, [exerciseType, activePracticeMode])
 
   // Generate new letter choices when current letter changes
   useEffect(() => {
@@ -284,6 +306,13 @@ export default function SnellenChart({
           if (distanceChoice) distanceChoiceActionRef.current(distanceChoice)
           return
         }
+        if (isGaborPractice) {
+          const gaborChoice = parseScreenGaborChoice(rawTranscript)
+          if (gaborChoice) {
+            window.dispatchEvent(new CustomEvent('voiceGaborChoice', { detail: gaborChoice }))
+          }
+          return
+        }
         if (!answer) return
 
         if (answer.type === 'direction' && exerciseType === 'e-directional') {
@@ -308,11 +337,12 @@ export default function SnellenChart({
     return () => {
       WhisperService.stop()
     }
-  }, [voiceEnabled, exerciseType])
+  }, [voiceEnabled, exerciseType, isGaborPractice])
 
   // Listen for voice direction events
   const handleLineByLineAnswerRef = useRef((..._args: Parameters<typeof handleLineByLineAnswer>) => {})
   const handleLetterAnswerRef = useRef((..._args: Parameters<typeof handleLetterAnswer>) => {})
+  const handleGaborAnswerRef = useRef((..._args: Parameters<typeof handleGaborAnswer>) => {})
 
   // Refs updated after function definitions below (see after handleLetterAnswer)
 
@@ -320,13 +350,23 @@ export default function SnellenChart({
     if (!voiceEnabled) return
     const handler = (e: Event) => {
       const direction = (e as CustomEvent).detail as EDirection
-      if (direction && exerciseType === 'e-directional') {
+      if (direction && exerciseType === 'e-directional' && !isGaborPractice) {
         handleLineByLineAnswerRef.current(direction)
       }
     }
     window.addEventListener('voiceDirection', handler)
     return () => window.removeEventListener('voiceDirection', handler)
-  }, [voiceEnabled, exerciseType])
+  }, [voiceEnabled, exerciseType, isGaborPractice])
+
+  useEffect(() => {
+    if (!voiceEnabled) return
+    const handler = (e: Event) => {
+      const choice = (e as CustomEvent).detail as ScreenGaborChoice
+      if (choice && isGaborPractice) handleGaborAnswerRef.current(choice)
+    }
+    window.addEventListener('voiceGaborChoice', handler)
+    return () => window.removeEventListener('voiceGaborChoice', handler)
+  }, [voiceEnabled, isGaborPractice])
 
   useEffect(() => {
     if (!voiceEnabled) return
@@ -418,6 +458,47 @@ export default function SnellenChart({
     }
   }
 
+  // Gabor touch and spoken-number answers use the same progression and the
+  // same one-shot gate as the protected directional-E path.
+  const handleGaborAnswer = (selectedChoice: ScreenGaborChoice) => {
+    if (!acceptingAnswerRef.current) return
+    const currentLine = chartData[currentLineIndex]
+    if (!currentLine) return
+    acceptingAnswerRef.current = false
+
+    const correctChoice = currentLine.gaborChoices[currentLetterIndex]
+    const isCorrect = selectedChoice === correctChoice
+    setFeedback(isCorrect ? 'correct' : 'incorrect')
+    onAnswer(isCorrect)
+
+    if (isCorrect) {
+      setConsecutiveFailures(0)
+      settleChartMotion(() => {
+        if (currentLetterIndex < currentLine.letterCount - 1) {
+          setCurrentLetterIndex(prev => prev + 1)
+        } else if (currentLineIndex >= CHART_LINES.length - 1) {
+          openDistancePrompt()
+        } else {
+          setCurrentLineIndex(prev => prev + 1)
+          setCurrentLetterIndex(0)
+        }
+      })
+      return
+    }
+
+    const shouldRegenerate = consecutiveFailures >= 2
+    setConsecutiveFailures(prev => prev + 1)
+    settleChartMotion(() => {
+      if (!shouldRegenerate) return
+      acceptingAnswerRef.current = false
+      motionSettleTimerRef.current = setTimeout(() => {
+        regenerateChart()
+        acceptingAnswerRef.current = true
+      }, 1100)
+      return true
+    })
+  }
+
   // Handle answer for letter mode
   const handleLetterAnswer = (selectedLetter: string) => {
     if (!acceptingAnswerRef.current) return
@@ -469,6 +550,7 @@ export default function SnellenChart({
   // Keep refs in sync so voice event listeners always call latest versions
   handleLineByLineAnswerRef.current = handleLineByLineAnswer
   handleLetterAnswerRef.current = handleLetterAnswer
+  handleGaborAnswerRef.current = handleGaborAnswer
 
   // Handle distance adjustment - TINY increments like adding 2.5lb plates
   const handleDistanceAdjust = (direction: 'closer' | 'further') => {
@@ -527,13 +609,30 @@ export default function SnellenChart({
     }
     const sizeMultiplier = LEVEL_SIZES[chartSize] || 1
     const baseSize = getBaseSize()
+    const singleGaborChoice = chartData[0]?.gaborChoices[0] ?? 1
+    const singleGaborEntry = screenGaborManifestEntry(singleGaborChoice)
+    const singleStimulusSize = baseSize * sizeMultiplier
 
     return (
-      <div className="flex flex-col items-center bg-white rounded-lg p-4">
+      <div
+        className={`flex flex-col items-center rounded-lg p-4 ${isGaborPractice ? 'bg-[#808080]' : 'bg-white'}`}
+        data-screen-practice-mode={activePracticeMode}
+      >
         <div className="text-gray-500 text-xs mb-2">{chartSize} Level</div>
 
         <div className="mb-4 select-none">
-          {exerciseType === 'e-directional' ? (
+          {isGaborPractice ? (
+            <GaborPatch
+              size={singleStimulusSize}
+              orientation={singleGaborEntry.orientationDegrees}
+              frequency={SCREEN_GABOR_FREQUENCY_CYCLES}
+              contrast={SCREEN_GABOR_CONTRAST}
+              sigma={singleStimulusSize * SCREEN_GABOR_SIGMA_RATIO}
+              backgroundColor={SCREEN_GABOR_MEAN_GRAY}
+              rasterMode={SCREEN_GABOR_RASTER_MODE}
+              animate={false}
+            />
+          ) : exerciseType === 'e-directional' ? (
             <TumblingE direction={singleDirection} size={baseSize * sizeMultiplier} screenEStyle={screenEStyle} devicePixelRatio={viewportDevicePixelRatio} />
           ) : (
             <SnellenLetter letter={singleLetter} size={baseSize * sizeMultiplier} strokeWeight={strokeWeight} />
@@ -541,7 +640,14 @@ export default function SnellenChart({
         </div>
 
         {/* Direction buttons for E, Letter buttons for letters */}
-        {exerciseType === 'e-directional' ? (
+        {isGaborPractice ? (
+          <GaborResponseCompass
+            onSelect={(choice) => {
+              onAnswer(choice === singleGaborChoice)
+              setChartData(generateChartData(exerciseType))
+            }}
+          />
+        ) : exerciseType === 'e-directional' ? (
           <DirectionButtons
             onSelect={(dir) => {
               onAnswer(dir === singleDirection)
@@ -573,11 +679,9 @@ export default function SnellenChart({
     currentLineIndex,
     chartData.length,
   )
-  const activeLineSize = screenELineSize(
-    viewportWidth,
-    currentLineIndex,
-    viewportDevicePixelRatio,
-  )
+  const activeLineSize = isGaborPractice
+    ? screenGaborLineSize(viewportWidth, currentLineIndex, viewportDevicePixelRatio)
+    : screenELineSize(viewportWidth, currentLineIndex, viewportDevicePixelRatio)
   const activeMarkerOffsetX = currentLine
     ? (currentLetterIndex - (currentLine.letterCount - 1) / 2) * (activeLineSize + 8)
     : 0
@@ -590,19 +694,27 @@ export default function SnellenChart({
   }
 
   return (
-    <div className="flex flex-col items-center bg-white rounded-lg p-2">
+    <div
+      className={`flex flex-col items-center rounded-lg p-2 ${isGaborPractice ? 'bg-[#808080]' : 'bg-white'}`}
+      data-screen-practice-mode={activePracticeMode}
+    >
       {/* The complete strip stays mounted; the clipped viewport only hides rows outside view. */}
       <div
         className="relative w-full max-w-xl overflow-hidden mb-2"
-        style={{ height: SCREEN_E_CHART_STAGE_HEIGHT }}
-        aria-label="Long directional-E chart"
+        style={{
+          height: SCREEN_E_CHART_STAGE_HEIGHT,
+          backgroundColor: isGaborPractice ? SCREEN_GABOR_MEAN_GRAY : undefined,
+        }}
+        aria-label={isGaborPractice ? 'Long Gabor orientation chart' : 'Long directional-E chart'}
       >
         <div
           className="absolute inset-x-0 top-0 transition-transform duration-300 ease-out"
           style={{ transform: `translateY(${chartPosition.stripOffsetY}px)` }}
         >
           {chartData.map((line, lineIdx) => {
-            const lineSize = screenELineSize(viewportWidth, lineIdx, viewportDevicePixelRatio)
+            const lineSize = isGaborPractice
+              ? screenGaborLineSize(viewportWidth, lineIdx, viewportDevicePixelRatio)
+              : screenELineSize(viewportWidth, lineIdx, viewportDevicePixelRatio)
             const isCurrentLine = lineIdx === currentLineIndex
 
             return (
@@ -613,7 +725,35 @@ export default function SnellenChart({
                 }`}
                 style={{ height: chartPosition.rowHeights[lineIdx] }}
               >
-                {exerciseType === 'e-directional' ? (
+                {isGaborPractice ? (
+                  line.gaborChoices.map((choice, letterIdx) => {
+                    const entry = screenGaborManifestEntry(choice)
+                    const isCurrentLetter = isCurrentLine && letterIdx === currentLetterIndex
+                    const isPastLetter = isCurrentLine && letterIdx < currentLetterIndex
+
+                    return (
+                      <div
+                        key={letterIdx}
+                        className="flex items-center justify-center"
+                        data-screen-gabor-target-choice={choice}
+                        data-screen-gabor-active-target={isCurrentLetter ? 'true' : undefined}
+                      >
+                        <div className={`${isPastLetter ? 'opacity-30' : ''} ${isCurrentLetter ? getFeedbackClass() + ' rounded-full' : ''}`}>
+                          <GaborPatch
+                            size={lineSize}
+                            orientation={entry.orientationDegrees}
+                            frequency={SCREEN_GABOR_FREQUENCY_CYCLES}
+                            contrast={SCREEN_GABOR_CONTRAST}
+                            sigma={lineSize * SCREEN_GABOR_SIGMA_RATIO}
+                            backgroundColor={SCREEN_GABOR_MEAN_GRAY}
+                            rasterMode={SCREEN_GABOR_RASTER_MODE}
+                            animate={false}
+                          />
+                        </div>
+                      </div>
+                    )
+                  })
+                ) : exerciseType === 'e-directional' ? (
                   line.directions.map((dir, letterIdx) => {
                     const isCurrentLetter = isCurrentLine && letterIdx === currentLetterIndex
                     const isPastLetter = isCurrentLine && letterIdx < currentLetterIndex
@@ -700,9 +840,13 @@ export default function SnellenChart({
 
       {/* Input buttons - COMPACT and always visible */}
       {!showDistancePrompt && (
-        <div className="mt-1" data-screen-e-response-dock>
-          <p className="text-gray-500 text-xs text-center mb-2">
-            {exerciseType === 'e-directional' ? 'Which way?' : 'Which letter?'} (Line {currentLineIndex + 1}/{CHART_LINES.length})
+        <div
+          className="mt-1 w-full"
+          data-screen-e-response-dock
+          data-screen-gabor-response-dock={isGaborPractice ? 'true' : undefined}
+        >
+          <p className={`${isGaborPractice ? 'text-gray-100' : 'text-gray-500'} text-xs text-center mb-2`}>
+            {isGaborPractice ? 'Which pattern? Say or choose 1-8' : exerciseType === 'e-directional' ? 'Which way?' : 'Which letter?'} (Line {currentLineIndex + 1}/{CHART_LINES.length})
           </p>
           {/* Voice control — only loads model when tapped ON */}
           <div className="flex items-center justify-center gap-3 mb-2">
@@ -721,16 +865,19 @@ export default function SnellenChart({
               {voiceEnabled ? 'Voice ON' : 'Voice OFF'}
             </button>
             {voiceEnabled && (
-              <span className="text-xs text-gray-500">
+              <span className={`text-xs ${isGaborPractice ? 'text-gray-100' : 'text-gray-500'}`}>
                 {voiceStatus === 'loading' ? 'Loading model...' :
                  isSpeaking ? 'Hearing...' :
                  lastHeard ? `Heard: "${lastHeard}"` :
+                 isGaborPractice ? 'Say a number from 1 to 8' :
                  exerciseType === 'e-directional' ? 'Say up/down/left/right' : 'Say the letter name'}
               </span>
             )}
           </div>
 
-          {exerciseType === 'e-directional' ? (
+          {isGaborPractice ? (
+            <GaborResponseCompass onSelect={handleGaborAnswer} />
+          ) : exerciseType === 'e-directional' ? (
             <DirectionButtons
               onSelect={handleLineByLineAnswer}
               compact={deviceMode === 'phone'}

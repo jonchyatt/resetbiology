@@ -9,10 +9,14 @@ import DistanceGuidance from './DistanceGuidance'
 import { Play, Pause, RotateCcw, CheckCircle, XCircle, Glasses, MoveHorizontal, Trophy, ArrowRight } from 'lucide-react'
 import { currentVisionLocalDayInput } from '@/lib/vision/localDayInput'
 import {
-  DEFAULT_SCREEN_E_STYLE,
-  resolveScreenEStyle,
   type ScreenEStyle,
 } from '@/lib/vision/screenDirectionalE'
+import {
+  DEFAULT_SCREEN_PRACTICE_MODE,
+  resolveScreenPracticeMode,
+  screenPracticeModeEStyle,
+  type ScreenPracticeMode,
+} from '@/lib/vision/screenGaborPractice'
 
 interface TrainingSessionProps {
   visionType: 'near' | 'far'
@@ -24,6 +28,9 @@ interface TrainingSessionProps {
   nightMode?: boolean
   /** false = mount on the intro/settings screen with explicit Start (default true preserves Focus Training tab auto-start). */
   autoStart?: boolean
+  screenPracticeMode?: ScreenPracticeMode
+  onScreenPracticeModeChange?: (mode: ScreenPracticeMode) => void
+  /** Compatibility seam for existing callers; new practice selection uses screenPracticeMode. */
   screenEStyle?: ScreenEStyle
   onScreenEStyleChange?: (style: ScreenEStyle) => void
   onActiveChange?: (isActive: boolean) => void
@@ -63,6 +70,8 @@ export default function TrainingSession({
   untimed = false,
   nightMode = false,
   autoStart = true,
+  screenPracticeMode,
+  onScreenPracticeModeChange,
   screenEStyle,
   onScreenEStyleChange,
   onActiveChange,
@@ -72,20 +81,28 @@ export default function TrainingSession({
   const [currentLevel, setCurrentLevel] = useState(initialLevel)
   // Auto-start when component mounts unless caller wants an intro/settings screen first (autoStart=false)
   const [isActive, setIsActive] = useState(autoStart)
-  const [localScreenEStyle, setLocalScreenEStyle] = useState<ScreenEStyle>(DEFAULT_SCREEN_E_STYLE)
+  const [localPracticeMode, setLocalPracticeMode] = useState<ScreenPracticeMode>(DEFAULT_SCREEN_PRACTICE_MODE)
   const [attempts, setAttempts] = useState(0)
   const [correct, setCorrect] = useState(0)
   const [sessionDuration, setSessionDuration] = useState(0)
   const [resetTrigger, setResetTrigger] = useState(0) // Increments to trigger new letter
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [sessionComplete, setSessionComplete] = useState(false)
-  const activeScreenEStyle = screenEStyle === undefined
-    ? localScreenEStyle
-    : resolveScreenEStyle(screenEStyle)
+  const selectedPracticeMode = screenPracticeMode === undefined
+    ? screenEStyle === undefined
+      ? localPracticeMode
+      : resolveScreenPracticeMode(screenEStyle)
+    : resolveScreenPracticeMode(screenPracticeMode)
+  // The current binocular renderer has no eight-orientation presentation.
+  const activePracticeMode: ScreenPracticeMode = isBinocular && selectedPracticeMode === 'gabor'
+    ? 'crisp'
+    : selectedPracticeMode
+  const activeScreenEStyle = screenPracticeModeEStyle(activePracticeMode)
 
-  const handleScreenEStyleChange = (nextStyle: ScreenEStyle) => {
-    if (screenEStyle === undefined) setLocalScreenEStyle(nextStyle)
-    onScreenEStyleChange?.(nextStyle)
+  const handlePracticeModeChange = (nextMode: ScreenPracticeMode) => {
+    if (screenPracticeMode === undefined && screenEStyle === undefined) setLocalPracticeMode(nextMode)
+    onScreenPracticeModeChange?.(nextMode)
+    if (nextMode !== 'gabor') onScreenEStyleChange?.(nextMode)
   }
 
   // Distance progression state for nearsightedness training
@@ -240,7 +257,7 @@ export default function TrainingSession({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           visionType,
-          exerciseType,
+          exerciseType: activePracticeMode === 'gabor' ? 'gabor-orientation' : exerciseType,
           distanceCm: distanceProgressionMode ? targetDistanceCm : difficulty.targetDistance,
           accuracy,
           level: difficulty.label,
@@ -351,6 +368,7 @@ export default function TrainingSession({
               resetTrigger={resetTrigger}
               deviceMode={deviceMode}
               progressionMode="line-by-line"
+              practiceMode={activePracticeMode}
               screenEStyle={activeScreenEStyle}
               onChartComplete={() => {
                 // Free Practice stays continuous without adding formal session rows.
@@ -438,8 +456,8 @@ export default function TrainingSession({
       {!isActive && !sessionComplete && exerciseType === 'e-directional' && !isBinocular && (
         <div className={inactivePanelClass}>
           <ScreenEStylePicker
-            value={activeScreenEStyle}
-            onChange={handleScreenEStyleChange}
+            value={activePracticeMode}
+            onChange={handlePracticeModeChange}
             nightMode={nightMode}
           />
         </div>

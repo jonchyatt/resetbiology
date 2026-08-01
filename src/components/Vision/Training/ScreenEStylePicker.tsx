@@ -1,18 +1,23 @@
 'use client'
 
 import { TumblingE } from './SnellenChart'
+import GaborPatch from './GaborPatch'
 import {
-  SCREEN_E_STYLE_REGISTRY,
-  type ScreenEStyle,
-} from '@/lib/vision/screenDirectionalE'
+  SCREEN_GABOR_CONTRAST,
+  SCREEN_GABOR_FREQUENCY_CYCLES,
+  SCREEN_GABOR_MEAN_GRAY,
+  SCREEN_GABOR_RASTER_MODE,
+  SCREEN_PRACTICE_MODE_REGISTRY,
+  type ScreenPracticeMode,
+} from '@/lib/vision/screenGaborPractice'
 
 interface ScreenEStylePickerProps {
-  value: ScreenEStyle
-  onChange: (style: ScreenEStyle) => void
+  value: ScreenPracticeMode
+  onChange: (style: ScreenPracticeMode) => void
   nightMode?: boolean
 }
 
-const STYLE_IDS = Object.keys(SCREEN_E_STYLE_REGISTRY) as ScreenEStyle[]
+const PRACTICE_MODE_IDS = Object.keys(SCREEN_PRACTICE_MODE_REGISTRY) as ScreenPracticeMode[]
 
 export default function ScreenEStylePicker({
   value,
@@ -22,28 +27,28 @@ export default function ScreenEStylePicker({
   return (
     <fieldset>
       <legend className={`text-sm font-semibold ${nightMode ? 'text-amber-100' : 'text-white'}`}>
-        Directional E line style
+        Practice target
       </legend>
       <p className={`mt-1 text-xs ${nightMode ? 'text-amber-100/60' : 'text-gray-400'}`}>
-        Both styles use the same 14-row workout. Only the line weight changes.
+        Choose what you want to resolve through the same 14-row journey.
       </p>
 
       <div
         role="radiogroup"
-        aria-label="Directional E line style"
-        className="mt-3 grid grid-cols-2 gap-3"
+        aria-label="Vision practice target"
+        className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3"
       >
-        {STYLE_IDS.map((style) => {
-          const option = SCREEN_E_STYLE_REGISTRY[style]
-          const selected = value === style
+        {PRACTICE_MODE_IDS.map((mode) => {
+          const option = SCREEN_PRACTICE_MODE_REGISTRY[mode]
+          const selected = value === mode
 
           return (
             <button
-              key={style}
+              key={mode}
               type="button"
               role="radio"
               aria-checked={selected}
-              onClick={() => onChange(style)}
+              onClick={() => onChange(mode)}
               className={`min-h-11 rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
                 selected
                   ? 'border-primary-300 bg-primary-500/20 ring-1 ring-primary-300'
@@ -53,15 +58,30 @@ export default function ScreenEStylePicker({
               }`}
             >
               <span className="flex items-center gap-3">
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-white" aria-hidden="true">
-                  <TumblingE direction="right" size={44} screenEStyle={style} animate={false} />
+                <span
+                  className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-lg ${mode === 'gabor' ? 'bg-[#808080]' : 'bg-white'}`}
+                  aria-hidden="true"
+                >
+                  {mode === 'gabor' ? (
+                    <GaborPatch
+                      size={48}
+                      orientation={45}
+                      frequency={SCREEN_GABOR_FREQUENCY_CYCLES}
+                      contrast={SCREEN_GABOR_CONTRAST}
+                      backgroundColor={SCREEN_GABOR_MEAN_GRAY}
+                      rasterMode={SCREEN_GABOR_RASTER_MODE}
+                      animate={false}
+                    />
+                  ) : (
+                    <TumblingE direction="right" size={44} screenEStyle={mode} animate={false} />
+                  )}
                 </span>
                 <span className="min-w-0">
                   <span className={`block font-semibold ${nightMode ? 'text-amber-50' : 'text-white'}`}>
                     {option.label}
                   </span>
                   <span className={`mt-0.5 block text-xs ${nightMode ? 'text-amber-100/60' : 'text-gray-400'}`}>
-                    {selected ? 'Selected' : 'Choose style'}
+                    {selected ? 'Selected' : option.description}
                   </span>
                 </span>
               </span>
@@ -71,7 +91,7 @@ export default function ScreenEStylePicker({
       </div>
 
       <p className={`mt-2 text-xs ${nightMode ? 'text-amber-100/60' : 'text-gray-400'}`}>
-        Baseline checks stay Crisp so results remain comparable.
+        Baseline and retake checks stay Crisp so results remain comparable. Gabor is practice-only.
       </p>
     </fieldset>
   )
