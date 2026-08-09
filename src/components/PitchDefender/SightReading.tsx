@@ -19,7 +19,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
-import { initAudio, playPianoNote } from './audioEngine'
+import { initAudio, playPianoNote, markToneEmitted, setPianoVolume } from './audioEngine'
 import { computeLayout, renderStaff, drawNoteHeadWithStem, staffPositionToY, type StaffLayout } from './staffRenderer'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -132,13 +132,15 @@ function generatePhrase(
 // ─── Guide Audio ────────────────────────────────────────────────────────────
 
 let _sightCtx: AudioContext | null = null
-function playTone(semi: number, durationMs: number) {
+function playTone(semi: number, durationMs: number, volumePct = 100) {
   if (!_sightCtx) _sightCtx = new AudioContext()
   const ctx = _sightCtx
   if (ctx.state === 'suspended') ctx.resume()
   const now = ctx.currentTime
   const freq = semiToFreq(semi)
   const dur = durationMs / 1000
+  const volume = Math.max(0, Math.min(2, volumePct / 100))
+  markToneEmitted(durationMs + 100)
 
   const osc = ctx.createOscillator()
   osc.type = 'triangle'
@@ -146,8 +148,8 @@ function playTone(semi: number, durationMs: number) {
 
   const gain = ctx.createGain()
   gain.gain.setValueAtTime(0, now)
-  gain.gain.linearRampToValueAtTime(0.15, now + 0.02)
-  gain.gain.setValueAtTime(0.12, now + dur * 0.7)
+  gain.gain.linearRampToValueAtTime(0.15 * volume, now + 0.02)
+  gain.gain.setValueAtTime(0.12 * volume, now + dur * 0.7)
   gain.gain.exponentialRampToValueAtTime(0.001, now + dur)
 
   osc.connect(gain)
@@ -166,6 +168,7 @@ export default function SightReading() {
   const [difficulty, setDifficulty] = useState<Difficulty>('easy')
   const [phraseLength, setPhraseLength] = useState(8)
   const [mode, setMode] = useState<'pause' | 'flow'>('pause')
+  const [guideVolume, setGuideVolume] = useState(100)
 
   const [phrase, setPhrase] = useState<PhraseNote[]>([])
   const [currentIdx, setCurrentIdx] = useState(0)
@@ -187,6 +190,7 @@ export default function SightReading() {
   useEffect(() => { phraseRef.current = phrase }, [phrase])
   useEffect(() => { currentIdxRef.current = currentIdx }, [currentIdx])
   useEffect(() => { statsRef.current = stats }, [stats])
+  useEffect(() => { setPianoVolume(guideVolume) }, [guideVolume])
 
   // Canvas layout
   const updateLayout = useCallback(() => {
@@ -226,7 +230,7 @@ export default function SightReading() {
     // Play the starting note as reference
     const first = phraseRef.current[0]
     if (first) {
-      playTone(first.semitones, 1500)
+      playTone(first.semitones, 1500, guideVolume)
       // Also play via piano for familiarity
       const name = first.name
       if (!name.includes('#') && !name.includes('b')) {
@@ -347,9 +351,9 @@ export default function SightReading() {
 
     // Play hint on easy difficulty
     if (difficulty === 'easy') {
-      playTone(notes[nextIdx].semitones, 400)
+      playTone(notes[nextIdx].semitones, 400, guideVolume)
     }
-  }, [difficulty])
+  }, [difficulty, guideVolume])
 
   // ─── Render Frame (staff + notes) ─────────────────────────────────────
   const renderFrame = useCallback(() => {
@@ -563,6 +567,19 @@ export default function SightReading() {
           </div>
         </div>
 
+        <label className="flex items-center gap-3 mb-6">
+          <span className="text-xs text-gray-500 w-20">Guide Vol</span>
+          <input
+            type="range"
+            min={0}
+            max={200}
+            value={guideVolume}
+            onChange={e => setGuideVolume(Number(e.target.value))}
+            className="w-40 h-1 accent-yellow-500"
+          />
+          <span className="text-xs text-yellow-300 font-mono w-10 text-right">{guideVolume}%</span>
+        </label>
+
         <button onClick={generateNewPhrase}
           className="px-10 py-4 rounded-2xl text-xl font-bold text-white transition-all active:scale-95"
           style={{
@@ -597,9 +614,21 @@ export default function SightReading() {
             <div className="text-sm text-gray-500 mb-2">
               Starting note: <span className="text-yellow-400 font-bold">{phrase[0]?.name}</span>
             </div>
+            <label className="flex items-center justify-center gap-3 mb-4">
+              <span className="text-xs text-gray-500">Guide Vol</span>
+              <input
+                type="range"
+                min={0}
+                max={200}
+                value={guideVolume}
+                onChange={e => setGuideVolume(Number(e.target.value))}
+                className="w-36 h-1 accent-yellow-500"
+              />
+              <span className="text-xs text-yellow-300 font-mono w-10 text-right">{guideVolume}%</span>
+            </label>
             <div className="flex gap-3">
               <button onClick={() => {
-                if (phrase[0]) playTone(phrase[0].semitones, 1500)
+                if (phrase[0]) playTone(phrase[0].semitones, 1500, guideVolume)
               }}
                 className="px-4 py-2 rounded-xl text-sm text-gray-400 border border-gray-700 active:scale-95 transition-all">
                 🔊 Hear Starting Note

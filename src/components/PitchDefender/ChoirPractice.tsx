@@ -23,7 +23,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusion'
-import { initAudio, playPianoNote } from './audioEngine'
+import { initAudio, playPianoNote, markToneEmitted } from './audioEngine'
 import { extractMelodyFromComposition, compositionHasNotes } from './composerExtract'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -47,6 +47,7 @@ interface PracticeConfig {
   loopEnd: number       // measure number (0 = disabled)
   guideVolume: number   // 0 to 1
   selfFeedback: boolean // mic → speaker
+  selfFeedbackVolume: number // 0 to 2
   guidePan: number      // -1 = left, 0 = center, 1 = right
   voicePan: number      // -1 = left, 0 = center, 1 = right
 }
@@ -97,6 +98,8 @@ function playGuideNote(semi: number, durationMs: number, volume: number, pan: nu
   const now = ctx.currentTime
   const freq = semitonesToFreq(semi)
   const durSec = durationMs / 1000
+  const gainScale = Math.max(0, Math.min(2, volume))
+  markToneEmitted(durationMs + 100)
 
   // Triangle + slight detune for warm tone
   const osc1 = ctx.createOscillator()
@@ -111,8 +114,8 @@ function playGuideNote(semi: number, durationMs: number, volume: number, pan: nu
   // Envelope
   const gain = ctx.createGain()
   gain.gain.setValueAtTime(0, now)
-  gain.gain.linearRampToValueAtTime(volume * 0.2, now + 0.02)
-  gain.gain.setValueAtTime(volume * 0.15, now + Math.min(durSec * 0.8, durSec - 0.05))
+  gain.gain.linearRampToValueAtTime(gainScale * 0.2, now + 0.02)
+  gain.gain.setValueAtTime(gainScale * 0.15, now + Math.min(durSec * 0.8, durSec - 0.05))
   gain.gain.exponentialRampToValueAtTime(0.001, now + durSec)
 
   // Panning
@@ -132,7 +135,7 @@ function playGuideNote(semi: number, durationMs: number, volume: number, pan: nu
 
 let _feedbackRequestId = 0 // [FIX HIGH] Guard async mic resolution
 
-function startSelfFeedback(pan: number) {
+function startSelfFeedback(pan: number, volume: number) {
   stopSelfFeedback()
   const ctx = getGuideCtx()
   const requestId = ++_feedbackRequestId
@@ -146,7 +149,7 @@ function startSelfFeedback(pan: number) {
       _feedbackStream = stream
       _feedbackSource = ctx.createMediaStreamSource(stream)
       _feedbackGain = ctx.createGain()
-      _feedbackGain.gain.value = 0.7
+      _feedbackGain.gain.value = Math.max(0, Math.min(2, volume))
       _feedbackPanner = ctx.createStereoPanner()
       _feedbackPanner.pan.value = pan
       _feedbackSource.connect(_feedbackGain)
@@ -166,6 +169,10 @@ function stopSelfFeedback() {
 
 function updateFeedbackPan(pan: number) {
   if (_feedbackPanner) _feedbackPanner.pan.value = pan
+}
+
+function updateFeedbackVolume(volume: number) {
+  if (_feedbackGain) _feedbackGain.gain.value = Math.max(0, Math.min(2, volume))
 }
 
 // ─── OSMD Note Extraction ───────────────────────────────────────────────────
@@ -332,6 +339,7 @@ export default function ChoirPractice() {
     loopEnd: 0,
     guideVolume: 0.8,
     selfFeedback: false,
+    selfFeedbackVolume: 1,
     guidePan: -0.7,   // guide in left ear
     voicePan: 0.7,     // self in right ear
   })
@@ -351,6 +359,10 @@ export default function ChoirPractice() {
   useEffect(() => { configRef.current = config }, [config])
   useEffect(() => { statsRef.current = practiceStats }, [practiceStats])
   useEffect(() => { currentIdxRef.current = currentIdx }, [currentIdx])
+  useEffect(() => {
+    updateFeedbackPan(config.voicePan)
+    updateFeedbackVolume(config.selfFeedbackVolume)
+  }, [config.voicePan, config.selfFeedbackVolume])
 
   // Refresh saved-composition list whenever we're in upload phase.
   // Uses the shared composerExtract module — handles BOTH the new measures
@@ -564,7 +576,7 @@ export default function ChoirPractice() {
 
     // Start self-feedback if enabled
     if (config.selfFeedback) {
-      startSelfFeedback(config.voicePan)
+      startSelfFeedback(config.voicePan, config.selfFeedbackVolume)
     }
 
     setPhase('practicing')
@@ -933,9 +945,10 @@ export default function ChoirPractice() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">Guide volume</span>
-              <input type="range" min={0} max={100} value={config.guideVolume * 100}
+              <input type="range" min={0} max={200} value={config.guideVolume * 100}
                 onChange={e => setConfig(p => ({ ...p, guideVolume: Number(e.target.value) / 100 }))}
                 className="w-32 h-1 accent-indigo-500" />
+              <span className="text-xs text-indigo-300 font-mono w-10 text-right">{Math.round(config.guideVolume * 100)}%</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">Self-feedback (hear yourself)</span>
@@ -966,22 +979,31 @@ export default function ChoirPractice() {
               </div>
             </div>
             {config.selfFeedback && (
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">Stereo: Voice</span>
-                <div className="flex gap-1">
-                  {[{ label: 'L', val: -0.9 }, { label: 'C', val: 0 }, { label: 'R', val: 0.9 }].map(o => (
-                    <button key={o.label} onClick={() => setConfig(p => ({ ...p, voicePan: o.val }))}
-                      className="px-2 py-0.5 rounded text-[10px] transition-all"
-                      style={{
-                        background: Math.abs(config.voicePan - o.val) < 0.2 ? 'rgba(99,102,241,0.2)' : 'transparent',
-                        border: `1px solid ${Math.abs(config.voicePan - o.val) < 0.2 ? 'rgba(99,102,241,0.4)' : 'rgba(60,60,80,0.3)'}`,
-                        color: Math.abs(config.voicePan - o.val) < 0.2 ? '#a5b4fc' : '#666',
-                      }}>
-                      {o.label}
-                    </button>
-                  ))}
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">Voice volume</span>
+                  <input type="range" min={0} max={200} value={config.selfFeedbackVolume * 100}
+                    onChange={e => setConfig(p => ({ ...p, selfFeedbackVolume: Number(e.target.value) / 100 }))}
+                    className="w-32 h-1 accent-cyan-500" />
+                  <span className="text-xs text-cyan-300 font-mono w-10 text-right">{Math.round(config.selfFeedbackVolume * 100)}%</span>
                 </div>
-              </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400">Stereo: Voice</span>
+                  <div className="flex gap-1">
+                    {[{ label: 'L', val: -0.9 }, { label: 'C', val: 0 }, { label: 'R', val: 0.9 }].map(o => (
+                      <button key={o.label} onClick={() => setConfig(p => ({ ...p, voicePan: o.val }))}
+                        className="px-2 py-0.5 rounded text-[10px] transition-all"
+                        style={{
+                          background: Math.abs(config.voicePan - o.val) < 0.2 ? 'rgba(99,102,241,0.2)' : 'transparent',
+                          border: `1px solid ${Math.abs(config.voicePan - o.val) < 0.2 ? 'rgba(99,102,241,0.4)' : 'rgba(60,60,80,0.3)'}`,
+                          color: Math.abs(config.voicePan - o.val) < 0.2 ? '#a5b4fc' : '#666',
+                        }}>
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
           </div>
         </div>
