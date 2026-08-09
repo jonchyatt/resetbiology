@@ -25,6 +25,7 @@ import { NOTE_COLORS } from '@/lib/fsrs'
 import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusion'
 import { initAudio, playPianoNote } from './audioEngine'
 import { extractMelodyFromComposition, compositionHasNotes } from './composerExtract'
+import { usePitchScoreSync } from './scoreSync'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -356,7 +357,7 @@ export default function ChoirPractice() {
   // Uses the shared composerExtract module — handles BOTH the new measures
   // format AND the legacy flat-notes fallback. Previous reader only checked
   // c.notes (legacy) and silently dropped every modern Composer save.
-  useEffect(() => {
+  const refreshComposedList = useCallback(() => {
     if (phase !== 'upload') return
     try {
       const out: { key: string; title: string; noteCount: number }[] = []
@@ -376,6 +377,12 @@ export default function ChoirPractice() {
       setComposedList(out)
     } catch {}
   }, [phase])
+  usePitchScoreSync({
+    keys: [],
+    includeCompositions: true,
+    onHydrate: refreshComposedList,
+  })
+  useEffect(() => { refreshComposedList() }, [refreshComposedList])
 
   // Load a composition from localStorage as if it were a sample score
   const loadComposition = useCallback((storageKey: string) => {

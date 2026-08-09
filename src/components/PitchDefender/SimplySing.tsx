@@ -31,6 +31,7 @@ import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { initAudio, loadPianoSamples, playPianoNote, markToneEmitted, setPianoVolume } from './audioEngine'
 import { extractMelodyFromComposition, type ExtractedNote, compositionHasNotes } from './composerExtract'
 import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
+import { usePitchScoreSync } from './scoreSync'
 
 // ─── Layout constants (logical pixels) ─────────────────────────────────────
 
@@ -214,12 +215,21 @@ export default function SimplySing() {
   const ribbonStatsRef = useRef<Map<number, RibbonStats>>(new Map())  // key = note index in song.notes
   const rafRef = useRef(0)
   const lastTickRef = useRef(0)
+  const refreshSongs = useCallback(() => {
+    setSongs(loadAllSongs())
+  }, [])
+
+  usePitchScoreSync({
+    keys: [],
+    includeCompositions: true,
+    onHydrate: refreshSongs,
+  })
 
   // Load composer songs on mount
   useEffect(() => {
     loadPianoSamples()
-    setSongs(loadAllSongs())
-  }, [])
+    refreshSongs()
+  }, [refreshSongs])
 
   // Push the piano ("plunk") volume to the shared audio engine whenever it changes.
   useEffect(() => {
@@ -228,8 +238,8 @@ export default function SimplySing() {
 
   // Refresh song list when returning to menu
   useEffect(() => {
-    if (phase === 'menu') setSongs(loadAllSongs())
-  }, [phase])
+    if (phase === 'menu') refreshSongs()
+  }, [phase, refreshSongs])
 
   // ─── Mic startup / teardown ───────────────────────────────────────────────
   const startMic = useCallback(async () => {

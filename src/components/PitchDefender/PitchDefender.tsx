@@ -25,6 +25,7 @@ import {
   initAudio, playSfx as _sfx, loadPianoSamples as _loadSamples,
   playPianoNote, startMusic, stopMusic, changeMusic, setMicActive,
 } from './audioEngine'
+import { savePitchScore, usePitchScoreSync } from './scoreSync'
 import './animations.css'
 
 export type GameMode = 'noteBlaster' | 'echoCannon' | 'staffDefender' | 'sequenceAssault' | 'intervalHunter' | 'survival'
@@ -85,6 +86,21 @@ export default function PitchDefender() {
   const { isListening, pitch, error: micError, pitchRef: livePitchRef, startListening, stopListening } = usePitchDetection({ noiseGateDb })
   const countdownTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
+  usePitchScoreSync({
+    keys: [FSRS_KEY, PROGRESS_KEY],
+    onHydrate: (scores) => {
+      const fsrs = scores[FSRS_KEY]?.payload
+      if (fsrs && typeof fsrs === 'object' && !Array.isArray(fsrs)) {
+        fsrsRef.current = fsrs as Record<string, NoteMemory>
+      }
+
+      const progress = scores[PROGRESS_KEY]?.payload
+      if (progress && typeof progress === 'object' && !Array.isArray(progress)) {
+        progressRef.current = progress as GameProgress
+      }
+    },
+  })
+
   // Keep ref in sync
   useEffect(() => { stateRef.current = state }, [state])
 
@@ -117,11 +133,11 @@ export default function PitchDefender() {
 
   // ─── Persist FSRS memory ─────────────────────────────────────────────────
   const saveFsrs = useCallback(() => {
-    try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch { /* */ }
+    savePitchScore(FSRS_KEY, fsrsRef.current)
   }, [])
 
   const saveProgress = useCallback(() => {
-    try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressRef.current)) } catch { /* */ }
+    savePitchScore(PROGRESS_KEY, progressRef.current)
   }, [])
 
   // ─── Game Tick (check escapes, wave completion) ──────────────────────────
@@ -433,7 +449,7 @@ export default function PitchDefender() {
     const grade = autoGrade(correct, latency)
     if (!fsrsRef.current[alienNote]) fsrsRef.current[alienNote] = createNote(alienNote)
     fsrsRef.current[alienNote] = reviewNote(fsrsRef.current[alienNote], grade)
-    try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
+    savePitchScore(FSRS_KEY, fsrsRef.current)
 
     if (correct) {
       // ─── CORRECT — side effects first ───

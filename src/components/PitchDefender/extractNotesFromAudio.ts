@@ -10,6 +10,8 @@
 // Used by VocalTrainer.tsx. The model (~13MB) is fetched from CDN and cached.
 // ═══════════════════════════════════════════════════════════════════════════════
 
+import { savePitchScore } from './scoreSync';
+
 const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@spotify/basic-pitch@1.0.1/model/model.json';
 const TARGET_SR = 22050;
 
@@ -237,7 +239,7 @@ export function publishToSynthesia(template: { id: string; title: string; songNo
     publishedAt: new Date().toISOString(),
   };
   try {
-    localStorage.setItem(key, JSON.stringify(payload));
+    savePitchScore(key, payload, { updatedAt: payload.publishedAt });
   } catch (e) {
     console.warn('[vocal-trainer] failed to publish to Synthesia:', e);
   }
