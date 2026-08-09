@@ -18,7 +18,7 @@ import {
 } from '@/lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import NoteButtons from './NoteButtons'
-import PitchGuidance from './PitchGuidance'
+import PitchforksChargeBar from './PitchforksChargeBar'
 import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
@@ -658,43 +658,14 @@ export default function DrillMode() {
             )}
           </div>
 
-          {/* Mic pitch guidance (positioned beside the orb) */}
           {inputMode === 'mic' && isAnswering && (
-            <PitchGuidance
-              targetNote={currentNote}
-              pitch={pitch}
-              isLocking={lockProgress > 0}
-              lockProgress={lockProgress}
-            />
-          )}
-
-          {/* Pitchforks v1 slider bar — canonical mic lock feedback.
-              Gated to lockProgress > 0 so it only appears while singing on-pitch. */}
-          {inputMode === 'mic' && isAnswering && lockProgress > 0 && (
-            <div
+            <PitchforksChargeBar
+              progress={lockProgress}
+              width={100}
+              height={4}
               className="absolute left-1/2 -translate-x-1/2"
-              style={{
-                bottom: -14,
-                width: 100,
-                height: 4,
-                background: 'rgba(10,10,20,0.6)',
-                border: '1px solid rgba(60,60,90,0.6)',
-                borderRadius: 2,
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  width: `${lockProgress * 100}%`,
-                  height: '100%',
-                  background: lockProgress >= 0.8 ? '#4ade80' : '#fbbf24',
-                  boxShadow: lockProgress >= 0.8
-                    ? '0 0 8px #4ade80, 0 0 16px #4ade8060'
-                    : '0 0 6px #fbbf2460',
-                  transition: 'width 0.05s linear',
-                }}
-              />
-            </div>
+              style={{ bottom: -14 }}
+            />
           )}
         </div>
 
@@ -716,7 +687,7 @@ export default function DrillMode() {
             <div className="text-xs text-gray-500">
               {pitch?.isActive ? (
                 <span style={{ color: `hsl(${NOTE_COLORS[pitch.note]?.hue ?? 0}, 60%, 60%)` }}>
-                  Hearing: <b>{pitch.note}</b> ({pitch.cents > 0 ? '+' : ''}{pitch.cents}¢)
+                  Voice detected
                 </span>
               ) : (
                 'Sing the note you hear...'

@@ -14,7 +14,8 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusion'
-import { computeLayout, renderStaff, drawTargetNote, drawVoiceOrb, drawCentsIndicator, drawNoteHeadWithStem, staffPositionToY, type TrailPoint, type StaffLayout } from './staffRenderer'
+import { computeLayout, renderStaff, drawTargetNote, drawNoteHeadWithStem, staffPositionToY, type TrailPoint, type StaffLayout } from './staffRenderer'
+import PitchforksChargeBar from './PitchforksChargeBar'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote, setPianoVolume } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
@@ -419,17 +420,6 @@ export default function NoteRunner() {
         alpha: 1,  // alpha already encoded in color strings
       })
 
-      // Match progress ring
-      if (isWaiting && note.matchProgress > 0) {
-        const progress = note.matchProgress / HOLD_DURATION[difficulty]
-        const ringR = Math.max(noteRx, noteRy) + 5
-        ctx.strokeStyle = `hsla(120, 80%, 60%, ${0.8 * progress})`
-        ctx.lineWidth = 3
-        ctx.beginPath()
-        ctx.arc(noteX, noteY, ringR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * progress)
-        ctx.stroke()
-      }
-
       // Note name label (easy + medium difficulty)
       if (difficulty !== 'hard') {
         ctx.font = 'bold 11px monospace'
@@ -450,12 +440,6 @@ export default function NoteRunner() {
     ctx.lineTo(tzX, layout.bassLines[4] + 20)
     ctx.stroke()
     ctx.setLineDash([])
-
-    // Voice orb (drawn last, on top)
-    if (pitch?.isActive) {
-      drawVoiceOrb(ctx, layout, pitch.staffPosition, pitch.confidence, pitch.isSettled, pitch.isVibrato)
-      drawCentsIndicator(ctx, layout, pitch.cents, pitch.confidence)
-    }
 
     rafRef.current = requestAnimationFrame(gameLoop)
   }, [difficulty])
@@ -664,16 +648,7 @@ export default function NoteRunner() {
           <div className="text-4xl font-black text-white" style={{ textShadow: '0 0 20px rgba(139,92,246,0.4)' }}>
             {currentNoteName}
           </div>
-          {/* Match progress bar */}
-          {matchProgress > 0 && (
-            <div className="w-32 h-2 mt-2 mx-auto rounded-full overflow-hidden" style={{ background: 'rgba(40,40,60,0.6)' }}>
-              <div className="h-full rounded-full transition-all" style={{
-                width: `${matchProgress * 100}%`,
-                background: matchProgress >= 0.8 ? '#64ffa0' : '#8b5cf6',
-                boxShadow: `0 0 8px ${matchProgress >= 0.8 ? '#64ffa0' : '#8b5cf6'}`,
-              }} />
-            </div>
-          )}
+          <PitchforksChargeBar progress={matchProgress} width={128} className="mt-2 mx-auto" />
         </div>
       )}
     </div>
