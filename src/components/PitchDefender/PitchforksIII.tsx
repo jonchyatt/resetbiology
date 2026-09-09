@@ -1045,6 +1045,15 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       renderDeviation: ownershipBolt ? null : tuner.renderDeviation,
       onTarget: ownershipBolt ? false : tuner.onTarget,
       trail: tuner.trail.map(point => ({ ...point })),
+      feedback: ownershipBolt
+        ? {
+            ...tuner.feedback,
+            kind: 'locked',
+            headline: `STRIKE · ${ownershipBolt.note}`,
+            detail: 'Watch the lightning reach the fork',
+            compactLabel: `strike: ${ownershipBolt.note}`,
+          }
+        : tuner.feedback,
     },
     ceremony: {
       active: ceremony.active,
@@ -3555,9 +3564,14 @@ export default function PitchforksIII() {
 
   const cuePlayingNow = useCallback(() => performance.now() < cuePlayingUntilRef.current, [])
 
-  const matchingSuppressedNow = useCallback(() => {
-    return performance.now() < matchingSuppressedUntilRef.current || isWithinToneSuppressionWindow()
+  const strikePresentationPending = useCallback(() => {
+    const newestBolt = runtimeRef.current.bolts[runtimeRef.current.bolts.length - 1]
+    return !!newestBolt && newestBolt.life / newestBolt.maxLife < STRIKE_IMPACT_START
   }, [])
+
+  const matchingSuppressedNow = useCallback(() => {
+    return strikePresentationPending() || performance.now() < matchingSuppressedUntilRef.current || isWithinToneSuppressionWindow()
+  }, [strikePresentationPending])
 
   const syncSparkGuideStatus = useCallback((status: PitchforksSparkGuideStatus) => {
     if (sparkGuideStatusRef.current === status) return
@@ -4153,6 +4167,7 @@ export default function PitchforksIII() {
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
+    if (strikePresentationPending()) return
     clearCueTimers()
     const liveNotes = villager.notes.slice(villager.burned)
     if (!liveNotes.length) return
@@ -4263,7 +4278,7 @@ export default function PitchforksIII() {
     }
     const doneId = setTimeout(finishCue, suppressMs)
     cueTimeoutsRef.current.push(doneId)
-  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText])
+  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText, strikePresentationPending])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -4620,6 +4635,7 @@ export default function PitchforksIII() {
     if (gradeReview) reviewTargetNote(target, true)
     lastStrikeNoteRef.current = strikeNote ?? null
     lastStrikeHueRef.current = strikeHue
+    const wasMatchingSuppressed = matchingSuppressedNow()
     addBolt(villager, tineIndex, strikeHue, strikeNote)
     addBurst(villager, strikeHue, 'strike')
     if (villager.id === rt.firstVillagerId && villager.burned === 0) {
@@ -4644,7 +4660,7 @@ export default function PitchforksIII() {
     tintRef.current = null
     activeKeyRef.current = ''
     demoLockCountRef.current += 1
-    if (matchingSuppressedNow()) lockWhileSuppressedRef.current = true
+    if (wasMatchingSuppressed) lockWhileSuppressedRef.current = true
     if (demoRef.current) demoStepRef.current = 'strike'
     localSfx('strike', sfxVolumeRef.current)
 
@@ -4750,6 +4766,14 @@ export default function PitchforksIII() {
   const processLock = useCallback((dt: number) => {
     if (ceremonyRef.current.active) {
       pauseSparkGuide('ceremony')
+      activeKeyRef.current = ''
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      return
+    }
+    if (strikePresentationPending()) {
+      pauseSparkGuide('strike-presentation')
       activeKeyRef.current = ''
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
@@ -4879,6 +4903,7 @@ export default function PitchforksIII() {
     setFirstMinuteCoachSnapshot,
     setPromptText,
     strikeActiveTine,
+    strikePresentationPending,
     updateSparkGuide,
   ])
 
@@ -5207,12 +5232,12 @@ export default function PitchforksIII() {
       }
     }
 
-    const feedbackKey = `${tuner.feedback.kind}|${tuner.feedback.headline}|${tuner.feedback.detail}`
+    const feedbackKey = `${view.tuner.feedback.kind}|${view.tuner.feedback.headline}|${view.tuner.feedback.detail}`
     if (feedbackKey !== tunerFeedbackKeyRef.current) {
       tunerFeedbackKeyRef.current = feedbackKey
       // Paint both canvases first, then publish the DOM ribbon and any queued coach/status
       // updates in this same task. Publishing React first can expose a one-frame split state.
-      flushSync(() => setTunerFeedback(tuner.feedback))
+      flushSync(() => setTunerFeedback(view.tuner.feedback))
     }
 
     const actionPrompt = /^(?:Sing|Now):\s+(.+)$/.exec(currentPromptRef.current)
@@ -6519,8 +6544,9 @@ export default function PitchforksIII() {
         <div className={`flex w-full items-stretch justify-center gap-2 ${layoutMode === 'portrait' ? 'max-w-[760px]' : 'max-w-[360px]'}`}>
           <button
             type="button"
-            disabled={cuePlaybackActive}
+            disabled={cuePlaybackActive || strikePresentationPending()}
             onClick={() => {
+              if (strikePresentationPending()) return
               const active = getActiveTarget()
               if (active) {
                 pauseSparkGuide('replay')
