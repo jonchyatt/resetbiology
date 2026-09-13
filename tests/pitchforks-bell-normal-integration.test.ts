@@ -23,6 +23,12 @@ const check = (run: () => void): void => {
 }
 
 check(() => {
+  const declaration = source.indexOf('const normalBellRouteAvailable = useCallback')
+  const consumer = source.indexOf('const updateSparkGuide = useCallback')
+  assert.ok(declaration >= 0 && declaration < consumer, 'Bell route callback must initialize before Spark Guide captures it')
+})
+
+check(() => {
   assert.match(source, /from ['"]\.\/pitchforksBellPower['"]/) 
   assert.match(source, /const normalBellRouteAvailable = useCallback\(\(\) => \(/)
   assert.match(source, /const resetNormalBellPowerForRun = useCallback\(/)

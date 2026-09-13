@@ -290,11 +290,12 @@ export function parsePitchforksPresentationJourney(
     if (parsed.version !== 1 || parsed.rangeAssessedAt !== rangeAssessedAt) return null
     if (typeof parsed.startedAt !== 'string' || !Number.isFinite(Date.parse(parsed.startedAt))) return null
     if (!isDenseStringArray(parsed.unlockedNotes) || parsed.unlockedNotes.length < 2) return null
+    const unlockedNotes = parsed.unlockedNotes
     if (parsed.unlockedNotes.length > presentationOrder.length) return null
     if (parsed.unlockedNotes.some((note, index) => note !== presentationOrder[index])) return null
     if (!isDenseStringArray(parsed.guidedNotes)) return null
     if (new Set(parsed.guidedNotes).size !== parsed.guidedNotes.length) return null
-    if (parsed.guidedNotes.some(note => !parsed.unlockedNotes.includes(note))) return null
+    if (parsed.guidedNotes.some(note => !unlockedNotes.includes(note))) return null
     const currentLevel = parsed.currentLevel === undefined ? 1 : parsed.currentLevel
     if (!isValidPitchforksJourneyLevel(currentLevel)) return null
     const journey: PitchforksPresentationJourney = {

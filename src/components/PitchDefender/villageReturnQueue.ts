@@ -182,6 +182,7 @@ function isValidEntry(value: unknown, runId: string): value is VillageReturnQueu
     || !isIdentifier(value.targetNote)
     || !isEncounterCount(value.enqueuedAtCompletedEncounterCount)
     || !isMonotonicTime(value.enqueuedAtMs)
+    || typeof value.revision !== 'number'
     || !Number.isSafeInteger(value.revision)
     || value.revision < 1
     || !isAttempt(value.attempt)
@@ -197,6 +198,7 @@ function isValidEntry(value: unknown, runId: string): value is VillageReturnQueu
 function isValidState(value: unknown): value is VillageReturnQueueState {
   if (!isRecord(value)
     || !isIdentifier(value.runId)
+    || typeof value.nextRevision !== 'number'
     || !Number.isSafeInteger(value.nextRevision)
     || value.nextRevision < 1
     || !Array.isArray(value.entries)) return false

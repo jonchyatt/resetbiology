@@ -146,6 +146,7 @@ import {
   createRainState,
   createTorchState,
   deriveRainEffects,
+  RAINCALL_REQUIRED_RESPONSES,
   RAINCALL_TIMINGS,
   stepRain,
   stepTorch,
@@ -5513,6 +5514,14 @@ export default function PitchforksIII() {
     syncSparkGuideStatus(next.status)
   }, [recordSparkGuideEvent, syncSparkGuideStatus])
 
+  const normalBellRouteAvailable = useCallback(() => (
+    !demoRef.current &&
+    !fsrsDebugRef.current &&
+    !bossSimulatingRef.current &&
+    selectedWorldRef.current === 'village-gate' &&
+    presentationJourneyRef.current?.dungeonClear !== undefined
+  ), [])
+
   const updateSparkGuide = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
     source: PitchInfo | null,
@@ -6034,14 +6043,6 @@ export default function PitchforksIII() {
     }
     return 2000
   }, [])
-
-  const normalBellRouteAvailable = useCallback(() => (
-    !demoRef.current &&
-    !fsrsDebugRef.current &&
-    !bossSimulatingRef.current &&
-    selectedWorldRef.current === 'village-gate' &&
-    presentationJourneyRef.current?.dungeonClear !== undefined
-  ), [])
 
   const acceptNormalBellCombatResponse = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
     if (!normalBellRouteAvailable()) return

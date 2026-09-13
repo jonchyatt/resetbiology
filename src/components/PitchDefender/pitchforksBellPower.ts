@@ -217,6 +217,7 @@ function copyReceipt(receipt: PitchforksBellPowerReceipt | null): PitchforksBell
 function validateConfig(config: unknown): asserts config is PitchforksBellPowerConfig {
   if (!isRecord(config)
     || !isIdentifier(config.runId)
+    || typeof config.requiredResponses !== 'number'
     || !Number.isSafeInteger(config.requiredResponses)
     || config.requiredResponses <= 0
     || !Array.isArray(config.admittedNotes)
