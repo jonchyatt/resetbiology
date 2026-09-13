@@ -25,6 +25,7 @@ const journey = createPitchforksPresentationJourney({
 check(() => assert.equal(PITCHFORKS_PRESENTATION_JOURNEY_KEY, 'pitchforks3_presentation_journey_v1'))
 check(() => assert.deepEqual(journey, {
   version: 1,
+  currentLevel: 1,
   rangeAssessedAt,
   startedAt: '2026-07-20T19:00:00.000Z',
   unlockedNotes: ['D4', 'E4', 'C4'],

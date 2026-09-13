@@ -1,10 +1,15 @@
 'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { flushSync } from 'react-dom'
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
+import PitchforksMasteryPanel from './PitchforksMasteryPanel'
+import PitchforksSongcraft, { observePitchforksSongcraftGeneration, type PitchforksSongcraftGenerationState } from './PitchforksSongcraft'
+import { advancePitchforksCampaignProgress } from './pitchforksCampaignProgress'
+import { projectPitchforksMastery } from './pitchforksMasteryProjection'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
+import { createPitchforksMicrophoneOwner, type PitchforksMicrophoneOwner } from './pitchforksMicrophoneOwner'
 import { PITCHFORKS_AUDIO_CONSTRAINTS, PITCHFORKS_PITCH_PROFILE } from './pitchDetectionSmoothing'
 import {
   PITCHFORKS_ROOM_CHECK_MS,
@@ -40,10 +45,22 @@ import {
   gradeEar,
   gradeVoice,
   loadStore,
+  migrate,
   saveStore,
 } from '@/lib/fsrsFamily'
-import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
-import { WORLD_REGISTRY, isWorldUnlocked } from './pitchforks3WorldRegistry'
+import {
+  createPitchforksBossRecital,
+  type PitchforksBossRecitalController,
+  type PitchforksBossRecitalState,
+  type PitchforksBossRecitalResult,
+  type PitchforksBossRecitalReceipt,
+  type PitchforksBossRecitalStorage,
+} from './pitchforksBossRecital'
+import { INTRO_ORDER } from './types'
+import { selectPitchforksChargePose } from './pitchforksChargePose'
+import { drawStormHeart, selectStormHeartState } from './pitchforksStormHeart'
+import { getPitchforksThunderheadPathPosition, getPitchforksThunderheadCaptionRect, PITCHFORKS_THUNDERHEAD_CLEAR_LANE_Y } from './pitchforksThunderheadPath'
+import { WORLD_REGISTRY } from './pitchforks3WorldRegistry'
 import {
   PITCHFORKS_RANGE_NOTES,
   PITCHFORKS_RANGE_PROFILE_KEY,
@@ -58,8 +75,8 @@ import {
 import {
   EMPTY_CUE_SUPPORT_PROFILE,
   PITCHFORKS_PRESENTATION_JOURNEY_KEY,
-  admissionAllowedForWave,
   admissionRecallReady,
+  advancePitchforksJourneyLevel,
   attackTimeForCurriculum,
   createPitchforksPresentationJourney,
   cueSupportForNote,
@@ -78,6 +95,8 @@ import {
   type PitchforksPresentationJourney,
   type TineCount,
 } from './pitchforksCurriculum'
+import { selectVillageLessonCandidate } from './villageLessonSelector'
+import { recordVillagePractice } from './villagePractice'
 import {
   pitchforksApproaching,
   pitchforksMicUnreliable,
@@ -111,11 +130,103 @@ import {
   savePitchforksSettings,
   type PitchforksSettingsSnapshot,
 } from './pitchforksSettings'
+import {
+  PITCHFORKS_LEVEL_ACCURACY_GOAL_PERCENT,
+  createPitchforksLevelProgress,
+  pitchforksLevelAccuracyPercent,
+  pitchforksLevelResult,
+  pitchforksNewNoteAccuracyEligible,
+  recordPitchforksLevelOutcome,
+  type PitchforksLevelCredit,
+  type PitchforksLevelProgress,
+  type PitchforksLevelResult,
+} from './pitchforksLevelProgress'
+import {
+  acceptPitchforksRainCombatResponse,
+  createRainState,
+  createTorchState,
+  deriveRainEffects,
+  RAINCALL_TIMINGS,
+  stepRain,
+  stepTorch,
+  TORCH_EXACT_HOLD_MS,
+  type RainState,
+  type TorchState,
+} from './pitchforksRainEcology'
+import { drawRainArchitecture, drawVillagerTorch } from './pitchforksRainView'
+import { drawPitchforksTargetContour, type PitchforksTargetContourDescriptor } from './pitchforksTargetContourView'
+import {
+  armPitchforksCloseSmash,
+  completePitchforksCloseSmashSettle,
+  consumePitchforksCloseSmash,
+  createPitchforksCloseSmashState,
+  presentPitchforksCloseSmashContact,
+  settlePitchforksCloseSmash,
+  type PitchforksCloseSmashReceipt,
+  type PitchforksCloseSmashState,
+} from './pitchforksCloseSmash'
+import {
+  advancePitchforksThunderhead,
+  createPitchforksThunderheadState,
+  getPitchforksThunderheadDebugProjection,
+  type PitchforksThunderheadDebugProjection,
+  type PitchforksThunderheadEvent,
+  type PitchforksThunderheadLockReceipt,
+  type PitchforksThunderheadState,
+  type PitchforksThunderheadTarget,
+  type PitchforksThunderheadTransition,
+  type PitchforksThunderheadTransitionReason,
+} from './pitchforksThunderhead'
+import {
+  createPitchforksGalvanicState,
+  planPitchforksGalvanicSweep,
+  type PitchforksGalvanicLock,
+  type PitchforksGalvanicOutcome,
+  type PitchforksGalvanicPlanReason,
+  type PitchforksGalvanicState,
+} from './pitchforksGalvanic'
+import {
+  advancePitchforksBellWave,
+  createPitchforksBellWaveState,
+  projectPitchforksBellWave,
+  releasePitchforksBellWave,
+  resetPitchforksBellWaveState,
+  type PitchforksBellWaveAdvanceDecision,
+  type PitchforksBellWaveProjection,
+  type PitchforksBellWaveState,
+  type PitchforksBellWaveVillager,
+} from './pitchforksBellWave'
+import {
+  acceptPitchforksBellPowerActivationNote,
+  acceptPitchforksBellPowerCombatResponse,
+  acknowledgePitchforksBellPowerWaveRelease,
+  cancelPitchforksBellPowerActivation,
+  createPitchforksBellPowerState,
+  startPitchforksBellPowerActivation,
+  type PitchforksBellPowerState,
+} from './pitchforksBellPower'
+import { drawPitchforksBellWave } from './pitchforksBellWaveView'
+import { drawPitchforksBellSwing } from './pitchforksBellSwingView'
+import { PITCHFORKS_BELL_RING_MS, schedulePitchforksBellRing } from './pitchforksBellAudio'
+import {
+  PITCHFORKS_VICTORY_ACTIVE_END_MS,
+  PITCHFORKS_VICTORY_CLEAR_MS,
+  PITCHFORKS_VICTORY_REDUCED_MOTION_END_MS,
+  PITCHFORKS_VICTORY_START_MS,
+  selectPitchforksVictoryPose,
+  type PitchforksVictoryAssetAvailability,
+  type PitchforksVictoryPose,
+} from './pitchforksVictoryPose'
 
 const W = 720
 const H = 405
 const MAX_CANVAS_DISPLAY_W = 1280
 const MAX_CANVAS_DISPLAY_H = 720
+// Keep the 16:9 battlefield useful when the fixed result band and learning dock
+// exhaust a short viewport. This floor is the existing canvas aspect ratio,
+// capped at the native canvas height, leaving room for controls on a laptop.
+const STAGE_MIN_HEIGHT_VW = (H / W) * 100
+const STAGE_MIN_HEIGHT_CSS = `min(${H}px, ${STAGE_MIN_HEIGHT_VW}vw)`
 const STAFF_BAND_RENDER_SCALE = 3
 const SPRITE_SCALE = 3
 // Frankenstein's native sprite resolution was bumped 3x (32x48 -> 96x144, C11
@@ -127,6 +238,8 @@ const SPRITE_SCALE = 3
 // that reads from assets.frankMeta / frankMeta.
 const FRANK_SPRITE_SCALE = SPRITE_SCALE / 3
 const ASSET_BASE = '/images/pitchforks'
+export const PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC = '/images/pitchforks/village_gate_plate.png'
+export const PITCHFORKS_BELLRINGER_REST_SRC = '/images/pitchforks/bellringer_rest.png'
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 const FSRS_DEBUG_KEY = 'pitch_fsrs_debug'
 const MASTERY_PROGRESS_KEY = 'pitchforks3_mastery_progress'
@@ -134,6 +247,215 @@ const MASTERY_PROGRESS_DEBUG_KEY = 'pitchforks3_mastery_progress_debug'
 const CUE_SUPPORT_KEY = 'pitchforks3_cue_support_v1'
 const CUE_SUPPORT_DEBUG_KEY = 'pitchforks3_cue_support_debug_v1'
 const STARTING_NOTES = [INTRO_ORDER[0], INTRO_ORDER[1]]
+
+export type PitchforksBossId = 'torchmaster' | 'bellringer'
+
+export type PitchforksBossEntryAssets = Readonly<{
+  torchmasterChamberPlate: boolean
+  bellringerChamberPlate: boolean
+  bellringerRest: boolean
+}>
+
+export type PitchforksBossEntryReason = 'ready' | 'demo-only' | 'unknown-boss' | 'missing-art' | 'fewer-than-two-notes' | 'no-admitted-notes'
+
+export type PitchforksBossEntryStatus = Readonly<{
+  bossId: PitchforksBossId | null
+  available: boolean
+  reason: PitchforksBossEntryReason
+  sequence: readonly string[]
+  missingAssets: readonly ('chamber-plate' | 'rest')[]
+}>
+
+export function isPitchforksBossId(value: unknown): value is PitchforksBossId {
+  return value === 'torchmaster' || value === 'bellringer'
+}
+
+/** Preserve literal note identity and admitted order; no octave folding or transposition. */
+export function distinctPitchforksAdmittedNotes(admittedNotes: readonly string[]): string[] {
+  const seen = new Set<string>()
+  return admittedNotes.filter(note => {
+    if (seen.has(note)) return false
+    seen.add(note)
+    return true
+  })
+}
+
+/** Select only the bounded private sequence; the caller still passes the full admitted arsenal to the controller. */
+export function selectPitchforksBossSequence(bossId: unknown, admittedNotes: readonly string[]): readonly string[] | null {
+  if (!isPitchforksBossId(bossId) || !Array.isArray(admittedNotes)) return null
+  const snapshot = [...admittedNotes]
+  const sequence = bossId === 'bellringer'
+    ? distinctPitchforksAdmittedNotes(snapshot).slice(0, 2)
+    : snapshot.slice(0, 2)
+  return sequence.length > 0 ? Object.freeze(sequence) : null
+}
+
+export function assessPitchforksBossEntry(
+  bossId: unknown,
+  demo: boolean,
+  assets: PitchforksBossEntryAssets,
+  admittedNotes: readonly string[],
+): PitchforksBossEntryStatus {
+  if (!isPitchforksBossId(bossId)) {
+    return { bossId: null, available: false, reason: 'unknown-boss', sequence: [], missingAssets: [] }
+  }
+  if (!demo) {
+    return { bossId, available: false, reason: 'demo-only', sequence: [], missingAssets: [] }
+  }
+
+  const missingAssets: Array<'chamber-plate' | 'rest'> = []
+  if (bossId === 'torchmaster') {
+    if (!assets.torchmasterChamberPlate) missingAssets.push('chamber-plate')
+  } else {
+    if (!assets.bellringerChamberPlate) missingAssets.push('chamber-plate')
+    if (!assets.bellringerRest) missingAssets.push('rest')
+  }
+  if (missingAssets.length > 0) {
+    return { bossId, available: false, reason: 'missing-art', sequence: [], missingAssets }
+  }
+
+  const sequence = selectPitchforksBossSequence(bossId, admittedNotes) ?? []
+  if (bossId === 'bellringer' && distinctPitchforksAdmittedNotes(admittedNotes).length < 2) {
+    return { bossId, available: false, reason: 'fewer-than-two-notes', sequence, missingAssets: [] }
+  }
+  if (sequence.length === 0) {
+    return { bossId, available: false, reason: 'no-admitted-notes', sequence, missingAssets: [] }
+  }
+  return { bossId, available: true, reason: 'ready', sequence, missingAssets: [] }
+}
+
+export function pitchforksBossEntryCopy(status: PitchforksBossEntryStatus): string {
+  if (status.available) return 'Ready for this private demo.'
+  if (status.reason === 'demo-only') return 'Private demo only. This room is not an ordinary world route.'
+  if (status.reason === 'unknown-boss') return 'This recital is unavailable.'
+  if (status.reason === 'missing-art') return 'Artwork is preparing. Entry stays disabled until the Village Gate plate and Bellringer rest pose are ready.'
+  if (status.reason === 'fewer-than-two-notes') return 'Unavailable: two distinct admitted notes are required for two-note interval practice.'
+  return 'Unavailable until an admitted note is ready.'
+}
+
+export function selectPitchforksPrivatePlateAsset(search: URLSearchParams): string | null {
+  if (search.get('demo') !== '1') return null
+  switch (search.get('worldProof')) {
+    case 'village-gate':
+      return 'village_gate_plate.png'
+    case 'bell-tower':
+      return 'bell_tower_plate.png'
+    case 'cathedral':
+      return 'cathedral_plate.png'
+    default:
+      return null
+  }
+}
+
+export type PitchforksJourneySaveStorage = Pick<Storage, 'setItem' | 'getItem'>
+export type PitchforksJourneySaveStorageSource = PitchforksJourneySaveStorage | (() => PitchforksJourneySaveStorage)
+export type PitchforksJourneySaveReason =
+  | 'no-journey'
+  | 'demo'
+  | 'fsrs-debug'
+  | 'serialize-failed'
+  | 'write-failed'
+  | 'readback-failed'
+  | 'readback-mismatch'
+export type PitchforksJourneySaveResult = Readonly<{
+  status: 'confirmed' | 'not-confirmed' | 'skipped'
+  journey: PitchforksPresentationJourney | null
+  reason?: PitchforksJourneySaveReason
+}>
+
+/**
+ * Confirm a normal journey only after the storage write can be read back
+ * byte-for-byte. The caller owns the in-memory journey, so every failure keeps
+ * that snapshot available for a later retry.
+ */
+export function persistPitchforksPresentationJourney(
+  storageSource: PitchforksJourneySaveStorageSource,
+  journey: PitchforksPresentationJourney | null,
+  options: Readonly<{ demo?: boolean; fsrsDebug?: boolean; key?: string }> = {},
+): PitchforksJourneySaveResult {
+  if (!journey) return { status: 'skipped', journey, reason: 'no-journey' }
+  if (options.demo) return { status: 'skipped', journey, reason: 'demo' }
+  if (options.fsrsDebug) return { status: 'skipped', journey, reason: 'fsrs-debug' }
+
+  const key = options.key ?? PITCHFORKS_PRESENTATION_JOURNEY_KEY
+  let storage: PitchforksJourneySaveStorage
+  try {
+    storage = typeof storageSource === 'function' ? storageSource() : storageSource
+  } catch {
+    return { status: 'not-confirmed', journey, reason: 'write-failed' }
+  }
+  let serialized: string
+  try {
+    serialized = JSON.stringify(journey)
+  } catch {
+    return { status: 'not-confirmed', journey, reason: 'serialize-failed' }
+  }
+
+  try {
+    storage.setItem(key, serialized)
+  } catch {
+    return { status: 'not-confirmed', journey, reason: 'write-failed' }
+  }
+
+  let readback: string | null
+  try {
+    readback = storage.getItem(key)
+  } catch {
+    return { status: 'not-confirmed', journey, reason: 'readback-failed' }
+  }
+  if (readback !== serialized) {
+    return { status: 'not-confirmed', journey, reason: 'readback-mismatch' }
+  }
+  return { status: 'confirmed', journey }
+}
+
+export type PitchforksMasterySaveStorage = Pick<Storage, 'getItem'>
+export type PitchforksMasterySaveReason =
+  | 'serialize-failed'
+  | 'write-failed'
+  | 'readback-failed'
+  | 'readback-mismatch'
+export type PitchforksMasterySaveResult = Readonly<{
+  status: 'confirmed' | 'not-confirmed'
+  store: Record<string, NoteMemory>
+  reason?: PitchforksMasterySaveReason
+}>
+
+/**
+ * Confirm an FSRS mastery write without changing the shared fsrsFamily API.
+ * The caller retains the live store ref on every failure so a later retry can
+ * persist whatever the player has most recently learned.
+ */
+export function persistPitchforksMasteryStore(
+  storageSource: () => PitchforksMasterySaveStorage,
+  key: string,
+  store: Record<string, NoteMemory>,
+  write: () => boolean,
+): PitchforksMasterySaveResult {
+  let serialized: string
+  try {
+    const next = JSON.stringify(store)
+    if (typeof next !== 'string') throw new Error('FSRS mastery store did not serialize')
+    serialized = next
+  } catch {
+    return { status: 'not-confirmed', store, reason: 'serialize-failed' }
+  }
+
+  try {
+    if (!write()) return { status: 'not-confirmed', store, reason: 'write-failed' }
+  } catch {
+    return { status: 'not-confirmed', store, reason: 'write-failed' }
+  }
+
+  let readback: string | null
+  try {
+    readback = storageSource().getItem(key)
+  } catch {
+    return { status: 'not-confirmed', store, reason: 'readback-failed' }
+  }
+  if (readback !== serialized) return { status: 'not-confirmed', store, reason: 'readback-mismatch' }
+  return { status: 'confirmed', store }
+}
 
 // ported from Pitchforks.tsx:430-432
 const CONFIDENCE_FLOOR = 0.75
@@ -171,7 +493,136 @@ const CIRCUIT_BUCKET_S = 0.05
 const FRANK_CLOUD_X_OFFSET = 26
 const FRANK_CLOUD_Y = 88
 const FRANK_REACTION_MS = 260
+const VICTORY_SPRITE_W = 96
+const VICTORY_SPRITE_H = 144
+// Private integration policy carried forward from the staged grammar. Keep this
+// tunable while the hosted timing/latency gate remains open.
+const CLOSE_SMASH_FALLBACK_MS = 1600
+const CLOSE_SMASH_CONTACT_DELAY_MS = 200
+const CLOSE_SMASH_SETTLE_MS = 250
+const CLOSE_SMASH_RECOIL_MS = 280
+const CLOSE_SMASH_RECOIL_RADIUS_X = 128
+const CLOSE_SMASH_RECOIL_RADIUS_Y = 84
+// Native authored contact cell is 96x144; this point is the joined-hand mass
+// used as the deterministic energy origin for the contact-only presentation.
+const CLOSE_SMASH_HANDS_X = 68
+const CLOSE_SMASH_HANDS_Y = 88
+// Thunderhead is a private demo-only receipt. The cloud uses the existing
+// Storm Heart envelope and deterministic circuit renderer; no new asset or
+// timer engine is introduced.
+const THUNDERHEAD_CEILING_Y = PITCHFORKS_THUNDERHEAD_CLEAR_LANE_Y
+const THUNDERHEAD_BANK_X_OFFSET = -8
+const THUNDERHEAD_TRAVEL_MS = 820
+const THUNDERHEAD_MATCH_SETTLE_MS = 120
+const THUNDERHEAD_RUNE_STATUS = 'unresolved-canonical-rune'
+const GALVANIC_BANK_CAPACITY = 2 as const
+const GALVANIC_PROOF_FIRST_NOTES = ['C4', 'C4', 'E4'] as const
+const GALVANIC_PROOF_X = [220, 395, 570] as const
+// Bell Tower is a private proof route only. The measured anchor comes from
+// the original plate metadata; this wave never grants ordinary tine credit.
+const BELL_WAVE_ORIGIN = Object.freeze({ x: 274.5, y: 61.5 })
+const BELL_WAVE_SPEED = 0.34
+const BELL_WAVE_DURATION_MS = 1400
+// A full actor-width shove remains readable at the 390px phone floor.
+const BELL_KNOCKBACK_DISTANCE = 72
+const BELL_KNOCKBACK_MS = 320
 const MASTERY_STABILITY_DAYS = 21
+
+export type PitchforksCuePromptTiming = Readonly<{
+  /** The authored piano tone is still audible. */
+  cuePlaying: boolean
+  /** The existing cue/echo suppression window is still active. */
+  matchingSuppressed: boolean
+}>
+
+/**
+ * Sing/Now is an action prompt, so it must not outrun either side of the
+ * existing tuner presentation gate. Returning null lets the caller retain its
+ * current Listen/status copy until the same target is safe to ask for.
+ */
+export function selectPitchforksCuePrompt(
+  note: string,
+  burned: number,
+  timing: PitchforksCuePromptTiming,
+): string | null {
+  if (timing.cuePlaying || timing.matchingSuppressed) return null
+  return `${burned === 0 ? 'Sing' : 'Now'}: ${note}`
+}
+
+/** The existing receipt window is also the canonical next-wave schedule. */
+export const PITCHFORKS_VICTORY_NEXT_WAVE_MS = WAVE_RECEIPT_MS
+
+export type PitchforksVictoryReceiptClaim = Readonly<{
+  receiptId: string
+  /** Authoritative wave ordinal captured at receipt claim time. */
+  receiptOrdinal: number
+  /** Parity-selected micro-presentation, captured once per receipt. */
+  variant: 'neutral' | 'eyeLift'
+  /** Reduced-motion preference captured once per receipt. */
+  reducedMotion: boolean
+  /** Whether the accepted original sprites were available at claim time. */
+  assetAvailability: PitchforksVictoryAssetAvailability
+  /** Absolute position on the existing runtime.animClock. */
+  claimedAtMs: number
+}>
+
+export function selectPitchforksVictoryPoseForClaim(
+  claim: PitchforksVictoryReceiptClaim | null,
+  elapsedMs: number,
+  cancelled = false,
+): PitchforksVictoryPose {
+  if (!claim || cancelled) return 'none'
+  return selectPitchforksVictoryPose({
+    elapsedMs,
+    eligible: true,
+    reducedMotion: claim.reducedMotion,
+    // Use the immutable claim variant rather than re-deriving it during a
+    // rerender. The ordinal remains in the receipt for audit parity.
+    wave: claim.variant === 'eyeLift' ? 1 : 0,
+    assets: claim.assetAvailability,
+  })
+}
+
+export type PitchforksWaveReceiptClockInput = Readonly<{
+  logicalNowMs: number
+  receiptStartedAtMs: number
+}>
+
+/**
+ * Derive a bounded receipt age from the existing rAF logical clock. This is
+ * deliberately pure so timing tests exercise the same arithmetic as runtime.
+ */
+export function pitchforksWaveReceiptAgeMs({ logicalNowMs, receiptStartedAtMs }: PitchforksWaveReceiptClockInput): number {
+  if (!Number.isFinite(logicalNowMs) || !Number.isFinite(receiptStartedAtMs)) return 0
+  return clamp(logicalNowMs - receiptStartedAtMs, 0, PITCHFORKS_VICTORY_NEXT_WAVE_MS)
+}
+
+/** Advance the existing logical clock; a paused receipt must not accrue age. */
+export function advancePitchforksLogicalClock(logicalNowMs: number, dtMs: number, paused: boolean): number {
+  const now = Number.isFinite(logicalNowMs) ? Math.max(0, logicalNowMs) : 0
+  if (paused || !Number.isFinite(dtMs) || dtMs <= 0) return now
+  return now + dtMs
+}
+
+export function pitchforksWaveReceiptDue({ logicalNowMs, receiptStartedAtMs }: PitchforksWaveReceiptClockInput): boolean {
+  return pitchforksWaveReceiptAgeMs({ logicalNowMs, receiptStartedAtMs }) >= PITCHFORKS_VICTORY_NEXT_WAVE_MS
+}
+
+export type PitchforksWaveReceiptSealInput = Readonly<{
+  spawned: number
+  required: number
+  villagers: ReadonlyArray<{ state: VillagerState }>
+  bolts: readonly unknown[]
+}>
+
+/** A receipt cannot seal while even an ash villager or bolt remains present. */
+export function canSealPitchforksWaveReceipt(input: PitchforksWaveReceiptSealInput): boolean {
+  return Number.isSafeInteger(input.spawned) &&
+    Number.isSafeInteger(input.required) &&
+    input.spawned >= input.required &&
+    input.villagers.length === 0 &&
+    input.bolts.length === 0
+}
 const MASTERY_SESSION_COUNT = 3
 const TRAIL_MS = 1000
 const PITCH_BAR_Y = H - 52
@@ -243,7 +694,7 @@ const frankSparkPoints: { x: number; y: number }[][] = [0, 1].map(() =>
 )
 let frankSparkJitterBucket = -1
 
-type Phase = 'menu' | 'tutorial' | 'calibrating' | 'range_manual' | 'range_assessment' | 'playing' | 'game_over'
+type Phase = 'menu' | 'tutorial' | 'calibrating' | 'range_manual' | 'range_assessment' | 'playing' | 'game_over' | 'songcraft'
 type RangeAssessmentStep = 'anchor' | 'lower' | 'higher' | 'summary'
 type RangeIntent = 'guided' | 'saved'
 type ButtonFeedbackKind = 'listen' | 'question' | 'correct' | 'wrong'
@@ -286,9 +737,25 @@ interface ForkMeta {
   tine_tips: Array<{ x: number; y: number }>
 }
 
+type PitchforksNormalWorld = 'dungeon' | 'village-gate'
+type VillageGateAssetStatus = 'loading' | 'ready' | 'missing'
+
 interface Assets {
   frankIdle?: HTMLImageElement
+  stormHeart?: HTMLImageElement
+  bellSwing?: HTMLImageElement
+  bellBackdrop?: HTMLImageElement
+  gargoyleSpout?: HTMLImageElement
+  rainCloud?: HTMLImageElement
+  villageGatePlate?: HTMLImageElement
+  privatePlate?: HTMLImageElement
+  torchmasterChamberPlate?: HTMLImageElement
+  bellringerChamberPlate?: HTMLImageElement
+  bellringerRest?: HTMLImageElement
   frankCharge?: HTMLImageElement
+  frankCloseSmash?: HTMLImageElement
+  frankVictoryNeutral?: HTMLImageElement
+  frankVictoryEyeLift?: HTMLImageElement
   frankMeta: FrankMeta
   villagerMeta: Record<TineCount, VillagerMeta>
   forkMeta: Record<TineCount, ForkMeta>
@@ -315,7 +782,12 @@ interface Villager {
   walkFrame: number
   walkClock: number
   ashTimer: number
+  torch: TorchState
+  torchBearer: boolean
+  supportedLesson?: SupportedVillageLesson
 }
+
+type BoltPresentation = 'ordinary' | 'ordinary-fallback' | 'close-smash' | 'thunderhead' | 'galvanic'
 
 interface Bolt {
   fromX: number
@@ -331,6 +803,7 @@ interface Bolt {
   note: string
   villagerId: number
   tineIndex: number
+  presentation: BoltPresentation
 }
 
 interface LightningPhaseTransition {
@@ -341,6 +814,90 @@ interface LightningPhaseTransition {
 
 type BurstKind = 'strike' | 'kill'
 type FrankReactionKind = 'kill' | 'miss'
+
+type CloseSmashRequest = Readonly<{
+  targetKey: string
+  requestedAtMs: number
+}>
+
+type BellChargeReceipt = Readonly<{
+  receiptId: string
+  targetKey: string
+  note: string
+  frequency: number
+  chargedAtMs: number
+}>
+
+type BellKnockback = Readonly<{
+  startX: number
+  direction: -1 | 1
+  startedAtMs: number
+  expiresAtMs: number
+}>
+
+type ThunderheadPoint = Readonly<{ x: number; y: number }>
+
+type ThunderheadView = Readonly<{
+  projection: PitchforksThunderheadDebugProjection
+  travelProgress: number
+  cloudX: number
+  cloudY: number
+  targetX: number | null
+  targetY: number | null
+  runeStatus: typeof THUNDERHEAD_RUNE_STATUS
+}>
+
+type ThunderheadDebugProjection = Readonly<PitchforksThunderheadDebugProjection & {
+  travelProgress: number
+  cloudX: number
+  cloudY: number
+  targetX: number | null
+  targetY: number | null
+  runeStatus: typeof THUNDERHEAD_RUNE_STATUS
+}>
+
+type GalvanicDebugProjection = Readonly<{
+  enabled: boolean
+  battleId: string
+  armed: boolean
+  awaitingSilence: boolean
+  bankCount: number
+  capacity: typeof GALVANIC_BANK_CAPACITY
+  banks: ReadonlyArray<Readonly<Pick<PitchforksGalvanicLock, 'lockId' | 'targetKey' | 'note' | 'octave'>>>
+  consumedLockIds: readonly string[]
+  processedAttackIds: readonly string[]
+  lastOutcomes: readonly PitchforksGalvanicOutcome[]
+  lastReason: PitchforksGalvanicPlanReason | string | null
+}>
+
+function buildGalvanicDebugProjection(
+  enabled: boolean,
+  state: PitchforksGalvanicState,
+  banks: readonly PitchforksGalvanicLock[],
+  armed: boolean,
+  awaitingSilence: boolean,
+  lastOutcomes: readonly PitchforksGalvanicOutcome[],
+  lastReason: PitchforksGalvanicPlanReason | string | null,
+): GalvanicDebugProjection {
+  return Object.freeze({
+    enabled,
+    battleId: state.battleId,
+    armed,
+    awaitingSilence,
+    bankCount: banks.length,
+    capacity: GALVANIC_BANK_CAPACITY,
+    banks: Object.freeze(banks.map(bank => Object.freeze({
+      lockId: bank.lockId,
+      targetKey: bank.targetKey,
+      note: bank.note,
+      octave: bank.octave,
+    }))),
+    consumedLockIds: Object.freeze([...state.consumedLockIds]),
+    processedAttackIds: Object.freeze([...state.processedAttackIds]),
+    lastOutcomes: Object.freeze(lastOutcomes.map(outcome => Object.freeze({ ...outcome }))),
+    lastReason,
+  })
+}
 
 interface Burst {
   x: number
@@ -381,9 +938,13 @@ interface Runtime {
   spawnClock: number
   bannerTimer: number
   nextWavePending: boolean
+  nextWaveNumber: number | null
+  nextWaveAtMs: number | null
+  nextWaveRunGeneration: number | null
   animClock: number
   gameOver: boolean
   firstVillagerId: number | null
+  rain: RainState
 }
 
 interface ActiveTarget {
@@ -391,6 +952,235 @@ interface ActiveTarget {
   tineIndex: number
   note: string
   key: string
+}
+
+type PitchforksMusicalPromptTarget = Readonly<{
+  key: string
+  note: string
+  burned: number
+  firstMinute: boolean
+}>
+
+type VillageLessonObjective = 'minor-third' | 'major-third' | 'perfect-fifth'
+
+type SupportedVillageLesson = Readonly<{
+  objective: VillageLessonObjective
+  contextNote: string
+  targetNote: string
+  support?: 'SUPPORTED' | 'UNAIDED_RETURN'
+}>
+
+export function projectVillageReturnDisplay(
+  villager: Pick<Villager, 'id' | 'burned' | 'totalTines' | 'notes' | 'supportedLesson'>,
+  targetOutcomes: PitchforksLevelProgress['targetOutcomes'],
+  hintedTargetKeys: ReadonlySet<string>,
+): Readonly<{ targetKey: string; answerVisible: boolean }> {
+  const targetKey = `${villager.id}:${villager.burned}`
+  const lesson = villager.supportedLesson
+  const isUnaidedReturn = villager.totalTines === 1 &&
+    lesson?.support === 'UNAIDED_RETURN' &&
+    lesson.contextNote !== lesson.targetNote &&
+    lesson.targetNote === villager.notes[villager.burned]
+  const answerVisible = !isUnaidedReturn ||
+    Object.prototype.hasOwnProperty.call(targetOutcomes, targetKey) ||
+    hintedTargetKeys.has(targetKey)
+  return { targetKey, answerVisible }
+}
+
+const VILLAGE_RETURN_HIDDEN_NOTE_LABEL = 'THE TARGET'
+
+export type VillageReturnTextProjection = Readonly<{
+  targetKey: string
+  answerVisible: boolean
+  contextNote: string | null
+  objective: string | null
+  direction: 'above' | 'below' | null
+}>
+
+/**
+ * Keep every return-facing text surface on the same exact-key decision as the
+ * accepted canvas projection. A concealed projection deliberately has no
+ * target-note field; callers must not be able to render the answer by accident.
+ */
+export function projectVillageReturnText(
+  villager: Pick<Villager, 'id' | 'burned' | 'totalTines' | 'notes' | 'supportedLesson'>,
+  targetOutcomes: PitchforksLevelProgress['targetOutcomes'],
+  hintedTargetKeys: ReadonlySet<string>,
+): VillageReturnTextProjection {
+  const display = projectVillageReturnDisplay(villager, targetOutcomes, hintedTargetKeys)
+  const lesson = villager.supportedLesson
+  const targetNote = villager.notes[villager.burned]
+  const validLesson = !!lesson &&
+    lesson.contextNote !== lesson.targetNote &&
+    lesson.targetNote === targetNote
+  return {
+    targetKey: display.targetKey,
+    answerVisible: display.answerVisible,
+    contextNote: validLesson ? lesson.contextNote : null,
+    objective: validLesson ? lesson.objective.replace('-', ' ') : null,
+    direction: validLesson
+      ? noteToFreq(lesson.targetNote) > noteToFreq(lesson.contextNote) ? 'above' : 'below'
+      : null,
+  }
+}
+
+function replaceLastExact(value: string, target: string, replacement: string): string {
+  if (!target) return value
+  const index = value.lastIndexOf(target)
+  if (index < 0) return value
+  return `${value.slice(0, index)}${replacement}${value.slice(index + target.length)}`
+}
+
+function villageReturnIntervalInstruction(projection: VillageReturnTextProjection): string | null {
+  if (projection.answerVisible || !projection.contextNote || !projection.objective || !projection.direction) return null
+  return `starting note ${projection.contextNote} · ${projection.objective} ${projection.direction}`
+}
+
+export function projectVillageReturnPrompt(
+  prompt: string,
+  projection: VillageReturnTextProjection,
+): string {
+  const interval = villageReturnIntervalInstruction(projection)
+  if (!interval) return prompt
+  const verb = /^(Listen|Replay|Sing|Now|Strike):/.exec(prompt)?.[1] ?? 'Sing'
+  return `${verb}: ${interval}`
+}
+
+export function projectVillageReturnTunerFeedback(
+  feedback: PitchforksTunerFeedback,
+  targetNote: string,
+  projection: VillageReturnTextProjection,
+): PitchforksTunerFeedback {
+  if (projection.answerVisible) return feedback
+  return {
+    ...feedback,
+    // Replace the final occurrence so an on-target reading can retain the
+    // singer's own source pitch while hiding the target occurrence.
+    headline: replaceLastExact(feedback.headline, targetNote, VILLAGE_RETURN_HIDDEN_NOTE_LABEL),
+    detail: replaceLastExact(feedback.detail, targetNote, VILLAGE_RETURN_HIDDEN_NOTE_LABEL),
+    compactLabel: replaceLastExact(feedback.compactLabel, targetNote, VILLAGE_RETURN_HIDDEN_NOTE_LABEL),
+  }
+}
+
+export function projectVillageReturnNoteLabel(
+  targetKey: string,
+  note: string,
+  projection: VillageReturnTextProjection | null,
+): string {
+  return projection && !projection.answerVisible && projection.targetKey === targetKey
+    ? VILLAGE_RETURN_HIDDEN_NOTE_LABEL
+    : note
+}
+
+export function projectVillageReturnEnvironmentText(
+  text: string,
+  targetNote: string | null,
+  targetKey: string,
+  projection: VillageReturnTextProjection | null,
+): string {
+  if (!projection || projection.answerVisible || projection.targetKey !== targetKey || !targetNote) return text
+  return replaceLastExact(text, targetNote, VILLAGE_RETURN_HIDDEN_NOTE_LABEL)
+}
+
+export function projectVillageReturnCoachCopy(
+  beat: FirstMinuteBeat,
+  note: string | null,
+  projection: VillageReturnTextProjection,
+): string | null {
+  const interval = villageReturnIntervalInstruction(projection)
+  const ordinary = firstMinuteCoachCopy(beat, note)
+  if (!interval) return ordinary
+  if (beat === 'listen') return `LISTEN TO ${projection.contextNote} · THEN MATCH A ${projection.objective} ${projection.direction}`
+  if (beat === 'charge') return `HOLD ${VILLAGE_RETURN_HIDDEN_NOTE_LABEL} · THE CLOUD IS CHARGING · ${interval}`
+  if (beat === 'sing') return `SING A ${projection.objective} ${projection.direction} FROM ${projection.contextNote} · HUM TO ARM THE LIGHTNING`
+  return ordinary
+}
+
+function pitchIdentity(note: string): Readonly<{ pitchClass: string; octave: number }> | null {
+  const match = /^([A-G](?:#|b)?)(-?\d+)$/.exec(note)
+  if (!match) return null
+  const octave = Number(match[2])
+  return Number.isSafeInteger(octave) ? { pitchClass: match[1], octave } : null
+}
+
+const BELL_NOTE_PITCH_CLASS_SEMITONES: Readonly<Record<string, number>> = Object.freeze({
+  C: 0,
+  'C#': 1,
+  Db: 1,
+  D: 2,
+  'D#': 3,
+  Eb: 3,
+  E: 4,
+  F: 5,
+  'F#': 6,
+  Gb: 6,
+  G: 7,
+  'G#': 8,
+  Ab: 8,
+  A: 9,
+  'A#': 10,
+  Bb: 10,
+  B: 11,
+})
+
+/** Preserve literal octave identity while measuring an activation pair. */
+export function pitchforksBellNoteMidi(note: string): number | null {
+  const identity = pitchIdentity(note)
+  const pitchClass = identity ? BELL_NOTE_PITCH_CLASS_SEMITONES[identity.pitchClass] : undefined
+  return pitchClass === undefined || !identity ? null : identity.octave * 12 + pitchClass
+}
+
+/** Pick the closest distinct admitted pair without octave folding or reordering. */
+export function selectPitchforksBellTaughtPair(admittedNotes: readonly string[]): readonly [string, string] | null {
+  if (!Array.isArray(admittedNotes)) return null
+  const candidates = distinctPitchforksAdmittedNotes([...admittedNotes])
+    .filter(note => pitchforksBellNoteMidi(note) !== null)
+  if (candidates.length < 2) return null
+
+  let bestPair: readonly [string, string] | null = null
+  let bestDistance = Number.POSITIVE_INFINITY
+  let bestLowerMidi = Number.POSITIVE_INFINITY
+  let bestUpperMidi = Number.POSITIVE_INFINITY
+  for (let leftIndex = 0; leftIndex < candidates.length - 1; leftIndex += 1) {
+    const leftMidi = pitchforksBellNoteMidi(candidates[leftIndex])
+    if (leftMidi === null) continue
+    for (let rightIndex = leftIndex + 1; rightIndex < candidates.length; rightIndex += 1) {
+      const rightMidi = pitchforksBellNoteMidi(candidates[rightIndex])
+      if (rightMidi === null) continue
+      const distance = Math.abs(leftMidi - rightMidi)
+      const lowerMidi = Math.min(leftMidi, rightMidi)
+      const upperMidi = Math.max(leftMidi, rightMidi)
+      const orderedPair: readonly [string, string] = leftMidi < rightMidi
+        ? [candidates[leftIndex], candidates[rightIndex]]
+        : leftMidi > rightMidi
+          ? [candidates[rightIndex], candidates[leftIndex]]
+          : candidates[leftIndex] <= candidates[rightIndex]
+            ? [candidates[leftIndex], candidates[rightIndex]]
+            : [candidates[rightIndex], candidates[leftIndex]]
+      const pairIsCanonicalTieBreaker = distance === bestDistance && (
+        lowerMidi < bestLowerMidi ||
+        (lowerMidi === bestLowerMidi && (
+          upperMidi < bestUpperMidi ||
+          (upperMidi === bestUpperMidi && bestPair !== null && (
+            orderedPair[0] < bestPair[0] ||
+            (orderedPair[0] === bestPair[0] && orderedPair[1] < bestPair[1])
+          ))
+        ))
+      )
+      if (distance < bestDistance || pairIsCanonicalTieBreaker) {
+        bestDistance = distance
+        bestLowerMidi = lowerMidi
+        bestUpperMidi = upperMidi
+        bestPair = orderedPair
+      }
+    }
+  }
+  // Canonical pair ordering keeps equal-distance ties stable across pool permutations.
+  // The pure Bell controller requires a comfortable (< octave) teaching pair;
+  // leave the power unavailable rather than asking for an invalid activation.
+  return bestPair && bestDistance < 12
+    ? Object.freeze([bestPair[0], bestPair[1]]) as readonly [string, string]
+    : null
 }
 
 interface HudState {
@@ -416,9 +1206,12 @@ interface NewNoteCeremonyState {
 type WaveReceiptState = Readonly<{
   visible: boolean
   timer: number
+  receiptStartedAtMs: number
   heard: readonly string[]
   sung: readonly string[]
   mastered: readonly string[]
+  levelResult: PitchforksLevelResult | null
+  claim: PitchforksVictoryReceiptClaim | null
 }>
 
 type MasteryProgress = Record<string, {
@@ -436,16 +1229,15 @@ type NoteChipPalette = Readonly<{
   glowAlpha: number
 }>
 
-type WaveReceiptView = WaveReceiptState & Readonly<{
-  noteStyles: Readonly<Record<string, NoteChipPalette>>
-}>
-
 const EMPTY_WAVE_RECEIPT: WaveReceiptState = {
   visible: false,
   timer: 0,
+  receiptStartedAtMs: 0,
   heard: [],
   sung: [],
   mastered: [],
+  levelResult: null,
+  claim: null,
 }
 
 type VillagerView = Readonly<{
@@ -467,11 +1259,16 @@ type VillagerView = Readonly<{
   walkFrame: number
   ashTimer: number
   active: boolean
+  answerVisible: boolean
   displayBurn: number
   timerPct: number
   soulR: number      // 0-1, currentR() for this villager's active note (notes[burned])
   soulCalm: number   // 0-1, retrievability(1, mem.S) for the same note, fixed 1-day-out reference
   soulHue: number     // hueForNote() for the same note
+  torch: TorchState
+  torchBearer: boolean
+  /** Visual-only bystander recoil; never feeds target, tine, or score state. */
+  recoilProgress: number
 }>
 
 type BoltView = Readonly<Bolt>
@@ -503,8 +1300,32 @@ type TunerView = Readonly<{
   feedback: PitchforksTunerFeedback
 }>
 
+const EMPTY_TUNER_VIEW: TunerView = {
+  visible: false,
+  now: 0,
+  targetNote: null,
+  sourceNote: null,
+  canUseSource: false,
+  dotDeviation: null,
+  renderDeviation: null,
+  onTarget: false,
+  trail: [],
+  feedback: pitchforksTunerFeedback({
+    targetNote: null,
+    sourceNote: null,
+    deviationSemis: null,
+    matchingSuppressed: false,
+    micUnreliable: false,
+    voiceBreak: false,
+    approaching: false,
+    lockProgress: 0,
+    toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
+  }),
+}
+
 type ViewState = Readonly<{
   phase: Phase
+  normalWorld: PitchforksNormalWorld
   inputMode: PitchforksInputMode
   animClock: number
   gameOver: boolean
@@ -522,6 +1343,20 @@ type ViewState = Readonly<{
     kind: FrankReactionKind
     ageMs: number
   }> | null
+  frankVictory: Readonly<{
+    pose: Exclude<PitchforksVictoryPose, 'none'>
+    ageMs: number
+    receiptId: string
+  }> | null
+  closeSmash: Readonly<{
+    phase: PitchforksCloseSmashState['phase']
+    receipt: PitchforksCloseSmashReceipt | null
+    consumer: PitchforksCloseSmashState['consumer']
+    contactAtMs: number | null
+    contactPresented: boolean
+    fallbackRemainingMs: number | null
+    showcase: boolean
+  }>
   shake: ShakeView
   hud: Readonly<{
     wave: number
@@ -533,7 +1368,6 @@ type ViewState = Readonly<{
     visible: boolean
     timer: number
   }>
-  waveReceipt: WaveReceiptView
   prompt: Readonly<{
     visible: boolean
     text: string
@@ -547,6 +1381,10 @@ type ViewState = Readonly<{
   ceremony: Readonly<NewNoteCeremonyState>
   noteMastered: string | null
   noteMasteredAgeMs: number
+  rain: RainState
+  thunderhead: ThunderheadView
+  bellWave: PitchforksBellWaveProjection
+  bellWaveElapsedMs: number
 }>
 
 interface NoteHealthDebug {
@@ -556,7 +1394,11 @@ interface NoteHealthDebug {
 }
 
 interface Pf3DebugState {
+  bossId: PitchforksBossId | null
+  bossRecital: PitchforksBossRecitalState | null
+  bossReviewReceipts: readonly PitchforksBossRecitalReceipt[]
   demoStep: string
+  closeSmashProof: boolean
   inputMode: PitchforksInputMode
   settings: PitchforksSettingsSnapshot
   chargeProgress: number
@@ -568,6 +1410,8 @@ interface Pf3DebugState {
   burnedTines: number
   ashCount: number
   wave: number
+  levelProgress: PitchforksLevelProgress
+  levelAccuracyPercent: number
   waveBannerVisible: boolean
   fullSequenceComplete: boolean
   barVisible: boolean
@@ -619,6 +1463,46 @@ interface Pf3DebugState {
   boltCount: number
   lightningBendDeg: number | null
   lightningPhaseTrace: LightningPhaseTransition[]
+  closeSmashPhase: PitchforksCloseSmashState['phase']
+  closeSmashReceipt: PitchforksCloseSmashReceipt | null
+  closeSmashConsumer: PitchforksCloseSmashState['consumer']
+  closeSmashContactPresented: boolean
+  closeSmashFallbackRemainingMs: number | null
+  closeSmashRequestQueued: boolean
+  logicalNowMs: number
+  waveReceiptVictoryPose: PitchforksVictoryPose
+  waveReceiptVictoryAgeMs: number | null
+  waveReceiptVictoryNextWaveAtMs: number | null
+  waveReceiptVictoryNextWaveRemainingMs: number | null
+  villagers: Array<{
+    id: number
+    state: VillagerState
+    burned: number
+    totalTines: TineCount
+    notes: string[]
+    x: number
+  }>
+  rainPhase: RainState['phase']
+  rainFill: number
+  rainCycleID: number
+  rainSlowFactor: number
+  rainExtinguishes: boolean
+  rainTransitions: RainState['recentTransitions']
+  torchStates: Record<string, TorchState>
+  thunderhead: ThunderheadDebugProjection
+  thunderheadArmed: boolean
+  thunderheadReleaseQueued: boolean
+  thunderheadLastTransitionReason: PitchforksThunderheadTransitionReason | null
+  thunderheadRuneStatus: typeof THUNDERHEAD_RUNE_STATUS
+  thunderheadTravelProgress: number
+  galvanic: GalvanicDebugProjection
+  bellProof: boolean
+  bellPhase: PitchforksBellWaveState['phase']
+  bellRadius: number
+  bellContactCount: number
+  bellRingCount: number
+  bellChargeReceiptId: string | null
+  bellReleaseQueued: boolean
 }
 
 declare global {
@@ -738,6 +1622,40 @@ function noteChipStyle(note: string, memory: Readonly<Record<string, NoteMemory>
   }
 }
 
+function WaveReceiptNoteRow(props: {
+  label: string
+  testId: string
+  notes: readonly string[]
+  noteNamesVisible: boolean
+  memory: Readonly<Record<string, NoteMemory>>
+  mastered?: boolean
+}) {
+  return (
+    <div data-testid={props.testId} className="flex min-w-0 items-center gap-1">
+      <span className={`shrink-0 text-[11px] font-black tracking-wider ${props.mastered ? 'text-cyan-100' : 'text-gray-400'}`}>
+        {props.label}
+      </span>
+      <div className="flex min-w-0 flex-wrap items-center gap-1">
+        {props.notes.length === 0 ? (
+          <span className="text-[11px] font-bold text-gray-500">NONE</span>
+        ) : props.notes.map((note, index) => (
+          <span
+            key={`${props.label}:${note}:${index}`}
+            data-note={note}
+            role="img"
+            aria-label={`${props.label} note ${note}`}
+            className={`inline-flex min-h-5 min-w-5 items-center justify-center rounded border px-1 text-[11px] font-black leading-none ${props.mastered ? 'ring-1 ring-cyan-100/70' : ''}`}
+            style={noteChipStyle(note, props.memory)}
+          >
+            <span className={props.noteNamesVisible ? undefined : 'sr-only'}>{note}</span>
+            {!props.noteNamesVisible && <span aria-hidden="true">•</span>}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function ceremonyBannerStyle(note: string): CSSProperties {
   const hue = hueForNote(note)
   return {
@@ -758,8 +1676,21 @@ function ceremonyNoteStyle(note: string, memory: Readonly<Record<string, NoteMem
   }
 }
 
-function fixedWaveDirector(wave: number, demo: boolean): WavePlan {
+function fixedWaveDirector(wave: number, demo: boolean, closeSmashProof = false, galvanicProof = false): WavePlan {
   const speed = Math.min(56, 15 + (wave - 1) * 5)
+  // Explicit private proof fixture only. It reuses the ordinary spawn and
+  // attack machinery while exposing three independent two-tine actors for a
+  // bounded Galvanic receipt; no bank or strike is created here.
+  if (demo && galvanicProof && wave === 1) {
+    return { wave, count: 3, spawnInterval: 0.01, speed, tineCounts: [2, 2, 2] }
+  }
+  // Explicit private proof fixture only. Normal demo and every normal wave
+  // retain their existing director; this two-villager plan creates the
+  // canonical two-tine target plus nearby three-tine bystander without a free
+  // lock or a production movement change.
+  if (demo && closeSmashProof && wave === 1) {
+    return { wave, count: 2, spawnInterval: 0.01, speed, tineCounts: [2, 3] }
+  }
   const early = patientTineCountsForWave(wave)
   if (early) {
     return { wave, count: early.length, spawnInterval: demo ? 0.01 : Math.max(1.4, 3.2 - (wave - 1) * 0.3), speed, tineCounts: [...early] }
@@ -780,8 +1711,8 @@ function attackTimeForWave(wave: number, index: number): number {
   return attackTimeForCurriculum(wave, index)
 }
 
-function makeInitialRuntime(demo: boolean): Runtime {
-  const plan = fixedWaveDirector(1, demo)
+function makeInitialRuntime(demo: boolean, closeSmashProof = false, galvanicProof = false): Runtime {
+  const plan = fixedWaveDirector(1, demo, closeSmashProof, galvanicProof)
   return {
     villagers: [],
     bolts: [],
@@ -795,10 +1726,18 @@ function makeInitialRuntime(demo: boolean): Runtime {
     spawnClock: 0,
     bannerTimer: 1.1,
     nextWavePending: false,
+    nextWaveNumber: null,
+    nextWaveAtMs: null,
+    nextWaveRunGeneration: null,
     animClock: 0,
     gameOver: false,
     firstVillagerId: null,
+    rain: createRainState(),
   }
+}
+
+function createInactiveTorchState(): TorchState {
+  return { ...createTorchState(), phase: 'spent' }
 }
 
 function colorForCents(absCents: number): string | null {
@@ -869,10 +1808,13 @@ function pitchDeviationSemis(source: PitchInfo, targetNote: string): number {
 type BuildViewStateArgs = Readonly<{
   runtime: Runtime
   phase: Phase
+  normalWorld: PitchforksNormalWorld
   inputMode: PitchforksInputMode
   active: ActiveTarget | null
   activeVillagerId: number | null
   activeKey: string
+  targetOutcomes: PitchforksLevelProgress['targetOutcomes']
+  hintedTargetKeys: ReadonlySet<string>
   chargeProgress: number
   tint: string | null
   noteNamesVisible: boolean
@@ -885,20 +1827,117 @@ type BuildViewStateArgs = Readonly<{
   ceremony: NewNoteCeremonyState
   noteMastered: string | null
   noteMasteredAgeMs: number
-  waveReceipt: WaveReceiptState
   frankReaction: ViewState['frankReaction']
+  closeSmash: PitchforksCloseSmashState
+  closeSmashFallbackDueAtMs: number
+  closeSmashRecoilUntil: ReadonlyMap<number, number>
+  bellRecoilUntil: ReadonlyMap<number, number>
+  bellWaveClockMs: number
   shake: ShakeView
   fsrsMemory: Readonly<Record<string, NoteMemory>>
+  frankVictory: ViewState['frankVictory']
+  thunderhead: PitchforksThunderheadState
+  thunderheadClockMs: number
+  thunderheadTravelStartedAtMs: number
+  thunderheadTravelStart: ThunderheadPoint | null
+  thunderheadTravelTarget: ThunderheadPoint | null
+  bellWave: PitchforksBellWaveProjection
+  bellWaveElapsedMs: number
 }>
+
+function activeTargetFromLiveVillager(villager: Villager): ActiveTarget | null {
+  if (
+    villager.state !== 'walking' ||
+    !Number.isInteger(villager.burned) ||
+    villager.burned < 0 ||
+    villager.burned >= villager.totalTines
+  ) return null
+  const note = villager.notes[villager.burned]
+  if (typeof note !== 'string' || note.length === 0) return null
+  const tineIndex = villager.totalTines - 1 - villager.burned
+  if (!Number.isSafeInteger(tineIndex) || tineIndex < 0) return null
+  return {
+    villager,
+    tineIndex,
+    note,
+    key: `${villager.id}:${villager.burned}`,
+  }
+}
+
+function activeTargetForThunderheadReceipt(
+  villagers: readonly Villager[],
+  receipt: PitchforksThunderheadLockReceipt,
+): ActiveTarget | null {
+  for (const villager of villagers) {
+    const liveTarget = activeTargetFromLiveVillager(villager)
+    if (!liveTarget || liveTarget.key !== receipt.targetKey || liveTarget.note !== receipt.note) continue
+    const identity = pitchIdentity(liveTarget.note)
+    if (!identity || identity.octave !== receipt.octave || identity.pitchClass !== receipt.pitchClass) return null
+    return liveTarget
+  }
+  return null
+}
+
+function thunderheadTargetPoint(target: ActiveTarget, assets: Assets): ThunderheadPoint {
+  const meta = assets.villagerMeta[target.villager.totalTines]
+  const tine = meta.tines[Math.max(0, Math.min(target.tineIndex, meta.tines.length - 1))]
+  const forkPivotX = target.villager.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+  const forkPivotY = target.villager.y + meta.fork_base.y * SPRITE_SCALE
+  const rawX = target.villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
+  const rawY = target.villager.y + tine.y * SPRITE_SCALE
+  return rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+}
+
+function activeTargetForCloseReceipt(
+  villager: Villager,
+  receipt: PitchforksCloseSmashReceipt,
+  phase: PitchforksCloseSmashState['phase'],
+): ActiveTarget | null {
+  const liveTarget = activeTargetFromLiveVillager(villager)
+  // After contact, settle may show the surviving villager's real next tine;
+  // locks remain disabled by processLock's lifecycle gate.
+  if (phase === 'settle') return liveTarget
+  if (
+    !liveTarget ||
+    String(liveTarget.villager.id) !== receipt.villagerId ||
+    liveTarget.key !== receipt.targetKey ||
+    liveTarget.note !== receipt.pitch ||
+    liveTarget.tineIndex !== receipt.tineIndex
+  ) return null
+  return liveTarget
+}
+
+function liveGalvanicTargets(villagers: readonly Villager[]): ActiveTarget[] {
+  return villagers
+    .map(activeTargetFromLiveVillager)
+    .filter((target): target is ActiveTarget => target !== null)
+    .sort((left, right) => left.villager.x - right.villager.x || left.villager.spawnIndex - right.villager.spawnIndex)
+}
+
+function liveBellWaveRoster(villagers: readonly Villager[]): PitchforksBellWaveVillager[] {
+  return villagers
+    .filter(villager => villager.state === 'walking' && villager.burned < villager.totalTines)
+    .map(villager => ({
+      stableID: String(villager.id),
+      x: villager.x,
+      y: villager.y,
+      walking: true,
+      alive: true,
+      spent: false,
+    }))
+}
 
 function buildViewState(args: BuildViewStateArgs): ViewState {
   const {
     runtime,
     phase,
+    normalWorld,
     inputMode,
     active,
     activeVillagerId,
     activeKey,
+    targetOutcomes,
+    hintedTargetKeys,
     chargeProgress,
     tint,
     noteNamesVisible,
@@ -911,56 +1950,137 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     ceremony,
     noteMastered,
     noteMasteredAgeMs,
-    waveReceipt,
     frankReaction,
+    frankVictory,
+    closeSmash,
+    closeSmashFallbackDueAtMs,
+    closeSmashRecoilUntil,
+    bellRecoilUntil,
+    bellWaveClockMs,
     shake,
     fsrsMemory,
+    thunderhead,
+    thunderheadClockMs,
+    thunderheadTravelStartedAtMs,
+    thunderheadTravelStart,
+    thunderheadTravelTarget,
+    bellWave,
+    bellWaveElapsedMs,
   } = args
   const newestBolt = runtime.bolts[runtime.bolts.length - 1]
   const ownershipBolt = newestBolt && newestBolt.life / newestBolt.maxLife < STRIKE_IMPACT_START
     ? newestBolt
     : null
-  const visualActive = ownershipBolt
+  const closeLifecycleActive = closeSmash.phase !== 'idle'
+  const pinnedReceipt = closeLifecycleActive ? closeSmash.receipt : null
+  const pinnedVillager = pinnedReceipt
+    ? runtime.villagers.find(v => String(v.id) === pinnedReceipt.villagerId) ?? null
+    : null
+  const pinnedActive = pinnedReceipt && pinnedVillager
+    ? activeTargetForCloseReceipt(pinnedVillager, pinnedReceipt, closeSmash.phase)
+    : null
+  const thunderheadLifecycleActive = thunderhead.phase !== 'idle' && thunderhead.phase !== 'consumed'
+  const thunderheadReceipt = thunderheadLifecycleActive ? thunderhead.receipt ?? thunderhead.bank : null
+  const thunderheadPinnedActive = thunderheadReceipt
+    ? activeTargetForThunderheadReceipt(runtime.villagers, thunderheadReceipt)
+    : null
+  const thunderheadTravelProgress = thunderheadLifecycleActive && thunderheadTravelStartedAtMs > 0
+    ? clamp((thunderheadClockMs - thunderheadTravelStartedAtMs) / THUNDERHEAD_TRAVEL_MS, 0, 1)
+    : thunderhead.phase === 'target_match' || thunderhead.phase === 'strike' || thunderhead.phase === 'consumed'
+      ? 1
+      : 0
+  const travelStart = thunderheadTravelStart ?? { x: FRANK_X + defaultFrankMeta.rod_tip.x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET, y: FRANK_CLOUD_Y }
+  const travelTarget = thunderheadTravelTarget ?? travelStart
+  const thunderheadPosition = getPitchforksThunderheadPathPosition(travelStart, travelTarget.x, thunderheadTravelProgress) ?? travelStart
+  const thunderheadCloudX = thunderheadPosition.x
+  const thunderheadCloudY = thunderheadPosition.y
+  const visualActive = thunderheadPinnedActive
+    ? {
+        villagerId: thunderheadPinnedActive.villager.id,
+        tineIndex: thunderheadPinnedActive.tineIndex,
+        note: thunderheadPinnedActive.note,
+        key: thunderheadPinnedActive.key,
+      }
+    : thunderheadLifecycleActive
+    ? null
+    : pinnedActive
+    ? {
+        villagerId: pinnedActive.villager.id,
+        tineIndex: pinnedActive.tineIndex,
+        note: pinnedActive.note,
+        key: pinnedActive.key,
+      }
+    : closeLifecycleActive
+    ? null
+    : ownershipBolt
     ? {
         villagerId: ownershipBolt.villagerId,
         tineIndex: ownershipBolt.tineIndex,
         note: ownershipBolt.note,
         key: `${ownershipBolt.villagerId}:${ownershipBolt.tineIndex}`,
       }
-    : active
+      : active
       ? {
           villagerId: active.villager.id,
           tineIndex: active.tineIndex,
           note: active.note,
           key: active.key,
-        }
+          }
       : null
+  const activeVillagerForView = visualActive
+    ? runtime.villagers.find(v => v.id === visualActive.villagerId) ?? null
+    : null
+  const activeReturnDisplay = activeVillagerForView
+    ? projectVillageReturnDisplay(activeVillagerForView, targetOutcomes, hintedTargetKeys)
+    : null
+  const activeReturnText = activeVillagerForView
+    ? projectVillageReturnText(activeVillagerForView, targetOutcomes, hintedTargetKeys)
+    : null
   const promptMatch = /^(Listen|Replay|Sing|Now|Strike):\s+(.+)$/.exec(prompt)
-  const visualPrompt = ownershipBolt
+  const ownershipPrompt = ownershipBolt
     ? `Strike: ${ownershipBolt.note}`
     : visualActive && promptMatch
       ? `${promptMatch[1]}: ${visualActive.note}`
       : prompt
+  // Apply the return policy after ownership rewriting so raw prompt text from
+  // audio/torch helpers cannot bypass the exact-key concealment.
+  const visualPrompt = activeReturnText
+    ? projectVillageReturnPrompt(ownershipPrompt, activeReturnText)
+    : ownershipPrompt
+  const ownershipFeedback: PitchforksTunerFeedback = ownershipBolt
+    ? {
+        ...tuner.feedback,
+        kind: 'locked',
+        headline: `STRIKE · ${ownershipBolt.note}`,
+        detail: 'Watch the lightning reach the fork',
+        compactLabel: `strike: ${ownershipBolt.note}`,
+      }
+    : tuner.feedback
+  const visualTunerFeedback = activeReturnText && visualActive
+    ? projectVillageReturnTunerFeedback(ownershipFeedback, visualActive.note, activeReturnText)
+    : ownershipFeedback
   const chargeLevel = active
     ? Math.max(
         active.villager.burned,
         Math.min(active.villager.totalTines, Math.round(chargeProgress * active.villager.totalTines)),
       )
     : 0
-  const receiptNoteStyles: Record<string, NoteChipPalette> = {}
-  if (waveReceipt.visible) {
-    for (const note of new Set([...waveReceipt.heard, ...waveReceipt.sung, ...waveReceipt.mastered])) {
-      receiptNoteStyles[note] = noteChipPalette(note, fsrsMemory)
-    }
-  }
-
   return {
     phase,
+    normalWorld,
     inputMode,
     animClock: runtime.animClock,
     gameOver: runtime.gameOver,
     villagers: runtime.villagers.map(v => {
-      const isActive = ownershipBolt
+    const isActive = thunderheadPinnedActive
+        ? thunderheadPinnedActive.villager.id === v.id
+        : thunderheadLifecycleActive
+        ? false
+        : pinnedActive
+        ? pinnedActive.villager.id === v.id
+        : closeLifecycleActive
+        ? false
+        : ownershipBolt
         ? ownershipBolt.villagerId === v.id
         : activeVillagerId === v.id || activeKey.startsWith(`${v.id}:`)
       const awaitingImpact = runtime.bolts.some(b => (
@@ -995,23 +2115,49 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
         walkFrame: v.walkFrame,
         ashTimer: v.ashTimer,
         active: isActive,
+        answerVisible: projectVillageReturnDisplay(v, targetOutcomes, hintedTargetKeys).answerVisible,
         displayBurn,
         timerPct: clamp(v.attackTimer / Math.max(0.001, v.attackTimerMax), 0, 1),
         soulR,
         soulCalm,
         soulHue,
+        torch: {
+          ...v.torch,
+          recentTransitions: v.torch.recentTransitions.map(transition => ({ ...transition })),
+        },
+        torchBearer: v.torchBearer,
+        recoilProgress: Math.max(
+          closeSmashRecoilUntil.has(v.id)
+            ? clamp(1 - (closeSmashRecoilUntil.get(v.id)! - runtime.animClock * 1000) / CLOSE_SMASH_RECOIL_MS, 0, 1)
+            : 0,
+          bellRecoilUntil.has(v.id)
+            ? clamp(1 - (bellRecoilUntil.get(v.id)! - bellWaveClockMs) / BELL_KNOCKBACK_MS, 0, 1)
+            : 0,
+        ),
       }
     }),
     active: visualActive,
     charge: {
       progress: chargeProgress,
       level: chargeLevel,
-      tint,
+      tint: activeReturnDisplay?.answerVisible === false ? null : tint,
       charging: chargeProgress > 0 || runtime.bolts.length > 0,
     },
     bolts: runtime.bolts.map(b => ({ ...b })),
     bursts: runtime.bursts.map(b => ({ ...b })),
     frankReaction,
+    frankVictory,
+    closeSmash: {
+      phase: closeSmash.phase,
+      receipt: closeSmash.receipt,
+      consumer: closeSmash.consumer,
+      contactAtMs: closeSmash.contactAtMs,
+      contactPresented: closeSmash.contactPresented,
+      fallbackRemainingMs: closeSmash.receipt
+        ? Math.max(0, closeSmashFallbackDueAtMs - runtime.animClock * 1000)
+        : null,
+      showcase: false,
+    },
     shake,
     hud: {
       wave: runtime.wave,
@@ -1022,10 +2168,6 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     waveBanner: {
       visible: runtime.bannerTimer > 0,
       timer: runtime.bannerTimer,
-    },
-    waveReceipt: {
-      ...waveReceipt,
-      noteStyles: receiptNoteStyles,
     },
     prompt: {
       visible: !!visualPrompt && !!visualActive,
@@ -1045,15 +2187,7 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       renderDeviation: ownershipBolt ? null : tuner.renderDeviation,
       onTarget: ownershipBolt ? false : tuner.onTarget,
       trail: tuner.trail.map(point => ({ ...point })),
-      feedback: ownershipBolt
-        ? {
-            ...tuner.feedback,
-            kind: 'locked',
-            headline: `STRIKE · ${ownershipBolt.note}`,
-            detail: 'Watch the lightning reach the fork',
-            compactLabel: `strike: ${ownershipBolt.note}`,
-          }
-        : tuner.feedback,
+      feedback: visualTunerFeedback,
     },
     ceremony: {
       active: ceremony.active,
@@ -1063,6 +2197,21 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
     },
     noteMastered,
     noteMasteredAgeMs,
+    rain: {
+      ...runtime.rain,
+      recentTransitions: runtime.rain.recentTransitions.map(transition => ({ ...transition })),
+    },
+    thunderhead: {
+      projection: getPitchforksThunderheadDebugProjection(thunderhead),
+      travelProgress: thunderheadTravelProgress,
+      cloudX: thunderheadCloudX,
+      cloudY: thunderheadCloudY,
+      targetX: thunderheadTravelTarget?.x ?? null,
+      targetY: thunderheadTravelTarget?.y ?? null,
+      runeStatus: THUNDERHEAD_RUNE_STATUS,
+    },
+    bellWave,
+    bellWaveElapsedMs,
   }
 }
 
@@ -1205,39 +2354,30 @@ function drawCircuitLeg(
 
 function drawStormCloudView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
   const bolt = view.bolts[view.bolts.length - 1]
+  const galvanicPresentationActive = view.bolts.some(candidate => candidate.presentation === 'galvanic')
+  const thunderheadLifecycleActive = view.thunderhead.projection.phase !== 'idle' &&
+    view.thunderhead.projection.phase !== 'consumed'
+  // Smash contact is hand-originated; suppress the ordinary cloud/relay
+  // presentation while its explicit hand-to-tine route is drawn below.
+  if (bolt?.presentation === 'close-smash' || galvanicPresentationActive) return
+  if (bolt?.presentation === 'thunderhead' || thunderheadLifecycleActive) return
   const charge = view.charge.progress
-  if (charge <= 0 && !bolt) return
+  if (view.phase !== 'playing' || (!view.active && !bolt)) return
   const pivotX = FRANK_X + assets.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE
   const pivotY = FRANK_Y + assets.frankMeta.rod_tip.y * FRANK_SPRITE_SCALE
   const cloudX = bolt?.fromX ?? pivotX + FRANK_CLOUD_X_OFFSET
   const cloudY = bolt?.fromY ?? FRANK_CLOUD_Y
   const boltAge = bolt ? clamp(bolt.life / bolt.maxLife, 0, 1) : 0
-  const spent = bolt ? clamp((boltAge - STRIKE_RECEIPT_END) / (1 - STRIKE_RECEIPT_END), 0, 1) : 0
-  const power = Math.max(charge, bolt ? 1 - boltAge * 0.45 : 0)
-  const cloudAlpha = (0.24 + power * 0.58) * (1 - spent * 0.62)
   const bucket = bolt ? Math.floor(bolt.life / CIRCUIT_BUCKET_S) : Math.floor(charge * 20)
-
+  const state = selectStormHeartState({
+    listening: !bolt && (view.timersPaused || view.tuner.feedback.kind === 'listen'),
+    chargeProgress: charge,
+    hasBolt: !!bolt,
+    spent: !!bolt && boltAge > STRIKE_RECEIPT_END,
+  })
+  drawStormHeart(ctx, state, cloudX, cloudY, assets.stormHeart)
+  if (state === 'listen') return
   ctx.save()
-  const glow = ctx.createRadialGradient(cloudX, cloudY - 8, 2, cloudX, cloudY - 8, 54)
-  glow.addColorStop(0, `rgba(125,211,252,${cloudAlpha * 0.34})`)
-  glow.addColorStop(1, 'rgba(30,64,175,0)')
-  ctx.fillStyle = glow
-  ctx.fillRect(cloudX - 56, cloudY - 58, 112, 92)
-  for (let i = 0; i < 5; i++) {
-    const x = cloudX + (i - 2) * 12
-    const y = cloudY - 11 - (i % 2) * 5
-    const radiusX = 17 - Math.abs(i - 2) * 1.5
-    const radiusY = 10 + (i % 2) * 2
-    ctx.fillStyle = `rgba(${30 + i * 4},${38 + i * 4},${61 + i * 6},${cloudAlpha})`
-    ctx.beginPath()
-    ctx.ellipse(x, y, radiusX, radiusY, 0, 0, Math.PI * 2)
-    ctx.fill()
-  }
-  ctx.fillStyle = `rgba(8,15,30,${cloudAlpha * 0.94})`
-  ctx.beginPath()
-  ctx.ellipse(cloudX, cloudY - 4, 37, 11, 0, 0, Math.PI * 2)
-  ctx.fill()
-
   if (charge >= CHARGE_LEADER_START) {
     const reveal = clamp((charge - CHARGE_LEADER_START) / (CHARGE_DISCHARGE_START - CHARGE_LEADER_START), 0, 1)
     drawCircuitLeg(ctx, cloudX, cloudY, pivotX, pivotY, reveal, 71, bucket, 0.2 + charge * 0.48, false, false, view.reducedMotion)
@@ -1245,9 +2385,150 @@ function drawStormCloudView(ctx: CanvasRenderingContext2D, view: ViewState, asse
   ctx.restore()
 }
 
+function drawThunderheadCloudView(
+  ctx: CanvasRenderingContext2D,
+  view: ViewState,
+  stormHeart?: HTMLImageElement,
+) {
+  const projection = view.thunderhead.projection
+  const thunderheadBolt = view.bolts
+    .slice()
+    .reverse()
+    .find(bolt => bolt.presentation === 'thunderhead') ?? null
+  const boltLifecycle = projection.phase === 'strike' || projection.phase === 'consumed'
+  if (
+    !boltLifecycle &&
+    projection.phase !== 'banked' &&
+    projection.phase !== 'detached' &&
+    projection.phase !== 'ceiling_travel' &&
+    projection.phase !== 'target_match'
+  ) return
+  if (boltLifecycle && !thunderheadBolt) return
+  const note = projection.bank?.note ?? projection.receipt?.note
+  if (!note) return
+
+  const boltAge = thunderheadBolt
+    ? clamp(thunderheadBolt.life / thunderheadBolt.maxLife, 0, 1)
+    : 0
+  const cloudX = thunderheadBolt?.fromX ?? view.thunderhead.cloudX
+  const cloudY = thunderheadBolt?.fromY ?? view.thunderhead.cloudY
+  const stormHeartState = thunderheadBolt
+    ? selectStormHeartState({
+        listening: false,
+        chargeProgress: boltAge < STRIKE_RECEIPT_END ? 1 : 0,
+        hasBolt: true,
+        spent: boltAge >= STRIKE_RECEIPT_END,
+      })
+    : selectStormHeartState({
+        listening: false,
+        chargeProgress: 1,
+        hasBolt: false,
+        spent: false,
+      })
+  drawStormHeart(ctx, stormHeartState, cloudX, cloudY, stormHeart)
+
+  // The canonical rune dictionary has not been recovered. Keep the exact note
+  // text large and pair it with the existing note-hue identity swatch; the
+  // unresolved rune status remains in diagnostics; player-facing text is the exact note.
+  ctx.save()
+  const hue = hueForNote(note)
+  const swatchSize = 14
+  ctx.font = 'bold 24px monospace'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+  const noteWidth = ctx.measureText(note).width
+  const contentWidth = swatchSize + 8 + noteWidth
+  const labelWidth = Math.max(72, contentWidth + 20)
+  const caption = getPitchforksThunderheadCaptionRect({ x: cloudX, y: cloudY }, labelWidth, W)
+  if (!caption) { ctx.restore(); return }
+  const labelHeight = caption.height
+  const labelX = caption.left
+  const labelY = caption.top
+  const labelCenterX = labelX + labelWidth / 2
+  ctx.fillStyle = 'rgba(3, 10, 20, 0.9)'
+  ctx.fillRect(labelX, labelY, labelWidth, labelHeight)
+  ctx.strokeStyle = 'rgba(159, 231, 255, 0.78)'
+  ctx.lineWidth = 1
+  ctx.strokeRect(labelX + 0.5, labelY + 0.5, labelWidth - 1, labelHeight - 1)
+  ctx.fillStyle = `hsl(${hue}, 86%, 62%)`
+  ctx.fillRect(labelCenterX - contentWidth / 2, labelY + 4, swatchSize, swatchSize)
+  ctx.strokeStyle = `hsla(${hue}, 100%, 88%, 0.96)`
+  ctx.strokeRect(labelCenterX - contentWidth / 2 + 0.5, labelY + 4.5, swatchSize - 1, swatchSize - 1)
+  ctx.fillStyle = '#f4fbff'
+  ctx.fillText(note, labelCenterX + (swatchSize + 8) / 2, labelY + 1)
+  ctx.restore()
+}
+
 function drawBoltView(ctx: CanvasRenderingContext2D, b: BoltView, reducedMotion: boolean) {
   const age = clamp(b.life / b.maxLife, 0, 1)
   const bucket = Math.floor(b.life / CIRCUIT_BUCKET_S)
+  if (b.presentation === 'galvanic') {
+    // Galvanic is a direct joined-hand sweep. Each bolt is created only for a
+    // backed tine, so this branch cannot visually claim an unbacked target.
+    const reveal = reducedMotion ? 1 : clamp(age / STRIKE_RECEIPT_END, 0, 1)
+    const alpha = age < STRIKE_RECEIPT_END ? 0.98 : 0.64 * Math.max(0.55, 1 - Math.pow(age, 2.2))
+    ctx.save()
+    drawCircuitLeg(ctx, b.fromX, b.fromY, b.toX, b.toY, reveal, b.seed, bucket, alpha, true, true, reducedMotion)
+    const impactProgress = clamp((age - STRIKE_IMPACT_START) / (1 - STRIKE_IMPACT_START), 0, 1)
+    if (age >= STRIKE_IMPACT_START || reducedMotion) {
+      const impactAlpha = reducedMotion ? 0.9 : Math.max(0, (1 - impactProgress) * 0.92)
+      const impactRadius = reducedMotion ? 10 : 6 + impactProgress * 22
+      const impact = ctx.createRadialGradient(b.toX, b.toY, 0, b.toX, b.toY, impactRadius)
+      impact.addColorStop(0, `hsla(${b.hue},100%,92%,${impactAlpha})`)
+      impact.addColorStop(0.35, `hsla(${b.hue},100%,65%,${impactAlpha * 0.72})`)
+      impact.addColorStop(1, `hsla(${b.hue},100%,50%,0)`)
+      ctx.fillStyle = impact
+      ctx.beginPath()
+      ctx.arc(b.toX, b.toY, impactRadius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.restore()
+    return
+  }
+  if (b.presentation === 'thunderhead') {
+    const reveal = reducedMotion ? 1 : clamp(age / STRIKE_RECEIPT_END, 0, 1)
+    const alpha = age < STRIKE_RECEIPT_END ? 0.98 : 0.64 * Math.max(0.55, 1 - Math.pow(age, 2.2))
+    ctx.save()
+    drawCircuitLeg(ctx, b.fromX, b.fromY, b.toX, b.toY, reveal, b.seed, bucket, alpha, true, true, reducedMotion)
+    const impactProgress = clamp((age - STRIKE_IMPACT_START) / (1 - STRIKE_IMPACT_START), 0, 1)
+    if (age >= STRIKE_IMPACT_START || reducedMotion) {
+      const impactAlpha = reducedMotion ? 0.9 : Math.max(0, (1 - impactProgress) * 0.92)
+      const impactRadius = reducedMotion ? 10 : 6 + impactProgress * 22
+      const impact = ctx.createRadialGradient(b.toX, b.toY, 0, b.toX, b.toY, impactRadius)
+      impact.addColorStop(0, `hsla(${b.hue},100%,92%,${impactAlpha})`)
+      impact.addColorStop(0.35, `hsla(${b.hue},100%,65%,${impactAlpha * 0.72})`)
+      impact.addColorStop(1, `hsla(${b.hue},100%,50%,0)`)
+      ctx.fillStyle = impact
+      ctx.beginPath()
+      ctx.arc(b.toX, b.toY, impactRadius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.restore()
+    return
+  }
+  if (b.presentation === 'close-smash') {
+    // Smash contact has no cloud leg or relay detour: the accepted joined-hand
+    // origin drives one bounded route to the exact tine endpoint. This is
+    // presentation-only; strikeActiveTine still owns the musical mutation.
+    const reveal = reducedMotion ? 1 : clamp(age / STRIKE_RECEIPT_END, 0, 1)
+    const alpha = age < STRIKE_RECEIPT_END ? 0.98 : 0.62 * Math.max(0.55, 1 - Math.pow(age, 2.2))
+    ctx.save()
+    drawCircuitLeg(ctx, b.fromX, b.fromY, b.toX, b.toY, reveal, b.seed, bucket, alpha, true, false, reducedMotion)
+    const impactAlpha = reducedMotion ? 0.9 : Math.max(0, (1 - clamp((age - STRIKE_IMPACT_START) / (1 - STRIKE_IMPACT_START), 0, 1)) * 0.92)
+    if (age >= STRIKE_IMPACT_START || reducedMotion) {
+      const impactRadius = reducedMotion ? 10 : 6 + clamp((age - STRIKE_IMPACT_START) / (1 - STRIKE_IMPACT_START), 0, 1) * 22
+      const impact = ctx.createRadialGradient(b.toX, b.toY, 0, b.toX, b.toY, impactRadius)
+      impact.addColorStop(0, `hsla(${b.hue},100%,92%,${impactAlpha})`)
+      impact.addColorStop(0.35, `hsla(${b.hue},100%,65%,${impactAlpha * 0.72})`)
+      impact.addColorStop(1, `hsla(${b.hue},100%,50%,0)`)
+      ctx.fillStyle = impact
+      ctx.beginPath()
+      ctx.arc(b.toX, b.toY, impactRadius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.restore()
+    return
+  }
   const relayX = b.pivotX + CIRCUIT_RELAY_X
   const relayY = b.pivotY + CIRCUIT_RELAY_Y
   const phase = lightningPhaseFor(0, b)
@@ -1607,7 +2888,7 @@ function drawBurstView(ctx: CanvasRenderingContext2D, b: BurstView) {
   ctx.restore()
 }
 
-function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: ViewState, assets: Assets) {
+function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: ViewState, assets: Assets): PitchforksTargetContourDescriptor | undefined {
   const meta = assets.villagerMeta[v.totalTines]
   const sw = meta.frame_w * SPRITE_SCALE
   const sh = meta.frame_h * SPRITE_SCALE
@@ -1634,12 +2915,44 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   let offsetPx = agitation * 1.0 * Math.sin(view.animClock * 1.35 + v.spawnIndex * 0.73)
   offsetPx *= 1 - calm * 0.7
   if (view.reducedMotion) offsetPx = 0
-  const spriteX = v.x + offsetPx
+  // Smash recoil is a bystander-only presentation accent. It never changes
+  // the villager's x, burned, tine, ash, or target-selection fields.
+  const recoilPx = view.reducedMotion
+    ? 0
+    : Math.round(Math.sin(v.recoilProgress * Math.PI) * -6)
+  const spriteX = v.x + offsetPx + recoilPx
   const spriteY = v.y + offsetPx * 0.35
   if (strip) {
     ctx.drawImage(img, v.walkFrame * meta.frame_w, 0, meta.frame_w, meta.frame_h, spriteX, spriteY, sw, sh)
   } else {
     ctx.drawImage(img, spriteX, spriteY, sw, sh)
+  }
+
+  if (v.recoilProgress > 0) {
+    // Recoil is a bystander-only consequence. Reduced motion keeps a discrete
+    // stun contour and three fixed pips, while normal motion additionally
+    // permits the short positional nudge above; neither path changes gameplay.
+    const stunAlpha = view.reducedMotion ? 0.82 : clamp(v.recoilProgress * 1.4, 0, 0.82)
+    const stunX = spriteX + sw * 0.5
+    const stunY = spriteY + sh * 0.16
+    ctx.save()
+    ctx.globalAlpha = stunAlpha
+    ctx.strokeStyle = '#fbbf24'
+    ctx.lineWidth = 1.5
+    ctx.beginPath()
+    ctx.arc(stunX, stunY, view.reducedMotion ? 9 : 9 + v.recoilProgress * 2, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.fillStyle = '#fde68a'
+    for (let pip = -1; pip <= 1; pip += 1) {
+      ctx.fillRect(stunX + pip * 5 - 1, stunY - 15 - Math.abs(pip) * 2, 3, 3)
+    }
+    ctx.restore()
+  }
+
+  // Torch ecology attaches to the existing villager identity. It is a prop,
+  // never a replacement sprite, and its state has no musical authority.
+  if (v.visualState === 'walking' && v.torchBearer) {
+    drawVillagerTorch(ctx, v.torch, spriteX + sw * 0.78, spriteY + sh - 3, view.reducedMotion)
   }
 
   if (v.visualState !== 'walking') return
@@ -1673,7 +2986,7 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const tineTipAnchor = rotateAroundPivot(fx + forkW / 2, fy + 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
   const noteLabelAnchor = rotateAroundPivot(fx + forkW / 2, fy - 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 
-  if (view.synesthesiaOn) {
+  if (view.synesthesiaOn && v.answerVisible) {
     // Argus MED (C7 same-session): a flat same-alpha wash camouflages against
     // UI elements sharing this note's hue family (e.g. the cyan G4 note-name
     // badge). Fix mirrors C6's white-core-pip pattern: a bright saturated
@@ -1696,11 +3009,11 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
     ctx.restore()
   }
 
-  if (v.active && view.charge.tint) {
+  if (v.active && v.answerVisible && view.charge.tint) {
     drawForkAccuracyRibbon(ctx, tineTipAnchor, view.charge.tint, progress)
   }
 
-  if (v.active && view.noteNamesVisible) {
+  if (v.active && v.answerVisible && view.noteNamesVisible) {
     const note = v.notes[Math.min(v.visualBurn, v.notes.length - 1)]
     const canvasScale = ctx.canvas.clientWidth > 0 ? ctx.canvas.clientWidth / W : 1
     const noteFontPx = Math.round(clamp(11 / canvasScale, 14, 26))
@@ -1735,6 +3048,18 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
     ctx.strokeStyle = view.timersPaused ? 'rgba(125,211,252,0.85)' : '#555'
     ctx.lineWidth = 1
     ctx.strokeRect(bx, by, barW, barH)
+  }
+  if (v.active) {
+    return {
+      image: img,
+      sourceX: strip ? v.walkFrame * meta.frame_w : 0,
+      sourceY: 0,
+      sourceWidth: meta.frame_w,
+      sourceHeight: meta.frame_h,
+      destinationX: spriteX,
+      destinationY: spriteY,
+      scale: SPRITE_SCALE,
+    }
   }
 }
 
@@ -2019,9 +3344,10 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
     const x = queue.length === 1 ? (queueLeft + queueRight) / 2 : queueLeft + stepX * index
     const spent = !!activeVillager && index < activeVillager.visualBurn
     const target = !!activeVillager && index === activeVillager.visualBurn
-    drawStaffNoteHead(ctx, note, x, spent, target)
+    const concealedTarget = target && activeVillager?.answerVisible === false
+    if (!concealedTarget) drawStaffNoteHead(ctx, note, x, spent, target)
 
-    if (view.noteNamesVisible) {
+    if (view.noteNamesVisible && !concealedTarget) {
       ctx.save()
       ctx.globalAlpha = spent ? 0.45 : 1
       ctx.fillStyle = spent ? '#9ca3af' : '#bbf7d0'
@@ -2326,204 +3652,73 @@ function drawNoteMasteredCeremony(
   ctx.restore()
 }
 
-function waveReceiptChipWidth(ctx: CanvasRenderingContext2D, note: string, noteNamesVisible: boolean) {
-  ctx.font = 'bold 13px monospace'
-  return noteNamesVisible ? Math.max(36, Math.ceil(ctx.measureText(note).width) + 18) : 24
-}
-
-function measureWaveReceiptRows(
-  ctx: CanvasRenderingContext2D,
-  notes: readonly string[],
-  noteNamesVisible: boolean,
-  startX: number,
-  maxX: number,
-) {
-  if (notes.length === 0) return 1
-  let rows = 1
-  let x = startX
-  for (const note of notes) {
-    const width = waveReceiptChipWidth(ctx, note, noteNamesVisible)
-    if (x > startX && x + width > maxX) {
-      rows += 1
-      x = startX
-    }
-    x += width + 8
-  }
-  return rows
-}
-
-function drawWaveReceiptChip(
-  ctx: CanvasRenderingContext2D,
-  note: string,
-  x: number,
-  y: number,
-  noteNamesVisible: boolean,
-  palette: NoteChipPalette,
-  mastered: boolean,
-) {
-  const width = waveReceiptChipWidth(ctx, note, noteNamesVisible)
-  const height = 24
-  const gradient = ctx.createLinearGradient(0, y - height / 2, 0, y + height / 2)
-  gradient.addColorStop(0, `hsla(${palette.hue}, ${palette.saturation}%, ${palette.fillLight + 7}%, 0.88)`)
-  gradient.addColorStop(1, `hsla(${palette.hue}, ${palette.saturation}%, ${palette.fillLight}%, 0.72)`)
-
-  ctx.save()
-  ctx.shadowColor = `hsla(${palette.hue}, ${palette.saturation}%, ${palette.borderLight}%, ${mastered ? 0.44 : palette.glowAlpha})`
-  ctx.shadowBlur = mastered ? Math.max(16, palette.glowPx + 6) : palette.glowPx
-  ctx.fillStyle = gradient
-  ctx.strokeStyle = `hsla(${palette.hue}, ${palette.saturation}%, ${mastered ? 72 : palette.borderLight}%, ${mastered ? 0.9 : 0.86})`
-  ctx.lineWidth = mastered ? 1.6 : 1
-  ctx.beginPath()
-  ctx.roundRect(x, y - height / 2, width, height, 6)
-  ctx.fill()
-  ctx.stroke()
-
-  if (noteNamesVisible) {
-    ctx.shadowBlur = 0
-    ctx.fillStyle = mastered ? '#f7fbff' : `hsl(${palette.hue}, ${palette.saturation}%, ${palette.textLight}%)`
-    ctx.font = 'bold 13px monospace'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(note, x + width / 2, y + 1)
-  }
-  ctx.restore()
-  return width
-}
-
-function drawWaveReceiptRow(
-  ctx: CanvasRenderingContext2D,
-  receipt: WaveReceiptView,
-  label: string,
-  notes: readonly string[],
-  y: number,
-  noteNamesVisible: boolean,
-  mastered: boolean,
-) {
-  const labelX = 112
-  const chipStartX = 228
-  const maxX = W - 112
-  let x = chipStartX
-  let chipY = y + 12
-
-  ctx.font = 'bold 12px monospace'
-  ctx.textAlign = 'left'
-  ctx.textBaseline = 'middle'
-  ctx.fillStyle = mastered ? '#f7fbff' : '#a9b5c8'
-  ctx.fillText(label, labelX, chipY)
-
-  if (notes.length === 0) {
-    ctx.fillStyle = 'rgba(211, 222, 238, 0.5)'
-    ctx.font = 'bold 11px monospace'
-    ctx.fillText('NONE', chipStartX, chipY)
-    return y + 30
-  }
-
-  for (const note of notes) {
-    const palette = receipt.noteStyles[note] ?? noteChipPalette(note, {})
-    const width = waveReceiptChipWidth(ctx, note, noteNamesVisible)
-    if (x > chipStartX && x + width > maxX) {
-      x = chipStartX
-      chipY += 30
-    }
-    drawWaveReceiptChip(ctx, note, x, chipY, noteNamesVisible, palette, mastered)
-    x += width + 8
-  }
-
-  return chipY + 18
-}
-
-function drawWaveReceipt(
-  ctx: CanvasRenderingContext2D,
-  receipt: WaveReceiptView,
-  noteNamesVisible: boolean,
-  animClock: number,
-  reducedMotion: boolean,
-  inputMode: PitchforksInputMode,
-) {
-  if (!receipt.visible) return
-
-  const durationSeconds = WAVE_RECEIPT_MS / 1000
-  const alpha = Math.min(1, receipt.timer / 0.18, (durationSeconds - receipt.timer) / 0.22)
-  if (alpha <= 0) return
-
-  const cardX = 80
-  const cardW = W - cardX * 2
-  const chipStartX = 228
-  const maxX = W - 112
-  const heardRows = measureWaveReceiptRows(ctx, receipt.heard, noteNamesVisible, chipStartX, maxX)
-  const sungRows = measureWaveReceiptRows(ctx, receipt.sung, noteNamesVisible, chipStartX, maxX)
-  const masteredRows = receipt.mastered.length > 0
-    ? measureWaveReceiptRows(ctx, receipt.mastered, noteNamesVisible, chipStartX, maxX)
-    : 0
-  const cardH = 92 + heardRows * 30 + sungRows * 30 + (receipt.mastered.length > 0 ? 18 + masteredRows * 30 : 0)
-  const cardY = Math.max(74, 192 - cardH / 2)
-  const pulse = reducedMotion ? 0 : Math.sin(animClock * 2.6) * 2
-
-  ctx.save()
-  ctx.globalAlpha = alpha
-  ctx.fillStyle = 'rgba(2, 7, 14, 0.72)'
-  ctx.fillRect(0, cardY - 20, W, cardH + 40)
-
-  ctx.shadowColor = 'rgba(125, 211, 252, 0.28)'
-  ctx.shadowBlur = 18 + Math.max(0, pulse)
-  ctx.fillStyle = 'rgba(8, 13, 24, 0.9)'
-  ctx.strokeStyle = 'rgba(148, 163, 184, 0.48)'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.roundRect(cardX, cardY, cardW, cardH, 8)
-  ctx.fill()
-  ctx.stroke()
-
-  ctx.shadowBlur = 0
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.fillStyle = '#f6f8ff'
-  ctx.font = 'bold 22px monospace'
-  ctx.fillText('WAVE CLEAR', W / 2, cardY + 28)
-
-  ctx.fillStyle = 'rgba(211, 222, 238, 0.72)'
-  ctx.font = 'bold 11px monospace'
-  const answerVerb = inputMode === 'buttons' ? 'answered' : 'sung'
-  const summary = `${receipt.heard.length} heard | ${receipt.sung.length} ${answerVerb}${receipt.mastered.length > 0 ? ` | ${receipt.mastered.length} mastered` : ''}`
-  ctx.fillText(summary, W / 2, cardY + 50)
-
-  let rowY = cardY + 66
-  rowY = drawWaveReceiptRow(ctx, receipt, 'HEARD', receipt.heard, rowY, noteNamesVisible, false)
-  rowY = drawWaveReceiptRow(ctx, receipt, inputMode === 'buttons' ? 'ANSWERED' : 'SUNG', receipt.sung, rowY, noteNamesVisible, false)
-
-  if (receipt.mastered.length > 0) {
-    const glowY = rowY + 19
-    const glow = ctx.createRadialGradient(W / 2, glowY, 8, W / 2, glowY, 210)
-    glow.addColorStop(0, 'rgba(191, 239, 255, 0.22)')
-    glow.addColorStop(0.46, 'rgba(96, 165, 250, 0.1)')
-    glow.addColorStop(1, 'rgba(96, 165, 250, 0)')
-    ctx.fillStyle = glow
-    ctx.fillRect(cardX, rowY - 6, cardW, 54 + masteredRows * 12)
-    drawWaveReceiptRow(ctx, receipt, 'MASTERED', receipt.mastered, rowY + 8, noteNamesVisible, true)
-  }
-
-  ctx.restore()
-}
-
 function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Assets) {
   ctx.save()
   ctx.translate(view.shake.x, view.shake.y)
-  drawDungeonBackground(ctx, view.animClock)
+  if (assets.privatePlate) {
+    // Only the explicit demo art-proof route loads this candidate plate.
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(assets.privatePlate, 0, 0, W, H)
+  } else if (view.normalWorld === 'village-gate' && assets.villageGatePlate) {
+    ctx.imageSmoothingEnabled = false
+    ctx.drawImage(assets.villageGatePlate, 0, 0, W, H)
+  } else {
+    drawDungeonBackground(ctx, view.animClock)
+  }
+  drawPitchforksBellSwing(ctx, {
+    active: view.bellWave.phase === 'active' || view.bellWave.phase === 'finished',
+    elapsedMs: view.bellWaveElapsedMs,
+    reducedMotion: view.reducedMotion,
+    bell: assets.bellSwing,
+    backdrop: assets.bellBackdrop,
+    renderResting: view.normalWorld === 'village-gate',
+  })
   drawStormCloudView(ctx, view, assets)
+  drawRainArchitecture(ctx, view.rain, view.reducedMotion, assets.gargoyleSpout, assets.rainCloud)
+  // Stored-note identity and its lightning origin stay in front of the gutter.
+  drawThunderheadCloudView(ctx, view, assets.stormHeart)
 
-  // C5: always the real AI-sourced idle art. The prior charging?frankCharge:frankIdle
-  // swap pointed at a stale session-1 placeholder (frankenstein_charging.png never got
-  // the C5 art pass) — every held note was flashing Frankenstein back to the ugly
-  // green-blob sprite. Charging is now a code-only overlay on the SAME idle art
-  // (drawFrankChargeView below), not an asset swap. frankCharge stays loaded but
-  // inert this pass (FLW consult-22 LOW: real 2nd pose is a later art-lane item).
-  const frank = assets.frankIdle
+  // Close Smash deliberately uses the one accepted authored contact cell only.
+  // Anticipation and settle are whole-pixel translations of shipped idle art;
+  // no generated in-between frames enter the runtime.
+  const closeSmashAction = (
+    (view.closeSmash.phase === 'pending' || view.closeSmash.phase === 'settle') &&
+    view.closeSmash.consumer === 'smash'
+  )
+  // Galvanic reuses the accepted original Close Smash cell only during the
+  // short bolt/contact window; its accounting and lifecycle stay separate.
+  // The authored joined-hand origin must remain visible for the whole lifetime
+  // of a Galvanic bolt, including its reduced-motion static presentation.
+  const galvanicContact = view.bolts.some(b => b.presentation === 'galvanic')
+  const closeSmashPose = closeSmashAction || galvanicContact
+  const closeSmashContact = (closeSmashAction && view.closeSmash.contactPresented) || galvanicContact
+  // Accepted Conductor Coil: a held note changes Frank's pose, not a lingering bolt.
+  const chargePose = selectPitchforksChargePose(
+    closeSmashPose ? 0 : view.charge.progress,
+    view.animClock,
+    view.reducedMotion,
+    !!assets.frankCharge,
+  )
+  const victoryFrank = view.frankVictory?.pose === 'eyeLift'
+    ? assets.frankVictoryEyeLift
+    : view.frankVictory?.pose === 'neutral'
+      ? assets.frankVictoryNeutral
+      : undefined
+  const frank = victoryFrank
+    ?? (closeSmashContact
+      ? assets.frankCloseSmash ?? assets.frankIdle
+      : chargePose.pose === 'charge' ? assets.frankCharge : assets.frankIdle)
   if (frank) {
     const fm = assets.frankMeta
-    const frame = Math.floor(view.animClock * (view.charge.progress > 0 ? 8 : 4)) % fm.frames
-    const spriteW = fm.frame_w * FRANK_SPRITE_SCALE
-    const spriteH = fm.frame_h * FRANK_SPRITE_SCALE
-    const reaction = view.frankReaction
+    const isVictorySprite = !!victoryFrank
+    const sourceFrameW = isVictorySprite ? VICTORY_SPRITE_W : fm.frame_w
+    const sourceFrameH = isVictorySprite ? VICTORY_SPRITE_H : fm.frame_h
+    const frame = isVictorySprite ? 0 : closeSmashContact ? 0 : chargePose.frame % fm.frames
+    const spriteW = sourceFrameW * FRANK_SPRITE_SCALE
+    const spriteH = sourceFrameH * FRANK_SPRITE_SCALE
+    // Victory is a single authored sprite substitution. It deliberately does
+    // not participate in the existing per-kill reaction scale/glow treatment.
+    const reaction = isVictorySprite ? null : view.frankReaction
     const reactionPhase = reaction ? clamp(reaction.ageMs / FRANK_REACTION_MS, 0, 1) : 1
     const reactionBeat = reaction ? Math.sin(reactionPhase * Math.PI) : 0
     const reactionFade = reaction ? 1 - reactionPhase : 0
@@ -2533,7 +3728,12 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     const drawW = spriteW * scaleX
     const drawH = spriteH * scaleY
     const drawX = FRANK_X - (drawW - spriteW) / 2 + (reaction?.kind === 'miss' ? -5 * motionBeat : 0)
-    const drawY = FRANK_Y - (drawH - spriteH) + (reaction?.kind === 'kill' ? -4 * motionBeat : 0)
+    const closeSmashOffsetY = closeSmashPose
+      ? closeSmashContact
+        ? view.closeSmash.phase === 'settle' ? 1 : 0
+        : 2
+      : 0
+    const drawY = FRANK_Y - (drawH - spriteH) + closeSmashOffsetY + (reaction?.kind === 'kill' ? -4 * motionBeat : 0)
     ctx.imageSmoothingEnabled = false
     if (reaction?.kind === 'kill') {
       ctx.save()
@@ -2555,10 +3755,10 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     ctx.globalAlpha = reaction?.kind === 'miss' ? 1 - reactionFade * 0.34 : 1
     ctx.drawImage(
       frank,
-      frame * fm.frame_w,
+      frame * sourceFrameW,
       0,
-      fm.frame_w,
-      fm.frame_h,
+      sourceFrameW,
+      sourceFrameH,
       drawX,
       drawY,
       drawW,
@@ -2569,10 +3769,10 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
       ctx.globalAlpha = 0.28 * reactionFade
       ctx.drawImage(
         frank,
-        frame * fm.frame_w,
+        frame * sourceFrameW,
         0,
-        fm.frame_w,
-        fm.frame_h,
+        sourceFrameW,
+        sourceFrameH,
         drawX,
         drawY,
         drawW,
@@ -2593,7 +3793,25 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   }
 
   const ordered = [...view.villagers].sort((x, y) => x.y - y.y)
-  for (const v of ordered) drawVillagerView(ctx, v, view, assets)
+  let targetContour: PitchforksTargetContourDescriptor | undefined
+  for (const v of ordered) {
+    const descriptor = drawVillagerView(ctx, v, view, assets)
+    if (descriptor) targetContour = descriptor
+  }
+  const bellOrigin = view.bellWave.bellOrigin
+  if (bellOrigin) {
+    // The renderer receives the lifecycle's leading radius directly; it owns
+    // no clock or contact state and therefore cannot drift from knockback.
+    drawPitchforksBellWave(ctx, {
+      active: view.bellWave.visible,
+      originX: bellOrigin.x,
+      originY: bellOrigin.y,
+      radius: view.bellWave.radius,
+      progress: view.bellWave.progress,
+      reducedMotion: view.reducedMotion,
+    })
+  }
+  if (targetContour) drawPitchforksTargetContour(ctx, targetContour)
   drawChargeArcView(ctx, view, assets)
   for (const burst of view.bursts) drawBurstView(ctx, burst)
   for (const bolt of view.bolts) drawBoltView(ctx, bolt, view.reducedMotion)
@@ -2601,10 +3819,6 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
 
   if (view.noteMastered) {
     drawNoteMasteredCeremony(ctx, view.noteMastered, view.noteMasteredAgeMs, view.animClock, view.reducedMotion)
-  }
-
-  if (view.waveReceipt.visible) {
-    drawWaveReceipt(ctx, view.waveReceipt, view.inputMode === 'buttons' ? true : view.noteNamesVisible, view.animClock, view.reducedMotion, view.inputMode)
   }
 
   if (view.waveBanner.visible) {
@@ -2623,15 +3837,15 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   if (view.hud.streak >= 3) {
     ctx.fillStyle = view.hud.streak >= 10 ? '#ff6090' : '#ffc83c'
     ctx.font = 'bold 14px monospace'
-    ctx.textAlign = 'center'
-    ctx.fillText(`${view.hud.streak}x COMBO`, W / 2, 18)
+    ctx.textAlign = 'left'
+    ctx.fillText(`${view.hud.streak}x COMBO`, 16, 18)
   }
 
   if (view.prompt.visible) {
     ctx.fillStyle = '#f4f7fb'
     ctx.font = 'bold 15px monospace'
     ctx.textAlign = 'center'
-    ctx.fillText(view.prompt.text, W / 2, 40)
+    ctx.fillText(view.prompt.text, W / 2, 20)
   }
 
   if (view.active) {
@@ -2655,7 +3869,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   if (view.staffNotationVisible) drawStaffNotationView(ctx, view)
 }
 
-function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
+function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | 'recoil' | 'bell', volumePct: number, note?: string) {
   if (typeof window === 'undefined') return
   const AudioCtor = window.AudioContext || (window as any).webkitAudioContext
   if (!AudioCtor) return
@@ -2666,7 +3880,10 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
   const now = ctx.currentTime
   let closeAfterMs = 450
 
-  if (kind === 'strike') {
+  if (kind === 'bell') {
+    schedulePitchforksBellRing(ctx, master, note ? noteToFreq(note) : NaN)
+    closeAfterMs = PITCHFORKS_BELL_RING_MS + 100
+  } else if (kind === 'strike') {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.type = 'sawtooth'
@@ -2678,6 +3895,36 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
     gain.connect(master)
     osc.start(now)
     osc.stop(now + 0.19)
+  } else if (kind === 'smash-contact') {
+    // The contact sting is the earned pitch one octave down. The existing
+    // strike call still supplies the normal tine snap through its authority.
+    const contactFrequency = note ? noteToFreq(note) / 2 : 220
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'triangle'
+    osc.frequency.setValueAtTime(Math.max(40, contactFrequency), now)
+    osc.frequency.exponentialRampToValueAtTime(Math.max(32, contactFrequency * 0.72), now + 0.22)
+    gain.gain.setValueAtTime(0.16, now)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28)
+    osc.connect(gain)
+    gain.connect(master)
+    osc.start(now)
+    osc.stop(now + 0.29)
+    closeAfterMs = 520
+  } else if (kind === 'recoil') {
+    // A bystander gets one dull, unpitched thud; this branch owns no musical
+    // state and intentionally has no note/frequency derived from the target.
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'square'
+    osc.frequency.setValueAtTime(120, now)
+    osc.frequency.exponentialRampToValueAtTime(52, now + 0.14)
+    gain.gain.setValueAtTime(0.09, now)
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.17)
+    osc.connect(gain)
+    gain.connect(master)
+    osc.start(now)
+    osc.stop(now + 0.18)
   } else if (kind === 'ash') {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
@@ -2757,21 +4004,106 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar', volumePct: number) {
   window.setTimeout(() => ctx.close().catch(() => {}), closeAfterMs)
 }
 
+function renderBossChamber(
+  ctx: CanvasRenderingContext2D, assets: Assets, state: PitchforksBossRecitalState,
+  progress: number, clock: number, reducedMotion: boolean, bossId: PitchforksBossId = 'torchmaster',
+) {
+  ctx.save()
+  ctx.setTransform(1, 0, 0, 1, 0, 0)
+  ctx.imageSmoothingEnabled = false
+  ctx.fillStyle = '#070914'
+  ctx.fillRect(0, 0, W, H)
+  const chamberPlate = bossId === 'bellringer' ? assets.bellringerChamberPlate : assets.torchmasterChamberPlate
+  if (chamberPlate) ctx.drawImage(chamberPlate, 0, 0, W, H)
+  const fm = assets.frankMeta
+  if (bossId === 'bellringer') {
+    // The Bellringer leaf uses the original idle Frank at the unchanged
+    // battlefield anchor, plus one fixed 96x144 rest pose. It is not a
+    // spritesheet and never falls back to Torchmaster art.
+    if (assets.frankIdle) {
+      ctx.drawImage(assets.frankIdle, 0, 0, fm.frame_w, fm.frame_h,
+        FRANK_X, FRANK_Y, fm.frame_w * FRANK_SPRITE_SCALE, fm.frame_h * FRANK_SPRITE_SCALE)
+    }
+    if (assets.bellringerRest) {
+      ctx.drawImage(assets.bellringerRest, 540, FRANK_Y, 96, 144)
+    }
+  } else {
+    const pose = selectPitchforksChargePose(progress, clock, reducedMotion, !!assets.frankCharge)
+    const frank = pose.pose === 'charge' ? assets.frankCharge : assets.frankIdle
+    if (frank) {
+      ctx.drawImage(frank, (pose.frame % fm.frames) * fm.frame_w, 0, fm.frame_w, fm.frame_h,
+        FRANK_X, FRANK_Y, fm.frame_w * FRANK_SPRITE_SCALE, fm.frame_h * FRANK_SPRITE_SCALE)
+    }
+    const rodX = FRANK_X + fm.rod_tip.x * FRANK_SPRITE_SCALE
+    const rodY = FRANK_Y + fm.rod_tip.y * FRANK_SPRITE_SCALE
+    const cloudX = rodX + FRANK_CLOUD_X_OFFSET
+    drawStormHeart(ctx, selectStormHeartState({ listening: progress === 0, chargeProgress: progress, hasBolt: false, spent: false }), cloudX, FRANK_CLOUD_Y, assets.stormHeart)
+    if (progress > 0) drawCircuitLeg(ctx, cloudX, FRANK_CLOUD_Y, rodX, rodY, progress, 71, Math.floor(progress * 20), 0.6, false, false, reducedMotion)
+  }
+  ctx.textAlign = 'center'
+  ctx.fillStyle = '#09111bea'
+  ctx.fillRect(235, 35, 250, 118)
+  ctx.strokeStyle = '#8ca6ac'
+  ctx.strokeRect(235.5, 35.5, 249, 117)
+  ctx.fillStyle = '#e5f7ed'
+  ctx.font = bossId === 'bellringer' ? 'bold 13px monospace' : 'bold 18px monospace'
+  ctx.fillText(
+    state.status === 'complete'
+      ? bossId === 'bellringer' ? 'BELLRINGER PRACTICE COMPLETE' : 'PRACTICE COMPLETE'
+      : bossId === 'bellringer' ? 'TWO-NOTE INTERVAL PRACTICE' : 'ONE NOTE. YOUR TIME.',
+    W / 2,
+    65,
+  )
+  ctx.fillStyle = progress > 0 ? '#8cf2b0' : '#f6d79a'
+  ctx.font = 'bold 48px monospace'
+  ctx.fillText(state.status === 'complete' ? '✓' : state.lane === 'ear' && !state.hinted ? '?' : state.currentNote ?? '', W / 2, 120)
+  ctx.fillStyle = '#20343a'
+  ctx.fillRect(250, 137, 220, 6)
+  ctx.fillStyle = '#8cf2b0'
+  ctx.fillRect(250, 137, Math.round(220 * progress), 6)
+  ctx.restore()
+}
+
 export default function PitchforksIII() {
+  const bossControllerRef = useRef<PitchforksBossRecitalController | null>(null)
+  const bossIdentityRef = useRef<PitchforksBossId | null>(null)
+  const bossReceiptsRef = useRef<PitchforksBossRecitalReceipt[]>([])
+  const bossSupportedPracticeRef = useRef(false)
+  const bossHoldRef = useRef({ heldMs: 0, matched: false })
+  const bossSimulatingRef = useRef(false)
+  const bossClockRef = useRef(0)
+  const bossHeadingRef = useRef<HTMLHeadingElement>(null)
+  const bossHeardClaimRef = useRef<string | null>(null)
+  const bossButtonTrialRef = useRef<PitchforksButtonTrial | null>(null)
+  const [bossState, setBossState] = useState<PitchforksBossRecitalState | null>(null)
+  const [bossIdentity, setBossIdentity] = useState<PitchforksBossId | null>(null)
+  const [bossMessage, setBossMessage] = useState('')
+  const [bossSimulating, setBossSimulating] = useState(false)
+  const [bossAudioBusy, setBossAudioBusy] = useState(false)
   const canvasContainerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const staffCanvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef(0)
   const lastTimeRef = useRef(0)
   const runtimeRef = useRef<Runtime>(makeInitialRuntime(false))
+  const rainActivationRequestedRef = useRef(false)
+  const rainUiSignatureRef = useRef('')
+  const torchSteppedTargetKeyRef = useRef('')
   const assetsRef = useRef<Assets>(emptyAssets())
   const nextIdRef = useRef(0)
   const fsrsRef = useRef<Record<string, NoteMemory>>({})
   const earFsrsRef = useRef<Record<string, NoteMemory>>({})
   const masteryProgressRef = useRef<MasteryProgress>({})
+  const levelProgressRef = useRef<PitchforksLevelProgress>(createPitchforksLevelProgress(1))
+  const levelAdmissionOfferedRef = useRef(false)
   const cueSupportProfileRef = useRef<CueSupportProfile>(EMPTY_CUE_SUPPORT_PROFILE)
   const presentationJourneyRef = useRef<PitchforksPresentationJourney | null>(null)
+  const selectedWorldRef = useRef<PitchforksNormalWorld>('dungeon')
+  const [journeySaveStatus, setJourneySaveStatus] = useState<'idle' | 'not-confirmed'>('idle')
+  const masterySavePendingLanesRef = useRef<Set<PitchforksInputMode>>(new Set())
+  const [masterySaveStatus, setMasterySaveStatus] = useState<'idle' | 'not-confirmed'>('idle')
   const cueSupportByTargetRef = useRef<Map<string, CueSupportLevel>>(new Map())
+  const presentationVisitCountByTargetRef = useRef<Map<string, number>>(new Map())
   const hintedTargetKeysRef = useRef<Set<string>>(new Set())
   const waveNotesHeardRef = useRef<Set<string>>(new Set())
   const waveNotesSungRef = useRef<Set<string>>(new Set())
@@ -2782,28 +4114,96 @@ export default function PitchforksIII() {
   const rangeProfileRef = useRef<PitchforksRangeProfile | null>(null)
   const rangeHeldMsRef = useRef(0)
   const rangeLastSampleAtRef = useRef(0)
-  const consecutiveCorrectRef = useRef(0)
+  const runGenerationRef = useRef(0)
+  const nextWaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const debugReviewSequenceRef = useRef(0)
+  const closeSmashProofRef = useRef(false)
   const fsrsDebugRef = useRef(false)
   const promptStartedAtRef = useRef(0)
   const activePromptKeyRef = useRef('')
+  const pendingMusicalPromptRef = useRef<PitchforksMusicalPromptTarget | null>(null)
   const failureGradedKeysRef = useRef<Set<string>>(new Set())
   const newNoteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const noteMasteredTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const waveReceiptTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const noteMasteredRef = useRef<string | null>(null)
   const noteMasteredStartedAtRef = useRef(0)
   const waveReceiptRef = useRef<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
-  const waveReceiptStartedAtRef = useRef(0)
+  const waveReceiptSequenceRef = useRef(0)
+  const victoryCancelledReceiptIdRef = useRef<string | null>(null)
   const ceremonyToneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const ceremonyRef = useRef<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const deferredAdmissionNotesRef = useRef<Set<string>>(new Set())
   const admissionHeldMsRef = useRef(0)
   const admissionLastSampleAtRef = useRef(0)
   const pianoSamplesReadyRef = useRef(false)
+  const [pianoSamplesReady, setPianoSamplesReady] = useState(false)
   const lockHeldMsRef = useRef(0)
+  const lockGenerationRef = useRef<PitchforksSongcraftGenerationState>({ lastGeneration: null, generationObserved: false, generationObservedAt: 0 })
   const lockProgressRef = useRef(0)
   const activeKeyRef = useRef('')
   const tintRef = useRef<string | null>(null)
+  const closeSmashStateRef = useRef<PitchforksCloseSmashState>(createPitchforksCloseSmashState())
+  const closeSmashRequestRef = useRef<CloseSmashRequest | null>(null)
+  const closeSmashFallbackDueAtRef = useRef(0)
+  const closeSmashSettleDueAtRef = useRef(0)
+  const closeSmashRecoilUntilRef = useRef<Map<number, number>>(new Map())
+  const closeSmashReonsetNoteRef = useRef<string | null>(null)
+  const closeSmashReonsetStartedAtRef = useRef(0)
+  const thunderheadStateRef = useRef<PitchforksThunderheadState>(createPitchforksThunderheadState())
+  const thunderheadArmRequestedRef = useRef(false)
+  const thunderheadReleaseRequestedRef = useRef(false)
+  const thunderheadSequenceRef = useRef(0)
+  const thunderheadLastTransitionReasonRef = useRef<PitchforksThunderheadTransitionReason | null>(null)
+  const thunderheadClockMsRef = useRef(0)
+  const thunderheadTravelStartedAtRef = useRef(0)
+  const thunderheadTravelStartRef = useRef<ThunderheadPoint | null>(null)
+  const thunderheadTravelTargetRef = useRef<ThunderheadPoint | null>(null)
+  const thunderheadMatchDueAtRef = useRef(0)
+  const thunderheadStrikeOriginRef = useRef<ThunderheadPoint | null>(null)
+  const galvanicStateRef = useRef<PitchforksGalvanicState>(createPitchforksGalvanicState('galvanic:initial'))
+  const galvanicBanksRef = useRef<PitchforksGalvanicLock[]>([])
+  const galvanicArmRequestedRef = useRef(false)
+  const galvanicReleaseRequestedRef = useRef(false)
+  const galvanicAwaitingSilenceRef = useRef(false)
+  const galvanicArmedTargetKeyRef = useRef('')
+  const galvanicSequenceRef = useRef(0)
+  const galvanicAttackSequenceRef = useRef(0)
+  const galvanicLastOutcomesRef = useRef<PitchforksGalvanicOutcome[]>([])
+  const galvanicLastReasonRef = useRef<PitchforksGalvanicPlanReason | string | null>(null)
+  const galvanicRecoilVillagerIdsRef = useRef<Set<number>>(new Set())
+  const galvanicProofRef = useRef(false)
+  const bellWaveStateRef = useRef<PitchforksBellWaveState>(createPitchforksBellWaveState())
+  const bellWaveClockMsRef = useRef(0)
+  const bellWaveProjectionRef = useRef<PitchforksBellWaveProjection>(projectPitchforksBellWave(createPitchforksBellWaveState(), 0))
+  const bellArmRequestedRef = useRef(false)
+  const bellArmedTargetKeyRef = useRef('')
+  const bellReleaseRequestedRef = useRef(false)
+  const bellChargeSequenceRef = useRef(0)
+  const bellChargeReceiptRef = useRef<BellChargeReceipt | null>(null)
+  const bellReleaseStableIDsRef = useRef<Set<string>>(new Set())
+  const bellKnockbackRef = useRef<Map<number, BellKnockback>>(new Map())
+  const bellRecoilUntilRef = useRef<Map<number, number>>(new Map())
+  // The shared matching-suppression window is intentionally broader than the
+  // Bell's own ring. Keep a separate wall-clock marker so only that ring's
+  // 1200 ms tone plus the existing echo tail can bypass matching suppression.
+  const bellOwnRingSuppressionUntilRef = useRef(0)
+  // Debug only: count accepted releases whose audible SFX branch was
+  // scheduled. Muted physical waves stay mechanic-only and do not increment;
+  // the prior receipt below guards duplicate side effects without replacing
+  // the pure lifecycle's consumed-receipt ledger.
+  const bellRingCountRef = useRef(0)
+  // Last receipt whose audible ring side effects were scheduled. A muted
+  // release intentionally leaves this value unchanged.
+  const bellLastRingReceiptIdRef = useRef<string | null>(null)
+  const bellLastReasonRef = useRef<string | null>(null)
+  const bellUiSignatureRef = useRef('')
+  const bellProofRef = useRef(false)
+  const bellPowerStateRef = useRef<PitchforksBellPowerState | null>(null)
+  // Normal Village activation is a separate run-local input lane. It shares
+  // the existing detector generation/health gate, but never borrows a
+  // villager target or the ordinary tine-resolution authority.
+  const bellActivationNoteRef = useRef<string | null>(null)
+  const bellActivationEventSequenceRef = useRef(0)
   const demoRef = useRef(false)
   const demoPitchRef = useRef<PitchInfo | null>(null)
   const demoTargetRef = useRef('')
@@ -2887,8 +4287,12 @@ export default function PitchforksIII() {
 
   const [phase, setPhase] = useState<Phase>('menu')
   const [assetsReady, setAssetsReady] = useState(false)
+  const [selectedWorld, setSelectedWorld] = useState<PitchforksNormalWorld>('dungeon')
+  const [villageGateAssetStatus, setVillageGateAssetStatus] = useState<VillageGateAssetStatus>('loading')
   const [assetError, setAssetError] = useState<string | null>(null)
   const [hud, setHud] = useState<HudState>({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
+  const [rainState, setRainState] = useState<RainState>(() => createRainState())
+  const [levelProgress, setLevelProgress] = useState<PitchforksLevelProgress>(() => createPitchforksLevelProgress(1))
   const [noteNamesOn, setNoteNamesOnState] = useState(true)
   const [audioCueOn, setAudioCueOnState] = useState(true)
   const [staffNotationOn, setStaffNotationOn] = useState(false)
@@ -2908,7 +4312,22 @@ export default function PitchforksIII() {
     kind: 'listen',
     text: 'LISTEN, THEN CHOOSE THE NOTE',
   })
+  const [closeSmashState, setCloseSmashState] = useState<PitchforksCloseSmashState>(() => createPitchforksCloseSmashState())
+  const [thunderheadState, setThunderheadState] = useState<PitchforksThunderheadState>(() => createPitchforksThunderheadState())
+  const [bellWaveState, setBellWaveState] = useState<PitchforksBellWaveState>(() => createPitchforksBellWaveState())
+  const [bellWaveProjection, setBellWaveProjection] = useState<PitchforksBellWaveProjection>(() => projectPitchforksBellWave(createPitchforksBellWaveState(), 0))
+  const [bellPowerState, setBellPowerState] = useState<PitchforksBellPowerState | null>(null)
+  const [galvanicProjection, setGalvanicProjection] = useState<GalvanicDebugProjection>(() => buildGalvanicDebugProjection(
+    false,
+    createPitchforksGalvanicState('galvanic:initial'),
+    [],
+    false,
+    false,
+    [],
+    null,
+  ))
   const [unlockedNotes, setUnlockedNotes] = useState<string[]>([...STARTING_NOTES])
+  const [presentationJourney, setPresentationJourney] = useState<PitchforksPresentationJourney | null>(null)
   const [rangeProfile, setRangeProfile] = useState<PitchforksRangeProfile | null>(null)
   const [tunerFeedback, setTunerFeedback] = useState<PitchforksTunerFeedback>(() => pitchforksTunerFeedback({
     targetNote: null,
@@ -2938,7 +4357,7 @@ export default function PitchforksIII() {
   const [journeyResetStatus, setJourneyResetStatus] = useState<string | null>(null)
   const [newNoteUnlocked, setNewNoteUnlocked] = useState<string | null>(null)
   const [noteMastered, setNoteMastered] = useState<string | null>(null)
-  const [, setWaveReceipt] = useState<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
+  const [waveReceipt, setWaveReceipt] = useState<WaveReceiptState>(EMPTY_WAVE_RECEIPT)
   const [ceremony, setCeremony] = useState<NewNoteCeremonyState>({ active: false, note: null, toneFired: false, tonePulseKey: 0 })
   const [admissionCuePlayed, setAdmissionCuePlayed] = useState(false)
   const [admissionMatched, setAdmissionMatched] = useState(false)
@@ -2968,14 +4387,25 @@ export default function PitchforksIII() {
     signalDbRef,
     micSourceHealthRef,
     pitchGenerationRef,
-    startListening,
-    stopListening,
+    startListening: startMicrophoneRaw,
+    stopListening: stopMicrophoneRaw,
     error: micError,
   } = usePitchDetection({
     profile: PITCHFORKS_PITCH_PROFILE,
     audioConstraints: PITCHFORKS_AUDIO_CONSTRAINTS,
     observationGainPct: microphoneGain,
   })
+
+  const microphoneOwnerRef = useRef<PitchforksMicrophoneOwner | null>(null)
+  if (!microphoneOwnerRef.current) {
+    microphoneOwnerRef.current = createPitchforksMicrophoneOwner({
+      start: startMicrophoneRaw,
+      stop: stopMicrophoneRaw,
+      isLive: () => micSourceHealthRef.current.trackReadyState === 'live',
+    })
+  }
+  const startListening = useCallback(() => microphoneOwnerRef.current!.start(), [])
+  const stopListening = useCallback(() => microphoneOwnerRef.current!.stop(), [])
 
   useEffect(() => {
     noteNamesRef.current = noteNamesOn
@@ -3001,7 +4431,7 @@ export default function PitchforksIII() {
     setAudioCueOnState(settings.referenceAudio)
     setCueVolume(settings.referenceGainPct)
     setMicrophoneGain(settings.microphoneGainPct)
-    savePitchforksSettings(localStorage, settings)
+    try { savePitchforksSettings(localStorage, settings) } catch {}
   }, [])
 
   const setNoteNamesPreference = useCallback((value: boolean) => {
@@ -3173,6 +4603,21 @@ export default function PitchforksIII() {
     return demoRef.current || fsrsDebugRef.current ? FSRS_EAR_DEBUG_KEY : FSRS_EAR_KEY
   }, [])
 
+  const songcraftStorage = useMemo<PitchforksBossRecitalStorage>(() => {
+    const keyFor = (lane: 'voice' | 'ear') => lane === 'voice' ? fsrsStorageKey() : earFsrsStorageKey()
+    return {
+      loadStore: lane => migrate(keyFor(lane), localStorage.getItem(keyFor(lane))),
+      saveStore: (lane, store) => saveStore(keyFor(lane), store),
+      readback: (lane, note) => {
+        const durable = migrate(keyFor(lane), localStorage.getItem(keyFor(lane)))
+        // Keep the returning battle on the same durable family history.
+        if (lane === 'voice') fsrsRef.current = durable
+        else earFsrsRef.current = durable
+        return durable[note]
+      },
+    }
+  }, [earFsrsStorageKey, fsrsStorageKey])
+
   const masteryStorageKey = useCallback(() => {
     return demoRef.current || fsrsDebugRef.current ? MASTERY_PROGRESS_DEBUG_KEY : MASTERY_PROGRESS_KEY
   }, [])
@@ -3184,8 +4629,26 @@ export default function PitchforksIII() {
   const saveFsrs = useCallback((lane: PitchforksInputMode = 'voice') => {
     const key = lane === 'buttons' ? earFsrsStorageKey() : fsrsStorageKey()
     const store = lane === 'buttons' ? earFsrsRef.current : fsrsRef.current
-    saveStore(key, store)
+    if (demoRef.current || fsrsDebugRef.current) {
+      try { saveStore(key, store) } catch {}
+      return
+    }
+
+    const result = persistPitchforksMasteryStore(
+      () => localStorage,
+      key,
+      store,
+      () => saveStore(key, store),
+    )
+    if (result.status === 'confirmed') masterySavePendingLanesRef.current.delete(lane)
+    else masterySavePendingLanesRef.current.add(lane)
+    setMasterySaveStatus(masterySavePendingLanesRef.current.size > 0 ? 'not-confirmed' : 'idle')
   }, [earFsrsStorageKey, fsrsStorageKey])
+
+  const retryMasterySave = useCallback(() => {
+    if (demoRef.current || fsrsDebugRef.current) return
+    for (const lane of [...masterySavePendingLanesRef.current]) saveFsrs(lane)
+  }, [saveFsrs])
 
   const chooseInputMode = useCallback((mode: PitchforksInputMode) => {
     inputModeRef.current = mode
@@ -3208,9 +4671,44 @@ export default function PitchforksIII() {
   const savePresentationJourney = useCallback((journey = presentationJourneyRef.current) => {
     if (!journey || demoRef.current || fsrsDebugRef.current) return
     try {
-      localStorage.setItem(PITCHFORKS_PRESENTATION_JOURNEY_KEY, JSON.stringify(journey))
-    } catch {}
+      // Resolve localStorage inside the guard: some privacy modes throw while
+      // reading window.localStorage before setItem can even be attempted.
+      const result = persistPitchforksPresentationJourney(() => localStorage, journey)
+      if (result.status === 'confirmed') setJourneySaveStatus('idle')
+      else if (result.status === 'not-confirmed') setJourneySaveStatus('not-confirmed')
+    } catch {
+      setJourneySaveStatus('not-confirmed')
+    }
   }, [])
+
+  const reconcileCampaignProgress = useCallback((journey = presentationJourneyRef.current) => {
+    if (!journey || demoRef.current || fsrsDebugRef.current || bossSimulatingRef.current) return
+    const rangeProfile = rangeProfileRef.current
+    if (!rangeProfile) return
+
+    const result = advancePitchforksCampaignProgress({
+      journey,
+      rangeAssessedAt: rangeProfile.assessedAt,
+      startedAt: journey.startedAt,
+      demo: demoRef.current || fsrsDebugRef.current,
+      simulated: bossSimulatingRef.current,
+      voiceMemory: fsrsRef.current,
+      masteryRecords: masteryProgressRef.current,
+      nowMs: Date.now(),
+    })
+    if (!result.changed) return
+
+    // Keep the receipt live even when persistence is unavailable; the existing
+    // retry action will write this same ref value later.
+    presentationJourneyRef.current = result.journey
+    setPresentationJourney(result.journey)
+    savePresentationJourney(result.journey)
+  }, [savePresentationJourney])
+
+  const retryPresentationJourneySave = useCallback(() => {
+    if (demoRef.current || fsrsDebugRef.current) return
+    savePresentationJourney()
+  }, [savePresentationJourney])
 
   const beginPresentationJourney = useCallback((
     profile: PitchforksRangeProfile,
@@ -3223,6 +4721,9 @@ export default function PitchforksIII() {
       guidedNotes,
     })
     presentationJourneyRef.current = journey
+    setPresentationJourney(journey)
+    selectedWorldRef.current = 'dungeon'
+    setSelectedWorld('dungeon')
     savePresentationJourney(journey)
   }, [savePresentationJourney])
 
@@ -3231,6 +4732,7 @@ export default function PitchforksIII() {
     if (!current) return
     const next = { ...current, unlockedNotes: [...notes] }
     presentationJourneyRef.current = next
+    setPresentationJourney(next)
     savePresentationJourney(next)
   }, [savePresentationJourney])
 
@@ -3239,6 +4741,7 @@ export default function PitchforksIII() {
     if (!current?.guidedNotes.includes(note)) return
     const next = { ...current, guidedNotes: current.guidedNotes.filter(candidate => candidate !== note) }
     presentationJourneyRef.current = next
+    setPresentationJourney(next)
     savePresentationJourney(next)
   }, [savePresentationJourney])
 
@@ -3292,12 +4795,18 @@ export default function PitchforksIII() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const isDemo = params.get('demo') === '1'
+    closeSmashProofRef.current = isDemo && params.get('closeSmashProof') === '1'
+    galvanicProofRef.current = isDemo && params.get('galvanicProof') === '1'
+    bellProofRef.current = isDemo && params.get('worldProof') === 'bell-tower'
     const isFsrsDebug = params.get('fsrsDebug') === '1'
     const requestedInput = params.get('input')
     const storedInput = (() => {
       try { return localStorage.getItem(PITCHFORKS_INPUT_MODE_KEY) } catch { return null }
     })()
-    const storedSettings = loadPitchforksSettings(localStorage)
+    const storedSettings = (() => {
+      try { return loadPitchforksSettings(localStorage) }
+      catch { return normalizePitchforksSettings(null) }
+    })()
     const restoredInput = requestedInput === 'buttons' || requestedInput === 'voice'
       ? requestedInput
       : parsePitchforksInputMode(storedInput)
@@ -3318,8 +4827,16 @@ export default function PitchforksIII() {
     setGeometryDebug(params.get('geom') === '1')
     getMasterySessionId()
 
-    fsrsRef.current = loadStore(isDemo || isFsrsDebug ? FSRS_DEBUG_KEY : FSRS_VOICE_KEY)
-    earFsrsRef.current = loadStore(isDemo || isFsrsDebug ? FSRS_EAR_DEBUG_KEY : FSRS_EAR_KEY)
+    try {
+      fsrsRef.current = loadStore(isDemo || isFsrsDebug ? FSRS_DEBUG_KEY : FSRS_VOICE_KEY)
+    } catch {
+      fsrsRef.current = {}
+    }
+    try {
+      earFsrsRef.current = loadStore(isDemo || isFsrsDebug ? FSRS_EAR_DEBUG_KEY : FSRS_EAR_KEY)
+    } catch {
+      earFsrsRef.current = {}
+    }
 
     try {
       const rawMastery = localStorage.getItem(isDemo || isFsrsDebug ? MASTERY_PROGRESS_DEBUG_KEY : MASTERY_PROGRESS_KEY)
@@ -3363,6 +4880,7 @@ export default function PitchforksIII() {
       )
       if (storedJourney) {
         presentationJourneyRef.current = storedJourney
+        setPresentationJourney(storedJourney)
         restored = [...storedJourney.unlockedNotes]
       } else {
         // One-time migration for players whose presentation unlocks were previously
@@ -3383,6 +4901,7 @@ export default function PitchforksIII() {
           guidedNotes: [],
         })
         presentationJourneyRef.current = migratedJourney
+        setPresentationJourney(migratedJourney)
         savePresentationJourney(migratedJourney)
       }
     } else {
@@ -3405,7 +4924,8 @@ export default function PitchforksIII() {
       ensureNoteMemory(note)
       ensureEarNoteMemory(note)
     }
-  }, [ensureEarNoteMemory, ensureNoteMemory, getMasterySessionId, savePresentationJourney])
+    reconcileCampaignProgress(presentationJourneyRef.current)
+  }, [ensureEarNoteMemory, ensureNoteMemory, getMasterySessionId, reconcileCampaignProgress, savePresentationJourney])
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('composerSeedProof') !== '1') return
@@ -3429,7 +4949,43 @@ export default function PitchforksIII() {
       try {
         const a = assetsRef.current
         a.frankIdle = await loadImage(`${ASSET_BASE}/frankenstein_idle.png`)
-        a.frankCharge = await loadImage(`${ASSET_BASE}/frankenstein_charging.png`)
+        a.stormHeart = await loadImage(`${ASSET_BASE}/storm_heart_nano.png`).catch(() => undefined)
+        // The same original Bell pixels serve the ordinary Village at rest and
+        // the existing private proof. Keep this asset caller shared so the
+        // normal route never renders an empty tower before activation.
+        if (bellProofRef.current || (!demoRef.current && !fsrsDebugRef.current)) {
+          a.bellSwing = await loadImage(`${ASSET_BASE}/bell_swing.png`).catch(() => undefined)
+          a.bellBackdrop = await loadImage(`${ASSET_BASE}/bell_swing_backdrop.png`).catch(() => undefined)
+        }
+        a.gargoyleSpout = await loadImage(`${ASSET_BASE}/gargoyle_spout_idle.png`).catch(() => undefined)
+        a.rainCloud = await loadImage(`${ASSET_BASE}/rain_cloud.png`).catch(() => undefined)
+        if (!demoRef.current && !fsrsDebugRef.current) {
+          a.villageGatePlate = await loadImage(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC).catch(() => undefined)
+          if (!cancelled) setVillageGateAssetStatus(a.villageGatePlate ? 'ready' : 'missing')
+        }
+        const artProof = new URLSearchParams(window.location.search)
+        if (artProof.get('demo') === '1') {
+          a.torchmasterChamberPlate = await loadImage(`${ASSET_BASE}/torchmaster_chamber_plate.png`).catch(() => undefined)
+          // Bellringer art stays inside the existing demo-only asset lane. The
+          // fixed Village Gate plate is independent of worldProof so a wrong
+          // proof query can never substitute another world's backdrop.
+          a.bellringerChamberPlate = await loadImage(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC).catch(() => undefined)
+          a.bellringerRest = await loadImage(PITCHFORKS_BELLRINGER_REST_SRC).catch(() => undefined)
+        }
+        const privatePlateAsset = selectPitchforksPrivatePlateAsset(artProof)
+        if (privatePlateAsset) {
+          a.privatePlate = await loadImage(`${ASSET_BASE}/${privatePlateAsset}`).catch(() => undefined)
+        }
+        // These are the two accepted, original staged-victory sprites. A
+        // missing optional pose must never fabricate a new asset or block the
+        // rest of the game; the claim snapshots exactly what was available.
+        a.frankVictoryNeutral = await loadImage(`${ASSET_BASE}/frankenstein_victory_neutral.png`).catch(() => undefined)
+        a.frankVictoryEyeLift = await loadImage(`${ASSET_BASE}/frankenstein_victory_eye_lift.png`).catch(() => undefined)
+        // An optional pose must never prevent the game from loading.
+        a.frankCharge = await loadImage(`${ASSET_BASE}/frankenstein_conductor_coil.png`).catch(() => undefined)
+        // Contact art is optional during a private rollout; idle remains the
+        // truthful non-blank fallback when the byte-copied strip is unavailable.
+        a.frankCloseSmash = await loadImage(`${ASSET_BASE}/frankenstein_close_smash.png`).catch(() => undefined)
         try {
           const frank = await fetch(`${ASSET_BASE}/frankenstein.json`)
           if (frank.ok) a.frankMeta = await frank.json()
@@ -3439,7 +4995,7 @@ export default function PitchforksIII() {
           if (forks.ok) {
             const parsed = await forks.json()
             a.forkMeta = {
-              1: parsed['2tine'] ?? defaultForkMeta,
+              1: a.forkMeta[1],
               2: parsed['2tine'] ?? defaultForkMeta,
               3: parsed['3tine'] ?? defaultForkMeta,
               4: parsed['4tine'] ?? defaultForkMeta,
@@ -3447,7 +5003,11 @@ export default function PitchforksIII() {
           }
         } catch {}
 
-        for (const n of [2, 3, 4] as const) {
+        const oneTineForkMeta = await fetch(`${ASSET_BASE}/fork_1tine.json`)
+        if (!oneTineForkMeta.ok) throw new Error('Single-tine fork metadata failed to load')
+        a.forkMeta[1] = await oneTineForkMeta.json()
+
+        for (const n of [1, 2, 3, 4] as const) {
           a.walkLeft[n] = await loadImage(`${ASSET_BASE}/villager_${n}tine_walk_left.png`)
           a.ashLeft[n] = await loadImage(`${ASSET_BASE}/villager_${n}tine_ash_left.png`)
           for (let k = 1; k < n; k++) {
@@ -3460,27 +5020,224 @@ export default function PitchforksIII() {
           try {
             const meta = await fetch(`${ASSET_BASE}/villager_${n}tine.json`)
             if (meta.ok) a.villagerMeta[n] = await meta.json()
-          } catch {}
+            else if (n === 1) throw new Error('Single-tine villager metadata failed to load')
+          } catch (error) {
+            if (n === 1) throw error
+          }
         }
-        // 1-tine (single-note) tier reuses 2-tine art for now (real 1-tine sprite = art gate).
-        a.walkLeft[1] = a.walkLeft[2]
-        a.ashLeft[1] = a.ashLeft[2]
-        a.villagerMeta[1] = a.villagerMeta[2]
-        a.forkMeta[1] = a.forkMeta[2]
-        a.fork['1_0'] = a.fork['2_0']
-        a.fork['1_1'] = a.fork['2_1']
-        a.forkGlow['1_0'] = a.forkGlow['2_0']
-        a.forkGlow['1_1'] = a.forkGlow['2_1']
         if (!cancelled) setAssetsReady(true)
       } catch (err) {
         if (!cancelled) setAssetError(err instanceof Error ? err.message : 'Sprite load failed')
       }
     })()
     loadPianoSamples()
-      .then(() => { pianoSamplesReadyRef.current = true })
-      .catch(() => { pianoSamplesReadyRef.current = false })
+      .then(() => {
+        pianoSamplesReadyRef.current = true
+        if (!cancelled) setPianoSamplesReady(true)
+      })
+      .catch(() => {
+        pianoSamplesReadyRef.current = false
+        if (!cancelled) setPianoSamplesReady(false)
+      })
     return () => { cancelled = true }
   }, [])
+
+  const retryVillageGateAsset = useCallback(() => {
+    if (demoRef.current || fsrsDebugRef.current) return
+    setVillageGateAssetStatus('loading')
+    void loadImage(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC)
+      .then(image => {
+        assetsRef.current.villageGatePlate = image
+        setVillageGateAssetStatus('ready')
+      })
+      .catch(() => {
+        assetsRef.current.villageGatePlate = undefined
+        if (selectedWorldRef.current === 'village-gate') {
+          selectedWorldRef.current = 'dungeon'
+          setSelectedWorld('dungeon')
+        }
+        setVillageGateAssetStatus('missing')
+      })
+  }, [])
+
+  const resetNormalBellPowerForRun = useCallback((eligible: boolean) => {
+    const admittedNotes = distinctPitchforksAdmittedNotes([...unlockedNotesRef.current])
+      .filter(note => pitchforksBellNoteMidi(note) !== null)
+    const taughtPair = eligible ? selectPitchforksBellTaughtPair(admittedNotes) : null
+    const next = taughtPair
+      ? createPitchforksBellPowerState({
+          runId: `bell-power:${runGenerationRef.current}`,
+          requiredResponses: 3,
+          admittedNotes,
+          taughtPair,
+        })
+      : null
+    bellPowerStateRef.current = next
+    bellActivationNoteRef.current = null
+    bellActivationEventSequenceRef.current = 0
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    setBellPowerState(next)
+    return next
+  }, [])
+
+  const selectNormalWorld = useCallback((world: PitchforksNormalWorld) => {
+    if (
+      world === 'village-gate' &&
+      (demoRef.current || fsrsDebugRef.current || !presentationJourneyRef.current?.dungeonClear || villageGateAssetStatus !== 'ready' || !assetsRef.current.villageGatePlate)
+    ) return
+    if (world !== 'village-gate') resetNormalBellPowerForRun(false)
+    selectedWorldRef.current = world
+    setSelectedWorld(world)
+  }, [resetNormalBellPowerForRun, villageGateAssetStatus])
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (typeof document === 'undefined' || document.visibilityState === 'visible') return
+      // RAF can stop while hidden, so invalidate vocal proof at the event itself.
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      lockGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
+      const claim = waveReceiptRef.current.claim
+      if (claim) victoryCancelledReceiptIdRef.current = claim.receiptId
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
+  const commitCloseSmashState = useCallback((next: PitchforksCloseSmashState) => {
+    // The helper is immutable, but the ref replacement is the runtime's
+    // compare-and-swap boundary. Replace it before any strike/audio/VFX side
+    // effect so a queued tap and fallback cannot both consume one receipt.
+    closeSmashStateRef.current = next
+    setCloseSmashState(next)
+  }, [])
+
+  const resetCloseSmash = useCallback(() => {
+    const next = createPitchforksCloseSmashState()
+    closeSmashStateRef.current = next
+    closeSmashRequestRef.current = null
+    closeSmashFallbackDueAtRef.current = 0
+    closeSmashSettleDueAtRef.current = 0
+    closeSmashRecoilUntilRef.current = new Map()
+    closeSmashReonsetNoteRef.current = null
+    closeSmashReonsetStartedAtRef.current = 0
+    setCloseSmashState(next)
+  }, [])
+
+  const commitThunderheadState = useCallback((next: PitchforksThunderheadState) => {
+    // The Thunderhead reducer is immutable, but the ref replacement is the
+    // runtime CAS boundary. Publish the next snapshot before any strike,
+    // audio, or presentation effect can observe the old consumer.
+    thunderheadStateRef.current = next
+    setThunderheadState(next)
+  }, [])
+
+  const transitionThunderhead = useCallback((event: PitchforksThunderheadEvent): PitchforksThunderheadTransition => {
+    const decision = advancePitchforksThunderhead(thunderheadStateRef.current, event)
+    thunderheadLastTransitionReasonRef.current = decision.reason
+    if (decision.accepted) commitThunderheadState(decision.state)
+    return decision
+  }, [commitThunderheadState])
+
+  const resetThunderhead = useCallback((publish = true) => {
+    thunderheadArmRequestedRef.current = false
+    thunderheadReleaseRequestedRef.current = false
+    thunderheadClockMsRef.current = 0
+    thunderheadTravelStartedAtRef.current = 0
+    thunderheadTravelStartRef.current = null
+    thunderheadTravelTargetRef.current = null
+    thunderheadMatchDueAtRef.current = 0
+    thunderheadStrikeOriginRef.current = null
+    thunderheadLastTransitionReasonRef.current = null
+    const next = createPitchforksThunderheadState()
+    thunderheadStateRef.current = next
+    if (publish) setThunderheadState(next)
+  }, [])
+
+  const commitBellWaveState = useCallback((next: PitchforksBellWaveState, logicalNowMs: number, force = false) => {
+    bellWaveStateRef.current = next
+    const projection = projectPitchforksBellWave(next, logicalNowMs)
+    bellWaveProjectionRef.current = projection
+    // Diagnostics are intentionally coarse: the canvas still projects the
+    // current immutable state every frame, while React only publishes a
+    // meaningful phase/contact/radius snapshot to the browser recorder.
+    const signature = [
+      projection.phase,
+      projection.visible ? Math.round(projection.radius / 12) : 0,
+      next.contactedStableIDs.length,
+    ].join('|')
+    if (!force && signature === bellUiSignatureRef.current) return
+    bellUiSignatureRef.current = signature
+    setBellWaveState(next)
+    setBellWaveProjection(projection)
+  }, [])
+
+  const commitBellPowerState = useCallback((next: PitchforksBellPowerState) => {
+    bellPowerStateRef.current = next
+    setBellPowerState(next)
+  }, [])
+
+  const resetBellWave = useCallback((publish = true) => {
+    const next = resetPitchforksBellWaveState(bellWaveStateRef.current)
+    bellWaveStateRef.current = next
+    bellWaveClockMsRef.current = 0
+    bellWaveProjectionRef.current = projectPitchforksBellWave(next, 0)
+    bellArmRequestedRef.current = false
+    bellArmedTargetKeyRef.current = ''
+    bellReleaseRequestedRef.current = false
+    bellChargeSequenceRef.current = 0
+    bellChargeReceiptRef.current = null
+    bellReleaseStableIDsRef.current = new Set()
+    bellKnockbackRef.current = new Map()
+    bellRecoilUntilRef.current = new Map()
+    bellOwnRingSuppressionUntilRef.current = 0
+    bellRingCountRef.current = 0
+    bellLastRingReceiptIdRef.current = null
+    bellLastReasonRef.current = 'reset'
+    bellUiSignatureRef.current = ''
+    if (publish) {
+      setBellWaveState(next)
+      setBellWaveProjection(bellWaveProjectionRef.current)
+    }
+  }, [])
+
+  const publishGalvanicProjection = useCallback(() => {
+    setGalvanicProjection(buildGalvanicDebugProjection(
+      galvanicProofRef.current,
+      galvanicStateRef.current,
+      galvanicBanksRef.current,
+      galvanicArmRequestedRef.current,
+      galvanicAwaitingSilenceRef.current,
+      galvanicLastOutcomesRef.current,
+      galvanicLastReasonRef.current,
+    ))
+  }, [])
+
+  const resetGalvanic = useCallback((publish = true) => {
+    const next = createPitchforksGalvanicState(`galvanic:${runGenerationRef.current}:${runtimeRef.current.wave}`)
+    galvanicStateRef.current = next
+    galvanicBanksRef.current = []
+    galvanicArmRequestedRef.current = false
+    galvanicReleaseRequestedRef.current = false
+    galvanicAwaitingSilenceRef.current = false
+    galvanicArmedTargetKeyRef.current = ''
+    galvanicSequenceRef.current = 0
+    galvanicAttackSequenceRef.current = 0
+    galvanicLastOutcomesRef.current = []
+    galvanicLastReasonRef.current = 'reset'
+    for (const villagerId of galvanicRecoilVillagerIdsRef.current) {
+      closeSmashRecoilUntilRef.current.delete(villagerId)
+    }
+    galvanicRecoilVillagerIdsRef.current.clear()
+    runtimeRef.current.bolts = runtimeRef.current.bolts.filter(candidate => candidate.presentation !== 'galvanic')
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    activeKeyRef.current = ''
+    if (publish) publishGalvanicProjection()
+  }, [publishGalvanicProjection])
 
   const getActiveVillager = useCallback(() => {
     const walkers = runtimeRef.current.villagers.filter(v => v.state === 'walking' && v.burned < v.totalTines)
@@ -3490,20 +5247,121 @@ export default function PitchforksIII() {
   }, [])
 
   const getActiveTarget = useCallback((): ActiveTarget | null => {
+    // During the earned receipt lifecycle, pin selection to that villager but
+    // construct the target from live gameplay fields. READY/PENDING require
+    // an exact receipt match; a stale receipt returns null instead of falling
+    // through to a bystander. SETTLE may expose the surviving villager's real
+    // next tine, while processLock's lifecycle gate keeps it un-lockable.
+    const bellState = bellWaveStateRef.current
+    const normalBellPhase = bellPowerStateRef.current?.phase
+    if (
+      bellState.phase === 'active' ||
+      bellChargeReceiptRef.current ||
+      bellReleaseRequestedRef.current ||
+      normalBellPhase === 'activating' ||
+      normalBellPhase === 'pending'
+    ) {
+      return null
+    }
+    if (bellArmRequestedRef.current) {
+      const armed = runtimeRef.current.villagers.find(v => {
+        const target = activeTargetFromLiveVillager(v)
+        return target?.key === bellArmedTargetKeyRef.current
+      })
+      return armed ? activeTargetFromLiveVillager(armed) : null
+    }
+    const closeState = closeSmashStateRef.current
+    if (closeState.phase !== 'idle') {
+      const closeReceipt = closeState.receipt
+      if (!closeReceipt) return null
+      const pinnedVillager = runtimeRef.current.villagers.find(v => String(v.id) === closeReceipt.villagerId)
+      if (!pinnedVillager) return null
+      return activeTargetForCloseReceipt(pinnedVillager, closeReceipt, closeState.phase)
+    }
+    const thunderheadState = thunderheadStateRef.current
+    if (thunderheadState.phase !== 'idle' && thunderheadState.phase !== 'consumed') {
+      const receipt = thunderheadState.receipt ?? thunderheadState.bank
+      return receipt ? activeTargetForThunderheadReceipt(runtimeRef.current.villagers, receipt) : null
+    }
+    if (galvanicProofRef.current) {
+      if (galvanicReleaseRequestedRef.current) return null
+      const candidates = liveGalvanicTargets(runtimeRef.current.villagers)
+      if (galvanicArmRequestedRef.current) {
+        return candidates.find(target => target.key === galvanicArmedTargetKeyRef.current) ?? null
+      }
+      // Keep the next live unbanked target visible at capacity so the existing
+      // source path can observe a real re-onset. processLock owns the capacity
+      // gate and prevents both a third bank and ordinary credit.
+      const bankedKeys = new Set(galvanicBanksRef.current.map(bank => bank.targetKey))
+      return candidates.find(target => !bankedKeys.has(target.key)) ?? null
+    }
     const villager = getActiveVillager()
     if (!villager) return null
-    const tineIndex = villager.totalTines - 1 - villager.burned
-    return {
-      villager,
-      tineIndex,
-      note: villager.notes[villager.burned],
-      key: `${villager.id}:${villager.burned}`,
-    }
+    return activeTargetFromLiveVillager(villager)
   }, [getActiveVillager])
+
+  const syncRainSnapshot = useCallback((next: RainState) => {
+    const active = getActiveTarget()
+    const heldBucket = active ? Math.round(active.villager.torch.heldMs / 100) : 0
+    const signature = [
+      next.phase,
+      Math.round(next.fill * 20),
+      next.cycleID,
+      active?.key ?? 'none',
+      active?.villager.torch.phase ?? 'none',
+      heldBucket,
+    ].join('|')
+    if (signature === rainUiSignatureRef.current) return
+    rainUiSignatureRef.current = signature
+    setRainState(next)
+  }, [getActiveTarget])
 
   const setPromptText = useCallback((text: string) => {
     currentPromptRef.current = text
+    // Any explicit Listen/status copy supersedes a deferred Sing/Now request.
+    // The gated presenter below only stores a pending target when it cannot
+    // safely publish an action prompt yet.
+    pendingMusicalPromptRef.current = null
   }, [])
+
+  const armCloseSmash = useCallback((
+    target: NonNullable<ReturnType<typeof getActiveTarget>>,
+    logicalNowMs: number,
+  ) => {
+    // Close Smash is a voice-lane earned ability. The exact lock is still
+    // owned by processLock; this callback only packages its immutable receipt.
+    const existingCloseBoundaryEligible = target.villager.x <= FRANK_REACH_X + 0.5
+    if (
+      galvanicProofRef.current ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellReleaseRequestedRef.current ||
+      inputModeRef.current !== 'voice' ||
+      closeSmashStateRef.current.phase !== 'idle' ||
+      !existingCloseBoundaryEligible ||
+      lockProgressRef.current < 1
+    ) return false
+
+    const receipt: PitchforksCloseSmashReceipt = Object.freeze({
+      lockId: `close-smash:${runGenerationRef.current}:${target.key}`,
+      targetKey: target.key,
+      pitch: target.note,
+      villagerId: String(target.villager.id),
+      tineIndex: target.tineIndex,
+    })
+    const current = closeSmashStateRef.current
+    const next = armPitchforksCloseSmash(current, {
+      receipt,
+      existingCloseBoundaryEligible,
+    })
+    if (next === current) return false
+    commitCloseSmashState(next)
+    closeSmashFallbackDueAtRef.current = logicalNowMs + CLOSE_SMASH_FALLBACK_MS
+    if (demoRef.current) demoStepRef.current = 'close-smash-ready-showcase'
+    setPromptText(`CLOSE SMASH READY · ${target.note}`)
+    return true
+  }, [commitCloseSmashState, getActiveTarget, setPromptText])
 
   const setActiveCueContextSnapshot = useCallback((next: ActiveCueContext) => {
     const current = activeCueContextRef.current
@@ -3573,6 +5431,41 @@ export default function PitchforksIII() {
     return strikePresentationPending() || performance.now() < matchingSuppressedUntilRef.current || isWithinToneSuppressionWindow()
   }, [strikePresentationPending])
 
+  const presentMusicalPrompt = useCallback((target: PitchforksMusicalPromptTarget) => {
+    const text = selectPitchforksCuePrompt(target.note, target.burned, {
+      cuePlaying: cuePlayingNow(),
+      matchingSuppressed: matchingSuppressedNow(),
+    })
+    if (!text) {
+      pendingMusicalPromptRef.current = target
+      return false
+    }
+    pendingMusicalPromptRef.current = null
+    activePromptKeyRef.current = target.key
+    promptStartedAtRef.current = performance.now()
+    setPromptText(text)
+    if (
+      target.firstMinute &&
+      firstMinuteCoachRef.current.beat !== 'strike' &&
+      firstMinuteCoachRef.current.beat !== 'victory' &&
+      firstMinuteCoachRef.current.beat !== 'complete'
+    ) {
+      setFirstMinuteCoachSnapshot('sing', target.note)
+    }
+    return true
+  }, [cuePlayingNow, matchingSuppressedNow, setFirstMinuteCoachSnapshot, setPromptText])
+
+  const flushPendingMusicalPrompt = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
+    const pending = pendingMusicalPromptRef.current
+    if (
+      !pending ||
+      pending.key !== target.key ||
+      pending.note !== target.note ||
+      pending.burned !== target.villager.burned
+    ) return false
+    return presentMusicalPrompt(pending)
+  }, [getActiveTarget, presentMusicalPrompt])
+
   const syncSparkGuideStatus = useCallback((status: PitchforksSparkGuideStatus) => {
     if (sparkGuideStatusRef.current === status) return
     sparkGuideStatusRef.current = status
@@ -3629,6 +5522,13 @@ export default function PitchforksIII() {
     const suppressed = cuePlaying || matchingSuppressedNow()
     const usable = !!source?.isActive && source.confidence >= CONFIDENCE_FLOOR && source.frequency > 0
     const inWindow = usable && Math.abs(exactCents(source.frequency, noteToFreq(target.note))) <= MATCH_TOLERANCE_CENTS
+    const unhintedUnaidedReturn = normalBellRouteAvailable() &&
+      inputModeRef.current === 'voice' &&
+      target.villager.totalTines === 1 &&
+      target.villager.supportedLesson?.support === 'UNAIDED_RETURN' &&
+      target.villager.supportedLesson.contextNote !== target.note &&
+      target.villager.supportedLesson.targetNote === target.note &&
+      !hintedTargetKeysRef.current.has(target.key)
     const eligible = phaseRef.current === 'playing' &&
       inputModeRef.current === 'voice' &&
       activeCueContextRef.current.support === 'guided' &&
@@ -3637,6 +5537,7 @@ export default function PitchforksIII() {
       cueVolumeRef.current > 0 &&
       pianoSamplesReadyRef.current &&
       !ceremonyRef.current.active &&
+      !unhintedUnaidedReturn &&
       (typeof document === 'undefined' || document.visibilityState === 'visible')
     const sample = suppressed
       ? 'suppressed' as const
@@ -3659,15 +5560,12 @@ export default function PitchforksIII() {
       sparkGuideRef.current = decision.state
       syncSparkGuideStatus(decision.state.status)
       if (before.status === 'pulse' && decision.state.status !== 'pulse') {
-        activePromptKeyRef.current = target.key
-        promptStartedAtRef.current = now
-        setPromptText(target.villager.burned === 0 ? `Sing: ${target.note}` : `Now: ${target.note}`)
-        if (
-          target.villager.id === runtimeRef.current.firstVillagerId &&
-          firstMinuteCoachRef.current.beat !== 'complete'
-        ) {
-          setFirstMinuteCoachSnapshot('sing', target.note)
-        }
+        presentMusicalPrompt({
+          key: target.key,
+          note: target.note,
+          burned: target.villager.burned,
+          firstMinute: target.villager.id === runtimeRef.current.firstVillagerId,
+        })
       }
       for (const transition of decision.transitions) {
         recordSparkGuideEvent(transition.kind, transition.reason)
@@ -3687,6 +5585,12 @@ export default function PitchforksIII() {
       activeCueContextRef.current.noteCount === 1 &&
       audioCueRef.current &&
       cueVolumeRef.current > 0 &&
+      !(normalBellRouteAvailable() &&
+        liveTarget.villager.totalTines === 1 &&
+        liveTarget.villager.supportedLesson?.support === 'UNAIDED_RETURN' &&
+        liveTarget.villager.supportedLesson.contextNote !== liveTarget.note &&
+        liveTarget.villager.supportedLesson.targetNote === liveTarget.note &&
+        !hintedTargetKeysRef.current.has(liveTarget.key)) &&
       !cuePlayingNow() &&
       !matchingSuppressedNow()
     if (!stillEligible) {
@@ -3720,7 +5624,7 @@ export default function PitchforksIII() {
     if (decision.state.autoPulseCount >= PITCHFORKS_SPARK_MAX_AUTO_PULSES) {
       recordSparkGuideEvent('capped', 'automatic-limit-after-pulse')
     }
-  }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText, syncSparkGuideStatus])
+  }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, normalBellRouteAvailable, presentMusicalPrompt, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText, syncSparkGuideStatus])
 
   const resetRangeMatch = useCallback((candidate: string | null = null) => {
     rangeHeldMsRef.current = 0
@@ -3821,6 +5725,14 @@ export default function PitchforksIII() {
     return paused
   }, [getActiveTarget, matchingSuppressedNow])
 
+  // Attack timers keep the first target's grace period, but environmental
+  // clocks must still let a demo torch receive its truthful extended hold.
+  // Cue/suppression, ceremony, and an unavailable live mic remain hard pauses.
+  const environmentalClockPausedNow = useCallback((ignoreMatchingSuppression = false) => {
+    const micUnavailable = inputModeRef.current === 'voice' && !demoRef.current && (!isListeningRef.current || !!micErrorRef.current)
+    return ceremonyRef.current.active || (!ignoreMatchingSuppression && matchingSuppressedNow()) || micUnavailable
+  }, [matchingSuppressedNow])
+
   const setCeremonySnapshot = useCallback((next: NewNoteCeremonyState) => {
     ceremonyRef.current = next
     setCeremony(next)
@@ -3866,34 +5778,43 @@ export default function PitchforksIII() {
     setNoteMastered(null)
   }, [clearNoteMasteredTimer])
 
-  const clearWaveReceiptTimer = useCallback(() => {
-    if (waveReceiptTimerRef.current) {
-      clearTimeout(waveReceiptTimerRef.current)
-      waveReceiptTimerRef.current = null
-    }
-  }, [])
-
   const setWaveReceiptSnapshot = useCallback((next: WaveReceiptState) => {
     waveReceiptRef.current = next
     setWaveReceipt(next)
   }, [])
 
   const clearWaveReceipt = useCallback(() => {
-    clearWaveReceiptTimer()
-    waveReceiptStartedAtRef.current = 0
+    const rt = runtimeRef.current
+    rt.nextWavePending = false
+    rt.nextWaveNumber = null
+    rt.nextWaveAtMs = null
+    rt.nextWaveRunGeneration = null
+    victoryCancelledReceiptIdRef.current = null
     setWaveReceiptSnapshot(EMPTY_WAVE_RECEIPT)
-  }, [clearWaveReceiptTimer, setWaveReceiptSnapshot])
+  }, [setWaveReceiptSnapshot])
+
+  const clearNextWaveTimer = useCallback(() => {
+    if (!nextWaveTimerRef.current) return
+    clearTimeout(nextWaveTimerRef.current)
+    nextWaveTimerRef.current = null
+  }, [])
+
+  const resetLevelProgress = useCallback((level: number) => {
+    const next = createPitchforksLevelProgress(level)
+    levelAdmissionOfferedRef.current = false
+    levelProgressRef.current = next
+    setLevelProgress(next)
+  }, [])
 
   const showWaveReceipt = useCallback((snapshot: WaveReceiptState) => {
-    clearWaveReceiptTimer()
-    waveReceiptStartedAtRef.current = performance.now()
     setWaveReceiptSnapshot(snapshot)
-    waveReceiptTimerRef.current = setTimeout(() => {
-      clearWaveReceipt()
-    }, WAVE_RECEIPT_MS)
-  }, [clearWaveReceipt, clearWaveReceiptTimer, setWaveReceiptSnapshot])
+  }, [setWaveReceiptSnapshot])
 
-  const snapshotWaveReceipt = useCallback((): WaveReceiptState => {
+  const snapshotWaveReceipt = useCallback((
+    levelResult: PitchforksLevelResult,
+    receiptStartedAtMs: number,
+    claim: PitchforksVictoryReceiptClaim | null,
+  ): WaveReceiptState => {
     const mastered = Object.entries(masteryProgressRef.current)
       .filter(([, progress]) => progress.masteredAt !== null && progress.masteredAt >= waveStartedAtRef.current)
       .map(([note]) => note)
@@ -3901,9 +5822,12 @@ export default function PitchforksIII() {
     return {
       visible: true,
       timer: 0,
+      receiptStartedAtMs,
       heard: [...waveNotesHeardRef.current],
       sung: [...waveNotesSungRef.current],
       mastered,
+      levelResult,
+      claim,
     }
   }, [])
 
@@ -4028,9 +5952,11 @@ export default function PitchforksIII() {
     clearNewNoteCeremony()
   }, [clearNewNoteCeremony])
 
-  const maybeUnlockNextNote = useCallback((consecutive: number) => {
+  const maybeUnlockNextNote = useCallback(() => {
     const bypassEvidence = demoRef.current || fsrsDebugRef.current
-    if (!admissionAllowedForWave(runtimeRef.current.wave, demoRef.current, fsrsDebugRef.current)) return
+    // Showcase autoplay has no human hand to complete the exact-note ceremony;
+    // keep the isolated demo running instead of parking it behind a dialog.
+    if (demoRef.current) return
     const currentPool = unlockedNotesRef.current
     if (
       inputModeRef.current === 'voice' &&
@@ -4039,8 +5965,10 @@ export default function PitchforksIII() {
     ) return
     const currentPoolSize = currentPool.length
     const presentationOrder = presentationOrderRef.current
-    const threshold = UNLOCK_THRESHOLDS[currentPoolSize]
-    if (threshold && consecutive >= threshold && currentPoolSize < presentationOrder.length) {
+    if (
+      pitchforksNewNoteAccuracyEligible(levelProgressRef.current, inputModeRef.current) &&
+      currentPoolSize < presentationOrder.length
+    ) {
       const nextNote = presentationOrder[currentPoolSize]
       if (ceremonyRef.current.active || deferredAdmissionNotesRef.current.has(nextNote)) return
       requestNewNoteAdmission(nextNote)
@@ -4107,6 +6035,49 @@ export default function PitchforksIII() {
     return 2000
   }, [])
 
+  const normalBellRouteAvailable = useCallback(() => (
+    !demoRef.current &&
+    !fsrsDebugRef.current &&
+    !bossSimulatingRef.current &&
+    selectedWorldRef.current === 'village-gate' &&
+    presentationJourneyRef.current?.dungeonClear !== undefined
+  ), [])
+
+  const acceptNormalBellCombatResponse = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
+    if (!normalBellRouteAvailable()) return
+    const current = bellPowerStateRef.current
+    const expectedRunId = `bell-power:${runGenerationRef.current}`
+    if (!current || current.runId !== expectedRunId || !current.admittedNotes.includes(target.note)) return
+    const liveTarget = getActiveTarget()
+    if (!liveTarget || liveTarget.villager !== target.villager || liveTarget.key !== target.key || liveTarget.note !== target.note) return
+
+    // This is the authoritative normal combat seam. Build one immutable event
+    // and hand it to each independent ecology ledger; neither ledger borrows
+    // the other's charge or optional provenance as a stale-run fence.
+    const event = Object.freeze({
+      runId: expectedRunId,
+      eventId: `combat:${expectedRunId}:${target.key}`,
+      note: target.note,
+      lane: 'voice' as const,
+      source: 'combat' as const,
+      correct: true as const,
+      demo: false,
+      simulated: false,
+      stale: false,
+      inputMode: 'voice',
+    })
+    const bellDecision = acceptPitchforksBellPowerCombatResponse(current, event)
+    if (bellDecision.state !== current) commitBellPowerState(bellDecision.state)
+
+    const rain = runtimeRef.current.rain
+    const rainDecision = acceptPitchforksRainCombatResponse(rain, event)
+    const rainEarned = rainDecision.charged
+    if (rainEarned || rainDecision.state !== rain) {
+      runtimeRef.current.rain = rainDecision.state
+      syncRainSnapshot(rainDecision.state)
+    }
+  }, [commitBellPowerState, getActiveTarget, normalBellRouteAvailable, syncRainSnapshot])
+
   const reviewTargetNote = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
     correct: boolean,
@@ -4115,6 +6086,10 @@ export default function PitchforksIII() {
     if (!target.note) return false
     if (matchingSuppressedNow()) return false
     if (lane === 'voice' && !demoRef.current && !isListeningRef.current) return false
+    // Resolution is one-shot for both FSRS and level accuracy. This also
+    // protects against an echo, duplicate callback, or a delayed button tap
+    // trying to rewrite the same exact-octave encounter+tine.
+    if (Object.prototype.hasOwnProperty.call(levelProgressRef.current.targetOutcomes, target.key)) return false
 
     if (!correct) {
       if (failureGradedKeysRef.current.has(target.key)) return false
@@ -4122,6 +6097,76 @@ export default function PitchforksIII() {
     }
 
     const latencyMs = latencyForTarget(target)
+    const support = cueSupportByTargetRef.current.get(target.key) ?? 'guided'
+    const hinted = hintedTargetKeysRef.current.has(target.key)
+    const supportedVillageLesson = normalBellRouteAvailable() &&
+      lane === 'voice' &&
+      target.villager.totalTines === 1 &&
+      target.villager.supportedLesson?.targetNote === target.note
+      ? target.villager.supportedLesson
+      : undefined
+    const levelCredit: PitchforksLevelCredit = lane === 'buttons'
+      ? 'ear'
+      : supportedVillageLesson || demoRef.current || support === 'guided'
+        ? 'guided-practice'
+        : hinted
+          ? 'hinted'
+          : 'recall'
+    const nextLevelProgress = recordPitchforksLevelOutcome(levelProgressRef.current, {
+      targetKey: target.key,
+      correct,
+      lane,
+      credit: levelCredit,
+      sampleState: 'valid',
+    })
+    if (nextLevelProgress === levelProgressRef.current) return false
+    levelProgressRef.current = nextLevelProgress
+    setLevelProgress(nextLevelProgress)
+
+    if (supportedVillageLesson) {
+      cueSupportByTargetRef.current.delete(target.key)
+      hintedTargetKeysRef.current.delete(target.key)
+      if (correct) {
+        const journey = presentationJourneyRef.current
+        const range = rangeProfileRef.current
+        if (journey && range) {
+          const currentVillagePractice = journey.villagePractice ?? []
+          const practiceSessionId = `${getMasterySessionId()}:run:${runGenerationRef.current}`
+          const nextVillagePractice = recordVillagePractice(currentVillagePractice, {
+            eventId: `village-practice:${practiceSessionId}:${target.key}`,
+            journeyId: journey.startedAt,
+            sessionId: practiceSessionId,
+            encounterIndex: target.villager.id,
+            introducedEncounterIndex: target.villager.id,
+            timestampMs: Date.now(),
+            objective: supportedVillageLesson.objective,
+            contextNote: supportedVillageLesson.contextNote,
+            targetNote: supportedVillageLesson.targetNote,
+            support: 'SUPPORTED',
+            correct,
+            normalVoice: normalBellRouteAvailable() && lane === 'voice',
+            demo: demoRef.current,
+            simulated: bossSimulatingRef.current,
+            cueFree: false,
+            candidateEligibility: {
+              admittedNotes: unlockedNotesRef.current,
+              introducedNotes: [...journey.guidedNotes, ...journey.unlockedNotes],
+              comfortableRange: range,
+            },
+          })
+          if (nextVillagePractice !== currentVillagePractice) {
+            const nextJourney = { ...journey, villagePractice: nextVillagePractice }
+            presentationJourneyRef.current = nextJourney
+            setPresentationJourney(nextJourney)
+            savePresentationJourney(nextJourney)
+          }
+        }
+        waveNotesSungRef.current.add(target.note)
+        acceptNormalBellCombatResponse(target)
+      }
+      return true
+    }
+
     if (lane === 'buttons') {
       gradeEar(earFsrsRef.current, target.note, correct, latencyMs)
       saveFsrs('buttons')
@@ -4131,7 +6176,6 @@ export default function PitchforksIII() {
 
     gradeVoice(fsrsRef.current, target.note, correct, latencyMs)
     saveFsrs('voice')
-    const support = cueSupportByTargetRef.current.get(target.key) ?? 'guided'
     const outcome = !correct
       ? 'miss'
       : support === 'guided'
@@ -4152,18 +6196,19 @@ export default function PitchforksIII() {
     if (correct) {
       completeJourneyGuidanceForNote(target.note)
       recordMasteryProgressForReview(target.note)
+      if (lane === 'voice' && !demoRef.current && !fsrsDebugRef.current && !bossSimulatingRef.current) {
+        reconcileCampaignProgress()
+      }
     }
 
     if (correct) {
       waveNotesSungRef.current.add(target.note)
-      const nextConsecutive = consecutiveCorrectRef.current + 1
-      consecutiveCorrectRef.current = nextConsecutive
-      maybeUnlockNextNote(nextConsecutive)
-    } else {
-      consecutiveCorrectRef.current = 0
+      // The same accepted normal voice response reaches Rain independently;
+      // it never borrows Bell's charge or receipt.
+      if (lane === 'voice') acceptNormalBellCombatResponse(target) // Rain connector
     }
     return true
-  }, [completeJourneyGuidanceForNote, latencyForTarget, matchingSuppressedNow, maybeUnlockNextNote, recordMasteryProgressForReview, saveCueSupport, saveFsrs])
+  }, [acceptNormalBellCombatResponse, completeJourneyGuidanceForNote, getMasterySessionId, latencyForTarget, matchingSuppressedNow, normalBellRouteAvailable, recordMasteryProgressForReview, reconcileCampaignProgress, saveCueSupport, saveFsrs, savePresentationJourney])
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
@@ -4171,6 +6216,37 @@ export default function PitchforksIII() {
     clearCueTimers()
     const liveNotes = villager.notes.slice(villager.burned)
     if (!liveNotes.length) return
+    const supportedLesson = normalBellRouteAvailable() &&
+      inputModeRef.current === 'voice' &&
+      villager.totalTines === 1 &&
+      liveNotes.length === 1 &&
+      !!villager.supportedLesson?.contextNote &&
+      villager.supportedLesson.contextNote !== liveNotes[0] &&
+      villager.supportedLesson.targetNote === liveNotes[0]
+      ? villager.supportedLesson
+      : undefined
+    const targetKey = `${villager.id}:${villager.burned}`
+    if (mode === 'replay' && supportedLesson?.support === 'UNAIDED_RETURN') {
+      // Replay is the explicit hint path. Mark the exact target before any
+      // answer tone is scheduled, even when the current cue profile is Guided.
+      hintedTargetKeysRef.current.add(targetKey)
+    }
+    const unhintedUnaidedReturnCue = supportedLesson?.support === 'UNAIDED_RETURN' &&
+      mode === 'cue' &&
+      !hintedTargetKeysRef.current.has(targetKey)
+    const playbackNotes = supportedLesson
+      ? [supportedLesson.contextNote, supportedLesson.targetNote]
+      : liveNotes
+    if (unhintedUnaidedReturnCue) playbackNotes.pop()
+    const supportedInterval = supportedLesson?.objective.replace('-', ' ')
+    const supportedDirection = supportedLesson
+      ? noteToFreq(supportedLesson.targetNote) > noteToFreq(supportedLesson.contextNote)
+        ? 'above'
+        : 'below'
+      : undefined
+    const supportedCueText = supportedLesson
+      ? `Listen ${supportedLesson.contextNote}, then sing ${supportedLesson.targetNote} comfortably — ${supportedInterval} ${supportedDirection}.`
+      : undefined
     const buttonLane = inputModeRef.current === 'buttons'
     const activeTarget = getActiveTarget()
     const buttonTrial = buttonTrialRef.current
@@ -4191,7 +6267,14 @@ export default function PitchforksIII() {
       return
     }
     if (emitsTone) {
-      for (const note of liveNotes) waveNotesHeardRef.current.add(note)
+      if (unhintedUnaidedReturnCue) {
+        // The automatic return only played its context. Do not claim the
+        // target was heard; the later queue consumer needs this provenance.
+        for (const note of playbackNotes) waveNotesHeardRef.current.add(note)
+      } else {
+        // Preserve the existing supported/ordinary hearing semantics.
+        for (const note of liveNotes) waveNotesHeardRef.current.add(note)
+      }
     }
     if (mode === 'replay' && activeCueContextRef.current.support === 'recall') {
       liveNotes.forEach((_, offset) => {
@@ -4208,7 +6291,7 @@ export default function PitchforksIII() {
     }
 
     const now = performance.now()
-    const toneWindowMs = (liveNotes.length - 1) * TONE_SPACING_MS + TONE_MS
+    const toneWindowMs = (playbackNotes.length - 1) * TONE_SPACING_MS + TONE_MS
     const suppressMs = toneWindowMs + ECHO_TAIL_MS
     cuePlayingUntilRef.current = now + toneWindowMs
     matchingSuppressedUntilRef.current = now + suppressMs
@@ -4223,18 +6306,28 @@ export default function PitchforksIII() {
 
     const firstIndex = villager.burned
     if (buttonLane) setPromptText('Listen...')
-    else setPromptText(`${mode === 'replay' ? 'Replay' : 'Listen'}: ${liveNotes[0]}`)
+    else setPromptText(supportedCueText
+      ? `${mode === 'replay' ? 'Replay: ' : ''}${supportedCueText}`
+      : `${mode === 'replay' ? 'Replay' : 'Listen'}: ${liveNotes[0]}`)
     if (buttonLane) setButtonFeedback({ kind: 'listen', text: 'LISTEN, THEN CHOOSE THE NOTE' })
     activePromptKeyRef.current = `${villager.id}:${firstIndex}`
     promptStartedAtRef.current = now
 
-    liveNotes.forEach((note, i) => {
-      const index = villager.burned + i
+    playbackNotes.forEach((note, toneIndex) => {
+      // A supported context tone teaches the relationship but is not a new
+      // villager tine. Both tones therefore point at the actual target tine.
+      const tineIndex = supportedLesson ? villager.burned : villager.burned + toneIndex
       const id = setTimeout(() => {
-        const promptOwnerKey = `${villager.id}:${index}`
+        const promptOwnerKey = `${villager.id}:${tineIndex}`
         if (phaseRef.current === 'playing' && getActiveTarget()?.key === promptOwnerKey) {
-          setPromptText(buttonLane ? 'Listen…' : `${mode === 'replay' ? 'Replay' : 'Listen'}: ${note}`)
-          activePromptKeyRef.current = `${villager.id}:${index}`
+          setPromptText(buttonLane
+            ? 'Listen…'
+            : supportedLesson && toneIndex === 0
+              ? `${mode === 'replay' ? 'Replay' : 'Listen'}: starting note ${note}`
+              : supportedCueText
+                ? `${mode === 'replay' ? 'Replay: ' : ''}${supportedCueText}`
+                : `${mode === 'replay' ? 'Replay' : 'Listen'}: ${note}`)
+          activePromptKeyRef.current = promptOwnerKey
           promptStartedAtRef.current = performance.now()
         }
         setPianoVolume(cueVolumeRef.current)
@@ -4244,12 +6337,17 @@ export default function PitchforksIII() {
           matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
           markToneEmitted(TONE_SUPPRESS_MS)
         }
-      }, i * TONE_SPACING_MS)
+      }, toneIndex * TONE_SPACING_MS)
       cueTimeoutsRef.current.push(id)
     })
 
     const finishCue = () => {
       if (matchingSuppressedNow()) {
+        const retryId = setTimeout(finishCue, 25)
+        cueTimeoutsRef.current.push(retryId)
+        return
+      }
+      if (cuePlayingNow()) {
         const retryId = setTimeout(finishCue, 25)
         cueTimeoutsRef.current.push(retryId)
         return
@@ -4261,24 +6359,25 @@ export default function PitchforksIII() {
       ) {
         const note = villager.notes[villager.burned]
         if (note) {
-          activePromptKeyRef.current = `${villager.id}:${villager.burned}`
-          promptStartedAtRef.current = performance.now()
-          setPromptText(buttonLane ? 'Which note did you hear?' : villager.burned === 0 ? `Sing: ${note}` : `Now: ${note}`)
-          if (buttonLane) setButtonFeedback({ kind: 'question', text: 'WHICH NOTE DID YOU HEAR?' })
-          if (
-            villager.id === runtimeRef.current.firstVillagerId &&
-            firstMinuteCoachRef.current.beat !== 'strike' &&
-            firstMinuteCoachRef.current.beat !== 'victory' &&
-            firstMinuteCoachRef.current.beat !== 'complete'
-          ) {
-            setFirstMinuteCoachSnapshot('sing', note)
+          if (buttonLane) {
+            activePromptKeyRef.current = `${villager.id}:${villager.burned}`
+            promptStartedAtRef.current = performance.now()
+            setPromptText('Which note did you hear?')
+            setButtonFeedback({ kind: 'question', text: 'WHICH NOTE DID YOU HEAR?' })
+          } else {
+            presentMusicalPrompt({
+              key: `${villager.id}:${villager.burned}`,
+              note,
+              burned: villager.burned,
+              firstMinute: villager.id === runtimeRef.current.firstVillagerId,
+            })
           }
         }
       }
     }
     const doneId = setTimeout(finishCue, suppressMs)
     cueTimeoutsRef.current.push(doneId)
-  }, [clearCueTimers, getActiveTarget, matchingSuppressedNow, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText, strikePresentationPending])
+  }, [clearCueTimers, cuePlayingNow, getActiveTarget, matchingSuppressedNow, normalBellRouteAvailable, presentMusicalPrompt, recordSparkGuideEvent, setPromptText, strikePresentationPending])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -4297,9 +6396,59 @@ export default function PitchforksIII() {
           )
         : 0
       const newestBolt = rt.bolts[rt.bolts.length - 1]
+      const rainEffects = deriveRainEffects(rt.rain)
+      const receipt = waveReceiptRef.current
+      const logicalNowMs = rt.animClock * 1000
+      const thunderheadClockMs = thunderheadClockMsRef.current
+      const bellProjection = projectPitchforksBellWave(
+        bellWaveStateRef.current,
+        bellWaveClockMsRef.current,
+      )
+      const thunderheadProjection = getPitchforksThunderheadDebugProjection(thunderheadStateRef.current)
+      const thunderheadPhase = thunderheadProjection.phase
+      const thunderheadTravelProgress = thunderheadPhase === 'ceiling_travel' && thunderheadTravelStartedAtRef.current > 0
+        ? clamp((thunderheadClockMs - thunderheadTravelStartedAtRef.current) / THUNDERHEAD_TRAVEL_MS, 0, 1)
+        : thunderheadPhase === 'target_match' || thunderheadPhase === 'strike' || thunderheadPhase === 'consumed'
+          ? 1
+          : 0
+      const thunderheadTravelStart = thunderheadTravelStartRef.current ?? { x: FRANK_X + assetsRef.current.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET, y: FRANK_CLOUD_Y }
+      const thunderheadTravelTarget = thunderheadTravelTargetRef.current ?? thunderheadTravelStart
+      const thunderheadPosition = getPitchforksThunderheadPathPosition(thunderheadTravelStart, thunderheadTravelTarget.x, thunderheadTravelProgress) ?? thunderheadTravelStart
+      const thunderheadCloudX = thunderheadPosition.x
+      const thunderheadCloudY = thunderheadPosition.y
+      const thunderheadDebugProjection: ThunderheadDebugProjection = Object.freeze({
+        ...thunderheadProjection,
+        travelProgress: thunderheadTravelProgress,
+        cloudX: thunderheadCloudX,
+        cloudY: thunderheadCloudY,
+        targetX: thunderheadTravelTargetRef.current?.x ?? null,
+        targetY: thunderheadTravelTargetRef.current?.y ?? null,
+        runeStatus: THUNDERHEAD_RUNE_STATUS,
+      })
+      const receiptAgeMs = receipt.visible
+        ? pitchforksWaveReceiptAgeMs({
+            logicalNowMs,
+            receiptStartedAtMs: receipt.receiptStartedAtMs,
+          })
+        : 0
+      const victoryClaim = receipt.visible && rt.nextWavePending ? receipt.claim : null
+      const victoryPose = selectPitchforksVictoryPoseForClaim(
+        victoryClaim,
+        victoryClaim ? pitchforksWaveReceiptAgeMs({ logicalNowMs, receiptStartedAtMs: victoryClaim.claimedAtMs }) : 0,
+        victoryClaim ? victoryCancelledReceiptIdRef.current === victoryClaim.receiptId : false,
+      )
 
       return Object.freeze({
+        bossId: bossIdentityRef.current,
+        bossRecital: bossControllerRef.current?.state() ?? null,
+        bossReviewReceipts: bossReceiptsRef.current.map(receipt => ({
+          ...receipt,
+          before: receipt.before ? { ...receipt.before } : null,
+          after: { ...receipt.after },
+          readback: receipt.readback ? { ...receipt.readback } : null,
+        })),
         demoStep: demoStepRef.current,
+        closeSmashProof: closeSmashProofRef.current,
         inputMode: inputModeRef.current,
         settings: normalizePitchforksSettings({
           noteNames: noteNamesRef.current,
@@ -4316,6 +6465,13 @@ export default function PitchforksIII() {
         burnedTines: burnedTinesRef.current,
         ashCount: ashCountRef.current,
         wave: rt.wave,
+        levelProgress: {
+          ...levelProgressRef.current,
+          targetOutcomes: Object.fromEntries(
+            Object.entries(levelProgressRef.current.targetOutcomes).map(([key, outcome]) => [key, { ...outcome }]),
+          ),
+        },
+        levelAccuracyPercent: pitchforksLevelAccuracyPercent(levelProgressRef.current, inputModeRef.current),
         waveBannerVisible: rt.bannerTimer > 0,
         fullSequenceComplete: fullSequenceCompleteRef.current,
         barVisible: barVisibleRef.current,
@@ -4376,29 +6532,94 @@ export default function PitchforksIII() {
         boltCount: rt.bolts.length,
         lightningBendDeg: lightningBendDeg(newestBolt),
         lightningPhaseTrace: lightningPhaseTraceRef.current.map(entry => ({ ...entry })),
+        closeSmashPhase: closeSmashStateRef.current.phase,
+        closeSmashReceipt: closeSmashStateRef.current.receipt
+          ? { ...closeSmashStateRef.current.receipt }
+          : null,
+        closeSmashConsumer: closeSmashStateRef.current.consumer,
+        closeSmashContactPresented: closeSmashStateRef.current.contactPresented,
+        closeSmashFallbackRemainingMs: closeSmashStateRef.current.receipt
+          ? Math.max(0, closeSmashFallbackDueAtRef.current - rt.animClock * 1000)
+          : null,
+        closeSmashRequestQueued: closeSmashRequestRef.current !== null,
+        logicalNowMs,
+        waveReceiptVictoryPose: victoryPose,
+        waveReceiptVictoryAgeMs: victoryClaim ? receiptAgeMs : null,
+        waveReceiptVictoryNextWaveAtMs: rt.nextWavePending ? rt.nextWaveAtMs : null,
+        waveReceiptVictoryNextWaveRemainingMs: rt.nextWavePending && rt.nextWaveAtMs !== null
+          ? Math.max(0, rt.nextWaveAtMs - logicalNowMs)
+          : null,
+        villagers: rt.villagers.map(v => ({
+          id: v.id,
+          state: v.state,
+          burned: v.burned,
+          totalTines: v.totalTines,
+          notes: [...v.notes],
+          x: v.x,
+        })),
+        rainPhase: rt.rain.phase,
+        rainFill: rt.rain.fill,
+        rainCycleID: rt.rain.cycleID,
+        rainSlowFactor: rainEffects.slowFactor,
+        rainExtinguishes: rainEffects.extinguish,
+        rainTransitions: rt.rain.recentTransitions.map(transition => ({ ...transition })),
+        torchStates: Object.fromEntries(
+          rt.villagers.map(v => [v.id, {
+            ...v.torch,
+            recentTransitions: v.torch.recentTransitions.map(transition => ({ ...transition })),
+          }]),
+        ),
+        galvanic: buildGalvanicDebugProjection(
+          galvanicProofRef.current,
+          galvanicStateRef.current,
+          galvanicBanksRef.current,
+          galvanicArmRequestedRef.current,
+          galvanicAwaitingSilenceRef.current,
+          galvanicLastOutcomesRef.current,
+          galvanicLastReasonRef.current,
+        ),
+        thunderhead: thunderheadDebugProjection,
+        thunderheadArmed: thunderheadArmRequestedRef.current,
+        thunderheadReleaseQueued: thunderheadReleaseRequestedRef.current,
+        thunderheadLastTransitionReason: thunderheadLastTransitionReasonRef.current,
+        thunderheadRuneStatus: THUNDERHEAD_RUNE_STATUS,
+        thunderheadTravelProgress,
+        bellProof: bellProofRef.current,
+        bellPhase: bellWaveStateRef.current.phase,
+        bellRadius: bellProjection.radius,
+        bellContactCount: bellWaveStateRef.current.contactedStableIDs.length,
+        bellRingCount: bellRingCountRef.current,
+        bellChargeReceiptId: bellChargeReceiptRef.current?.receiptId ?? null,
+        bellReleaseQueued: bellReleaseRequestedRef.current,
       })
     }
-    // fsrsDebug-gated test hook: drives the REAL grade/unlock path (autoGrade →
-    // reviewNote → maybeUnlockNextNote) so the behavioral FLW receipts (unlock
-    // progression, one-review-per-resolution, failure resets streak) are
-    // machine-provable without the scripted single-villager demo. Inert in normal
-    // play — this whole effect only runs when demo/fsrsDebug is on.
+    // fsrsDebug-gated test hook: drives the same level-progress/admission path as
+    // live voice resolutions while keeping FSRS in the isolated debug store.
+    // Inert in normal play — this whole effect only runs when demo/fsrsDebug is on.
     const review = (note: string, correct: boolean) => {
       const mem = ensureNoteMemory(note)
       const grade = autoGrade(correct, correct ? 800 : 2000)
       fsrsRef.current[note] = reviewNote(mem, grade)
       saveFsrs()
       if (correct) recordMasteryProgressForReview(note)
-      if (correct) {
-        consecutiveCorrectRef.current += 1
-        maybeUnlockNextNote(consecutiveCorrectRef.current)
-      } else {
-        consecutiveCorrectRef.current = 0
+      const prior = levelProgressRef.current
+      const next = recordPitchforksLevelOutcome(prior, {
+        targetKey: `debug:${runtimeRef.current.wave}:${debugReviewSequenceRef.current++}:${note}`,
+        correct,
+        lane: 'voice',
+        credit: 'recall',
+        sampleState: 'valid',
+      })
+      if (next !== prior) {
+        levelProgressRef.current = next
+        setLevelProgress(next)
+        maybeUnlockNextNote()
       }
       return {
         note,
         grade,
-        consecutive: consecutiveCorrectRef.current,
+        level: next.level,
+        levelAccuracyPercent: pitchforksLevelAccuracyPercent(next, 'voice'),
         unlockedCount: unlockedNotesRef.current.length,
         unlockedNotes: [...unlockedNotesRef.current],
         phase: fsrsRef.current[note].phase,
@@ -4411,10 +6632,18 @@ export default function PitchforksIII() {
       fsrsRef.current = {}
       earFsrsRef.current = {}
       masteryProgressRef.current = {}
-      cueSupportProfileRef.current = { version: 1, notes: {} }
-      unlockedNotesRef.current = [...STARTING_NOTES]
-      setUnlockedNotes([...STARTING_NOTES])
-      consecutiveCorrectRef.current = 0
+    cueSupportProfileRef.current = { version: 1, notes: {} }
+    unlockedNotesRef.current = [...STARTING_NOTES]
+    setUnlockedNotes([...STARTING_NOTES])
+    resetThunderhead()
+    resetBellWave()
+    debugReviewSequenceRef.current = 0
+      rainActivationRequestedRef.current = false
+      rainUiSignatureRef.current = ''
+      setRainState(createRainState())
+      clearNextWaveTimer()
+      runGenerationRef.current += 1
+      resetLevelProgress(1)
       for (const n of unlockedNotesRef.current) {
         ensureNoteMemory(n)
         ensureEarNoteMemory(n)
@@ -4473,7 +6702,7 @@ export default function PitchforksIII() {
     return () => {
       if (window.__pf3 === hook) delete window.__pf3
     }
-  }, [activeFsrsStore, clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, earFsrsStorageKey, ensureEarNoteMemory, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, saveCueSupport, saveFsrs, saveMasteryProgress, showNoteMastered])
+  }, [activeFsrsStore, clearNextWaveTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, cuePlayingNow, demoMode, earFsrsStorageKey, ensureEarNoteMemory, ensureNoteMemory, fsrsDebugMode, fsrsStorageKey, getActiveTarget, matchingSuppressedNow, maybeUnlockNextNote, newNoteUnlocked, noteMastered, recordMasteryProgressForReview, resetBellWave, resetLevelProgress, resetThunderhead, saveCueSupport, saveFsrs, saveMasteryProgress, showNoteMastered])
 
   const pickVillagerNotes = useCallback((totalTines: TineCount, wave: number, encounterIndex: number) => {
     const pool = unlockedNotesRef.current.length > 0 ? unlockedNotesRef.current : [...STARTING_NOTES]
@@ -4532,12 +6761,37 @@ export default function PitchforksIII() {
     const totalTines = rt.plan.tineCounts[rt.spawned] ?? 2
     const lane = spawnIndex % 3
     const notes = pickVillagerNotes(totalTines, rt.wave, spawnIndex)
+    if (galvanicProofRef.current && rt.wave === 1 && spawnIndex < GALVANIC_PROOF_FIRST_NOTES.length) {
+      const firstNote = GALVANIC_PROOF_FIRST_NOTES[spawnIndex]
+      notes[0] = firstNote
+      ensureActiveNoteMemory(firstNote)
+    }
+    const targetNote = notes[0]
+    const encounterIndex = presentationVisitCountByTargetRef.current.get(targetNote) ?? 0
+    const range = rangeProfileRef.current
+    const journey = presentationJourneyRef.current
+    const supportedLesson = normalBellRouteAvailable() &&
+      inputModeRef.current === 'voice' &&
+      totalTines === 1 &&
+      !!range &&
+      !!journey &&
+      notes.length === 1
+      ? selectVillageLessonCandidate({
+          admittedNotes: unlockedNotesRef.current,
+          introducedNotes: [...journey.guidedNotes, ...journey.unlockedNotes],
+          comfortableRange: range,
+          targetNote,
+          encounterIndex,
+        })
+      : undefined
     const attackTimer = attackTimeForWave(rt.wave, spawnIndex)
     const spriteWidth = (assetsRef.current.villagerMeta[totalTines] ?? defaultVillagerMeta).frame_w * SPRITE_SCALE
     const v: Villager = {
       id: ++nextIdRef.current,
       totalTines,
-      x: demoRef.current ? W - 150 : villagerEntryX(W, spriteWidth),
+      x: galvanicProofRef.current && rt.wave === 1
+        ? GALVANIC_PROOF_X[spawnIndex] ?? W - 150
+        : demoRef.current ? W - 150 : villagerEntryX(W, spriteWidth),
       y: GROUND_Y - defaultVillagerMeta.frame_h * SPRITE_SCALE - lane * 6,
       speed: rt.plan.speed + lane * 1.8,
       notes,
@@ -4550,24 +6804,92 @@ export default function PitchforksIII() {
       walkFrame: 0,
       walkClock: 0,
       ashTimer: 0,
+      torch: (demoRef.current || normalBellRouteAvailable()) && !bellProofRef.current && spawnIndex % 2 === 0 ? createTorchState() : createInactiveTorchState(),
+      torchBearer: (demoRef.current || normalBellRouteAvailable()) && !bellProofRef.current && spawnIndex % 2 === 0,
+      ...(supportedLesson ? {
+        supportedLesson: {
+          objective: supportedLesson.objective,
+          contextNote: supportedLesson.contextNote,
+          targetNote: supportedLesson.targetNote,
+        },
+      } : {}),
+    }
+    // The regular demo path keeps its measured far-entry movement for rain
+    // and torch showcase coverage. Add one clearly labeled close-threat seed
+    // so the private Smash control can be exercised without waiting ~30 s.
+    if (bellProofRef.current && rt.wave === 1) {
+      // Bell proof actors stay ordinary walking villagers, but the
+      // environmental torch lane is intentionally absent so an exact Bell
+      // charge cannot be consumed by the unrelated douse action.
+      v.torch = createInactiveTorchState()
+      v.torchBearer = false
+    } else if (galvanicProofRef.current && rt.wave === 1) {
+      // The proof keeps every actor live and spaced so the release snapshot
+      // has three deterministic one-tine candidates.
+      v.torch = createInactiveTorchState()
+      v.torchBearer = false
+    } else if (demoRef.current && rt.wave === 1 && spawnIndex === 0) {
+      v.x = FRANK_REACH_X
+      v.torch = createInactiveTorchState()
+      v.torchBearer = false
+      demoStepRef.current = 'close-smash-threat-showcase'
+    } else if (demoRef.current && closeSmashProofRef.current && rt.wave === 1 && spawnIndex === 1) {
+      // Keep the three-tine negative-control bystander close enough to recoil
+      // visibly while remaining a separate active-target candidate.
+      v.x = FRANK_REACH_X + 96
+      v.torch = createInactiveTorchState()
+      v.torchBearer = false
     }
     rt.villagers.push(v)
+    if (supportedLesson) {
+      presentationVisitCountByTargetRef.current.set(
+        targetNote,
+        encounterIndex >= Number.MAX_SAFE_INTEGER ? 0 : encounterIndex + 1,
+      )
+    }
     if (rt.firstVillagerId === null) rt.firstVillagerId = v.id
     rt.spawned += 1
-  }, [pickVillagerNotes])
+  }, [ensureActiveNoteMemory, normalBellRouteAvailable, pickVillagerNotes])
 
   const startWave = useCallback((wave: number) => {
     const rt = runtimeRef.current
+    clearNextWaveTimer()
+    resetCloseSmash()
+    resetThunderhead()
+    resetBellWave()
+    resetNormalBellPowerForRun(normalBellRouteAvailable())
+    const rawPlan = fixedWaveDirector(wave, demoRef.current, closeSmashProofRef.current, galvanicProofRef.current)
+    const masteredAdmittedNotes = unlockedNotesRef.current.filter(note => (
+      inputModeRef.current === 'buttons'
+        ? earFsrsRef.current[note]?.phase === 'review'
+        : masteryProgressRef.current[note]?.masteredAt !== null && masteryProgressRef.current[note]?.masteredAt !== undefined
+    )).length
+    const maxTines: TineCount = masteredAdmittedNotes >= 3 ? 4 : masteredAdmittedNotes >= 2 ? 3 : 2
+    const plan = !demoRef.current && wave >= 6
+      ? { ...rawPlan, tineCounts: rawPlan.tineCounts.map(count => count > maxTines ? maxTines : count) }
+      : rawPlan
     waveNotesHeardRef.current = new Set()
     waveNotesSungRef.current = new Set()
     waveStartedAtRef.current = Date.now()
     clearWaveReceipt()
     rt.wave = wave
-    rt.plan = fixedWaveDirector(wave, demoRef.current)
+    resetGalvanic()
+    rt.plan = plan
     rt.spawned = 0
     rt.spawnClock = 0
     rt.bannerTimer = 1.15
     rt.nextWavePending = false
+    rt.nextWaveNumber = null
+    rt.nextWaveAtMs = null
+    rt.nextWaveRunGeneration = null
+    rt.rain = createRainState()
+    rainActivationRequestedRef.current = false
+    rainUiSignatureRef.current = ''
+    setRainState(rt.rain)
+    resetLevelProgress(wave)
+    cueSupportByTargetRef.current = new Map()
+    hintedTargetKeysRef.current = new Set()
+    failureGradedKeysRef.current = new Set()
     activeKeyRef.current = ''
     activeVillagerIdRef.current = null
     activePromptKeyRef.current = ''
@@ -4578,9 +6900,15 @@ export default function PitchforksIII() {
     setPromptText('')
     if (demoRef.current) demoStepRef.current = 'wave-banner'
     setHud({ wave, health: rt.health, score: rt.score, streak: rt.streak })
-  }, [clearWaveReceipt, setPromptText])
+  }, [clearNextWaveTimer, clearWaveReceipt, normalBellRouteAvailable, resetBellWave, resetCloseSmash, resetGalvanic, resetLevelProgress, resetNormalBellPowerForRun, resetThunderhead, setPromptText])
 
-  const addBolt = useCallback((villager: Villager, tineIndex: number, hue: number, note: string) => {
+  const addBolt = useCallback((
+    villager: Villager,
+    tineIndex: number,
+    hue: number,
+    note: string,
+    presentation: BoltPresentation = 'ordinary',
+  ) => {
     const a = assetsRef.current
     const frankMeta = a.frankMeta
     const vMeta = a.villagerMeta[villager.totalTines]
@@ -4593,8 +6921,19 @@ export default function PitchforksIII() {
     const rawToY = villager.y + tine.y * SPRITE_SCALE
     const { x: toX, y: toY } = rotateAroundPivot(rawToX, rawToY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
     runtimeRef.current.bolts.push({
-      fromX: pivotX + FRANK_CLOUD_X_OFFSET,
-      fromY: FRANK_CLOUD_Y,
+      // Ordinary strikes originate at the shipped cloud relay. Smash contact
+      // deliberately overrides only this presentation origin: the accepted
+      // joined-hand cell drives the same authoritative tine endpoint.
+      fromX: presentation === 'close-smash' || presentation === 'galvanic'
+        ? FRANK_X + CLOSE_SMASH_HANDS_X * FRANK_SPRITE_SCALE
+        : presentation === 'thunderhead'
+          ? thunderheadStrikeOriginRef.current?.x ?? pivotX + FRANK_CLOUD_X_OFFSET
+          : pivotX + FRANK_CLOUD_X_OFFSET,
+      fromY: presentation === 'close-smash' || presentation === 'galvanic'
+        ? FRANK_Y + CLOSE_SMASH_HANDS_Y * FRANK_SPRITE_SCALE
+        : presentation === 'thunderhead'
+          ? thunderheadStrikeOriginRef.current?.y ?? FRANK_CLOUD_Y
+        : FRANK_CLOUD_Y,
       pivotX,
       pivotY,
       toX,
@@ -4606,6 +6945,7 @@ export default function PitchforksIII() {
       note,
       villagerId: villager.id,
       tineIndex,
+      presentation,
     })
   }, [])
 
@@ -4627,6 +6967,7 @@ export default function PitchforksIII() {
   const strikeActiveTine = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
     gradeReview = true,
+    presentation: BoltPresentation = 'ordinary',
   ) => {
     const rt = runtimeRef.current
     const { villager, tineIndex } = target
@@ -4636,7 +6977,7 @@ export default function PitchforksIII() {
     lastStrikeNoteRef.current = strikeNote ?? null
     lastStrikeHueRef.current = strikeHue
     const wasMatchingSuppressed = matchingSuppressedNow()
-    addBolt(villager, tineIndex, strikeHue, strikeNote)
+    addBolt(villager, tineIndex, strikeHue, strikeNote, presentation)
     addBurst(villager, strikeHue, 'strike')
     if (villager.id === rt.firstVillagerId && villager.burned === 0) {
       clearFirstMinuteTimer()
@@ -4685,15 +7026,1024 @@ export default function PitchforksIII() {
       roarFiredCountRef.current += 1
       setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
     } else {
+      if (presentation === 'close-smash' || presentation === 'ordinary-fallback') {
+        // A close receipt resolves one tine without freezing the world. Give
+        // the surviving encounter its existing threat window again so an
+        // attack apex cannot immediately grade every remaining tine as miss.
+        villager.attackTimer = villager.attackTimerMax
+      }
       const nextNote = villager.notes[villager.burned]
       if (nextNote) {
-        activePromptKeyRef.current = `${villager.id}:${villager.burned}`
-        promptStartedAtRef.current = performance.now()
-        setPromptText(`Now: ${nextNote}`)
+        presentMusicalPrompt({
+          key: `${villager.id}:${villager.burned}`,
+          note: nextNote,
+          burned: villager.burned,
+          firstMinute: villager.id === runtimeRef.current.firstVillagerId,
+        })
       }
     }
     if (firstLockGraceRef.current) firstLockGraceRef.current = false
-  }, [addBolt, addBurst, clearFirstMinuteTimer, matchingSuppressedNow, reviewTargetNote, setFirstMinuteCoachSnapshot, setPromptText])
+  }, [addBolt, addBurst, clearFirstMinuteTimer, matchingSuppressedNow, presentMusicalPrompt, reviewTargetNote, setFirstMinuteCoachSnapshot, setPromptText])
+
+  const confirmThunderheadLock = useCallback((
+    target: NonNullable<ReturnType<typeof getActiveTarget>>,
+    logicalNowMs: number,
+  ) => {
+    if (
+      !demoRef.current ||
+      inputModeRef.current !== 'voice' ||
+      !thunderheadArmRequestedRef.current ||
+      (thunderheadStateRef.current.phase !== 'idle' && thunderheadStateRef.current.phase !== 'consumed')
+    ) return false
+
+    const identity = pitchIdentity(target.note)
+    if (!identity) {
+      thunderheadArmRequestedRef.current = false
+      thunderheadLastTransitionReasonRef.current = 'invalid-receipt'
+      return false
+    }
+    const sequence = ++thunderheadSequenceRef.current
+    const receipt: PitchforksThunderheadLockReceipt = Object.freeze({
+      bankId: `thunderhead-bank:${runGenerationRef.current}:${sequence}`,
+      lockId: `thunderhead-lock:${runGenerationRef.current}:${sequence}:${target.key}`,
+      targetKey: target.key,
+      pitchClass: identity.pitchClass,
+      // Canonical rune mapping is unresolved. Exact note text is the truthful
+      // temporary readable label; the debug/UI status keeps that gate open.
+      rune: target.note,
+      colorToken: NOTE_COLORS[target.note]?.name ?? 'unresolved-color-token',
+      note: target.note,
+      octave: identity.octave,
+    })
+    const confirmation = transitionThunderhead({
+      type: 'lock_confirmed',
+      logicalTimeMs: logicalNowMs,
+      receipt,
+    })
+    if (!confirmation.accepted) {
+      thunderheadArmRequestedRef.current = false
+      return false
+    }
+    const banked = transitionThunderhead({ type: 'banked', logicalTimeMs: logicalNowMs })
+    if (!banked.accepted) {
+      resetThunderhead()
+      thunderheadLastTransitionReasonRef.current = banked.reason
+      return false
+    }
+
+    thunderheadArmRequestedRef.current = false
+    thunderheadReleaseRequestedRef.current = false
+    thunderheadTravelStartedAtRef.current = 0
+    const frankMeta = assetsRef.current.frankMeta
+    const start = Object.freeze({
+      x: FRANK_X + frankMeta.rod_tip.x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET,
+      y: FRANK_CLOUD_Y,
+    })
+    const targetPoint = thunderheadTargetPoint(target, assetsRef.current)
+    thunderheadTravelStartRef.current = start
+    thunderheadTravelTargetRef.current = Object.freeze({ x: targetPoint.x, y: THUNDERHEAD_CEILING_Y })
+    thunderheadMatchDueAtRef.current = 0
+    thunderheadStrikeOriginRef.current = null
+    firstLockGraceRef.current = false
+    if (demoRef.current) demoStepRef.current = 'thunderhead-banked'
+    setPromptText(`THUNDERHEAD BANKED · ${target.note}`)
+    return true
+  }, [resetThunderhead, setPromptText, transitionThunderhead])
+
+  const confirmGalvanicLock = useCallback((
+    target: NonNullable<ReturnType<typeof getActiveTarget>>,
+  ) => {
+    if (
+      !galvanicProofRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      !galvanicArmRequestedRef.current ||
+      galvanicAwaitingSilenceRef.current ||
+      galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY ||
+      galvanicArmedTargetKeyRef.current !== target.key ||
+      matchingSuppressedNow()
+    ) return false
+
+    const identity = pitchIdentity(target.note)
+    const state = galvanicStateRef.current
+    const expectedBattleId = `galvanic:${runGenerationRef.current}:${runtimeRef.current.wave}`
+    if (!identity || state.battleId !== expectedBattleId || galvanicBanksRef.current.some(bank => bank.targetKey === target.key)) {
+      galvanicArmRequestedRef.current = false
+      galvanicArmedTargetKeyRef.current = ''
+      galvanicLastReasonRef.current = !identity ? 'invalid-target' : state.battleId !== expectedBattleId ? 'battle-mismatch' : 'duplicate-target'
+      publishGalvanicProjection()
+      return false
+    }
+
+    const sequence = ++galvanicSequenceRef.current
+    const receipt: PitchforksGalvanicLock = Object.freeze({
+      battleId: state.battleId,
+      lockId: `galvanic-lock:${runGenerationRef.current}:${runtimeRef.current.wave}:${sequence}:${target.key}:${target.note}:${identity.octave}`,
+      targetKey: target.key,
+      note: target.note,
+      octave: identity.octave,
+    })
+    galvanicBanksRef.current = [...galvanicBanksRef.current, receipt]
+    galvanicArmRequestedRef.current = false
+    galvanicArmedTargetKeyRef.current = ''
+    // A bank is not a strike. Clear the ordinary hold and require an observed
+    // inactive sample before the next target can be acquired or credited.
+    galvanicAwaitingSilenceRef.current = true
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    activeKeyRef.current = ''
+    galvanicLastReasonRef.current = 'banked'
+    if (demoRef.current) demoStepRef.current = 'galvanic-banked'
+    publishGalvanicProjection()
+    setPromptText(`GALVANIC BANKED · ${receipt.note} · ${galvanicBanksRef.current.length}/${GALVANIC_BANK_CAPACITY}`)
+    return true
+  }, [matchingSuppressedNow, publishGalvanicProjection, setPromptText])
+
+  const confirmBellCharge = useCallback((
+    target: NonNullable<ReturnType<typeof getActiveTarget>>,
+    logicalNowMs: number,
+  ) => {
+    if (
+      !bellProofRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      !bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      bellArmedTargetKeyRef.current !== target.key
+    ) return false
+
+    const frequency = noteToFreq(target.note)
+    if (!Number.isFinite(frequency) || frequency <= 0) {
+      bellArmRequestedRef.current = false
+      bellArmedTargetKeyRef.current = ''
+      bellLastReasonRef.current = 'invalid-note'
+      return false
+    }
+
+    const sequence = ++bellChargeSequenceRef.current
+    const receipt: BellChargeReceipt = Object.freeze({
+      receiptId: `bell-charge:${runGenerationRef.current}:${sequence}:${target.key}`,
+      targetKey: target.key,
+      note: target.note,
+      frequency,
+      chargedAtMs: logicalNowMs,
+    })
+    // Publish the exclusive receipt before any prompt/UI side effect. A
+    // second rAF or click can therefore observe READY and cannot re-fund it.
+    bellArmRequestedRef.current = false
+    bellArmedTargetKeyRef.current = ''
+    bellChargeReceiptRef.current = receipt
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    activeKeyRef.current = ''
+    bellLastReasonRef.current = 'charged'
+    if (demoRef.current) demoStepRef.current = 'bell-charged'
+    commitBellWaveState(bellWaveStateRef.current, logicalNowMs, true)
+    setPromptText(`BELL READY · ${receipt.note} · RING BELLS`)
+    return true
+  }, [commitBellWaveState, getActiveTarget, setPromptText])
+
+  const requestBellArm = useCallback(() => {
+    const state = bellWaveStateRef.current
+    const normalRoute = normalBellRouteAvailable()
+    if (normalRoute) {
+      const current = bellPowerStateRef.current
+      if (
+        !current ||
+        current.runId !== `bell-power:${runGenerationRef.current}` ||
+        current.phase !== 'ready' ||
+        phaseRef.current !== 'playing' ||
+        inputModeRef.current !== 'voice' ||
+        state.phase !== 'idle' && state.phase !== 'finished' ||
+        bellReleaseRequestedRef.current ||
+        closeSmashStateRef.current.phase !== 'idle' ||
+        thunderheadStateRef.current.phase !== 'idle' && thunderheadStateRef.current.phase !== 'consumed' ||
+        thunderheadArmRequestedRef.current ||
+        galvanicArmRequestedRef.current ||
+        galvanicReleaseRequestedRef.current ||
+        galvanicBanksRef.current.length > 0
+      ) return
+
+      const decision = startPitchforksBellPowerActivation(current)
+      if (!decision.accepted) return
+      commitBellPowerState(decision.state)
+      bellActivationNoteRef.current = null
+      bellActivationEventSequenceRef.current = 0
+      lockGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      activeKeyRef.current = `bell-activation:${current.runId}:0`
+      bellLastReasonRef.current = 'activation-started'
+      setBellWaveProjection(projectPitchforksBellWave(bellWaveStateRef.current, bellWaveClockMsRef.current))
+      setPromptText(`BELL ACTIVATION · SING ${current.taughtPair[0]} · STEP 1/2`)
+      return
+    }
+
+    const target = getActiveTarget()
+    const thunderheadBusy = thunderheadStateRef.current.phase !== 'idle' && thunderheadStateRef.current.phase !== 'consumed'
+    const galvanicBusy = galvanicArmRequestedRef.current || galvanicReleaseRequestedRef.current || galvanicBanksRef.current.length > 0
+    if (
+      !bellProofRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      !target ||
+      state.phase !== 'idle' && state.phase !== 'finished' ||
+      bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellReleaseRequestedRef.current ||
+      closeSmashStateRef.current.phase !== 'idle' ||
+      thunderheadBusy ||
+      thunderheadArmRequestedRef.current ||
+      galvanicBusy
+    ) return
+
+    bellArmRequestedRef.current = true
+    bellArmedTargetKeyRef.current = target.key
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    activeKeyRef.current = target.key
+    bellLastReasonRef.current = 'arming'
+    if (demoRef.current) demoStepRef.current = 'bell-arming'
+    setBellWaveProjection(projectPitchforksBellWave(bellWaveStateRef.current, bellWaveClockMsRef.current))
+    // Arming is only intent. Preserve the current cue/impact prompt, while
+    // processLock keeps its existing playback-suppression gate on earning.
+    if (!cuePlayingNow() && !matchingSuppressedNow() && !strikePresentationPending()) {
+      setPromptText(`BELL CHARGE · HOLD ${target.note}`)
+    }
+  }, [commitBellPowerState, cuePlayingNow, getActiveTarget, matchingSuppressedNow, normalBellRouteAvailable, setBellWaveProjection, setPromptText, strikePresentationPending])
+
+  const cancelBellActivation = useCallback(() => {
+    if (!normalBellRouteAvailable() || phaseRef.current !== 'playing' || inputModeRef.current !== 'voice') return
+    const current = bellPowerStateRef.current
+    if (!current || current.phase !== 'activating') return
+    const decision = cancelPitchforksBellPowerActivation(current)
+    if (!decision.accepted) return
+    commitBellPowerState(decision.state)
+    bellActivationNoteRef.current = null
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    activeKeyRef.current = ''
+    bellLastReasonRef.current = 'activation-cancelled'
+    setPromptText(`BELL READY · ${current.taughtPair.join(' → ')} · RETRY WHEN READY`)
+  }, [commitBellPowerState, normalBellRouteAvailable, setPromptText])
+
+  const requestBellRelease = useCallback(() => {
+    const normalRoute = normalBellRouteAvailable()
+    if (normalRoute) {
+      const current = bellPowerStateRef.current
+      const receipt = current?.pendingReceipt ?? null
+      if (
+        !current ||
+        current.runId !== `bell-power:${runGenerationRef.current}` ||
+        current.phase !== 'pending' ||
+        !receipt ||
+        phaseRef.current !== 'playing' ||
+        inputModeRef.current !== 'voice' ||
+        bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+        bellReleaseRequestedRef.current
+      ) return
+      bellReleaseRequestedRef.current = true
+      bellLastReasonRef.current = 'release-queued'
+      setBellWaveProjection(projectPitchforksBellWave(bellWaveStateRef.current, bellWaveClockMsRef.current))
+      setPromptText(`BELL RELEASE QUEUED · ${receipt.taughtPair.join(' → ')}`)
+      return
+    }
+
+    const receipt = bellChargeReceiptRef.current
+    if (
+      !bellProofRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      !receipt ||
+      bellReleaseRequestedRef.current
+    ) return
+    bellReleaseRequestedRef.current = true
+    bellLastReasonRef.current = 'release-queued'
+    if (demoRef.current) demoStepRef.current = 'bell-release-queued'
+    setBellWaveProjection(projectPitchforksBellWave(bellWaveStateRef.current, bellWaveClockMsRef.current))
+    setPromptText(`BELL RELEASE QUEUED · ${receipt.note}`)
+  }, [normalBellRouteAvailable, setBellWaveProjection, setPromptText])
+
+  const processNormalBellActivation = useCallback(() => {
+    const current = bellPowerStateRef.current
+    if (!normalBellRouteAvailable() || !current || current.phase !== 'activating') return false
+
+    const stepIndex = current.activationNotes.length
+    const expected = current.taughtPair[stepIndex]
+    if (!expected) return true
+    const stepKey = `${current.runId}:${stepIndex}`
+    if (activeKeyRef.current !== `bell-activation:${stepKey}`) {
+      activeKeyRef.current = `bell-activation:${stepKey}`
+      bellActivationNoteRef.current = null
+      lockGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+    }
+
+    const now = performance.now()
+    const observation = observePitchforksSongcraftGeneration(lockGenerationRef.current, pitchGenerationRef.current, now, TRAIL_MS)
+    lockGenerationRef.current = observation.state
+    const health = micSourceHealthRef.current
+    const suppressed = matchingSuppressedNow()
+    const pageVisible = typeof document === 'undefined' || document.visibilityState === 'visible'
+    const unreliable = pitchforksMicUnreliable({
+      // Activation is an active voice lane even when the moving combat roster
+      // has no current target. Keep the existing microphone health authority.
+      hasTarget: true,
+      isListening: isListeningRef.current,
+      micError: micErrorRef.current,
+      audioContextState: health.audioContextState,
+      trackReadyState: health.trackReadyState,
+      trackMuted: health.trackMuted,
+      matchingSuppressed: suppressed,
+      pageVisible,
+      generationObserved: observation.state.generationObserved,
+      generationAgeMs: observation.state.generationObserved
+        ? now - observation.state.generationObservedAt
+        : Number.POSITIVE_INFINITY,
+      staleAfterMs: TRAIL_MS,
+    })
+    if (unreliable || suppressed || observation.staleRecovery) {
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+    }
+    if (unreliable || suppressed) {
+      lockGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
+      return true
+    }
+    // A render frame is not a microphone sample and cannot confirm either
+    // activation note. The shared generation observer is the freshness fence.
+    if (!observation.generationAdvanced) return true
+
+    const source = pitchRef.current
+    if (!source?.isActive || source.confidence < CONFIDENCE_FLOOR || source.frequency <= 0) {
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      bellActivationNoteRef.current = null
+      return true
+    }
+
+    const actual = source.note
+    const actualFrequency = noteToFreq(actual)
+    if (!Number.isFinite(actualFrequency) || actualFrequency <= 0) {
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      bellActivationNoteRef.current = null
+      return true
+    }
+    const actualCents = Math.abs(exactCents(source.frequency, actualFrequency))
+    if (actualCents > MATCH_TOLERANCE_CENTS) {
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      bellActivationNoteRef.current = null
+      return true
+    }
+    if (bellActivationNoteRef.current !== actual) {
+      // A stable note identity starts a fresh exact hold. This prevents one
+      // detector sample from confirming both steps while still allowing the
+      // player to move directly from the first taught note to the second.
+      bellActivationNoteRef.current = actual
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+    }
+
+    const expectedFrequency = noteToFreq(expected)
+    const expectedExact = actual === expected && Number.isFinite(expectedFrequency)
+      && Math.abs(exactCents(source.frequency, expectedFrequency)) <= MATCH_TOLERANCE_CENTS
+    tintRef.current = colorForCents(expectedExact ? Math.abs(exactCents(source.frequency, expectedFrequency)) : actualCents)
+    // Only detector freshness advances the exact hold. A zero elapsed sample
+    // (including stale recovery) must not borrow RAF time into activation.
+    lockHeldMsRef.current = Math.min(HOLD_MS, lockHeldMsRef.current + Math.max(0, observation.freshElapsedMs))
+    lockProgressRef.current = Math.min(1, lockHeldMsRef.current / HOLD_MS)
+    if (lockProgressRef.current < 1) return true
+
+    const eventId = `activation:${current.runId}:${++bellActivationEventSequenceRef.current}:${stepIndex}:${actual}`
+    const decision = acceptPitchforksBellPowerActivationNote(current, {
+      runId: current.runId,
+      eventId,
+      note: actual,
+      confirmed: true,
+    })
+    bellLastReasonRef.current = decision.reason
+    if (decision.state !== current) commitBellPowerState(decision.state)
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    bellActivationNoteRef.current = null
+    activeKeyRef.current = ''
+
+    if (decision.accepted && decision.completed) {
+      setPromptText(`BELL PAIR READY · ${current.taughtPair.join(' → ')} · RING BELLS`)
+    } else if (decision.accepted) {
+      const next = current.taughtPair[stepIndex + 1] ?? current.taughtPair[1]
+      setPromptText(`BELL ACTIVATION · SING ${next} · STEP ${stepIndex + 2}/2`)
+    } else {
+      // Wrong, duplicate, stale, or unadmitted input never spends the earned
+      // charge; the pure controller has already returned the attempt to ready.
+      setPromptText(`BELL READY · ${current.taughtPair.join(' → ')} · RETRY WHEN READY`)
+    }
+    return true
+  }, [commitBellPowerState, matchingSuppressedNow, normalBellRouteAvailable, setPromptText])
+
+  const advanceBellWaveLifecycle = useCallback((logicalNowMs: number, paused: boolean) => {
+    const current = bellWaveStateRef.current
+    const normalRoute = normalBellRouteAvailable()
+    if ((!bellProofRef.current && !normalRoute) || phaseRef.current !== 'playing' || inputModeRef.current !== 'voice') {
+      if (
+        current.phase !== 'idle' ||
+        bellArmRequestedRef.current ||
+        bellChargeReceiptRef.current !== null ||
+        bellReleaseRequestedRef.current
+      ) resetBellWave(false)
+      return
+    }
+    // Hidden/environmental/ceremony pauses hold both the release request and
+    // the pure lifecycle clock. A Bell's own later ring audio is not included
+    // in this caller-supplied pause bit, so it cannot freeze its wave.
+    if (paused) return
+
+    if (bellReleaseRequestedRef.current && (current.phase === 'idle' || current.phase === 'finished')) {
+      const privateReceipt = bellChargeReceiptRef.current
+      const normalState = normalRoute ? bellPowerStateRef.current : null
+      const normalReceipt = normalState?.pendingReceipt ?? null
+      const receipt = privateReceipt ?? normalReceipt
+      const releaseRoster = liveBellWaveRoster(runtimeRef.current.villagers)
+      bellReleaseRequestedRef.current = false
+      if (!receipt || releaseRoster.length === 0) {
+        bellLastReasonRef.current = !receipt ? 'missing-charge' : 'no-live-roster'
+        return
+      }
+      const decision = releasePitchforksBellWave(current, {
+        receipt: { receiptId: receipt.receiptId },
+        releaseEligible: true,
+        logicalTimeMs: logicalNowMs,
+        bellOrigin: BELL_WAVE_ORIGIN,
+        waveSpeed: BELL_WAVE_SPEED,
+        waveDurationMs: BELL_WAVE_DURATION_MS,
+        walkingVillagers: releaseRoster,
+      })
+      if (!decision.accepted || !decision.intent) {
+        bellLastReasonRef.current = decision.reason
+        return
+      }
+      // The helper consumes the charge identity before any release effects.
+      // Keep the release roster as a caller-side revalidation fence so late
+      // spawns cannot appear behind an already-passed wave front.
+      if (privateReceipt) bellChargeReceiptRef.current = null
+      if (normalReceipt && normalState) {
+        // Only an accepted existing-wave release acknowledgement spends the
+        // normal Bell readiness. A rejected/empty release leaves the same
+        // pure-controller receipt available for the next button attempt.
+        const acknowledgement = acknowledgePitchforksBellPowerWaveRelease(normalState, {
+          runId: normalState.runId,
+          receiptId: normalReceipt.receiptId,
+          released: true,
+        })
+        if (acknowledgement.spent) {
+          commitBellPowerState(acknowledgement.state)
+        } else {
+          bellLastReasonRef.current = `ack-${acknowledgement.reason}`
+        }
+      }
+      bellReleaseStableIDsRef.current = new Set(releaseRoster.map(villager => villager.stableID))
+      bellLastReasonRef.current = decision.reason
+      commitBellWaveState(decision.state, logicalNowMs, true)
+      if (sfxVolumeRef.current > 0 && bellLastRingReceiptIdRef.current !== decision.intent.receiptId) {
+        bellLastRingReceiptIdRef.current = decision.intent.receiptId
+        bellRingCountRef.current += 1
+        const ringSuppressMs = PITCHFORKS_BELL_RING_MS + ECHO_TAIL_MS
+        const ringStartedAtMs = performance.now()
+        bellOwnRingSuppressionUntilRef.current = ringStartedAtMs + ringSuppressMs
+        matchingSuppressedUntilRef.current = Math.max(
+          matchingSuppressedUntilRef.current,
+          bellOwnRingSuppressionUntilRef.current,
+        )
+        markToneEmitted(ringSuppressMs)
+        localSfx('bell', sfxVolumeRef.current, 'note' in receipt ? receipt.note : receipt.taughtPair[0])
+      }
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      activeKeyRef.current = ''
+      if (demoRef.current) demoStepRef.current = 'bell-wave-active'
+      setPromptText(`BELLS RING · ${privateReceipt?.note ?? normalReceipt?.taughtPair.join(' → ') ?? 'BELL'}`)
+      return
+    }
+
+    if (current.phase !== 'active') return
+    const releaseIDs = bellReleaseStableIDsRef.current
+    const walkingRoster = liveBellWaveRoster(runtimeRef.current.villagers)
+      .filter(villager => releaseIDs.has(villager.stableID))
+    const decision: PitchforksBellWaveAdvanceDecision = advancePitchforksBellWave(current, {
+      logicalTimeMs: logicalNowMs,
+      walkingVillagers: walkingRoster,
+    })
+    if (!decision.accepted) {
+      bellLastReasonRef.current = decision.reason
+      return
+    }
+    commitBellWaveState(decision.state, logicalNowMs)
+    if (decision.state.phase === 'finished') {
+      bellLastReasonRef.current = 'finished'
+      if (demoRef.current) demoStepRef.current = 'bell-wave-finished'
+    }
+    for (const intent of decision.intents) {
+      const villager = runtimeRef.current.villagers.find(candidate => String(candidate.id) === intent.stableID)
+      // A contact is an intent, not authority: revalidate the live gameplay
+      // record before applying the bounded physical displacement.
+      if (!villager || villager.state !== 'walking' || villager.burned >= villager.totalTines) continue
+      // Bell Tower villagers approach Frank from the right; the wave pushes
+      // them back along the safe +X direction, never toward the player.
+      const direction: 1 = 1
+      bellKnockbackRef.current.set(villager.id, Object.freeze({
+        startX: villager.x,
+        direction,
+        startedAtMs: intent.contactAtMs,
+        expiresAtMs: intent.contactAtMs + BELL_KNOCKBACK_MS,
+      }))
+      bellRecoilUntilRef.current.set(villager.id, intent.contactAtMs + BELL_KNOCKBACK_MS)
+    }
+  }, [acknowledgePitchforksBellPowerWaveRelease, commitBellPowerState, commitBellWaveState, normalBellRouteAvailable, resetBellWave, setPromptText])
+
+  const applyBellKnockback = useCallback((logicalNowMs: number) => {
+    const rt = runtimeRef.current
+    for (const [villagerId, knockback] of bellKnockbackRef.current) {
+      const villager = rt.villagers.find(candidate => candidate.id === villagerId)
+      if (!villager || villager.state !== 'walking' || villager.burned >= villager.totalTines) {
+        bellKnockbackRef.current.delete(villagerId)
+        bellRecoilUntilRef.current.delete(villagerId)
+        continue
+      }
+      const progress = clamp((logicalNowMs - knockback.startedAtMs) / BELL_KNOCKBACK_MS, 0, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      const spriteWidth = (assetsRef.current.villagerMeta[villager.totalTines] ?? defaultVillagerMeta).frame_w * SPRITE_SCALE
+      const nextX = knockback.startX + knockback.direction * BELL_KNOCKBACK_DISTANCE * eased
+      villager.x = clamp(nextX, FRANK_REACH_X, W - spriteWidth)
+      if (progress >= 1) bellKnockbackRef.current.delete(villagerId)
+    }
+    for (const [villagerId, untilMs] of bellRecoilUntilRef.current) {
+      if (untilMs <= logicalNowMs) bellRecoilUntilRef.current.delete(villagerId)
+    }
+  }, [])
+
+  const cancelGalvanic = useCallback((reason: string = 'cancelled') => {
+    if (!galvanicProofRef.current) return
+    resetGalvanic(false)
+    galvanicLastReasonRef.current = reason
+    publishGalvanicProjection()
+    if (demoRef.current) demoStepRef.current = 'galvanic-cancelled'
+    setPromptText(`GALVANIC CANCELLED · ${reason}`)
+  }, [publishGalvanicProjection, resetGalvanic, setPromptText])
+
+  const cancelThunderhead = useCallback((reason: PitchforksThunderheadTransitionReason) => {
+    resetThunderhead()
+    thunderheadLastTransitionReasonRef.current = reason
+    if (demoRef.current) demoStepRef.current = 'thunderhead-cancelled'
+    setPromptText(`THUNDERHEAD CANCELLED · ${reason}`)
+  }, [resetThunderhead, setPromptText])
+
+  const advanceThunderheadLifecycle = useCallback((logicalNowMs: number, paused: boolean) => {
+    const current = thunderheadStateRef.current
+    if (!demoRef.current || inputModeRef.current !== 'voice') {
+      if (current.phase !== 'idle' && current.phase !== 'consumed') resetThunderhead()
+      return
+    }
+
+    if (current.phase === 'banked') {
+      if (!thunderheadReleaseRequestedRef.current || paused) return
+      thunderheadReleaseRequestedRef.current = false
+      const detached = transitionThunderhead({ type: 'detached', logicalTimeMs: logicalNowMs })
+      if (!detached.accepted) {
+        cancelThunderhead(detached.reason)
+        return
+      }
+      const travel = transitionThunderhead({ type: 'ceiling_travel', logicalTimeMs: logicalNowMs })
+      if (!travel.accepted) {
+        cancelThunderhead(travel.reason)
+        return
+      }
+      thunderheadTravelStartedAtRef.current = logicalNowMs
+      if (demoRef.current) demoStepRef.current = 'thunderhead-ceiling-travel'
+      const note = travel.state.bank?.note ?? travel.state.receipt?.note ?? ''
+      setPromptText(`THUNDERHEAD TRAVEL · ${note}`)
+      return
+    }
+
+    if (current.phase === 'ceiling_travel') {
+      if (paused || (typeof document !== 'undefined' && document.visibilityState !== 'visible')) return
+      if (
+        thunderheadTravelStartedAtRef.current <= 0 ||
+        logicalNowMs - thunderheadTravelStartedAtRef.current < THUNDERHEAD_TRAVEL_MS
+      ) return
+      const receipt = current.bank ?? current.receipt
+      const liveTarget = getActiveTarget()
+      if (!receipt || !liveTarget) {
+        cancelThunderhead('stale-target')
+        return
+      }
+      const identity = pitchIdentity(liveTarget.note)
+      if (
+        identity &&
+        identity.pitchClass === receipt.pitchClass &&
+        identity.octave !== receipt.octave
+      ) {
+        cancelThunderhead('octave-mismatch')
+        return
+      }
+      const target: PitchforksThunderheadTarget = {
+        targetKey: liveTarget.key,
+        note: liveTarget.note,
+        octave: identity?.octave ?? Number.NaN,
+      }
+      const matched = transitionThunderhead({ type: 'target_match', logicalTimeMs: logicalNowMs, target })
+      if (!matched.accepted) {
+        cancelThunderhead(matched.reason)
+        return
+      }
+      const start = thunderheadTravelStartRef.current ?? { x: FRANK_X + assetsRef.current.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET, y: FRANK_CLOUD_Y }
+      const targetPoint = thunderheadTravelTargetRef.current ?? { x: start.x, y: THUNDERHEAD_CEILING_Y }
+      thunderheadStrikeOriginRef.current = Object.freeze({ x: targetPoint.x, y: targetPoint.y })
+      thunderheadMatchDueAtRef.current = logicalNowMs + THUNDERHEAD_MATCH_SETTLE_MS
+      if (demoRef.current) demoStepRef.current = 'thunderhead-target-match'
+      setPromptText(`THUNDERHEAD TARGET MATCH · ${matched.state.matchedTarget?.note ?? liveTarget.note}`)
+      return
+    }
+
+    if (current.phase !== 'target_match' || paused) return
+    if (thunderheadMatchDueAtRef.current <= 0 || logicalNowMs < thunderheadMatchDueAtRef.current) return
+    const receipt = current.bank ?? current.receipt
+    const liveTarget = getActiveTarget()
+    const matchedTarget = current.matchedTarget
+    if (
+      !receipt ||
+      !matchedTarget ||
+      !liveTarget ||
+      liveTarget.key !== receipt.targetKey ||
+      liveTarget.key !== matchedTarget.targetKey ||
+      liveTarget.note !== receipt.note ||
+      liveTarget.note !== matchedTarget.note ||
+      (pitchIdentity(liveTarget.note)?.octave ?? Number.NaN) !== receipt.octave
+    ) {
+      cancelThunderhead('stale-target')
+      return
+    }
+    const strike = transitionThunderhead({ type: 'strike', logicalTimeMs: logicalNowMs })
+    if (!strike.accepted || !strike.intent) {
+      cancelThunderhead(strike.reason)
+      return
+    }
+    // `transitionThunderhead` publishes phase=strike before invoking the
+    // existing strike authority. The receipt therefore cannot race a second
+    // release or ordinary lock around this effect.
+    strikeActiveTine(liveTarget, true, 'thunderhead')
+    const consumed = transitionThunderhead({ type: 'consumed', logicalTimeMs: logicalNowMs })
+    thunderheadMatchDueAtRef.current = 0
+    if (!consumed.accepted) {
+      thunderheadLastTransitionReasonRef.current = consumed.reason
+      return
+    }
+    if (demoRef.current) demoStepRef.current = 'thunderhead-consumed'
+    setPromptText(`THUNDERHEAD CONSUMED · ${strike.intent.note}`)
+  }, [cancelThunderhead, getActiveTarget, resetThunderhead, setPromptText, strikeActiveTine, transitionThunderhead])
+
+  const arbitrateCloseSmash = useCallback((logicalNowMs: number) => {
+    const current = closeSmashStateRef.current
+    const receipt = current.receipt
+
+    if (current.phase === 'ready' && receipt) {
+      const request = closeSmashRequestRef.current
+      const requestedForReceipt = request?.targetKey === receipt.targetKey
+      const fallbackDue = closeSmashFallbackDueAtRef.current > 0 && logicalNowMs >= closeSmashFallbackDueAtRef.current
+      if (!requestedForReceipt && !fallbackDue) return
+
+      const liveTarget = getActiveTarget()
+      const currentTargetKey = liveTarget?.key ?? null
+      const consumer = requestedForReceipt ? 'smash' : 'ordinary-fallback'
+      const decision = consumePitchforksCloseSmash(current, {
+        consumer,
+        currentTargetKey,
+        logicalTimeMs: logicalNowMs,
+        deadlineMs: closeSmashFallbackDueAtRef.current,
+        contactAtMs: logicalNowMs + CLOSE_SMASH_CONTACT_DELAY_MS,
+      })
+      // Consume the request and replace the immutable state before any
+      // presentation or strike side effect. This is the runtime CAS boundary.
+      closeSmashRequestRef.current = null
+      commitCloseSmashState(decision.state)
+      if (!decision.intent) {
+        if (decision.state.phase === 'idle') closeSmashFallbackDueAtRef.current = 0
+        return
+      }
+
+      if (decision.intent.consumer === 'smash') {
+        lockHeldMsRef.current = 0
+        lockProgressRef.current = 0
+        tintRef.current = null
+        setPromptText(`CLOSE SMASH WIND-UP · ${decision.intent.receipt.pitch}`)
+        if (demoRef.current) demoStepRef.current = 'close-smash-wind-up-showcase'
+        return
+      }
+
+      // Ordinary fallback retains the existing presentation and strike seam.
+      // The receipt has already been consumed above, so this path cannot race
+      // a late deliberate tap into a second strike.
+      const fallbackTarget = getActiveTarget()
+      if (
+        !fallbackTarget ||
+        fallbackTarget.key !== decision.intent.receipt.targetKey ||
+        String(fallbackTarget.villager.id) !== decision.intent.receipt.villagerId ||
+        fallbackTarget.tineIndex !== decision.intent.receipt.tineIndex
+      ) return
+      // Fallback is still an earned resolution, so it shares the same
+      // re-onset discipline as Smash before the next tine can lock.
+      closeSmashReonsetNoteRef.current = decision.intent.receipt.pitch
+      closeSmashReonsetStartedAtRef.current = performance.now()
+      strikeActiveTine(fallbackTarget, true, 'ordinary-fallback')
+      commitCloseSmashState(settlePitchforksCloseSmash(decision.state))
+      closeSmashSettleDueAtRef.current = logicalNowMs + CLOSE_SMASH_SETTLE_MS
+      closeSmashFallbackDueAtRef.current = 0
+      if (demoRef.current) demoStepRef.current = 'close-smash-fallback-showcase'
+    }
+
+    const pending = closeSmashStateRef.current
+    if (pending.phase === 'pending' && pending.consumer === 'smash' && pending.receipt) {
+      const liveTarget = getActiveTarget()
+      const currentTargetKey = liveTarget?.key ?? null
+      const decision = presentPitchforksCloseSmashContact(pending, {
+        currentTargetKey,
+        logicalTimeMs: logicalNowMs,
+      })
+      // As with consumption, publish the helper's immutable state first. A
+      // stale target therefore voids the receipt without invoking strike.
+      commitCloseSmashState(decision.state)
+      if (!decision.intent) {
+        if (decision.state.phase === 'idle') closeSmashFallbackDueAtRef.current = 0
+        return
+      }
+
+      const contactTarget = getActiveTarget()
+      if (
+        !contactTarget ||
+        contactTarget.key !== decision.intent.receipt.targetKey ||
+        String(contactTarget.villager.id) !== decision.intent.receipt.villagerId ||
+        contactTarget.tineIndex !== decision.intent.receipt.tineIndex
+      ) return
+
+      const targetId = contactTarget.villager.id
+      for (const bystander of runtimeRef.current.villagers) {
+        const nearby = Math.abs(bystander.x - contactTarget.villager.x) <= CLOSE_SMASH_RECOIL_RADIUS_X &&
+          Math.abs(bystander.y - contactTarget.villager.y) <= CLOSE_SMASH_RECOIL_RADIUS_Y
+        if (bystander.state === 'walking' && bystander.id !== targetId && nearby) {
+          closeSmashRecoilUntilRef.current.set(bystander.id, logicalNowMs + CLOSE_SMASH_RECOIL_MS)
+        }
+      }
+      // Set the re-onset gate before striking so a continuous same-note voice
+      // cannot immediately resolve the next tine after the receipt settles.
+      closeSmashReonsetNoteRef.current = decision.intent.receipt.pitch
+      closeSmashReonsetStartedAtRef.current = performance.now()
+      strikeActiveTine(contactTarget, true, 'close-smash')
+      localSfx('smash-contact', sfxVolumeRef.current, decision.intent.receipt.pitch)
+      if (closeSmashRecoilUntilRef.current.size > 0) localSfx('recoil', sfxVolumeRef.current)
+      commitCloseSmashState(settlePitchforksCloseSmash(decision.state))
+      closeSmashSettleDueAtRef.current = logicalNowMs + CLOSE_SMASH_SETTLE_MS
+      closeSmashFallbackDueAtRef.current = 0
+      if (demoRef.current) demoStepRef.current = 'close-smash-contact-showcase'
+    }
+
+    const settled = closeSmashStateRef.current
+    if (settled.phase === 'settle' && settled.receipt) {
+      const hasStrikePresentation = runtimeRef.current.bolts.some(b => (
+        b.villagerId === Number(settled.receipt?.villagerId) &&
+        b.tineIndex === settled.receipt?.tineIndex
+      ))
+      const settleDue = closeSmashSettleDueAtRef.current
+      if ((settleDue > 0 && logicalNowMs >= settleDue) || !hasStrikePresentation) {
+        commitCloseSmashState(completePitchforksCloseSmashSettle(settled))
+        closeSmashSettleDueAtRef.current = 0
+        closeSmashFallbackDueAtRef.current = 0
+        if (demoRef.current) demoStepRef.current = 'close-smash-settle-showcase'
+      }
+    }
+  }, [commitCloseSmashState, getActiveTarget, setPromptText, strikeActiveTine])
+
+  const requestCloseSmash = useCallback(() => {
+    const state = closeSmashStateRef.current
+    const target = getActiveTarget()
+    if (
+      galvanicProofRef.current ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellReleaseRequestedRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      state.phase !== 'ready' ||
+      !state.receipt ||
+      !target ||
+      target.key !== state.receipt.targetKey
+    ) return
+    // The click only queues a consumer request. updateGame is the sole place
+    // that calls the helper, preventing stale READY snapshots from double
+    // consuming a receipt during a rerender or same-tick fallback.
+    closeSmashRequestRef.current = Object.freeze({
+      targetKey: state.receipt.targetKey,
+      requestedAtMs: performance.now(),
+    })
+  }, [getActiveTarget])
+
+  const requestThunderheadArm = useCallback(() => {
+    const state = thunderheadStateRef.current
+    if (
+      !demoRef.current ||
+      galvanicProofRef.current ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellReleaseRequestedRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      (state.phase !== 'idle' && state.phase !== 'consumed')
+    ) return
+    thunderheadArmRequestedRef.current = true
+    if (demoRef.current) demoStepRef.current = 'thunderhead-armed'
+    setPromptText('THUNDERHEAD ARMED · HOLD THE EXACT NOTE')
+  }, [setPromptText])
+
+  const requestThunderheadRelease = useCallback(() => {
+    const state = thunderheadStateRef.current
+    if (
+      !demoRef.current ||
+      galvanicProofRef.current ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellReleaseRequestedRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      state.phase !== 'banked' ||
+      !state.bank
+    ) return
+    thunderheadReleaseRequestedRef.current = true
+    if (demoRef.current) demoStepRef.current = 'thunderhead-release-queued'
+    setPromptText(`THUNDERHEAD RELEASE QUEUED · ${state.bank.note}`)
+  }, [setPromptText])
+
+  const requestGalvanicArm = useCallback(() => {
+    const target = getActiveTarget()
+    const thunderheadBusy = thunderheadStateRef.current.phase !== 'idle' && thunderheadStateRef.current.phase !== 'consumed'
+    const thunderheadArmPending = thunderheadArmRequestedRef.current
+    if (
+      !galvanicProofRef.current ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellReleaseRequestedRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      !target ||
+      target.villager.torch.phase !== 'spent' ||
+      galvanicArmRequestedRef.current ||
+      galvanicAwaitingSilenceRef.current ||
+      galvanicReleaseRequestedRef.current ||
+      galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY ||
+      closeSmashStateRef.current.phase !== 'idle' ||
+      thunderheadBusy ||
+      thunderheadArmPending ||
+      strikePresentationPending() ||
+      cuePlayingNow() ||
+      matchingSuppressedNow()
+    ) return
+
+    galvanicArmRequestedRef.current = true
+    galvanicArmedTargetKeyRef.current = target.key
+    galvanicAwaitingSilenceRef.current = true
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    galvanicLastReasonRef.current = 'armed'
+    if (demoRef.current) demoStepRef.current = 'galvanic-armed'
+    publishGalvanicProjection()
+    setPromptText(`GALVANIC ARMED · HOLD ${target.note} FOR ${HOLD_MS} MS`)
+  }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, publishGalvanicProjection, setPromptText, strikePresentationPending])
+
+  const requestGalvanicRelease = useCallback(() => {
+    if (
+      !galvanicProofRef.current ||
+      bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
+      bellArmRequestedRef.current ||
+      bellChargeReceiptRef.current !== null ||
+      bellReleaseRequestedRef.current ||
+      phaseRef.current !== 'playing' ||
+      inputModeRef.current !== 'voice' ||
+      galvanicBanksRef.current.length < 1 ||
+      galvanicBanksRef.current.length > GALVANIC_BANK_CAPACITY ||
+      galvanicReleaseRequestedRef.current ||
+      closeSmashStateRef.current.phase !== 'idle' ||
+      thunderheadArmRequestedRef.current ||
+      (thunderheadStateRef.current.phase !== 'idle' && thunderheadStateRef.current.phase !== 'consumed') ||
+      strikePresentationPending()
+    ) return
+    galvanicReleaseRequestedRef.current = true
+    galvanicLastReasonRef.current = 'release-queued'
+    if (demoRef.current) demoStepRef.current = 'galvanic-release-queued'
+    publishGalvanicProjection()
+    setPromptText(`GALVANIC RELEASE QUEUED · ${galvanicBanksRef.current.length} BANK${galvanicBanksRef.current.length === 1 ? '' : 'S'}`)
+  }, [publishGalvanicProjection, setPromptText, strikePresentationPending])
+
+  const advanceGalvanicRelease = useCallback((logicalNowMs: number) => {
+    if (!galvanicProofRef.current || inputModeRef.current !== 'voice') {
+      galvanicReleaseRequestedRef.current = false
+      return
+    }
+    if (!galvanicReleaseRequestedRef.current) return
+
+    const generation = runGenerationRef.current
+    const state = galvanicStateRef.current
+    const banks = [...galvanicBanksRef.current]
+    galvanicReleaseRequestedRef.current = false
+    if (banks.length < 1 || banks.length > GALVANIC_BANK_CAPACITY) {
+      galvanicLastReasonRef.current = 'no-bank'
+      publishGalvanicProjection()
+      return
+    }
+
+    const snapshot = liveGalvanicTargets(runtimeRef.current.villagers)
+    if (snapshot.length === 0) {
+      resetGalvanic(false)
+      galvanicLastReasonRef.current = 'stale-target'
+      publishGalvanicProjection()
+      return
+    }
+    const request = {
+      battleId: state.battleId,
+      attackId: `galvanic-attack:${state.battleId}:${++galvanicAttackSequenceRef.current}`,
+      expectedVersion: state.version,
+      tines: snapshot.map(target => ({
+        targetKey: target.key,
+        note: target.note,
+        octave: pitchIdentity(target.note)?.octave ?? Number.NaN,
+      })),
+      locks: banks,
+    }
+    // The run and helper snapshot are the caller's compare-and-swap fence.
+    if (generation !== runGenerationRef.current || galvanicStateRef.current !== state) return
+    const plan = planPitchforksGalvanicSweep(state, request)
+    if (!plan.accepted) {
+      galvanicLastReasonRef.current = plan.reason
+      publishGalvanicProjection()
+      return
+    }
+    if (generation !== runGenerationRef.current || galvanicStateRef.current !== state) return
+
+    // Publish the consumed helper state and discard every pending bank before
+    // the first strike/recoil effect can run.
+    galvanicStateRef.current = plan.nextState
+    galvanicBanksRef.current = []
+    galvanicArmRequestedRef.current = false
+    galvanicArmedTargetKeyRef.current = ''
+    galvanicAwaitingSilenceRef.current = true
+    lockHeldMsRef.current = 0
+    lockProgressRef.current = 0
+    tintRef.current = null
+    galvanicLastOutcomesRef.current = [...plan.outcomes]
+    galvanicLastReasonRef.current = plan.reason
+    publishGalvanicProjection()
+    if (demoRef.current) demoStepRef.current = 'galvanic-release'
+    setPromptText(`GALVANIC SWEEP · ${plan.outcomes.filter(outcome => outcome.kind === 'strike').length} STRIKE${plan.outcomes.filter(outcome => outcome.kind === 'strike').length === 1 ? '' : 'S'}`)
+
+    let recoilPresented = false
+    for (const outcome of plan.outcomes) {
+      if (generation !== runGenerationRef.current || galvanicStateRef.current !== plan.nextState) return
+      const live = liveGalvanicTargets(runtimeRef.current.villagers).find(candidate => {
+        const identity = pitchIdentity(candidate.note)
+        return candidate.key === outcome.targetKey && candidate.note === outcome.note && identity?.octave === outcome.octave
+      })
+      if (!live) continue
+      if (outcome.kind === 'strike') {
+        if (generation !== runGenerationRef.current || galvanicStateRef.current !== plan.nextState) return
+        strikeActiveTine(live, true, 'galvanic')
+      } else {
+        // Recoil is deliberately presentation-only: the live target is
+        // revalidated, but no tine, score, FSRS, miss, or health field changes.
+        closeSmashRecoilUntilRef.current.set(live.villager.id, logicalNowMs + CLOSE_SMASH_RECOIL_MS)
+        galvanicRecoilVillagerIdsRef.current.add(live.villager.id)
+        recoilPresented = true
+      }
+    }
+    if (recoilPresented) localSfx('recoil', sfxVolumeRef.current)
+  }, [publishGalvanicProjection, resetGalvanic, setPromptText, strikeActiveTine])
 
   const answerWithButton = useCallback((answeredNote: string) => {
     if (phaseRef.current !== 'playing' || inputModeRef.current !== 'buttons') return
@@ -4723,7 +8073,7 @@ export default function PitchforksIII() {
     requestAnimationFrame(() => { buttonAnswerPendingRef.current = false })
   }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, reviewTargetNote, setPromptText, strikeActiveTine])
 
-  const demoPitchForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>, now: number): PitchInfo | null => {
+  const demoPitchForTarget = useCallback((target: Pick<NonNullable<ReturnType<typeof getActiveTarget>>, 'key' | 'note'>, now: number): PitchInfo | null => {
     if (demoTargetRef.current !== target.key) {
       demoTargetRef.current = target.key
       demoTargetStartedRef.current = now
@@ -4772,6 +8122,49 @@ export default function PitchforksIII() {
       tintRef.current = null
       return
     }
+    const bellPhase = bellWaveStateRef.current.phase
+    if (bellPhase === 'active' || bellChargeReceiptRef.current !== null || bellReleaseRequestedRef.current) {
+      pauseSparkGuide('bell-lifecycle')
+      activeKeyRef.current = ''
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      return
+    }
+    const normalBellPhase = normalBellRouteAvailable() ? bellPowerStateRef.current?.phase : null
+    if (normalBellPhase === 'pending') {
+      pauseSparkGuide('bell-lifecycle')
+      activeKeyRef.current = ''
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      return
+    }
+    if (normalBellPhase === 'activating') {
+      pauseSparkGuide('bell-lifecycle')
+      processNormalBellActivation()
+      return
+    }
+    // The receipt owns the close action until its presentation settles. The
+    // world keeps stepping in updateGame, but this earned target cannot start
+    // a second lock or arm a second receipt during ready/pending/settle.
+    if (closeSmashStateRef.current.phase !== 'idle') {
+      pauseSparkGuide('close-smash-lifecycle')
+      activeKeyRef.current = ''
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = closeSmashStateRef.current.phase === 'ready' ? 1 : 0
+      tintRef.current = null
+      return
+    }
+    const thunderheadPhase = thunderheadStateRef.current.phase
+    if (thunderheadPhase !== 'idle' && thunderheadPhase !== 'consumed') {
+      pauseSparkGuide('thunderhead-lifecycle')
+      activeKeyRef.current = ''
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = thunderheadPhase === 'lock_confirmed' ? 1 : 0
+      tintRef.current = null
+      return
+    }
     if (strikePresentationPending()) {
       pauseSparkGuide('strike-presentation')
       activeKeyRef.current = ''
@@ -4782,6 +8175,17 @@ export default function PitchforksIII() {
     }
     const target = getActiveTarget()
     if (!target) {
+      if (bellArmRequestedRef.current) {
+        bellArmRequestedRef.current = false
+        bellArmedTargetKeyRef.current = ''
+        bellLastReasonRef.current = 'stale-target'
+      }
+      if (galvanicArmRequestedRef.current) {
+        galvanicArmRequestedRef.current = false
+        galvanicArmedTargetKeyRef.current = ''
+        galvanicLastReasonRef.current = 'stale-target'
+        publishGalvanicProjection()
+      }
       resetSparkGuide('no-target')
       activeKeyRef.current = ''
       activeVillagerIdRef.current = null
@@ -4797,13 +8201,61 @@ export default function PitchforksIII() {
       return
     }
 
+    flushPendingMusicalPrompt(target)
+
+    // Environmental torch work reuses this same target's authoritative pitch
+    // sample below. It never calls review/strike and never changes musical
+    // progress. The caller marks the target so updateGame does not advance its
+    // torch twice in one frame.
+    const advanceActiveTorch = (confirmedExactHold: boolean) => {
+      if (!target.villager.torchBearer) return target.villager.torch
+      const before = target.villager.torch
+      const next = stepTorch(before, dt * 1000, {
+        confirmedExactHold,
+        rainWet: deriveRainEffects(runtimeRef.current.rain).extinguish,
+        paused: environmentalClockPausedNow(),
+      })
+      target.villager.torch = next
+      torchSteppedTargetKeyRef.current = target.key
+      if (next.phase !== before.phase) {
+        if (next.phase === 'holding') setPromptText(`Hold ${target.note} to douse the torch`)
+        else if (next.phase === 'steaming') setPromptText(`Torch steaming · keep ${target.note}`)
+        else if (next.phase === 'wet') setPromptText(`Torch doused · keep ${target.note}`)
+        else if (next.phase === 'spent') {
+          presentMusicalPrompt({
+            key: target.key,
+            note: target.note,
+            burned: target.villager.burned,
+            firstMinute: target.villager.id === runtimeRef.current.firstVillagerId,
+          })
+        } else {
+          presentMusicalPrompt({
+            key: target.key,
+            note: target.note,
+            burned: target.villager.burned,
+            firstMinute: target.villager.id === runtimeRef.current.firstVillagerId,
+          })
+        }
+      }
+      return next
+    }
+
     if (activeVillagerIdRef.current !== target.villager.id) {
       activeVillagerIdRef.current = target.villager.id
       activeKeyRef.current = ''
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
-      setPromptText(inputModeRef.current === 'buttons' ? 'Listen…' : `Sing: ${target.villager.notes[0]}`)
+      if (inputModeRef.current === 'buttons') {
+        setPromptText('Listen…')
+      } else {
+        presentMusicalPrompt({
+          key: target.key,
+          note: target.note,
+          burned: target.villager.burned,
+          firstMinute: target.villager.id === runtimeRef.current.firstVillagerId,
+        })
+      }
       const cueContext = cueContextForVillager(target.villager)
       if (!target.villager.sequenceCued) {
         target.villager.sequenceCued = true
@@ -4820,6 +8272,7 @@ export default function PitchforksIII() {
 
     if (activeKeyRef.current !== target.key) {
       activeKeyRef.current = target.key
+      lockGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
@@ -4828,12 +8281,22 @@ export default function PitchforksIII() {
         setButtonFeedback({ kind: cuePlayingNow() ? 'listen' : 'question', text: cuePlayingNow() ? 'LISTEN, THEN CHOOSE THE NOTE' : 'WHICH NOTE DID YOU HEAR?' })
       }
       cueContextForVillager(target.villager)
-      if (!cuePlayingNow()) {
-        setPromptText(inputModeRef.current === 'buttons' ? 'Which note did you hear?' : target.villager.burned === 0 ? `Sing: ${target.note}` : `Now: ${target.note}`)
+      if (inputModeRef.current === 'buttons') {
+        if (!cuePlayingNow() && !matchingSuppressedNow()) {
+          setPromptText('Which note did you hear?')
+        }
+      } else {
+        presentMusicalPrompt({
+          key: target.key,
+          note: target.note,
+          burned: target.villager.burned,
+          firstMinute: target.villager.id === runtimeRef.current.firstVillagerId,
+        })
       }
     }
 
     if (inputModeRef.current === 'buttons') {
+      advanceActiveTorch(false)
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
@@ -4847,9 +8310,81 @@ export default function PitchforksIII() {
 
     const source = demoRef.current ? demoPitchRef.current : pitchRef.current
     updateSparkGuide(target, source, now)
+    let holdElapsedMs = dt * 1000
+    if (!demoRef.current) {
+      // ponytail: reuse the detector-generation fence; extract a shared module if another consumer needs it.
+      const observation = observePitchforksSongcraftGeneration(lockGenerationRef.current, pitchGenerationRef.current, now, TRAIL_MS)
+      lockGenerationRef.current = observation.state
+      const health = micSourceHealthRef.current
+      const suppressed = matchingSuppressedNow()
+      const pageVisible = typeof document === 'undefined' || document.visibilityState === 'visible'
+      const unreliable = !pageVisible || pitchforksMicUnreliable({
+        hasTarget: true,
+        isListening: isListeningRef.current,
+        micError: micErrorRef.current,
+        audioContextState: health.audioContextState,
+        trackReadyState: health.trackReadyState,
+        trackMuted: health.trackMuted,
+        matchingSuppressed: suppressed,
+        pageVisible,
+        generationObserved: observation.state.generationObserved,
+        generationAgeMs: observation.state.generationObserved ? now - observation.state.generationObservedAt : Number.POSITIVE_INFINITY,
+        staleAfterMs: TRAIL_MS,
+      })
+      if (unreliable || suppressed || observation.staleRecovery) {
+        lockHeldMsRef.current = 0
+        lockProgressRef.current = 0
+        tintRef.current = null
+      }
+      if (unreliable || suppressed) {
+        lockGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
+        return
+      }
+      // Render frames are not microphone samples and cannot earn a note or power charge.
+      if (!observation.generationAdvanced) return
+      holdElapsedMs = observation.freshElapsedMs
+    }
     if (matchingSuppressedNow()) return
 
+    // A bank or release must observe a real inactive detector sample before
+    // the next exact hold can begin. The source has already been sampled above
+    // so this gate cannot freeze the demo on the previous active sample.
+    if (galvanicAwaitingSilenceRef.current) {
+      if (source?.isActive) {
+        lockHeldMsRef.current = 0
+        lockProgressRef.current = 0
+        tintRef.current = null
+        if (demoRef.current) demoStepRef.current = 'galvanic-reonset'
+        return
+      }
+      galvanicAwaitingSilenceRef.current = false
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      galvanicLastReasonRef.current = 'awaiting-silence-cleared'
+      publishGalvanicProjection()
+      return
+    }
+
+    // Any close receipt resolution (Smash or ordinary fallback) must end a
+    // continuous phonation before the next tine can earn another lock. The
+    // gate is intentionally note-agnostic: a distinct next tine still needs
+    // an actual silent sample, so a held voice cannot roll through the hit.
+    if (closeSmashReonsetNoteRef.current) {
+      if (source?.isActive) {
+        lockHeldMsRef.current = 0
+        lockProgressRef.current = 0
+        tintRef.current = null
+        if (demoRef.current) demoStepRef.current = 'close-smash-reonset'
+        return
+      } else {
+        closeSmashReonsetNoteRef.current = null
+        closeSmashReonsetStartedAtRef.current = 0
+      }
+    }
+
     if (!source?.isActive || source.confidence < CONFIDENCE_FLOOR || source.frequency <= 0) {
+      advanceActiveTorch(false)
       if (demoRef.current && lockProgressRef.current > 0) {
         silenceFreezeObservedRef.current = true
         demoStepRef.current = 'silence-freeze'
@@ -4862,6 +8397,70 @@ export default function PitchforksIII() {
     const absCents = Math.abs(cents)
     tintRef.current = colorForCents(absCents)
 
+    const torch = advanceActiveTorch(absCents <= MATCH_TOLERANCE_CENTS)
+    if (torch.phase !== 'spent') {
+      // An exact hold is first an environmental action. Do not leak its
+      // extended hold into the ordinary 300 ms musical lock.
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      return
+    }
+
+    // Bell charge is the first exact-hold consumer on its private proof
+    // route. It mints a non-musical receipt and returns before Galvanic,
+    // Thunderhead, Close Smash, or ordinary strike authority can run.
+    if (bellArmRequestedRef.current) {
+      if (
+        bellArmedTargetKeyRef.current !== target.key
+        || bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished'
+      ) {
+        bellArmRequestedRef.current = false
+        bellArmedTargetKeyRef.current = ''
+        bellLastReasonRef.current = 'stale-target'
+        lockHeldMsRef.current = 0
+        lockProgressRef.current = 0
+        tintRef.current = null
+        return
+      }
+      if (absCents <= MATCH_TOLERANCE_CENTS) {
+        lockHeldMsRef.current = Math.min(HOLD_MS, lockHeldMsRef.current + holdElapsedMs)
+        lockProgressRef.current = Math.min(1, lockHeldMsRef.current / HOLD_MS)
+        tintRef.current = colorForCents(absCents)
+        if (lockProgressRef.current >= 1) {
+          confirmBellCharge(target, runtimeRef.current.animClock * 1000)
+        }
+      } else {
+        lockHeldMsRef.current = 0
+        lockProgressRef.current = 0
+        tintRef.current = null
+      }
+      return
+    }
+
+    if (galvanicProofRef.current && galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY) {
+      // Capacity is a hard private-proof boundary. The upstream target remains
+      // available for source observation, but this frame cannot mint a third
+      // Galvanic bank or fall through to ordinary/Close Smash credit.
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      if (demoRef.current) demoStepRef.current = 'galvanic-awaiting-release'
+      return
+    }
+
+    // Once a proof bank exists, ordinary exact input is presentation-only
+    // until the player deliberately releases the sweep or arms the next
+    // target. Source observation still runs, but no ordinary credit can leak
+    // through while a receipt waits.
+    if (galvanicProofRef.current && galvanicBanksRef.current.length > 0 && !galvanicArmRequestedRef.current) {
+      lockHeldMsRef.current = 0
+      lockProgressRef.current = 0
+      tintRef.current = null
+      if (demoRef.current) demoStepRef.current = 'galvanic-awaiting-release'
+      return
+    }
+
     if (absCents <= MATCH_TOLERANCE_CENTS) {
       if (
         target.villager.id === runtimeRef.current.firstVillagerId &&
@@ -4870,10 +8469,36 @@ export default function PitchforksIII() {
       ) {
         setFirstMinuteCoachSnapshot('charge', target.note)
       }
-      lockHeldMsRef.current = Math.min(HOLD_MS, lockHeldMsRef.current + dt * 1000)
+      lockHeldMsRef.current = Math.min(HOLD_MS, lockHeldMsRef.current + holdElapsedMs)
       lockProgressRef.current = Math.min(1, lockHeldMsRef.current / HOLD_MS)
       if (lockProgressRef.current >= 1) {
-        strikeActiveTine(target)
+        // Galvanic is a proof-only exact-hold consumer. It is deliberately
+        // first at this seam and returns so ordinary, Close Smash, and
+        // Thunderhead credit cannot also consume the same held sample.
+        if (galvanicArmRequestedRef.current) {
+          confirmGalvanicLock(target)
+          return
+        }
+        if (galvanicProofRef.current && galvanicBanksRef.current.length > 0) {
+          lockHeldMsRef.current = 0
+          lockProgressRef.current = 0
+          tintRef.current = null
+          return
+        }
+        // A private demo arming request gets first refusal at the exact
+        // 300 ms lock. It banks the existing receipt rather than invoking
+        // ordinary strike or Close Smash; buttons/EAR never enter this path.
+        if (thunderheadArmRequestedRef.current) {
+          // An armed demo lock is exclusive: invalid/rejected receipts must
+          // not fall through to ordinary strike authority.
+          confirmThunderheadLock(target, thunderheadClockMsRef.current)
+          return
+        }
+        // Close Smash gets first refusal at the shipped reach boundary. The
+        // ordinary strike remains the fallback when this target is elsewhere.
+        // `now` is the pitch-detector wall clock. Close Smash's fallback and
+        // contact deadlines share the runtime animation clock with updateGame.
+        if (!armCloseSmash(target, runtimeRef.current.animClock * 1000)) strikeActiveTine(target)
       }
     } else {
       // v1 confident-wrong = charge RESET only, NO FSRS review (FLW GREEN-LIGHT option A,
@@ -4892,12 +8517,22 @@ export default function PitchforksIII() {
   }, [
     cueContextForVillager,
     cuePlayingNow,
+    flushPendingMusicalPrompt,
+    confirmGalvanicLock,
+    confirmBellCharge,
+    confirmThunderheadLock,
     demoPitchForTarget,
+    environmentalClockPausedNow,
     getActiveTarget,
+    armCloseSmash,
     matchingSuppressedNow,
+    normalBellRouteAvailable,
+    processNormalBellActivation,
+    presentMusicalPrompt,
     pitchRef,
     playVillagerSequence,
     pauseSparkGuide,
+    publishGalvanicProjection,
     resetSparkGuide,
     setActiveCueContextSnapshot,
     setFirstMinuteCoachSnapshot,
@@ -4909,7 +8544,77 @@ export default function PitchforksIII() {
 
   const updateGame = useCallback((dt: number) => {
     const rt = runtimeRef.current
-    rt.animClock += dt
+    const environmentalPaused = environmentalClockPausedNow()
+    const receiptAtFrameStart = waveReceiptRef.current
+    const receiptWindowActive = receiptAtFrameStart.visible && rt.nextWavePending
+    const pageVisible = typeof document === 'undefined' || document.visibilityState === 'visible'
+    if (receiptWindowActive) {
+      // Visibility cancels the decorative presentation at most once. The
+      // receipt remains authoritative and its shared clock can still reach the
+      // existing next-wave boundary after the page is visible again.
+      if (!pageVisible && receiptAtFrameStart.claim) {
+        victoryCancelledReceiptIdRef.current = receiptAtFrameStart.claim.receiptId
+      }
+      // Recompute the pause source at the boundary; a prior cue/ceremony must
+      // not leave a stale `timersPausedRef` value blocking the 1900 ms handoff.
+      const receiptPaused = !pageVisible || environmentalPaused || timersPausedNow()
+      rt.animClock = advancePitchforksLogicalClock(rt.animClock * 1000, dt * 1000, receiptPaused) / 1000
+      const logicalNowMs = rt.animClock * 1000
+      if (
+        rt.nextWaveRunGeneration !== runGenerationRef.current ||
+        phaseRef.current !== 'playing'
+      ) {
+        clearWaveReceipt()
+        return
+      }
+      if (!receiptPaused && rt.nextWaveAtMs !== null && logicalNowMs >= rt.nextWaveAtMs) {
+        startWave(rt.nextWaveNumber ?? rt.wave)
+      }
+      // Receipt presentation owns this frame. Do not step rain, villagers,
+      // bolts, locks, targets, detector state, or any other gameplay state.
+      return
+    }
+    const activationRequested = rainActivationRequestedRef.current
+    const nextRain = stepRain(rt.rain, dt * 1000, {
+      paused: environmentalPaused,
+      activated: activationRequested,
+      mode: demoRef.current ? 'demo' : 'normal',
+    })
+    const rainEffects = deriveRainEffects(nextRain)
+    rt.rain = nextRain
+    if (nextRain.phase !== 'ready') rainActivationRequestedRef.current = false
+    syncRainSnapshot(nextRain)
+    torchSteppedTargetKeyRef.current = ''
+    rt.animClock = advancePitchforksLogicalClock(rt.animClock * 1000, dt * 1000, false) / 1000
+    const logicalNowMs = rt.animClock * 1000
+    // Ordinary combat keeps its shared clock moving. Thunderhead gets a
+    // pause-aware view of the same frame delta so cue/visibility pauses do not
+    // spend detached-cloud travel or match-settle time behind the player's back.
+    const thunderheadPhaseAtFrameStart = thunderheadStateRef.current.phase
+    const thunderheadLifecycleActiveAtFrameStart = thunderheadPhaseAtFrameStart !== 'idle' && thunderheadPhaseAtFrameStart !== 'consumed'
+    const thunderheadPausedAtFrameStart = thunderheadLifecycleActiveAtFrameStart && (
+      !pageVisible || environmentalPaused || timersPausedNow()
+    )
+    const thunderheadLogicalNowMs = advancePitchforksLogicalClock(
+      thunderheadClockMsRef.current,
+      dt * 1000,
+      thunderheadPausedAtFrameStart,
+    )
+    thunderheadClockMsRef.current = thunderheadLogicalNowMs
+    // During the Bell's own audible ring, the physical wave and swing outlive
+    // that ring's echo guard. Later unrelated cues may pause them normally;
+    // hidden pages, ceremonies and unavailable microphones always still pause.
+    const bellOwnRingSuppressionActive = (bellWaveStateRef.current.phase === 'active' || bellWaveStateRef.current.phase === 'finished') && bellOwnRingSuppressionUntilRef.current > performance.now()
+    const bellPausedAtFrameStart = !pageVisible || environmentalClockPausedNow(bellOwnRingSuppressionActive)
+    const bellLogicalNowMs = advancePitchforksLogicalClock(
+      bellWaveClockMsRef.current,
+      dt * 1000,
+      bellPausedAtFrameStart,
+    )
+    bellWaveClockMsRef.current = bellLogicalNowMs
+    for (const [villagerId, untilMs] of closeSmashRecoilUntilRef.current) {
+      if (untilMs <= logicalNowMs) closeSmashRecoilUntilRef.current.delete(villagerId)
+    }
     if (ceremonyRef.current.active) {
       timersPausedRef.current = true
       processLock(0)
@@ -4922,7 +8627,8 @@ export default function PitchforksIII() {
         spawnVillager()
       }
     } else {
-      const waitForClear = waitForClearBeforeSpawn(rt.wave, demoRef.current)
+      const waitForClear = waitForClearBeforeSpawn(rt.wave, demoRef.current) &&
+        !closeSmashProofRef.current && !(galvanicProofRef.current && rt.wave === 1)
       const encounterClear = !rt.villagers.some(v => v.state === 'walking')
       if (!waitForClear || encounterClear) {
         rt.spawnClock += dt
@@ -4937,7 +8643,7 @@ export default function PitchforksIII() {
 
     for (const v of rt.villagers) {
       if (v.state === 'walking') {
-        v.x = Math.max(FRANK_REACH_X, v.x - v.speed * dt)
+        v.x = Math.max(FRANK_REACH_X, v.x - v.speed * rainEffects.slowFactor * dt)
         v.walkClock += dt
         if (v.walkClock >= 0.16) {
           v.walkClock = 0
@@ -4958,6 +8664,27 @@ export default function PitchforksIII() {
     }
 
     processLock(dt)
+    advanceBellWaveLifecycle(bellLogicalNowMs, bellPausedAtFrameStart)
+    applyBellKnockback(bellLogicalNowMs)
+    advanceGalvanicRelease(logicalNowMs)
+    arbitrateCloseSmash(logicalNowMs)
+    const timersPaused = timersPausedNow()
+    const environmentalPausedAfterLock = environmentalClockPausedNow()
+    advanceThunderheadLifecycle(
+      thunderheadLogicalNowMs,
+      thunderheadPausedAtFrameStart || timersPaused || environmentalPausedAfterLock || !pageVisible,
+    )
+    const steppedTargetKey = torchSteppedTargetKeyRef.current
+    for (const v of rt.villagers) {
+      const currentTargetKey = `${v.id}:${v.burned}`
+      if (currentTargetKey === steppedTargetKey) continue
+      v.torch = stepTorch(v.torch, dt * 1000, {
+        confirmedExactHold: false,
+        rainWet: rainEffects.extinguish,
+        paused: environmentalPausedAfterLock,
+      })
+    }
+    syncRainSnapshot(rt.rain)
     const newestBolt = rt.bolts[rt.bolts.length - 1]
     const lightningPhase = lightningPhaseFor(lockProgressRef.current, newestBolt)
     const priorLightningPhase = lightningPhaseTraceRef.current[lightningPhaseTraceRef.current.length - 1]?.phase
@@ -4969,52 +8696,132 @@ export default function PitchforksIII() {
       })
       if (lightningPhaseTraceRef.current.length > 80) lightningPhaseTraceRef.current.shift()
     }
-    const timersPaused = timersPausedNow()
     const active = getActiveTarget()
+    const closeState = closeSmashStateRef.current
+    const thunderheadState = thunderheadStateRef.current
+    const closeLifecycleTarget = closeState.phase !== 'idle' &&
+      !!closeState.receipt &&
+      String(active?.villager.id) === closeState.receipt.villagerId
+    const thunderheadLifecycleTarget = thunderheadState.phase !== 'idle' &&
+      thunderheadState.phase !== 'consumed' &&
+      !!(thunderheadState.receipt ?? thunderheadState.bank) &&
+      active?.key === (thunderheadState.receipt ?? thunderheadState.bank)?.targetKey
     if (active?.villager.state === 'walking' && !timersPaused) {
       const v = active.villager
       v.attackTimer = Math.max(0, v.attackTimer - dt)
       if (v.attackTimer <= 0) {
-        reviewTargetNote(active, false)
-        if (inputModeRef.current === 'buttons') {
-          setButtonFeedback({ kind: 'wrong', text: `TIME EXPIRED · THE NOTE WAS ${active.note}` })
-        }
-        frankReactionKindRef.current = 'miss'
-        frankReactionStartedAtRef.current = performance.now()
-        v.state = 'ash'
-        v.ashTimer = 0.9
-        rt.health = Math.max(0, rt.health - 1)
-        rt.streak = 0
-        activeKeyRef.current = ''
-        activeVillagerIdRef.current = null
-        lockHeldMsRef.current = 0
-        lockProgressRef.current = 0
-        tintRef.current = null
-        setPromptText('')
-        localSfx('hurt', sfxVolumeRef.current)
-        setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
-        if (rt.health <= 0) {
-          rt.gameOver = true
-          resetSparkGuide('game-over')
-          phaseRef.current = 'game_over'
-          setPhase('game_over')
-          return
+        if (closeLifecycleTarget) {
+          // The existing attack timer is allowed to reach its threat apex; it
+          // is not frozen. While the earned receipt is still resolving, defer
+          // the consequence and let the same serialized fallback/Smash path
+          // finish first. READY reaches the ordinary fallback immediately at
+          // this apex, preserving musical credit without free damage.
+          if (closeState.phase === 'ready') {
+            closeSmashFallbackDueAtRef.current = closeSmashFallbackDueAtRef.current > 0
+              ? Math.min(closeSmashFallbackDueAtRef.current, logicalNowMs)
+              : logicalNowMs
+          }
+        } else if (thunderheadLifecycleTarget) {
+          // A released bank owns the exact target until its ceiling travel and
+          // target-match window finish. Keep the existing attack clock from
+          // converting a still-valid receipt into an unrelated miss; no new
+          // timer is created and the live target is revalidated before strike.
+          v.attackTimer = v.attackTimerMax
+        } else {
+          // A timeout resolves the whole encounter, not just the tine currently
+          // in front. Record every remaining tine as a miss so an abandoned
+          // multi-note fork cannot pass a level by skipping its tail.
+          for (let offset = v.burned; offset < v.notes.length; offset += 1) {
+            const unresolvedTarget: NonNullable<ReturnType<typeof getActiveTarget>> = {
+              villager: v,
+              tineIndex: v.totalTines - 1 - offset,
+              note: v.notes[offset],
+              key: `${v.id}:${offset}`,
+            }
+            reviewTargetNote(unresolvedTarget, false)
+          }
+          if (inputModeRef.current === 'buttons') {
+            setButtonFeedback({ kind: 'wrong', text: `TIME EXPIRED · THE NOTE WAS ${active.note}` })
+          }
+          frankReactionKindRef.current = 'miss'
+          frankReactionStartedAtRef.current = performance.now()
+          v.state = 'ash'
+          v.ashTimer = 0.9
+          rt.health = Math.max(0, rt.health - 1)
+          rt.streak = 0
+          activeKeyRef.current = ''
+          activeVillagerIdRef.current = null
+          lockHeldMsRef.current = 0
+          lockProgressRef.current = 0
+          tintRef.current = null
+          setPromptText('')
+          localSfx('hurt', sfxVolumeRef.current)
+          setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
+          if (rt.health <= 0) {
+            rt.gameOver = true
+            resetSparkGuide('game-over')
+            phaseRef.current = 'game_over'
+            setPhase('game_over')
+            return
+          }
         }
       }
     }
 
     rt.villagers = rt.villagers.filter(v => v.state !== 'ash' || v.ashTimer > 0)
 
-    const waveClear = rt.spawned >= rt.plan.count && rt.villagers.every(v => v.state !== 'walking') && rt.bolts.length === 0
-    if (waveClear && !rt.nextWavePending) {
-      showWaveReceipt(snapshotWaveReceipt())
+    const waveClear = canSealPitchforksWaveReceipt({
+      spawned: rt.spawned,
+      required: rt.plan.count,
+      villagers: rt.villagers,
+      bolts: rt.bolts,
+    })
+    if (waveClear && !rt.nextWavePending && !ceremonyRef.current.active) {
+      // Offer at most one comfortable new note after the earned strike has finished.
+      if (!levelAdmissionOfferedRef.current) {
+        levelAdmissionOfferedRef.current = true
+        maybeUnlockNextNote()
+        if (ceremonyRef.current.active) return
+      }
+      const measuredResult = pitchforksLevelResult(levelProgressRef.current, inputModeRef.current)
+      // Scripted input showcases the game; it never certifies independent recall.
+      const result: PitchforksLevelResult = demoRef.current
+        ? { ...measuredResult, showcase: true, cleared: true, nextLevel: rt.wave + 1, nextStep: `DEMO showcase · Next: Level ${rt.wave + 1}. No vocal mastery awarded.` }
+        : measuredResult
+      if (!demoRef.current && !fsrsDebugRef.current && inputModeRef.current === 'voice' && presentationJourneyRef.current) {
+        const nextJourney = advancePitchforksJourneyLevel(presentationJourneyRef.current, rt.wave, result.cleared)
+        if (nextJourney !== presentationJourneyRef.current) {
+          presentationJourneyRef.current = nextJourney
+          setPresentationJourney(nextJourney)
+          savePresentationJourney(nextJourney)
+        }
+      }
+      const receiptStartedAtMs = logicalNowMs
+      const receiptOrdinal = rt.wave
+      const assetAvailability = Object.freeze({
+        neutral: !!assetsRef.current.frankVictoryNeutral,
+        eyeLift: !!assetsRef.current.frankVictoryEyeLift,
+      })
+      const receiptId = `wave-receipt:${runGenerationRef.current}:${++waveReceiptSequenceRef.current}`
+      const claim = result.cleared && assetAvailability.neutral
+        ? Object.freeze({
+            receiptId,
+            receiptOrdinal,
+            variant: receiptOrdinal % 2 === 1 ? 'eyeLift' as const : 'neutral' as const,
+            reducedMotion: reducedMotionRef.current,
+            assetAvailability,
+            claimedAtMs: receiptStartedAtMs,
+          })
+        : null
+      showWaveReceipt(snapshotWaveReceipt(result, receiptStartedAtMs, claim))
       rt.nextWavePending = true
-      setTimeout(() => {
-        if (phaseRef.current !== 'playing') return
-        startWave(runtimeRef.current.wave + 1)
-      }, WAVE_RECEIPT_MS)
+      const nextWave = result.cleared ? rt.wave + 1 : rt.wave
+      rt.nextWaveNumber = nextWave
+      rt.nextWaveAtMs = receiptStartedAtMs + PITCHFORKS_VICTORY_NEXT_WAVE_MS
+      rt.nextWaveRunGeneration = runGenerationRef.current
+      clearNextWaveTimer()
     }
-  }, [getActiveTarget, processLock, resetSparkGuide, reviewTargetNote, setPromptText, showWaveReceipt, snapshotWaveReceipt, spawnVillager, startWave, timersPausedNow])
+  }, [advanceBellWaveLifecycle, advanceGalvanicRelease, advanceThunderheadLifecycle, applyBellKnockback, arbitrateCloseSmash, clearNextWaveTimer, clearWaveReceipt, environmentalClockPausedNow, getActiveTarget, maybeUnlockNextNote, processLock, resetSparkGuide, reviewTargetNote, savePresentationJourney, setPromptText, showWaveReceipt, snapshotWaveReceipt, spawnVillager, startWave, syncRainSnapshot, timersPausedNow])
 
   const updatePitchBarState = useCallback((active: ActiveTarget | null): TunerView => {
     const visible = phaseRef.current === 'playing' && inputModeRef.current === 'voice'
@@ -5123,6 +8930,42 @@ export default function PitchforksIII() {
       lockProgress: lockProgressRef.current,
       toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
     })
+    const bankedGalvanicNotes = galvanicBanksRef.current.map(bank => bank.note).join(' · ')
+    const galvanicBanked = galvanicProofRef.current &&
+      inputModeRef.current === 'voice' &&
+      galvanicBanksRef.current.length > 0
+    const storedThunderhead = thunderheadStateRef.current.bank
+    const thunderheadStoredPhase = thunderheadStateRef.current.phase
+    // A full bank owns this lock: continued singing cannot advance it further.
+    // Keep microphone/cue safety feedback authoritative while it is suppressed.
+    const thunderheadReadyFeedback = storedThunderhead &&
+      storedThunderhead.consumedAt === null && inputModeRef.current === 'voice' &&
+      !micUnreliable && !matchingSuppressed
+      ? {
+          ...feedback,
+          kind: 'locked' as const,
+          headline: `${storedThunderhead.note} ${thunderheadStoredPhase === 'banked' ? 'BANKED' : 'CLOUD IN FLIGHT'}`,
+          detail: thunderheadStoredPhase === 'banked'
+            ? 'SEND CLOUD WHEN READY'
+            : 'WATCH THE CLOUD REACH THE FORK',
+          compactLabel: `${thunderheadStoredPhase === 'banked' ? 'send' : 'cloud'}: ${storedThunderhead.note}`,
+        }
+      : null
+    const presentationFeedback = galvanicBanked
+      ? {
+          ...feedback,
+          kind: 'locked' as const,
+          headline: galvanicArmRequestedRef.current ? 'GALVANIC ARMED' : 'GALVANIC READY',
+          detail: galvanicArmRequestedRef.current
+            ? `HOLD ${active?.note ?? 'THE EXACT NOTE'} FOR ${HOLD_MS} MS`
+            : galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY
+              ? `2 BANKS · ${bankedGalvanicNotes} · RELEASE SWEEP`
+              : `BANKED · ${bankedGalvanicNotes} · RELEASE OR BANK AGAIN`,
+          compactLabel: galvanicArmRequestedRef.current
+            ? `galvanic: ${active?.note ?? 'exact note'}`
+            : `release: ${bankedGalvanicNotes}`,
+        }
+      : feedback
     return {
       visible,
       now,
@@ -5133,9 +8976,74 @@ export default function PitchforksIII() {
       renderDeviation,
       onTarget: barOnTargetRef.current,
       trail: pitchTrailRef.current,
-      feedback,
+      feedback: thunderheadReadyFeedback ?? presentationFeedback,
     }
   }, [cuePlayingNow, isListening, matchingSuppressedNow, micError, micSourceHealthRef, pitchGenerationRef, pitchRef])
+
+  const acceptBossResult = useCallback((result: PitchforksBossRecitalResult) => {
+    bossSimulatingRef.current = false
+    setBossSimulating(false)
+    bossHoldRef.current = { heldMs: 0, matched: false }
+    bossHeardClaimRef.current = null
+    bossButtonTrialRef.current = null
+    if ('receipt' in result) {
+      const index = bossReceiptsRef.current.findIndex(receipt => receipt.claimId === result.receipt.claimId)
+      if (index < 0) bossReceiptsRef.current.push(result.receipt)
+      else bossReceiptsRef.current[index] = result.receipt
+    }
+    setBossState(result.state)
+    if (result.kind === 'supported-practice') {
+      bossSupportedPracticeRef.current = true
+      setBossMessage(result.completed
+        ? 'Practice finished with help. Try again without hints when you feel ready.'
+        : 'Good practice with a hint. The next note is ready. This did not count as unaided recall.')
+    } else if (result.kind === 'persisted') {
+      setBossMessage(result.outcome === 'failed'
+        ? 'Saved for gentle review. Take your time, then try this same note again.'
+        : result.completed
+          ? bossSupportedPracticeRef.current
+            ? 'Practice complete. Unaided notes were saved; helped notes did not count as unaided recall.'
+            : 'You finished the recital. Your practice is saved.'
+          : 'That note is saved. The next note is ready when you are.')
+    } else if (result.kind === 'retry-note') setBossMessage('A fresh try, on the same note. There is no timer.')
+    else if (result.kind === 'storage-error') setBossMessage('Your saved history could not be read. Nothing was replaced. Try again or return safely.')
+    else if (result.kind === 'conflict') setBossMessage('Newer practice was found. It has not been overwritten. Return safely and reopen the room.')
+    else if (result.kind === 'save-failed' || result.kind === 'readback-mismatch') setBossMessage('Your answer is held, but saving is not confirmed. Retry saving; do not sing it again.')
+  }, [])
+
+  const resolveBossNote = useCallback((correct: boolean) => {
+    const controller = bossControllerRef.current
+    const state = controller?.state()
+    if (!controller || !state?.claimId || !state.currentNote || matchingSuppressedNow()) return
+    acceptBossResult(controller.resolve({
+      attempt: state.attempt, lane: state.lane, cursor: state.cursor,
+      note: state.currentNote, claimId: state.claimId, correct,
+    }))
+  }, [acceptBossResult, matchingSuppressedNow])
+
+  const stepBossChamber = useCallback((dt: number, ctx: CanvasRenderingContext2D) => {
+    const controller = bossControllerRef.current
+    if (!controller) return
+    bossClockRef.current += dt
+    let state = controller.state()
+    if (state.claimId && state.currentNote && state.lane === 'voice' && !matchingSuppressedNow()) {
+      const source = bossSimulatingRef.current
+        ? demoPitchForTarget({ key: state.claimId, note: state.currentNote }, performance.now())
+        : pitchRef.current
+      // DEMO silence is genuinely unavailable input unless the visible sample
+      // control is running; no hidden automatic success is synthesized.
+      const sample = demoRef.current && !bossSimulatingRef.current ? null : source
+      bossHoldRef.current = advanceExactPitchHold(bossHoldRef.current,
+        exactPitchSampleState(sample, noteToFreq(state.currentNote), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS), dt * 1000, HOLD_MS)
+      if (bossHoldRef.current.matched) {
+        resolveBossNote(true)
+        state = controller.state()
+      }
+    }
+    const bossId = bossIdentityRef.current
+    if (!bossId) return
+    renderBossChamber(ctx, assetsRef.current, state, bossHoldRef.current.heldMs / HOLD_MS, bossClockRef.current, reducedMotionRef.current, bossId)
+  }, [demoPitchForTarget, matchingSuppressedNow, resolveBossNote])
 
   const loop = useCallback((ts: number) => {
     if (phaseRef.current !== 'playing') return
@@ -5145,10 +9053,20 @@ export default function PitchforksIII() {
     if (!ctx) return
     const dt = lastTimeRef.current ? Math.min(0.05, (ts - lastTimeRef.current) / 1000) : 0
     lastTimeRef.current = ts
+    // The separate recital room owns this frame. No battlefield movement,
+    // attack deadlines, environmental clock, spawn or next-wave path runs.
+    if (bossControllerRef.current) {
+      stepBossChamber(dt, ctx)
+      rafRef.current = requestAnimationFrame(loop)
+      return
+    }
     updateGame(dt)
-    syncMicHudState()
-    const active = getActiveTarget()
-    const tuner = updatePitchBarState(active)
+    const receiptWindowActive = waveReceiptRef.current.visible && runtimeRef.current.nextWavePending
+    if (!receiptWindowActive) syncMicHudState()
+    const active = receiptWindowActive ? null : getActiveTarget()
+    const tuner = receiptWindowActive
+      ? viewStateRef.current?.tuner ?? EMPTY_TUNER_VIEW
+      : updatePitchBarState(active)
     const frameNow = performance.now()
     const shakeElapsedMs = frameNow - shakeStartedAtRef.current
     const shakeProgress = !reducedMotionRef.current && shakeStartedAtRef.current > 0 && shakeElapsedMs < SHAKE_MS
@@ -5162,7 +9080,7 @@ export default function PitchforksIII() {
       : { x: 0, y: 0 }
     let frankReaction: ViewState['frankReaction'] = null
     const frankReactionKind = frankReactionKindRef.current
-    if (frankReactionKind && frankReactionStartedAtRef.current > 0) {
+    if (!receiptWindowActive && frankReactionKind && frankReactionStartedAtRef.current > 0) {
       const ageMs = frameNow - frankReactionStartedAtRef.current
       if (ageMs < FRANK_REACTION_MS) {
         frankReaction = { kind: frankReactionKind, ageMs }
@@ -5171,13 +9089,44 @@ export default function PitchforksIII() {
         frankReactionStartedAtRef.current = 0
       }
     }
+    const logicalNowMs = runtimeRef.current.animClock * 1000
+    const bellWaveProjection = projectPitchforksBellWave(
+      bellWaveStateRef.current,
+      bellWaveClockMsRef.current,
+    )
+    const bellWaveElapsedMs = bellWaveStateRef.current.wave
+      ? Math.max(0, bellWaveClockMsRef.current - bellWaveStateRef.current.wave.releasedAtMs)
+      : 0
+    const receipt = waveReceiptRef.current
+    const receiptAgeMs = receipt.visible
+      ? pitchforksWaveReceiptAgeMs({
+          logicalNowMs,
+          receiptStartedAtMs: receipt.receiptStartedAtMs,
+        })
+      : 0
+    const victoryClaim = receiptWindowActive ? receipt.claim : null
+    const victoryPose = selectPitchforksVictoryPoseForClaim(
+      victoryClaim,
+      victoryClaim ? pitchforksWaveReceiptAgeMs({ logicalNowMs, receiptStartedAtMs: victoryClaim.claimedAtMs }) : 0,
+      victoryClaim ? victoryCancelledReceiptIdRef.current === victoryClaim.receiptId : false,
+    )
+    const frankVictory: ViewState['frankVictory'] = victoryPose === 'none' || !victoryClaim
+      ? null
+      : {
+          pose: victoryPose,
+          ageMs: receiptAgeMs,
+          receiptId: victoryClaim.receiptId,
+        }
     const view = freezeViewStateForDebug(buildViewState({
       runtime: runtimeRef.current,
       phase: phaseRef.current,
+      normalWorld: selectedWorldRef.current,
       inputMode,
       active,
       activeVillagerId: activeVillagerIdRef.current,
       activeKey: activeKeyRef.current,
+      targetOutcomes: levelProgressRef.current.targetOutcomes,
+      hintedTargetKeys: hintedTargetKeysRef.current,
       chargeProgress: lockProgressRef.current,
       tint: tintRef.current,
       noteNamesVisible: inputMode === 'buttons' ? false : noteNamesRef.current,
@@ -5192,17 +9141,22 @@ export default function PitchforksIII() {
       noteMasteredAgeMs: noteMasteredStartedAtRef.current > 0
         ? performance.now() - noteMasteredStartedAtRef.current
         : 0,
-      waveReceipt: waveReceiptRef.current.visible
-        ? {
-            ...waveReceiptRef.current,
-            timer: waveReceiptStartedAtRef.current > 0
-              ? (performance.now() - waveReceiptStartedAtRef.current) / 1000
-              : 0,
-          }
-        : waveReceiptRef.current,
       frankReaction,
+      frankVictory,
+      closeSmash: closeSmashStateRef.current,
+      closeSmashFallbackDueAtMs: closeSmashFallbackDueAtRef.current,
+      closeSmashRecoilUntil: closeSmashRecoilUntilRef.current,
+      bellRecoilUntil: bellRecoilUntilRef.current,
+      bellWaveClockMs: bellWaveClockMsRef.current,
       shake,
       fsrsMemory: inputMode === 'buttons' ? earFsrsRef.current : fsrsRef.current,
+      thunderhead: thunderheadStateRef.current,
+      thunderheadClockMs: thunderheadClockMsRef.current,
+      thunderheadTravelStartedAtMs: thunderheadTravelStartedAtRef.current,
+      thunderheadTravelStart: thunderheadTravelStartRef.current,
+      thunderheadTravelTarget: thunderheadTravelTargetRef.current,
+      bellWave: bellWaveProjection,
+      bellWaveElapsedMs,
     }), demoRef.current || fsrsDebugRef.current)
     viewStateRef.current = view
     renderView(ctx, view, assetsRef.current)
@@ -5251,9 +9205,16 @@ export default function PitchforksIII() {
       promptMismatchWarnedRef.current = ''
     }
     if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(loop)
-  }, [getActiveTarget, inputMode, syncMicHudState, updateGame, updatePitchBarState])
+  }, [getActiveTarget, inputMode, stepBossChamber, syncMicHudState, updateGame, updatePitchBarState])
 
   const beginPlaying = useCallback(() => {
+    presentationVisitCountByTargetRef.current.clear()
+    bossControllerRef.current?.cancel()
+    bossControllerRef.current = null
+    bossIdentityRef.current = null
+    setBossIdentity(null)
+    bossSimulatingRef.current = false
+    setBossState(null)
     if (!demoRef.current && !rangeProfileRef.current) {
       phaseRef.current = 'tutorial'
       setPhase('tutorial')
@@ -5261,6 +9222,8 @@ export default function PitchforksIII() {
     }
     resumeCueAudioFromGesture()
     clearCueTimers()
+    clearNextWaveTimer()
+    runGenerationRef.current += 1
     sparkGuideEventsRef.current = []
     sparkGuideRef.current = createPitchforksSparkGuideState(sparkGuideRef.current.generation + 1)
     syncSparkGuideStatus('idle')
@@ -5268,11 +9231,19 @@ export default function PitchforksIII() {
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
     clearWaveReceipt()
+    resetCloseSmash()
+    resetThunderhead()
+    resetNormalBellPowerForRun(normalBellRouteAvailable())
+    resetBellWave()
     resetRangeMatch(null)
     setPendingRangeProfile(null)
     setRangeAssessmentError(null)
-    setPortraitDockPanel(null)
-    runtimeRef.current = makeInitialRuntime(demoRef.current)
+    setPortraitDockPanel(staffNotationRef.current ? 'staff' : null)
+    runtimeRef.current = makeInitialRuntime(demoRef.current, closeSmashProofRef.current, galvanicProofRef.current)
+    resetGalvanic()
+    rainActivationRequestedRef.current = false
+    rainUiSignatureRef.current = ''
+    setRainState(runtimeRef.current.rain)
     viewStateRef.current = null
     lightningPhaseTraceRef.current = []
     deferredAdmissionNotesRef.current = new Set()
@@ -5295,7 +9266,7 @@ export default function PitchforksIII() {
     buttonTrialRef.current = null
     buttonAnswerPendingRef.current = false
     setButtonFeedback({ kind: 'listen', text: 'LISTEN, THEN CHOOSE THE NOTE' })
-    consecutiveCorrectRef.current = 0
+    resetLevelProgress(1)
     for (const note of unlockedNotesRef.current) ensureActiveNoteMemory(note)
     demoTargetRef.current = ''
     demoLockCountRef.current = 0
@@ -5328,18 +9299,138 @@ export default function PitchforksIII() {
     lockWhileSuppressedRef.current = false
     micHudStateRef.current = demoRef.current ? 'demo' : 'waiting'
     setMicHudState(micHudStateRef.current)
-    setHud({ wave: 1, health: STARTING_HEALTH, score: 0, streak: 0 })
+    // Reuse the same director and mastery caps as every later level. Demo and
+    // the separate EAR lane never borrow a singer's saved journey checkpoint.
+    const resumeLevel = !demoRef.current && !fsrsDebugRef.current && inputModeRef.current === 'voice'
+      ? presentationJourneyRef.current?.currentLevel ?? 1
+      : 1
+    startWave(resumeLevel)
     if (inputModeRef.current === 'buttons') stopListening()
     setPhase('playing')
     phaseRef.current = 'playing'
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, ensureActiveNoteMemory, loop, resetRangeMatch, resumeCueAudioFromGesture, stopListening, syncSparkGuideStatus])
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, ensureActiveNoteMemory, loop, normalBellRouteAvailable, resetBellWave, resetGalvanic, resetLevelProgress, resetNormalBellPowerForRun, resetRangeMatch, resetThunderhead, resumeCueAudioFromGesture, startWave, stopListening, syncSparkGuideStatus])
 
   const startGame = useCallback(() => {
     beginPlaying()
   }, [beginPlaying])
+
+  const beginBossPreview = useCallback((lane: 'voice' | 'ear', bossId: PitchforksBossId = 'torchmaster') => {
+    if (!isPitchforksBossId(bossId)) return
+    const admitted = [...unlockedNotesRef.current]
+    const entry = assessPitchforksBossEntry(bossId, demoRef.current, {
+      torchmasterChamberPlate: !!assetsRef.current.torchmasterChamberPlate,
+      bellringerChamberPlate: !!assetsRef.current.bellringerChamberPlate,
+      bellringerRest: !!assetsRef.current.bellringerRest,
+    }, admitted)
+    // Entry validation stays before any lifecycle reset, controller creation,
+    // attempt minting, or storage port access. Missing Bellringer art and a
+    // short admitted arsenal therefore remain visibly unavailable and inert.
+    if (!entry.available || !entry.sequence.length) return
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    bossControllerRef.current?.cancel()
+    clearCueTimers()
+    clearNextWaveTimer()
+    clearFirstMinuteTimer()
+    clearNewNoteCeremony()
+    clearNoteMasteredCeremony()
+    clearWaveReceipt()
+    resetCloseSmash()
+    resetThunderhead()
+    resetBellWave()
+    stopListening()
+    resumeCueAudioFromGesture()
+    runGenerationRef.current += 1
+    runtimeRef.current = makeInitialRuntime(true)
+    resetGalvanic()
+    const key = lane === 'voice' ? FSRS_DEBUG_KEY : FSRS_EAR_DEBUG_KEY
+    const controller = createPitchforksBossRecital({
+      attempt: `${bossId}:${runGenerationRef.current}:${Date.now()}`,
+      lane, sequence: entry.sequence, admittedNotes: admitted,
+      storage: {
+        loadStore: () => migrate(key, localStorage.getItem(key)),
+        saveStore: (_, store) => saveStore(key, store),
+        readback: (_, note) => migrate(key, localStorage.getItem(key))[note],
+      },
+    })
+    bossIdentityRef.current = bossId
+    setBossIdentity(bossId)
+    bossControllerRef.current = controller
+    bossReceiptsRef.current = []
+    bossSupportedPracticeRef.current = false
+    bossHoldRef.current = { heldMs: 0, matched: false }
+    bossClockRef.current = 0
+    bossSimulatingRef.current = false
+    bossHeardClaimRef.current = null
+    bossButtonTrialRef.current = null
+    demoTargetRef.current = ''
+    demoLockCountRef.current = 0
+    lastAshAtRef.current = 0
+    setBossSimulating(false)
+    setBossAudioBusy(false)
+    setBossState(controller.state())
+    setBossMessage(bossId === 'bellringer'
+      ? lane === 'ear'
+        ? 'Bellringer two-note interval practice: hear the challenge, then choose the note. There is no timer.'
+        : 'Bellringer two-note interval practice: one exact note at a time. Start the simulated voice when you are ready.'
+      : lane === 'ear'
+        ? 'Hear the challenge, then choose the note. There is no timer.'
+        : 'One exact note at a time. Start the simulated voice when you are ready.')
+    phaseRef.current = 'playing'
+    setPhase('playing')
+    lastTimeRef.current = 0
+    rafRef.current = requestAnimationFrame(loop)
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, loop, resetBellWave, resetCloseSmash, resetGalvanic, resetThunderhead, resumeCueAudioFromGesture, stopListening])
+
+  const playBossCue = useCallback((hint: boolean) => {
+    const controller = bossControllerRef.current
+    const state = controller?.state()
+    if (!controller || !state?.claimId || !state.currentNote || matchingSuppressedNow()) return
+    if (!pianoSamplesReadyRef.current) {
+      setBossMessage('Reference audio is still loading. Please wait before listening.')
+      return
+    }
+    if (hint) controller.hint({ attempt: state.attempt, lane: state.lane, cursor: state.cursor, note: state.currentNote, claimId: state.claimId })
+    bossSimulatingRef.current = false
+    setBossSimulating(false)
+    bossHoldRef.current = { heldMs: 0, matched: false }
+    resumeCueAudioFromGesture()
+    playPianoNote(state.currentNote, { exact: true })
+    const until = performance.now() + 1800
+    cuePlayingUntilRef.current = until
+    matchingSuppressedUntilRef.current = until
+    setBossAudioBusy(true)
+    setBossState(controller.state())
+    const claim = state.claimId
+    cueTimeoutsRef.current.push(setTimeout(() => {
+      if (bossControllerRef.current !== controller || controller.state().claimId !== claim || phaseRef.current !== 'playing') return
+      bossHeardClaimRef.current = claim
+      bossButtonTrialRef.current = createPitchforksButtonTrial(claim)
+      setBossAudioBusy(false)
+      setBossMessage(hint ? 'Hint heard. This is supported practice—take your time.' : 'Now choose the note you heard.')
+    }, 1800))
+  }, [matchingSuppressedNow, resumeCueAudioFromGesture])
+
+  const answerBossByButton = useCallback((note: string) => {
+    const state = bossControllerRef.current?.state()
+    const trial = bossButtonTrialRef.current
+    if (!state?.claimId || state.lane !== 'ear' || !state.currentNote || bossHeardClaimRef.current !== state.claimId || !trial || matchingSuppressedNow()) return
+    const decision = decidePitchforksButtonAnswer(trial, note, state.currentNote)
+    bossButtonTrialRef.current = decision.next
+    if (decision.accepted && decision.shouldGrade) resolveBossNote(decision.correct)
+  }, [matchingSuppressedNow, resolveBossNote])
+
+  useEffect(() => {
+    if (bossState) bossHeadingRef.current?.focus()
+  }, [bossState?.attempt])
+
+  const activateRaincall = useCallback(() => {
+    if ((!demoRef.current && !normalBellRouteAvailable()) || phaseRef.current !== 'playing') return
+    if (runtimeRef.current.rain.phase !== 'ready' || environmentalClockPausedNow()) return
+    rainActivationRequestedRef.current = true
+  }, [environmentalClockPausedNow, normalBellRouteAvailable])
 
   const beginCalibration = useCallback(async () => {
     if (demoRef.current) {
@@ -5357,6 +9448,7 @@ export default function PitchforksIII() {
     phaseRef.current = 'calibrating'
     setPhase('calibrating')
     await startListening()
+    if (phaseRef.current !== 'calibrating') return
     roomCheckStartedAtRef.current = performance.now()
   }, [beginPlaying, startListening])
 
@@ -5509,23 +9601,60 @@ export default function PitchforksIII() {
   }, [applyRangeProfile, beginPlaying, pendingRangeProfile])
 
   const quitToMenu = useCallback(() => {
+    presentationVisitCountByTargetRef.current.clear()
+    bossControllerRef.current?.cancel()
+    bossControllerRef.current = null
+    bossIdentityRef.current = null
+    setBossIdentity(null)
+    bossSimulatingRef.current = false
+    setBossState(null)
+    setBossAudioBusy(false)
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     clearCueTimers()
+    clearNextWaveTimer()
+    runGenerationRef.current += 1
     resetSparkGuide('quit')
     clearFirstMinuteTimer()
     clearNewNoteCeremony()
     clearNoteMasteredCeremony()
     clearWaveReceipt()
+    resetCloseSmash()
+    resetThunderhead()
+    resetBellWave()
+    resetNormalBellPowerForRun(false)
+    resetGalvanic()
     resetRangeMatch(null)
     setPendingRangeProfile(null)
     setRangeAssessmentError(null)
     phaseRef.current = 'menu'
     viewStateRef.current = null
+    rainActivationRequestedRef.current = false
+    rainUiSignatureRef.current = ''
+    runtimeRef.current.rain = createRainState()
+    setRainState(runtimeRef.current.rain)
+    resetLevelProgress(1)
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
     setPhase('menu')
-  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNoteMasteredCeremony, clearWaveReceipt, resetRangeMatch, resetSparkGuide, stopListening])
+  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, resetBellWave, resetCloseSmash, resetGalvanic, resetLevelProgress, resetNormalBellPowerForRun, resetRangeMatch, resetSparkGuide, resetThunderhead, stopListening])
+
+  const beginSongcraft = useCallback(() => {
+    if (!demoRef.current && !rangeProfileRef.current) return
+    quitToMenu()
+    phaseRef.current = 'songcraft'
+    setPhase('songcraft')
+  }, [quitToMenu])
+
+  const playSongcraftReference = useCallback((note: string) => {
+    if (phaseRef.current !== 'songcraft' || !pianoSamplesReadyRef.current) return
+    if (!unlockedNotesRef.current.includes(note) || !PITCHFORKS_RANGE_NOTES.includes(note)) return
+    resumeCueAudioFromGesture()
+    playPianoNote(note, { exact: true })
+    const until = performance.now() + 1800
+    cuePlayingUntilRef.current = until
+    matchingSuppressedUntilRef.current = until
+  }, [resumeCueAudioFromGesture])
 
   const restartNoteJourney = useCallback(() => {
     const profile = rangeProfileRef.current
@@ -5534,7 +9663,10 @@ export default function PitchforksIII() {
     unlockedNotesRef.current = [...starterNotes]
     setUnlockedNotes([...starterNotes])
     deferredAdmissionNotesRef.current = new Set()
-    consecutiveCorrectRef.current = 0
+    clearNextWaveTimer()
+    runGenerationRef.current += 1
+    resetNormalBellPowerForRun(false)
+    resetLevelProgress(1)
     clearNewNoteCeremony()
     setNewNoteUnlocked(null)
     for (const note of starterNotes) {
@@ -5546,7 +9678,7 @@ export default function PitchforksIII() {
     beginPresentationJourney(profile, starterNotes)
     setJourneyResetConfirm(false)
     setJourneyResetStatus(`Journey restarted with ${starterNotes.join(' and ')}. Your range and mastery are safe.`)
-  }, [beginPresentationJourney, clearNewNoteCeremony, ensureEarNoteMemory, ensureNoteMemory, saveCueSupport])
+  }, [beginPresentationJourney, clearNextWaveTimer, clearNewNoteCeremony, ensureEarNoteMemory, ensureNoteMemory, resetLevelProgress, resetNormalBellPowerForRun, saveCueSupport])
 
   useEffect(() => {
     const dialog = journeyResetDialogRef.current
@@ -5560,6 +9692,10 @@ export default function PitchforksIII() {
   }, [journeyResetConfirm])
 
   useEffect(() => () => {
+    bossControllerRef.current?.cancel()
+    bossControllerRef.current = null
+    bossIdentityRef.current = null
+    bossSimulatingRef.current = false
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
     if (admissionDialogRef.current?.open) admissionDialogRef.current.close()
     const admissionReturnTarget = admissionReturnFocusRef.current
@@ -5572,11 +9708,14 @@ export default function PitchforksIII() {
     }
     sparkGuideRef.current = createPitchforksSparkGuideState(spark.generation + 1)
     clearFirstMinuteTimer()
+    clearNextWaveTimer()
     clearCeremonyTimers()
     clearNoteMasteredTimer()
-    clearWaveReceiptTimer()
+    resetThunderhead(false)
+    resetBellWave(false)
+    resetGalvanic(false)
     stopListening()
-  }, [clearCeremonyTimers, clearCueTimers, clearFirstMinuteTimer, clearNoteMasteredTimer, clearWaveReceiptTimer, recordSparkGuideEvent, stopListening])
+  }, [clearCeremonyTimers, clearCueTimers, clearFirstMinuteTimer, clearNextWaveTimer, clearNoteMasteredTimer, recordSparkGuideEvent, resetBellWave, resetGalvanic, resetThunderhead, stopListening])
 
   const micHudView: Record<MicHudState, { label: string; className: string; dotClassName: string }> = {
     demo: {
@@ -5617,20 +9756,301 @@ export default function PitchforksIII() {
   const replayLabel = inputMode === 'buttons'
     ? activeCueContext.noteCount > 1 ? '🔊 REPLAY NOTE CHAIN' : '🔊 REPLAY NOTE'
     : replayLabelForCueSupport(activeCueContext.support, activeCueContext.noteCount, cuePlaybackActive)
-  const firstMinuteCopy = inputMode === 'buttons'
-    ? firstMinuteCoach.beat === 'threat'
-      ? 'THE MOB IS COMING · LISTEN FOR THE FORK NOTE'
-      : null
-    : firstMinuteCoachCopy(firstMinuteCoach.beat, firstMinuteCoach.note)
   const activeButtonTarget = inputMode === 'buttons' ? getActiveTarget() : null
+  const activeTargetForEnvironment = getActiveTarget()
+  const activeEnvironmentReturnText = activeTargetForEnvironment
+    ? projectVillageReturnText(activeTargetForEnvironment.villager, levelProgress.targetOutcomes, hintedTargetKeysRef.current)
+    : null
+  const activeEnvironmentTargetKey = activeTargetForEnvironment?.key ?? null
+  const activeEnvironmentHidden = !!activeTargetForEnvironment &&
+    !!activeEnvironmentReturnText &&
+    activeEnvironmentReturnText.targetKey === activeEnvironmentTargetKey &&
+    !activeEnvironmentReturnText.answerVisible
+  const activeEnvironmentNoteLabel = activeTargetForEnvironment
+    ? projectVillageReturnNoteLabel(
+        activeTargetForEnvironment.key,
+        activeTargetForEnvironment.note,
+        activeEnvironmentHidden ? activeEnvironmentReturnText : null,
+      )
+    : null
+  const projectEnvironmentNote = (targetKey: string, note: string): string =>
+    projectVillageReturnNoteLabel(targetKey, note, activeEnvironmentHidden ? activeEnvironmentReturnText : null)
+  const projectEnvironmentText = (text: string): string =>
+    projectVillageReturnEnvironmentText(
+      text,
+      activeTargetForEnvironment?.note ?? null,
+      activeEnvironmentTargetKey ?? '',
+      activeEnvironmentHidden ? activeEnvironmentReturnText : null,
+    )
+  const galvanicProof = demoMode && galvanicProofRef.current
+  const bellProof = demoMode && bellProofRef.current
+  const normalBell = normalBellRouteAvailable()
+  const bellringerEntry = assessPitchforksBossEntry('bellringer', demoMode, {
+    torchmasterChamberPlate: !!assetsRef.current.torchmasterChamberPlate,
+    bellringerChamberPlate: !!assetsRef.current.bellringerChamberPlate,
+    bellringerRest: !!assetsRef.current.bellringerRest,
+  }, unlockedNotes)
+  const bellringerEntryCopy = pitchforksBossEntryCopy(bellringerEntry)
+  const bellChargeReceipt = bellChargeReceiptRef.current
+  const normalBellState = normalBell ? bellPowerState : null
+  const normalBellPair = normalBellState?.taughtPair.join(' → ') ?? ''
+  const normalBellExpected = normalBellState?.phase === 'activating'
+    ? normalBellState.taughtPair[normalBellState.activationNotes.length] ?? null
+    : null
+  const thunderheadBank = thunderheadState.bank ?? thunderheadState.receipt
+  const projectedNormalBellPair = projectEnvironmentText(normalBellPair)
+  const projectedNormalBellExpected = normalBellExpected
+    ? projectEnvironmentText(normalBellExpected)
+    : null
+  const bellChargeReceiptNote = bellChargeReceipt
+    ? projectEnvironmentNote(bellChargeReceipt.targetKey, bellChargeReceipt.note)
+    : null
+  const thunderheadBankNote = thunderheadBank
+    ? projectEnvironmentNote(thunderheadBank.targetKey, thunderheadBank.note)
+    : null
+  const closeSmashReceiptPitch = closeSmashState.receipt
+    ? projectEnvironmentNote(closeSmashState.receipt.targetKey, closeSmashState.receipt.pitch)
+    : null
+  const bellLifecycleBusy = closeSmashState.phase !== 'idle' ||
+    (thunderheadState.phase !== 'idle' && thunderheadState.phase !== 'consumed') ||
+    galvanicProjection.bankCount > 0 ||
+    galvanicProjection.armed
+  const privateBellArmDisabled = !bellProof ||
+    phase !== 'playing' ||
+    inputMode !== 'voice' ||
+    bellWaveState.phase !== 'idle' && bellWaveState.phase !== 'finished' ||
+    !!bellChargeReceipt ||
+    bellArmRequestedRef.current ||
+    bellReleaseRequestedRef.current ||
+    !activeTargetForEnvironment ||
+    bellLifecycleBusy
+  const normalBellArmDisabled = !normalBell ||
+    phase !== 'playing' ||
+    inputMode !== 'voice' ||
+    bellWaveState.phase !== 'idle' && bellWaveState.phase !== 'finished' ||
+    !normalBellState ||
+    normalBellState.phase !== 'ready' ||
+    bellReleaseRequestedRef.current ||
+    bellChargeReceipt !== null ||
+    bellLifecycleBusy
+  const bellArmDisabled = bellProof ? privateBellArmDisabled : normalBellArmDisabled
+  const privateBellReleaseDisabled = !bellProof ||
+    phase !== 'playing' ||
+    inputMode !== 'voice' ||
+    bellWaveState.phase !== 'idle' && bellWaveState.phase !== 'finished' ||
+    !bellChargeReceipt ||
+    bellReleaseRequestedRef.current
+  const normalBellReleaseDisabled = !normalBell ||
+    phase !== 'playing' ||
+    inputMode !== 'voice' ||
+    bellWaveState.phase !== 'idle' && bellWaveState.phase !== 'finished' ||
+    normalBellState?.phase !== 'pending' ||
+    bellReleaseRequestedRef.current
+  const bellReleaseDisabled = bellProof ? privateBellReleaseDisabled : normalBellReleaseDisabled
+  const bellStatusCopy = bellProof
+    ? inputMode !== 'voice'
+      ? 'BELL · VOICE ONLY'
+      : bellWaveState.phase === 'active'
+        ? `WAVE ACTIVE · ${Math.round(bellWaveProjection.radius)} PX · ${bellWaveState.contactedStableIDs.length} CONTACT${bellWaveState.contactedStableIDs.length === 1 ? '' : 'S'}`
+        : bellReleaseRequestedRef.current
+          ? `RING QUEUED · ${bellChargeReceiptNote ?? ''}`
+          : bellChargeReceipt
+            ? `READY · ${bellChargeReceiptNote ?? 'THE EXACT NOTE'} · RING BELLS`
+            : bellWaveState.phase === 'finished'
+              ? `WAVE FINISHED · ${bellWaveState.contactedStableIDs.length} CONTACT${bellWaveState.contactedStableIDs.length === 1 ? '' : 'S'}`
+              : bellArmRequestedRef.current
+                ? `CHARGING · HOLD ${activeEnvironmentNoteLabel ?? 'THE EXACT NOTE'}`
+                : 'CHARGE THE EXACT NOTE'
+    : normalBell
+      ? inputMode !== 'voice'
+        ? 'BELL · VOICE ONLY'
+        : bellWaveState.phase === 'active'
+        ? `WAVE ACTIVE · ${Math.round(bellWaveProjection.radius)} PX · ${bellWaveState.contactedStableIDs.length} CONTACT${bellWaveState.contactedStableIDs.length === 1 ? '' : 'S'}`
+        : bellReleaseRequestedRef.current
+          ? `RING QUEUED · ${projectedNormalBellPair}`
+          : normalBellState?.phase === 'pending'
+            ? `READY · ${projectedNormalBellPair} · RING BELLS`
+            : bellWaveState.phase === 'finished'
+              ? `WAVE FINISHED · ${bellWaveState.contactedStableIDs.length} CONTACT${bellWaveState.contactedStableIDs.length === 1 ? '' : 'S'}`
+              : normalBellState?.phase === 'activating'
+                ? `SING ${projectedNormalBellExpected ?? 'THE NEXT NOTE'} · STEP ${(normalBellState.activationNotes.length + 1)}/2`
+                : normalBellState?.phase === 'ready'
+                  ? `READY · ${projectedNormalBellPair} · TEACH PAIR`
+                  : `CHARGE ${normalBellState?.charge ?? 0}/3 · ${projectedNormalBellPair}`
+      : 'BELL UNAVAILABLE'
+  const bellControlVisible = bellProof || normalBell
+  const activeTorch = activeTargetForEnvironment?.villager.torch ?? null
+  const closeSmashReady = inputMode === 'voice' &&
+    closeSmashState.phase === 'ready' &&
+    !!closeSmashState.receipt &&
+    activeTargetForEnvironment?.key === closeSmashState.receipt?.targetKey
+  const closeSmashActionDisabled = phase !== 'playing' || !closeSmashReady || galvanicProof
+  const closeSmashStatusCopy = inputMode !== 'voice'
+    ? 'CLOSE SMASH · VOICE LOCK REQUIRED'
+    : closeSmashState.phase === 'ready' && closeSmashState.receipt
+      ? `CLOSE SMASH READY · ${closeSmashReceiptPitch ?? 'THE EXACT NOTE'}`
+      : closeSmashState.phase === 'pending'
+        ? closeSmashState.consumer === 'smash' ? 'CLOSE SMASH · WIND-UP' : 'CLOSE SMASH · RESOLVING'
+        : closeSmashState.phase === 'settle'
+          ? 'CLOSE SMASH · SETTLING'
+          : 'CLOSE SMASH · EARN AN EXACT CLOSE LOCK'
+  const closeSmashStatusLabel = inputMode !== 'voice'
+    ? 'VOICE ONLY'
+    : closeSmashState.phase === 'ready' && closeSmashState.receipt
+      ? 'READY'
+      : closeSmashState.phase === 'pending'
+        ? closeSmashState.consumer === 'smash' ? 'WIND-UP' : 'RESOLVING'
+        : closeSmashState.phase === 'settle'
+          ? 'SETTLING'
+          : 'EARN LOCK'
+  const thunderheadArmReady = thunderheadState.phase === 'idle' || thunderheadState.phase === 'consumed'
+  const thunderheadArmDisabled = !demoMode || phase !== 'playing' || inputMode !== 'voice' || !thunderheadArmReady || galvanicProof
+  const thunderheadReleaseDisabled = !demoMode || phase !== 'playing' || inputMode !== 'voice' || thunderheadState.phase !== 'banked' || !thunderheadState.bank || galvanicProof
+  const thunderheadStatusCopy = inputMode !== 'voice'
+    ? 'THUNDERHEAD · VOICE ONLY'
+    : galvanicProof
+      ? 'DISABLED · GALVANIC OWNS SWEEP'
+      : thunderheadState.phase === 'banked' && thunderheadBank
+        ? `BANKED · ${thunderheadBankNote ?? 'THE EXACT NOTE'} · RELEASE WHEN READY`
+        : thunderheadState.phase === 'detached' || thunderheadState.phase === 'ceiling_travel'
+          ? `CEILING TRAVEL · ${thunderheadBankNote ?? ''}`
+          : thunderheadState.phase === 'target_match'
+            ? `TARGET MATCH · ${thunderheadBankNote ?? ''}`
+            : thunderheadState.phase === 'strike'
+              ? `STRIKE · ${thunderheadBankNote ?? ''}`
+              : thunderheadState.phase === 'consumed'
+                ? `CONSUMED · ${thunderheadBankNote ?? ''}`
+                : thunderheadArmRequestedRef.current
+                  ? 'ARMED · HOLD THE EXACT NOTE'
+                  : 'ARM NEXT EXACT VOICE LOCK'
+  const galvanicBankLabels = galvanicProjection.banks
+    .map(bank => projectEnvironmentNote(bank.targetKey, bank.note))
+    .join(' · ')
+  const galvanicStatusCopy = inputMode !== 'voice'
+    ? 'GALVANIC · VOICE ONLY'
+    : galvanicProjection.bankCount >= GALVANIC_BANK_CAPACITY
+      ? `2 BANKS · ${galvanicBankLabels} · RELEASE SWEEP`
+    : galvanicProjection.armed
+      ? `ARMED · HOLD ${activeEnvironmentNoteLabel ?? 'THE EXACT NOTE'} FOR ${HOLD_MS} MS · ${galvanicProjection.bankCount}/${GALVANIC_BANK_CAPACITY}`
+      : galvanicProjection.awaitingSilence
+        ? `WAITING FOR SILENCE · ${galvanicProjection.bankCount}/${GALVANIC_BANK_CAPACITY} BANK${galvanicProjection.bankCount === 1 ? '' : 'S'}`
+        : galvanicProjection.bankCount === 0
+          ? 'READY · 0 BANKS · BANK THE NEXT EXACT NOTE'
+          : galvanicProjection.bankCount === 1
+            ? `1 BANK · ${galvanicBankLabels} · BANK AGAIN OR RELEASE SWEEP`
+            : `2 BANKS · ${galvanicBankLabels} · RELEASE SWEEP`
+  const galvanicLifecycleBusy = closeSmashState.phase !== 'idle' ||
+    (thunderheadState.phase !== 'idle' && thunderheadState.phase !== 'consumed') ||
+    strikePresentationPending() ||
+    cuePlayingNow() ||
+    matchingSuppressedNow()
+  const galvanicBankDisabled = !galvanicProof ||
+    phase !== 'playing' ||
+    inputMode !== 'voice' ||
+    !activeTargetForEnvironment ||
+    activeTargetForEnvironment.villager.torch.phase !== 'spent' ||
+    galvanicProjection.bankCount >= GALVANIC_BANK_CAPACITY ||
+    galvanicProjection.armed ||
+    galvanicProjection.awaitingSilence ||
+    galvanicReleaseRequestedRef.current ||
+    galvanicLifecycleBusy
+  const galvanicReleaseDisabled = !galvanicProof ||
+    phase !== 'playing' ||
+    inputMode !== 'voice' ||
+    galvanicProjection.bankCount < 1 ||
+    galvanicProjection.bankCount > GALVANIC_BANK_CAPACITY ||
+    galvanicProjection.armed ||
+    galvanicReleaseRequestedRef.current ||
+    galvanicLifecycleBusy
+  const galvanicCancelDisabled = !galvanicProof || phase !== 'playing'
+  const galvanicCoachCopy = galvanicProof && inputMode === 'voice' && galvanicProjection.bankCount > 0
+    ? galvanicProjection.armed
+      ? `GALVANIC ARMED · HOLD ${activeEnvironmentNoteLabel ?? 'THE EXACT NOTE'}`
+      : galvanicStatusCopy
+    : null
+  const firstMinuteCoachDisplayCopy = activeEnvironmentReturnText
+    ? projectVillageReturnCoachCopy(firstMinuteCoach.beat, firstMinuteCoach.note, activeEnvironmentReturnText)
+    : firstMinuteCoachCopy(firstMinuteCoach.beat, firstMinuteCoach.note)
+  // Stored-cloud instructions replace the ordinary first-lock tutorial until
+  // this charge is consumed; the tutorial resumes on ordinary play afterward.
+  const firstMinuteCopy = thunderheadState.bank?.consumedAt === null
+    ? null
+    : galvanicCoachCopy
+    ?? (inputMode === 'buttons'
+      ? firstMinuteCoach.beat === 'threat'
+        ? 'THE MOB IS COMING · LISTEN FOR THE FORK NOTE'
+        : null
+      : firstMinuteCoachDisplayCopy)
+  const rainEffects = deriveRainEffects(rainState)
+  const rainChargeCopy = `${rainState.charge}/${RAINCALL_REQUIRED_RESPONSES}`
+  const rainCycleCopy = `cycle ${rainState.cycleID}`
+  const rainPhaseCopy = rainState.phase === 'charging'
+    ? `Charging ${rainChargeCopy} · ${Math.round(clamp(rainState.elapsedMs / RAINCALL_TIMINGS.chargingMs, 0, 1) * 100)}% · ${rainCycleCopy}`
+    : rainState.phase === 'ready'
+      ? `Ready ${rainChargeCopy} · ${rainCycleCopy} — call the rain`
+      : rainState.phase === 'gutter_fill'
+        ? `Gutters filling ${Math.round(rainState.fill * 100)}% · ${rainChargeCopy} · ${rainCycleCopy}`
+        : rainState.phase === 'gargoyle_release'
+          ? `Gargoyles releasing water · ${rainChargeCopy} · ${rainCycleCopy}`
+          : rainState.phase === 'raining'
+            ? `Rain active — villagers slowed · ${rainChargeCopy} · ${rainCycleCopy}`
+            : `Rain cooldown · ${rainChargeCopy} · ${rainCycleCopy}`
+  const torchPhaseCopy = !activeTorch
+    ? 'No active torch bearer.'
+    : activeTorch.phase === 'lit'
+      ? `Torch lit — hold the exact ${activeEnvironmentNoteLabel ?? 'target'} to douse it before the fork can strike.`
+      : activeTorch.phase === 'holding'
+        ? `Torch hold ${Math.round(clamp(activeTorch.heldMs / TORCH_EXACT_HOLD_MS, 0, 1) * 100)}% — keep the exact note.`
+        : activeTorch.phase === 'steaming'
+          ? 'Torch steaming — keep the target steady.'
+          : activeTorch.phase === 'wet'
+            ? 'Torch wet — no tine credit was granted by water.'
+            : 'Torch spent — the ordinary note lock is available.'
+  const rainPhaseLabel = rainState.phase === 'charging'
+    ? 'CHARGING'
+    : rainState.phase === 'ready'
+      ? 'READY'
+      : rainState.phase === 'gutter_fill'
+        ? 'FILLING'
+        : rainState.phase === 'gargoyle_release'
+          ? 'RELEASING'
+          : rainState.phase === 'raining'
+            ? 'RAINING'
+            : 'COOLDOWN'
+  const torchPhaseLabel = !activeTorch
+    ? null
+    : activeTorch.phase === 'lit'
+      ? 'DOUSE'
+      : activeTorch.phase === 'holding'
+        ? 'HOLD'
+        : activeTorch.phase === 'steaming'
+          ? 'STEAMING'
+          : activeTorch.phase === 'wet'
+            ? 'WET'
+            : 'SPENT'
+  const raincallActionDisabled = (!demoMode && !normalBell) || rainState.phase !== 'ready' || timersPausedRef.current || ceremony.active
   const buttonAnswerOpen = !!activeButtonTarget &&
     !cuePlaybackActive &&
     !matchingSuppressedNow() &&
     buttonTrialRef.current?.targetKey === activeButtonTarget.key &&
     !buttonTrialRef.current.requiresReplay &&
     !buttonTrialRef.current.resolved
+  const waveReceiptResult = waveReceipt.visible ? waveReceipt.levelResult : null
+  const waveReceiptNoteNamesVisible = inputMode === 'buttons' || noteNamesOn
+  const waveReceiptMemory = inputMode === 'buttons' ? earFsrsRef.current : fsrsRef.current
   const calibrationReady = heardYou && !micError
   const micReadinessView = pitchforksMicReadinessCopy(micReadiness)
+  const levelAccuracyPercent = pitchforksLevelAccuracyPercent(levelProgress, inputMode)
+  const levelProgressMode = inputMode === 'buttons'
+    ? 'EAR'
+    : levelProgress.level === 1
+      ? 'Practice'
+      : 'Recall'
+  const levelProgressCopy = demoMode ? 'DEMO showcase' : `${levelAccuracyPercent}% / ${PITCHFORKS_LEVEL_ACCURACY_GOAL_PERCENT}% ${levelProgressMode}`
+  const supportedPracticeCount = levelProgress.supportedPracticeCorrectTargets + levelProgress.hintedCorrectTargets
+  const supportedPracticeCopy = !demoMode && inputMode === 'voice' && supportedPracticeCount > 0
+    ? ` · supported +${supportedPracticeCount}`
+    : ''
   const calibrationHudLabel = micError
     ? activeMicHud.label
     : heardYou
@@ -5638,6 +10058,46 @@ export default function PitchforksIII() {
       : micHudState === 'waiting'
         ? 'Connecting mic...'
         : activeMicHud.label
+  const journeySaveNotice = !demoMode && !fsrsDebugMode && journeySaveStatus === 'not-confirmed' ? (
+    <div
+      data-testid="pf3-journey-save-status"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="mb-4 flex flex-wrap items-center justify-between gap-3 border border-amber-500/70 bg-amber-950/30 px-3 py-2 text-xs font-bold leading-relaxed text-amber-100"
+    >
+      <span id="pf3-journey-save-message">Saving not confirmed. Progress remains in memory; retry saving.</span>
+      <button
+        type="button"
+        data-testid="pf3-journey-save-retry"
+        aria-describedby="pf3-journey-save-message"
+        onClick={retryPresentationJourneySave}
+        className="min-h-11 shrink-0 border border-amber-200 px-3 py-1 text-xs font-black tracking-widest text-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+      >
+        RETRY SAVING JOURNEY
+      </button>
+    </div>
+  ) : null
+  const masterySaveNotice = !demoMode && !fsrsDebugMode && masterySaveStatus === 'not-confirmed' ? (
+    <div
+      data-testid="pf3-mastery-save-status"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="mb-4 flex flex-wrap items-center justify-between gap-3 border border-amber-500/70 bg-amber-950/30 px-3 py-2 text-xs font-bold leading-relaxed text-amber-100"
+    >
+      <span id="pf3-mastery-save-message">Mastery saving not confirmed. Latest practice remains in memory; retry saving.</span>
+      <button
+        type="button"
+        data-testid="pf3-mastery-save-retry"
+        aria-describedby="pf3-mastery-save-message"
+        onClick={retryMasterySave}
+        className="min-h-11 shrink-0 border border-amber-200 px-3 py-1 text-xs font-black tracking-widest text-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+      >
+        RETRY SAVING MASTERY
+      </button>
+    </div>
+  ) : null
   const newNoteCeremonyBanner = (
     <>
       <dialog
@@ -5761,10 +10221,32 @@ export default function PitchforksIII() {
     </>
   )
 
+  if (phase === 'songcraft') {
+    return (
+      <PitchforksSongcraft
+        admittedNotes={unlockedNotes}
+        storage={songcraftStorage}
+        microphone={{
+          pitchRef,
+          healthRef: micSourceHealthRef,
+          generationRef: pitchGenerationRef,
+          isListening,
+          error: micError,
+          start: startListening,
+          stop: stopListening,
+        }}
+        onReturn={quitToMenu}
+        matchingSuppressed={matchingSuppressedNow}
+        referenceReady={pianoSamplesReady}
+        playReference={playSongcraftReference}
+      />
+    )
+  }
+
   if (phase === 'menu') {
     const canRestartJourney = !!rangeProfile && unlockedNotes.length > starterPairForRange(rangeProfile).length
     return (
-      <div data-testid="pf3-menu" className={`fixed inset-0 overflow-y-auto bg-[#070914] text-gray-100 flex items-start justify-center px-4 py-4 ${composerSeedProofEnabled ? '' : 'sm:items-center'}`} style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
+      <div data-testid="pf3-menu" className="fixed inset-0 overflow-y-auto bg-[#070914] text-gray-100 flex items-start justify-center px-4 py-4" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
         {newNoteCeremonyBanner}
         {demoMode && (
           <div className="absolute top-4 right-4 text-[11px] font-bold tracking-widest text-orange-200 border border-orange-500/50 px-2 py-1">
@@ -5782,6 +10264,12 @@ export default function PitchforksIII() {
           </div>
           <h1 className="text-3xl font-black tracking-widest text-orange-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
+          {process.env.NODE_ENV === 'development' && (
+            <a href="/pitch-defender/pitchforks-3/gradesheet" target="_blank" rel="noopener noreferrer"
+              className="mb-4 flex min-h-12 items-center justify-center rounded border border-cyan-700 px-3 py-2 text-sm text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-200">
+              Procedure Gradesheet · opens a new tab
+            </a>
+          )}
           {composerSeedProofEnabled && (
             <section
               data-testid="pf3-composer-seed-proof"
@@ -5810,44 +10298,107 @@ export default function PitchforksIII() {
               )}
             </section>
           )}
-          <div className="mb-5 grid grid-cols-2 sm:grid-cols-4 gap-1.5" aria-label="World Map">
-            {WORLD_REGISTRY.map(world => {
-              const unlocked = isWorldUnlocked(world.id)
-              const current = world.playable && unlocked
+          <div className="mb-5" aria-label="World Map">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm font-black uppercase tracking-widest text-orange-100">
+              <span data-testid="pf3-selected-world">SELECTED WORLD · {selectedWorld === 'village-gate' ? 'THE VILLAGE GATE' : 'THE DUNGEON'}</span>
+              <span className="text-gray-400">
+                {selectedWorld === 'village-gate' ? 'Available after the Dungeon clear.' : 'Available now.'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+              {WORLD_REGISTRY.map(world => {
+                const isDungeon = world.id === 'dungeon'
+                const isVillageGate = world.id === 'village-gate'
+                const normalWorld: PitchforksNormalWorld | null = isDungeon
+                  ? 'dungeon'
+                  : isVillageGate
+                    ? 'village-gate'
+                    : null
+                const hasDungeonClear = !demoMode && !fsrsDebugMode && Boolean(presentationJourney?.dungeonClear)
+                const villageGateAvailable = isVillageGate && hasDungeonClear && villageGateAssetStatus === 'ready' && !!assetsRef.current.villageGatePlate
+                const selectable = isDungeon || villageGateAvailable
+                const selected = normalWorld !== null && selectedWorld === normalWorld
+                const stateCopy = isDungeon
+                  ? selected ? 'Ready to play.' : 'Choose this world.'
+                  : isVillageGate
+                    ? !hasDungeonClear
+                      ? 'Master your current notes to unlock.'
+                      : !villageGateAvailable
+                        ? villageGateAssetStatus === 'missing'
+                          ? 'Earned · Village Gate scene unavailable.'
+                          : 'Earned · Village Gate scene loading.'
+                        : selected
+                          ? 'Ready to play.'
+                          : 'Choose this world.'
+                    : 'Opens later in your adventure.'
 
-              return (
-                <div
-                  key={world.id}
-                  className={[
-                    'min-h-28 border px-2 py-2 text-left',
-                    current
-                      ? 'border-orange-200 bg-orange-500/10 text-orange-100'
-                      : 'border-gray-700/80 bg-black/20 text-gray-400',
-                  ].join(' ')}
-                  aria-disabled={unlocked ? undefined : true}
-                >
-                  <div className="min-h-8">
-                    {current ? (
-                      <span className="inline-flex border border-orange-200/60 px-1 py-0.5 text-[9px] font-black text-orange-100">
-                        PLAYING
-                      </span>
+                return (
+                  <div key={world.id} className="min-h-28 flex flex-col">
+                    {isDungeon || isVillageGate ? (
+                      <button
+                        type="button"
+                        data-testid={`pf3-world-${world.id}`}
+                        onClick={() => {
+                          if (normalWorld) selectNormalWorld(normalWorld)
+                        }}
+                        disabled={!selectable}
+                        aria-pressed={selected}
+                          className={[
+                           'min-h-28 flex-1 w-full border px-2 py-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-200',
+                          selected
+                            ? 'border-orange-200 bg-orange-500/10 text-orange-100'
+                            : selectable
+                              ? 'border-green-700/80 bg-green-950/20 text-green-100'
+                              : 'border-gray-700/80 bg-black/20 text-gray-400',
+                        ].join(' ')}
+                      >
+                        <div className="min-h-8">
+                          <span className="inline-flex border border-current/50 px-1 py-0.5 text-sm font-black">
+                            {selected ? 'SELECTED' : selectable ? 'AVAILABLE' : isVillageGate && hasDungeonClear ? 'EARNED' : 'LOCKED'}
+                          </span>
+                        </div>
+                        <div className="text-sm font-black uppercase leading-tight">
+                          {world.name}
+                        </div>
+                        <div
+                          className="mt-2 text-sm leading-snug"
+                          data-testid={isVillageGate ? 'pf3-village-gate-status' : undefined}
+                        >
+                          {stateCopy}
+                        </div>
+                      </button>
                     ) : (
-                      <span className="text-sm text-gray-500" aria-hidden="true">
-                        &#128274;
-                      </span>
+                      <div
+                        className="min-h-28 flex-1 border border-gray-700/80 bg-black/20 px-2 py-2 text-left text-gray-400"
+                        aria-disabled="true"
+                      >
+                        <div className="min-h-8">
+                          <span className="text-sm text-gray-500" aria-hidden="true">
+                            &#128274;
+                          </span>
+                        </div>
+                        <div className="text-sm font-black uppercase leading-tight">
+                          {world.name}
+                        </div>
+                        <div className="mt-2 text-sm leading-snug text-gray-500">
+                          {stateCopy}
+                        </div>
+                      </div>
+                    )}
+                    {isVillageGate && hasDungeonClear && villageGateAssetStatus === 'missing' && (
+                      <button
+                        type="button"
+                        data-testid="pf3-village-gate-retry"
+                        onClick={retryVillageGateAsset}
+                        className="mt-1 min-h-12 w-full border border-amber-300/70 px-2 py-1 text-sm font-black uppercase tracking-wider text-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200"
+                      >
+                        Retry Village Gate scene
+                      </button>
                     )}
                   </div>
-                  <div className="text-[10px] font-black uppercase leading-tight">
-                    {world.name}
-                  </div>
-                  {!current && (
-                    <div className="mt-2 text-[10px] leading-snug text-gray-500">
-                      {world.gateLabel}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
           <div className="mb-5">
             {rangeProfile || demoMode ? (
@@ -5886,6 +10437,22 @@ export default function PitchforksIII() {
               </div>
             )}
           </div>
+          {journeySaveNotice}
+          {masterySaveNotice}
+          {(rangeProfile || demoMode) && (
+            <button
+              type="button"
+              data-testid="pf3-songcraft-open"
+              onClick={beginSongcraft}
+              className="mb-4 min-h-12 w-full border border-cyan-500/70 bg-cyan-950/25 px-4 py-3 text-left text-cyan-100"
+            >
+              <span className="block text-sm font-black tracking-widest">SONGCRAFT · PRACTICE A SONG</span>
+              <span className="mt-1 block text-xs leading-relaxed text-gray-300">
+                Your songs and built-in exercises, one note at a time. No timer. Only notes in your comfortable arsenal earn practice credit.
+                {demoMode ? ' Demo keeps practice history separate.' : ''}
+              </span>
+            </button>
+          )}
           {!demoMode && (
             <section className="mb-4 border border-cyan-900/70 bg-cyan-950/15 p-3" aria-labelledby="pf3-input-mode-heading">
               <h2 id="pf3-input-mode-heading" className="text-xs font-black tracking-widest text-cyan-100">HOW YOU DEFEND</h2>
@@ -6037,6 +10604,55 @@ export default function PitchforksIII() {
           >
             {demoMode ? 'START DEMO' : 'HOW TO PLAY'}
           </button>
+          {!demoMode && !fsrsDebugMode && (
+            <details className="mt-4 w-full border border-cyan-900/70" data-testid="pf3-mastery-disclosure">
+              <summary className="min-h-12 cursor-pointer px-3 py-3 text-sm font-bold text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
+                YOUR NOTES · Singing &amp; listening progress
+              </summary>
+              <PitchforksMasteryPanel projection={projectPitchforksMastery({
+                admittedNotes: rangeProfile ? unlockedNotes : [],
+                voiceMemory: fsrsRef.current,
+                earMemory: earFsrsRef.current,
+                masteryRecords: masteryProgressRef.current,
+                nowMs: Date.now(),
+              })} />
+            </details>
+          )}
+          {demoMode && <section className="mt-5 border border-amber-700/60 p-3" aria-label="Torchmaster private preview">
+            <p className="text-sm font-bold text-amber-100">THE TORCHMASTER · UNTIMED ROOM</p>
+            <p className="mt-1 text-xs text-gray-400">Private preview. Uses demo notes and separate practice history; no world unlock.</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <button type="button" data-testid="pf3-boss-enter" disabled={!assetsReady || !assetsRef.current.torchmasterChamberPlate} onClick={() => beginBossPreview('voice')} className="min-h-12 border border-green-300 bg-green-950/50 px-3 text-sm font-bold text-green-100 disabled:opacity-40">SINGING DEMO</button>
+              <button type="button" data-testid="pf3-boss-enter-ear" disabled={!assetsReady || !assetsRef.current.torchmasterChamberPlate} onClick={() => beginBossPreview('ear')} className="min-h-12 border border-cyan-300 bg-cyan-950/50 px-3 text-sm font-bold text-cyan-100 disabled:opacity-40">LISTEN & CHOOSE</button>
+            </div>
+          </section>}
+          {demoMode && <section className="mt-5 border border-violet-700/60 p-3" aria-label="Bellringer private preview">
+            <p className="text-sm font-bold text-violet-100">THE BELLRINGER · TWO-NOTE INTERVAL PRACTICE</p>
+            <p className="mt-1 text-xs text-gray-400">DEMO ONLY · separate practice history · no world unlock. This private room uses the first two distinct admitted notes in order.</p>
+            <p role="status" aria-live="polite" data-testid="pf3-bellringer-availability" className={`mt-2 text-xs ${bellringerEntry.available ? 'text-green-200' : 'text-amber-200'}`}>
+              {bellringerEntryCopy}
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                data-testid="pf3-bellringer-enter-voice"
+                disabled={!bellringerEntry.available}
+                onClick={() => beginBossPreview('voice', 'bellringer')}
+                className="min-h-12 border border-violet-300 bg-violet-950/50 px-3 text-sm font-bold text-violet-100 disabled:opacity-40"
+              >
+                BELLRINGER SINGING DEMO
+              </button>
+              <button
+                type="button"
+                data-testid="pf3-bellringer-enter-ear"
+                disabled={!bellringerEntry.available}
+                onClick={() => beginBossPreview('ear', 'bellringer')}
+                className="min-h-12 border border-cyan-300 bg-cyan-950/50 px-3 text-sm font-bold text-cyan-100 disabled:opacity-40"
+              >
+                BELLRINGER LISTEN &amp; CHOOSE
+              </button>
+            </div>
+          </section>}
         </div>
       </div>
     )
@@ -6404,6 +11020,52 @@ export default function PitchforksIII() {
     )
   }
 
+  if (phase === 'playing' && bossState) {
+    const complete = bossState.status === 'complete'
+    const retryNote = !bossState.claimId && bossState.status === 'active' && bossState.lastReceipt?.correct === false
+    const supported = bossSupportedPracticeRef.current || bossReceiptsRef.current.some(receipt => receipt.persisted && receipt.supported)
+    const activeBossId = bossIdentity ?? (bossState.attempt.startsWith('bellringer:') ? 'bellringer' : 'torchmaster')
+    const activeBossName = activeBossId === 'bellringer' ? 'Bellringer' : 'Torchmaster'
+    const controlClass = 'min-h-12 rounded-sm border px-4 py-3 text-sm font-bold disabled:opacity-40'
+    return <main data-testid="pf3-boss-room" className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#070914] text-gray-100" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
+      <header className="mx-auto max-w-3xl px-4 pb-3 pt-5 text-center">
+        <p className="text-[10px] tracking-widest text-amber-200">PRIVATE DEMO · NO TIMER · SEPARATE PRACTICE HISTORY</p>
+        <h1 ref={bossHeadingRef} tabIndex={-1} className="mt-2 text-xl font-black tracking-widest text-amber-100">THE {activeBossName.toUpperCase()}</h1>
+        <p className="mt-2 text-xs text-gray-300">{complete ? `${activeBossName} practice complete` : `Pass-off ${bossState.cursor + 1} of ${bossState.sequence.length}`} · {activeBossId === 'bellringer' ? 'Two-note interval practice' : bossState.lane === 'ear' ? 'Listen and recognize' : 'Exact-note voice simulation'}</p>
+      </header>
+      <div ref={canvasContainerRef} className="relative mx-auto w-full max-w-[720px]" style={{ aspectRatio: `${W} / ${H}` }}>
+        <canvas ref={canvasRef} width={W} height={H} className="block h-full w-full" style={{ imageRendering: 'pixelated' }} aria-label={`${activeBossName} chamber with original Frankenstein and the current musical challenge`} />
+      </div>
+      <section className="mx-auto max-w-2xl px-4 py-4">
+        <p role="status" aria-live="polite" aria-atomic="true" data-testid="pf3-boss-status" className="min-h-12 text-center text-sm leading-relaxed text-cyan-100">{bossMessage}</p>
+        {complete ? <div className="my-3 border border-green-400/50 bg-green-950/30 p-4 text-center">
+          <p className="font-bold text-green-200">{activeBossId === 'bellringer' ? `Bellringer · ${supported ? 'Completed with help' : 'Completed without a hint'}` : supported ? 'Completed with help' : 'Completed without a hint'}</p>
+          <p className="mt-2 text-xs text-gray-300">{bossState.lane === 'voice' ? 'Simulated voice demonstration—not a singer assessment.' : 'Recognition practice—not a vocal assessment.'} No world or skill unlock is granted by this preview.</p>
+        </div> : <div className="grid gap-3">
+          {bossState.status === 'pending-save' ? <button type="button" data-testid="pf3-boss-retry-save" className={`${controlClass} border-amber-300 text-amber-100`} onClick={() => { const controller = bossControllerRef.current; if (controller) acceptBossResult(controller.retrySave()) }}>RETRY SAVING</button>
+            : retryNote ? <button type="button" data-testid="pf3-boss-retry-note" className={`${controlClass} border-green-300 text-green-100`} onClick={() => { const controller = bossControllerRef.current; if (controller) acceptBossResult(controller.retryNote()) }}>TRY THIS NOTE AGAIN</button>
+              : <>
+                {bossState.lane === 'ear' && <button type="button" data-testid="pf3-boss-hear" disabled={bossAudioBusy} className={`${controlClass} border-cyan-300 text-cyan-100`} onClick={() => playBossCue(false)}>HEAR THE CHALLENGE</button>}
+                {bossState.lane === 'voice' ? <button type="button" data-testid="pf3-boss-simulate" disabled={bossAudioBusy || bossSimulating || !bossState.claimId} className={`${controlClass} border-green-300 bg-green-950/50 text-green-100`} onClick={() => {
+                  if (!bossControllerRef.current?.state().claimId || matchingSuppressedNow()) return
+                  demoTargetRef.current = ''
+                  bossHoldRef.current = { heldMs: 0, matched: false }
+                  bossSimulatingRef.current = true
+                  setBossSimulating(true)
+                  setBossMessage('Simulated voice: finding the exact note, then holding it. No microphone is being assessed.')
+                }}>{bossSimulating ? 'SIMULATED VOICE IS SINGING…' : 'SING NOTE · SIMULATED VOICE'}</button>
+                  : <div className="grid grid-cols-2 gap-2" aria-label="Choose the note heard">{[...new Set(bossState.sequence)].map(note => <button key={note} type="button" data-testid={`pf3-boss-answer-${note}`} disabled={bossAudioBusy || bossHeardClaimRef.current !== bossState.claimId} onClick={() => answerBossByButton(note)} className={`${controlClass} border-cyan-400 text-cyan-100`}>{note}</button>)}</div>}
+                <div className="grid grid-cols-2 gap-3">
+                  <button type="button" data-testid="pf3-boss-hint" disabled={bossAudioBusy || bossSimulating} onClick={() => playBossCue(true)} className={`${controlClass} border-amber-500 text-amber-100`}>HINT · HEAR NOTE</button>
+                  <button type="button" data-testid="pf3-boss-review" disabled={bossAudioBusy || bossSimulating} onClick={() => resolveBossNote(false)} className={`${controlClass} border-gray-500 text-gray-200`}>REVIEW THIS NOTE</button>
+                </div>
+              </>}
+        </div>}
+        <button type="button" data-testid="pf3-boss-return" onClick={quitToMenu} className={`${controlClass} mt-4 w-full border-gray-600 text-gray-300`}>RETURN TO THE DUNGEON</button>
+      </section>
+    </main>
+  }
+
   if (phase === 'game_over') {
     return (
       <div className="fixed inset-0 bg-[#070914] text-gray-100 flex items-center justify-center px-4" style={{ fontFamily: 'monospace' }}>
@@ -6435,8 +11097,28 @@ export default function PitchforksIII() {
   }
 
   return (
-    <div className="fixed inset-0 overflow-hidden bg-black text-gray-100 flex flex-col" style={{ fontFamily: 'monospace' }}>
-      <div ref={canvasContainerRef} className="relative flex-1 min-h-0 flex items-center justify-center">
+    <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-black text-gray-100 flex flex-col" style={{ fontFamily: 'monospace' }}>
+      <header data-testid="pf3-play-status" className="shrink-0 border-b border-gray-800 bg-[#070914] px-3 py-1 text-[11px]">
+        <div className="flex min-h-6 items-center justify-between gap-2">
+          <span>Score {hud.score}</span>
+          <span>Level {levelProgress.level}</span>
+          {hud.streak >= 3 && <span className="text-yellow-200">{hud.streak}x combo</span>}
+          <span className={`inline-flex items-center gap-1 font-bold ${activeInputHud.className}`} title={activeInputHud.label}>
+            <span className={`h-2 w-2 rounded-full ${activeInputHud.dotClassName}`} />
+            {demoMode ? 'DEMO' : activeInputHud.label}
+          </span>
+        </div>
+        {!demoMode && <div data-testid="pf3-level-progress" aria-label={`Level ${levelProgress.level}, ${levelProgressCopy}${supportedPracticeCopy}`} className="text-center text-[10px] text-cyan-100">
+          {levelProgressCopy}{supportedPracticeCopy}
+        </div>}
+        {journeySaveNotice}
+        {masterySaveNotice}
+      </header>
+      <div ref={canvasContainerRef}
+        data-testid="pf3-stage"
+        className="relative flex-1 min-h-0 flex items-center justify-center"
+        style={{ minHeight: STAGE_MIN_HEIGHT_CSS }}
+      >
         <canvas
           ref={canvasRef}
           width={W}
@@ -6445,37 +11127,24 @@ export default function PitchforksIII() {
           style={{ width: canvasDisplaySize.width, height: canvasDisplaySize.height, imageRendering: 'pixelated' }}
         />
 
-        <div className="absolute top-3 left-3 flex flex-wrap items-center gap-2 text-xs bg-black/60 border border-gray-800 px-3 py-2">
-          <span>Score {hud.score}</span>
-          <span>Wave {hud.wave}</span>
-          {hud.streak >= 3 && <span>Combo {hud.streak}x</span>}
-          <span
-            className={`inline-flex min-h-7 items-center gap-2 border px-2 py-1 font-bold ${activeInputHud.className}`}
-            title={activeInputHud.label}
-          >
-            <span className={`h-2.5 w-2.5 rounded-full ${activeInputHud.dotClassName}`} />
-            {activeInputHud.label}
-          </span>
-        </div>
-
-        {demoMode && (
-          <div className="absolute top-3 right-3 text-[11px] font-bold tracking-widest text-orange-200 bg-black/60 border border-orange-500/50 px-2 py-1">
-            DEMO
-          </div>
-        )}
         {newNoteCeremonyBanner}
       </div>
 
       <div
         data-testid="pf3-tuner-feedback"
-        data-feedback-kind={tunerFeedback.kind}
+        data-feedback-kind={waveReceiptResult ? waveReceiptResult.cleared ? 'level-clear' : 'level-retry' : tunerFeedback.kind}
+        data-receipt-state={waveReceiptResult ? waveReceiptResult.cleared ? 'clear' : 'retry' : undefined}
         data-spark-guide-status={sparkGuideStatus}
         data-input-mode={inputMode}
         role="status"
         aria-live="polite"
         aria-atomic="true"
         className={`w-full shrink-0 border-y px-3 py-2 text-center ${
-          inputMode === 'buttons' && buttonFeedback.kind === 'correct'
+          waveReceiptResult
+            ? waveReceiptResult.cleared
+              ? 'border-emerald-500/70 bg-emerald-950/45 text-emerald-100'
+              : 'border-amber-400/70 bg-amber-950/45 text-amber-100'
+            : inputMode === 'buttons' && buttonFeedback.kind === 'correct'
             ? 'border-emerald-500/70 bg-emerald-950/45 text-emerald-100'
             : inputMode === 'buttons' && buttonFeedback.kind === 'wrong'
               ? 'border-amber-400/70 bg-amber-950/45 text-amber-100'
@@ -6488,8 +11157,56 @@ export default function PitchforksIII() {
                 : 'border-cyan-800/70 bg-[#071018] text-cyan-100'
         }`}
       >
-        <div className="mx-auto flex min-h-11 w-full max-w-[760px] flex-col items-center justify-center leading-tight sm:flex-row sm:gap-3">
-          {inputMode === 'buttons' ? (
+        <div
+          tabIndex={waveReceiptResult ? 0 : undefined}
+          aria-label={waveReceiptResult ? `Level ${waveReceiptResult.level} ${waveReceiptResult.cleared ? 'clear' : 'retry'} result; scroll for all note results` : undefined}
+          className={`mx-auto flex w-full max-w-[760px] leading-tight ${waveReceiptResult ? 'h-20 max-h-20 items-start justify-start overflow-y-auto overscroll-contain focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100' : 'h-20 max-h-20 items-center justify-center flex-col sm:flex-row sm:gap-3'}`}
+        >
+          {waveReceiptResult ? (
+            <div
+              data-testid="pf3-level-result"
+              data-receipt-outcome={waveReceiptResult.cleared ? 'clear' : 'retry'}
+              className="flex w-full min-w-0 flex-col justify-center gap-0.5 py-0.5 text-[11px] font-bold"
+            >
+              <div className="flex min-w-0 flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
+                <strong className="shrink-0 font-black tracking-wider">
+                  {waveReceiptResult.cleared
+                    ? `LEVEL ${waveReceiptResult.level} CLEAR`
+                    : `LEVEL ${waveReceiptResult.level} RETRY`}
+                </strong>
+                <span data-testid="pf3-result-accuracy" className="text-cyan-100">
+                  {waveReceiptResult.showcase ? 'Demo sequence complete' : `Level accuracy ${waveReceiptResult.accuracyPercent}% / ${PITCHFORKS_LEVEL_ACCURACY_GOAL_PERCENT}% goal`}
+                </span>
+                <span data-testid="pf3-result-next-step" className="min-w-0 break-words text-gray-300">
+                  {waveReceiptResult.nextStep}
+                </span>
+              </div>
+              <div data-testid="pf3-result-notes" className="flex min-w-0 flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
+                <WaveReceiptNoteRow
+                  label="HEARD"
+                  testId="pf3-result-heard"
+                  notes={waveReceipt.heard}
+                  noteNamesVisible={waveReceiptNoteNamesVisible}
+                  memory={waveReceiptMemory}
+                />
+                <WaveReceiptNoteRow
+                  label={inputMode === 'buttons' ? 'ANSWERED' : 'SUNG'}
+                  testId={inputMode === 'buttons' ? 'pf3-result-answered' : 'pf3-result-sung'}
+                  notes={waveReceipt.sung}
+                  noteNamesVisible={waveReceiptNoteNamesVisible}
+                  memory={waveReceiptMemory}
+                />
+                <WaveReceiptNoteRow
+                  label="MASTERED"
+                  testId="pf3-result-mastered"
+                  notes={waveReceipt.mastered}
+                  noteNamesVisible={waveReceiptNoteNamesVisible}
+                  memory={waveReceiptMemory}
+                  mastered
+                />
+              </div>
+            </div>
+          ) : inputMode === 'buttons' ? (
             <span className="text-xs font-black tracking-widest sm:text-sm">{buttonFeedback.text}</span>
           ) : (
             <>
@@ -6541,7 +11258,279 @@ export default function PitchforksIII() {
             <span className="sr-only">First storm: </span>{firstMinuteCopy}
           </div>
         )}
-        <div className={`flex w-full items-stretch justify-center gap-2 ${layoutMode === 'portrait' ? 'max-w-[760px]' : 'max-w-[360px]'}`}>
+        <div className="grid w-full max-w-[760px] sm:grid-cols-4 grid-cols-2 gap-2" data-testid="pf3-ability-dock">
+        <div
+          data-testid="pf3-close-smash-control"
+          className="col-span-1 flex min-h-12 min-w-0 w-full flex-col gap-2 border border-fuchsia-900/70 bg-fuchsia-950/15 px-2 py-2"
+          aria-label="Close Smash earned ability"
+        >
+          <div
+            data-testid="pf3-close-smash-status"
+            id="pf3-close-smash-status"
+            data-close-smash-phase={closeSmashState.phase}
+            data-close-smash-target={closeSmashState.receipt?.targetKey ?? undefined}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={closeSmashStatusCopy}
+            className="min-w-0 break-words text-sm font-black tracking-wide text-fuchsia-100"
+          >
+            <span aria-hidden="true">{`CLOSE · ${closeSmashStatusLabel}${closeSmashReady && closeSmashState.receipt ? ` · ${closeSmashReceiptPitch ?? 'THE EXACT NOTE'}` : ''}`}</span>
+          </div>
+          <div className="flex min-w-0 flex-wrap items-stretch gap-2">
+            <button
+              type="button"
+              data-testid="pf3-close-smash-action"
+              disabled={closeSmashActionDisabled}
+              aria-describedby="pf3-close-smash-status"
+              title={closeSmashReady ? 'Spend the earned close lock for a two-hand Smash.' : 'Earn an exact lock at Frankenstein’s close boundary first.'}
+              onClick={requestCloseSmash}
+              className="min-h-12 min-w-[48px] shrink-0 border border-fuchsia-200 bg-fuchsia-200 px-3 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#180719] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-100"
+            >
+              {closeSmashReady ? `SMASH · ${closeSmashState.receipt?.pitch ?? ''}` : 'CLOSE SMASH'}
+            </button>
+          </div>
+        </div>
+        {(demoMode || normalBell) && <section
+          data-testid="pf3-raincall"
+          aria-label="Raincall and torch ecology"
+          className="col-span-1 flex min-h-12 min-w-0 w-full flex-col gap-2 border border-cyan-800/70 bg-cyan-950/20 px-2 py-2 text-cyan-50"
+        >
+          <div className="min-w-0 break-words text-sm font-black tracking-wide text-cyan-100">
+            <div>RAIN · {rainPhaseLabel} · {rainState.charge}/{RAINCALL_REQUIRED_RESPONSES} · CYCLE {rainState.cycleID}</div>
+            {torchPhaseLabel && <div className="text-amber-100">TORCH · {torchPhaseLabel}</div>}
+          </div>
+          <div className="flex min-w-0 flex-wrap items-stretch gap-2">
+            <button
+              type="button"
+              data-testid="pf3-raincall-action"
+              onClick={activateRaincall}
+              disabled={raincallActionDisabled}
+              aria-describedby={demoMode ? 'pf3-raincall-status pf3-torch-status' : 'pf3-raincall-status'}
+              title={demoMode || normalBell ? 'Fill the gutter, then douse the torches.' : 'Raincall is unavailable outside the eligible Village route.'}
+              className="min-h-12 min-w-[48px] shrink-0 border border-cyan-200 bg-cyan-200 px-3 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80"
+            >
+              {demoMode || normalBell ? 'CALL RAIN' : 'DEMO ONLY'}
+            </button>
+          </div>
+          <p id="pf3-raincall-status" data-testid="pf3-raincall-status" className="sr-only">
+            {demoMode || normalBell
+              ? `${rainPhaseCopy}. Fill the gutter, then douse the torches. Keep singing to break the forks${rainEffects.slowFactor < 1 ? ' · movement slowed' : ''}. ${torchPhaseCopy} Raincall is environmental only and never grants musical tine credit.`
+              : 'Raincall is unavailable outside the eligible Village route.'}
+          </p>
+          {(demoMode || normalBell) && (
+            <p id="pf3-torch-status" data-testid="pf3-torch-status" className="sr-only">
+              {torchPhaseCopy}
+            </p>
+          )}
+        </section>}
+        {bellControlVisible && <section
+          data-testid="pf3-bell-control"
+          aria-label={bellProof ? 'Bell Tower private proof controls' : 'Normal Village Bell control'}
+          className="col-span-2 flex min-h-12 min-w-0 w-full max-w-[760px] flex-col gap-2 border border-amber-700/80 bg-amber-950/25 px-2 py-2 text-amber-50"
+        >
+          <div
+            data-testid="pf3-bell-status"
+            id="pf3-bell-status"
+            data-bell-phase={bellWaveState.phase}
+            data-bell-radius={bellWaveProjection.radius.toFixed(1)}
+            data-bell-contact-count={bellWaveState.contactedStableIDs.length}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={bellStatusCopy}
+            className="min-w-0 w-full break-words text-sm font-black tracking-wide text-amber-100"
+          >
+            <div>
+              {bellProof
+                ? inputMode !== 'voice'
+                  ? 'VOICE ONLY'
+                  : bellWaveState.phase === 'active'
+                    ? 'WAVE ACTIVE'
+                    : bellReleaseRequestedRef.current
+                      ? `RING QUEUED · ${bellChargeReceiptNote ?? ''}`
+                      : bellChargeReceipt
+                        ? `READY · ${bellChargeReceiptNote ?? 'THE EXACT NOTE'}`
+                        : bellWaveState.phase === 'finished'
+                          ? 'WAVE FINISHED'
+                          : bellArmRequestedRef.current
+                            ? lockProgressRef.current > 0
+                              ? `CHARGING · HOLD ${activeEnvironmentNoteLabel ?? 'THE EXACT NOTE'}`
+                              : `ARMED · HOLD ${activeEnvironmentNoteLabel ?? 'THE EXACT NOTE'}`
+                            : 'IDLE · CHARGE THE EXACT NOTE'
+                : inputMode !== 'voice'
+                  ? 'VOICE ONLY'
+                  : bellWaveState.phase === 'active'
+                    ? 'WAVE ACTIVE'
+                    : bellReleaseRequestedRef.current
+                      ? `RING QUEUED · ${projectedNormalBellPair}`
+                      : normalBellState?.phase === 'pending'
+                        ? `PAIR READY · ${projectedNormalBellPair}`
+                        : bellWaveState.phase === 'finished'
+                          ? 'WAVE FINISHED'
+                          : normalBellState?.phase === 'activating'
+                            ? `STEP ${(normalBellState.activationNotes.length + 1)}/2 · SING ${projectedNormalBellExpected ?? 'THE NEXT NOTE'}`
+                            : normalBellState?.phase === 'ready'
+                              ? `READY · ${projectedNormalBellPair}`
+                              : `CHARGE ${normalBellState?.charge ?? 0}/3`}
+            </div>
+            {!bellProof && normalBellState && (
+              <div data-testid="pf3-bell-pair" className="mt-0.5 break-words text-sm font-bold tracking-wide text-amber-200">
+                PAIR · {projectedNormalBellPair}
+              </div>
+            )}
+            {!bellProof && normalBellState?.phase === 'activating' && (
+              <div data-testid="pf3-bell-step" className="sr-only">
+                Current activation step {(normalBellState.activationNotes.length + 1)}/2: sing {projectedNormalBellExpected ?? 'the next taught note'}.
+              </div>
+            )}
+            <div className="sr-only">
+              {bellWaveState.phase === 'idle' && !bellChargeReceipt && normalBellState?.phase !== 'pending' ? 'EXACT NOTE ONLY · NO TINE CREDIT' : 'PHYSICAL WAVE ONLY · NO TINE CREDIT'}
+            </div>
+          </div>
+          <div className="flex min-w-0 flex-wrap items-stretch gap-2">
+            <button
+              type="button"
+              data-testid="pf3-bell-arm"
+              disabled={bellArmDisabled}
+              aria-describedby="pf3-bell-status"
+              title={bellProof
+                ? bellArmDisabled ? 'Bell charge requires the next exact voice hold in the Bell Tower proof.' : 'Charge the next exact voice note for the Bell Tower wave.'
+                : normalBellState?.phase === 'ready' ? `Teach the Bell pair ${projectedNormalBellPair}.` : `Earn 3 accepted voice responses before teaching ${projectedNormalBellPair}.`}
+              onClick={requestBellArm}
+              className="min-h-12 min-w-[48px] shrink-0 border border-amber-200 bg-amber-200 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#1a1102] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+            >
+              {bellProof
+                ? bellChargeReceipt ? 'BELL READY' : 'CHARGE BELL'
+                : normalBellState?.phase === 'ready' ? 'TEACH PAIR' : `BELL ${normalBellState?.charge ?? 0}/3`}
+            </button>
+            <button
+              type="button"
+              data-testid="pf3-bell-release"
+              disabled={bellReleaseDisabled}
+              aria-describedby="pf3-bell-status"
+              title={bellProof
+                ? bellReleaseDisabled ? 'Charge one exact note before ringing the Bell Tower wave.' : 'Release the charged Bell Tower wave.'
+                : bellReleaseDisabled ? 'Sing the taught pair first; a failed release keeps readiness for retry.' : 'Release the normal Village Bell wave.'}
+              onClick={requestBellRelease}
+              className="min-h-12 min-w-[48px] shrink-0 border border-yellow-100 bg-yellow-100 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#1a1102] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-100"
+            >
+              RING BELLS
+            </button>
+            {!bellProof && normalBellState?.phase === 'activating' && (
+              <button
+                type="button"
+                data-testid="pf3-bell-cancel"
+                aria-describedby="pf3-bell-status"
+                onClick={cancelBellActivation}
+                className="min-h-12 min-w-[48px] shrink-0 border border-amber-100 bg-amber-950/50 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-amber-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-100"
+              >
+                CANCEL
+              </button>
+            )}
+          </div>
+        </section>}
+        {galvanicProof && <section
+          data-testid="pf3-galvanic-control"
+          aria-label="Galvanic private proof controls"
+          className="col-span-2 flex min-h-12 min-w-0 w-full max-w-[760px] flex-col gap-2 border border-emerald-700/80 bg-emerald-950/25 px-2 py-2 text-emerald-50"
+        >
+          <div
+            data-testid="pf3-galvanic-status"
+            id="pf3-galvanic-status"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={galvanicStatusCopy}
+            className="min-w-0 w-full break-words text-sm font-black tracking-wide text-emerald-100"
+          >
+            <div>{galvanicStatusCopy}</div>
+            <div className="mt-0.5 break-words text-sm font-bold tracking-wide text-emerald-200/90">
+              {galvanicProjection.bankCount > 0 ? `BANKED NOTES · ${galvanicBankLabels}` : 'BANKED NOTES · NONE'}
+            </div>
+          </div>
+          <div className="flex min-w-0 flex-wrap items-stretch gap-2">
+            <button
+              type="button"
+              data-testid="pf3-galvanic-bank"
+              disabled={galvanicBankDisabled}
+              aria-describedby="pf3-galvanic-status"
+              title={galvanicBankDisabled ? 'Banking requires the next exact voice hold in the private proof.' : 'Arm the next exact voice hold for Galvanic.'}
+              onClick={requestGalvanicArm}
+              className="min-h-12 min-w-[48px] shrink-0 border border-emerald-200 bg-emerald-200 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#06150d] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-100"
+            >
+              BANK FOR SWEEP
+            </button>
+            <button
+              type="button"
+              data-testid="pf3-galvanic-release"
+              disabled={galvanicReleaseDisabled}
+              aria-describedby="pf3-galvanic-status"
+              title={galvanicReleaseDisabled ? 'Bank one or two exact notes before releasing the sweep.' : 'Release the banked Galvanic sweep.'}
+              onClick={requestGalvanicRelease}
+              className="min-h-12 min-w-[48px] shrink-0 border border-lime-200 bg-lime-200 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#101805] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-100"
+            >
+              RELEASE SWEEP
+            </button>
+            <button
+              type="button"
+              data-testid="pf3-galvanic-cancel"
+              disabled={galvanicCancelDisabled}
+              aria-describedby="pf3-galvanic-status"
+              title="Discard all pending Galvanic banks and return to ordinary proof play."
+              onClick={() => cancelGalvanic()}
+              className="min-h-12 min-w-[48px] shrink-0 border border-emerald-300 bg-emerald-950/70 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-emerald-100 disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-100"
+            >
+              CANCEL
+            </button>
+          </div>
+        </section>}
+        {demoMode && <section
+          data-testid="pf3-thunderhead-control"
+          aria-label="Thunderhead private demo control"
+          className="col-span-2 flex min-h-12 min-w-0 w-full max-w-[760px] flex-col gap-2 border border-sky-700/80 bg-sky-950/25 px-2 py-2 text-sky-50"
+        >
+          <div
+            data-testid="pf3-thunderhead-status"
+            id="pf3-thunderhead-status"
+            data-thunderhead-phase={thunderheadState.phase}
+            data-thunderhead-target={thunderheadBank?.targetKey ?? undefined}
+            data-thunderhead-rune-status={THUNDERHEAD_RUNE_STATUS}
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={thunderheadStatusCopy}
+            className="min-w-0 w-full break-words text-sm font-black tracking-wide text-sky-100"
+          >
+            <span aria-hidden="true">{thunderheadStatusCopy}</span>
+          </div>
+          <div className="flex min-w-0 flex-wrap items-stretch gap-2">
+            <button
+              type="button"
+              data-testid="pf3-thunderhead-arm"
+              disabled={thunderheadArmDisabled}
+              aria-describedby="pf3-thunderhead-status"
+              title={inputMode === 'voice' ? 'Bank the next exact voice note into one charge.' : 'Thunderhead requires the Voice Lightning lane.'}
+              onClick={requestThunderheadArm}
+              className="min-h-12 min-w-[48px] shrink-0 border border-sky-200 bg-sky-200 px-3 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-100"
+            >
+              BANK NOTE
+            </button>
+            <button
+              type="button"
+              data-testid="pf3-thunderhead-release"
+              disabled={thunderheadReleaseDisabled}
+              aria-describedby="pf3-thunderhead-status"
+              title={thunderheadReleaseDisabled ? 'Bank one exact voice note first.' : 'Send the banked cloud across the ceiling to its exact target.'}
+              onClick={requestThunderheadRelease}
+              className="min-h-12 min-w-[48px] shrink-0 border border-cyan-200 bg-cyan-200 px-3 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-100"
+            >
+              SEND CLOUD
+            </button>
+          </div>
+        </section>}
+        </div>
+        <div className="flex w-full max-w-[760px] items-stretch justify-center gap-2">
           <button
             type="button"
             disabled={cuePlaybackActive || strikePresentationPending()}
@@ -6554,7 +11543,7 @@ export default function PitchforksIII() {
               }
             }}
             data-testid="pf3-replay-notes"
-            className={`${layoutMode === 'portrait' ? 'min-h-12 flex-1 px-3' : 'min-h-[44px] w-full px-5'} py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50 disabled:cursor-wait disabled:opacity-75`}
+            className="min-h-12 min-w-0 flex-1 px-3 py-2 text-sm font-black tracking-widest text-yellow-200 border border-yellow-500 bg-yellow-950/45 active:scale-95 transition-all hover:bg-yellow-900/50 disabled:cursor-wait disabled:opacity-75"
           >
             {replayLabel}
           </button>
@@ -6575,6 +11564,8 @@ export default function PitchforksIII() {
               >
                 STAFF
               </button>
+            </>
+          )}
               <button
                 type="button"
                 data-testid="pf3-options-drawer-toggle"
@@ -6585,8 +11576,6 @@ export default function PitchforksIII() {
               >
                 OPTIONS
               </button>
-            </>
-          )}
         </div>
 
         {layoutMode === 'portrait' && staffNotationOn && portraitDockPanel === 'staff' && portraitStaffDisplaySize.height >= 64 && (
@@ -6611,13 +11600,13 @@ export default function PitchforksIII() {
           </div>
         )}
 
-        {(layoutMode !== 'portrait' || portraitDockPanel === 'settings') && (
+        {portraitDockPanel === 'settings' && (
           <div
-            id={layoutMode === 'portrait' ? 'pf3-portrait-options-panel' : undefined}
-            data-testid={layoutMode === 'portrait' ? 'pf3-portrait-options-panel' : undefined}
-            role={layoutMode === 'portrait' ? 'region' : undefined}
-            aria-label={layoutMode === 'portrait' ? 'Game options' : undefined}
-            className={`flex w-full max-w-[760px] flex-wrap items-center justify-center gap-2 ${layoutMode === 'portrait' ? 'max-h-[42svh] overflow-y-auto overscroll-contain py-1' : ''}`}
+            id="pf3-portrait-options-panel"
+            data-testid="pf3-portrait-options-panel"
+            role="region"
+            aria-label="Game options"
+            className="flex max-h-[30svh] w-full max-w-[760px] flex-wrap items-center justify-center gap-2 overflow-y-auto overscroll-contain py-1"
           >
             <SettingsRow
               noteNamesOn={noteNamesOn}
@@ -6645,6 +11634,13 @@ export default function PitchforksIII() {
             <button onClick={quitToMenu} className={`${layoutMode === 'portrait' ? 'min-h-12' : 'min-h-8'} text-xs text-gray-300 hover:text-gray-100 border border-gray-700 px-3 py-1`}>
               Quit
             </button>
+            <div
+              data-testid="pf3-options-scroll-cue"
+              aria-hidden="true"
+              className="sticky bottom-0 z-10 flex min-h-6 w-full items-center justify-center gap-1 bg-[#070914]/95 py-1 text-[10px] font-black tracking-widest text-gray-400"
+            >
+              <span aria-hidden="true">↕</span> SCROLL FOR MORE OPTIONS
+            </div>
           </div>
         )}
       </div>

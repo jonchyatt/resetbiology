@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "1.0.0",
+  "frame_w": 16,
+  "frame_h": 24,
+  "walk_frames": 4,
+  "facing": "right",
+  "fork_base": {
+    "x": 14,
+    "y": 11
+  },
+  "tines": [
+    {
+      "x": 14,
+      "y": -4
+    }
+  ],
+  "burnFrameCount": 0,
+  "ashOnStrike": 1,
+  "sourceProvenance": {
+    "receipt": "C:/Users/jonch/Projects/jarvis/data/pitchforks-rework/runtime-logs/c13-p4-1-5/P4-ART-PROOF-RECEIPT.md",
+    "archive": "C:/Users/jonch/Projects/jarvis/data/codex-sidequests/worktrees/ed29b5a5-rb-vision/data/pitchforks-rework/art-tests/villager-p4-1-5/native-codex-1-final/villager_1tine.json",
+    "sourceSha256": "7725FBBDE33277712145C7B9E019ADB23A31CD365ED2A1CF6173FF74B264A59F",
+    "sourceStatus": "STAGING_ONLY_NOT_INTEGRATED",
+    "adaptation": "Runtime VillagerMeta shape; tines is derived from fork_base + fork.tine_tip - handle_base, and sourceStatus is provenance only."
+  }
+}

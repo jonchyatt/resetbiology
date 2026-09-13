@@ -112,7 +112,7 @@ check(() => assert.match(shell, /const micUnreliable = !demoRef\.current && pitc
 check(() => assert.match(shell, /dropoutResetFrames: PITCHFORKS_PITCH_PROFILE\.dropoutResetFrames/))
 check(() => assert.match(shell, /const approaching = canUseSource && pitchforksApproaching\(/))
 check(() => assert.match(shell, /pitchforksTunerFeedback\(\{[\s\S]*?micUnreliable,[\s\S]*?voiceBreak,[\s\S]*?approaching,/))
-check(() => assert.match(shell, /data-feedback-kind=\{tunerFeedback\.kind\}/))
+check(() => assert.match(shell, /data-feedback-kind=\{waveReceiptResult \? waveReceiptResult\.cleared \? 'level-clear' : 'level-retry' : tunerFeedback\.kind\}/))
 check(() => assert.doesNotMatch(shell.slice(shell.indexOf('const micUnreliable ='), shell.indexOf('const feedbackKey =')), /lockProgressRef\.current\s*=|processLock\(|strikeVillager\(|maybeUnlockNextNote\(/))
 
 console.log(`pitchforks feedback residual states: ${checks}/${checks} PASS`)

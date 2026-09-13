@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0.0",
+  "frame_w": 8,
+  "frame_h": 16,
+  "handle_base": {
+    "x": 3,
+    "y": 15
+  },
+  "tine_tips": [
+    {
+      "x": 3,
+      "y": 0
+    }
+  ],
+  "burnFrameCount": 0,
+  "burnLadder": [
+    "b0",
+    "b1"
+  ],
+  "sourceProvenance": {
+    "receipt": "C:/Users/jonch/Projects/jarvis/data/pitchforks-rework/runtime-logs/c13-p4-1-5/P4-ART-PROOF-RECEIPT.md",
+    "archive": "C:/Users/jonch/Projects/jarvis/data/codex-sidequests/worktrees/ed29b5a5-rb-vision/data/pitchforks-rework/art-tests/villager-p4-1-5/native-codex-1-final/forks/fork_1tine.json",
+    "sourceSha256": "1445B54A9CDCF98E40FB486962C5AF3EC19CECE0DEC714726AA6CCD5361B8621",
+    "sourceStatus": "STAGING_ONLY_NOT_INTEGRATED",
+    "adaptation": "Runtime ForkMeta shape; sourceStatus is provenance only."
+  }
+}

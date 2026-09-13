@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+
+const source = readFileSync('src/components/PitchDefender/PitchforksIII.tsx', 'utf8')
+const start = source.indexOf('    const storedThunderhead =')
+const end = source.indexOf('    return {\n      visible,', start)
+assert.ok(start > 0 && end > start)
+const projection = source.slice(start, end)
+assert.match(projection, /const storedThunderhead = thunderheadStateRef\.current\.bank/)
+assert.match(projection, /thunderheadStoredPhase === 'banked'/)
+assert.match(projection, /storedThunderhead\.consumedAt === null/)
+assert.match(projection, /inputModeRef\.current === 'voice'/)
+assert.match(projection, /!micUnreliable && !matchingSuppressed/)
+assert.match(projection, /headline: `\$\{storedThunderhead\.note\}/)
+assert.match(projection, /'BANKED' : 'CLOUD IN FLIGHT'/)
+assert.match(projection, /'SEND CLOUD WHEN READY'/)
+assert.match(projection, /'WATCH THE CLOUD REACH THE FORK'/)
+assert.match(projection, /compactLabel:.*\$\{storedThunderhead\.note\}/)
+assert.match(projection, /const presentationFeedback = galvanicBanked/)
+assert.match(source, /feedback: thunderheadReadyFeedback \?\? presentationFeedback/)
+assert.match(source, /const firstMinuteCopy = thunderheadState\.bank\?\.consumedAt === null\s*\? null\s*: galvanicCoachCopy/)
+assert.doesNotMatch(projection, /\.current\s*=(?!=)|strikeActiveTine\(|reviewTargetNote\(|setItem\(/)
+console.log('pitchforks banked Thunderhead feedback: source guards PASS; browser acceptance required')

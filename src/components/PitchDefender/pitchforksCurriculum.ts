@@ -1,3 +1,9 @@
+import { PITCHFORKS_RANGE_NOTES } from './pitchforksRange'
+import {
+  recordVillagePractice,
+  type VillagePracticeReceipt,
+} from './villagePractice'
+
 export type TineCount = 1 | 2 | 3 | 4
 export type CurriculumStage = 'showcase' | 'guided-pair' | 'recall-pair' | 'step-chain' | 'intervals'
 export type CueSupportLevel = 'guided' | 'recall'
@@ -17,12 +23,23 @@ export interface CueSupportProfile {
 
 export const PITCHFORKS_PRESENTATION_JOURNEY_KEY = 'pitchforks3_presentation_journey_v1'
 
+export interface PitchforksDungeonClearReceipt {
+  version: 1
+  rangeAssessedAt: string
+  startedAt: string
+  admittedNotes: string[]
+  clearedAt: number
+}
+
 export interface PitchforksPresentationJourney {
   version: 1
+  currentLevel: number
   rangeAssessedAt: string
   startedAt: string
   unlockedNotes: string[]
   guidedNotes: string[]
+  dungeonClear?: PitchforksDungeonClearReceipt
+  villagePractice?: readonly VillagePracticeReceipt[]
 }
 
 type CueMemory = Readonly<{
@@ -37,14 +54,228 @@ export function createPitchforksPresentationJourney(input: {
   unlockedNotes: readonly string[]
   guidedNotes?: readonly string[]
   startedAt?: string
+  dungeonClear?: PitchforksDungeonClearReceipt
+  villagePractice?: readonly VillagePracticeReceipt[]
 }): PitchforksPresentationJourney {
-  return {
+  const journey: PitchforksPresentationJourney = {
     version: 1,
+    currentLevel: 1,
     rangeAssessedAt: input.rangeAssessedAt,
     startedAt: input.startedAt ?? new Date().toISOString(),
     unlockedNotes: [...input.unlockedNotes],
     guidedNotes: [...(input.guidedNotes ?? [])],
   }
+
+  const dungeonClear = normalizePitchforksDungeonClear(input.dungeonClear, journey)
+  const villagePractice = input.villagePractice ? [...input.villagePractice] : undefined
+  return {
+    ...journey,
+    ...(dungeonClear ? { dungeonClear } : {}),
+    ...(villagePractice ? { villagePractice } : {}),
+  }
+}
+
+function isValidPitchforksJourneyLevel(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value > 0
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
+function isDenseArray(value: unknown): value is unknown[] {
+  if (!Array.isArray(value)) return false
+  for (let index = 0; index < value.length; index += 1) {
+    if (!Object.prototype.hasOwnProperty.call(value, index)) return false
+  }
+  return true
+}
+
+function isDenseStringArray(value: unknown): value is string[] {
+  return isDenseArray(value) && value.every(candidate => typeof candidate === 'string')
+}
+
+function isTrimmedIdentifier(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0 && value.trim() === value
+}
+
+function isNonNegativeSafeInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
+}
+
+function isFiniteNonNegative(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+}
+
+const VILLAGE_PRACTICE_RECEIPT_KEYS = new Set([
+  'kind',
+  'eventId',
+  'journeyId',
+  'sessionId',
+  'encounterIndex',
+  'introducedEncounterIndex',
+  'timestampMs',
+  'objective',
+  'contextNote',
+  'targetNote',
+  'support',
+  'cueFree',
+])
+
+function hasExactKeys(value: Record<string, unknown>, keys: ReadonlySet<string>): boolean {
+  const ownKeys = Object.keys(value)
+  return ownKeys.length === keys.size && ownKeys.every(key => keys.has(key))
+}
+
+function isVillagePracticeReceipt(value: unknown): value is VillagePracticeReceipt {
+  if (!isRecord(value) || !hasExactKeys(value, VILLAGE_PRACTICE_RECEIPT_KEYS)) return false
+  return value.kind === 'practice'
+    && isTrimmedIdentifier(value.eventId)
+    && isTrimmedIdentifier(value.journeyId)
+    && isTrimmedIdentifier(value.sessionId)
+    && isNonNegativeSafeInteger(value.encounterIndex)
+    && isNonNegativeSafeInteger(value.introducedEncounterIndex)
+    && isFiniteNonNegative(value.timestampMs)
+    && (value.objective === 'minor-third'
+      || value.objective === 'major-third'
+      || value.objective === 'perfect-fifth')
+    && isTrimmedIdentifier(value.contextNote)
+    && isTrimmedIdentifier(value.targetNote)
+    && (value.support === 'SUPPORTED' || value.support === 'UNAIDED_RETURN')
+    && typeof value.cueFree === 'boolean'
+}
+
+function villagePracticeKey(value: Pick<
+  VillagePracticeReceipt,
+  'journeyId' | 'contextNote' | 'targetNote' | 'support'
+>): string {
+  return JSON.stringify([
+    value.journeyId,
+    value.contextNote,
+    value.targetNote,
+    value.support,
+  ])
+}
+
+function comfortableRangeForPresentationOrder(
+  presentationOrder: readonly string[],
+): { lowNote: string; highNote: string } | null {
+  let lowIndex = Number.POSITIVE_INFINITY
+  let highIndex = -1
+  for (const note of presentationOrder) {
+    const index = PITCHFORKS_RANGE_NOTES.indexOf(note)
+    if (index < 0) continue
+    lowIndex = Math.min(lowIndex, index)
+    highIndex = Math.max(highIndex, index)
+  }
+  if (highIndex <= lowIndex) return null
+  return {
+    lowNote: PITCHFORKS_RANGE_NOTES[lowIndex],
+    highNote: PITCHFORKS_RANGE_NOTES[highIndex],
+  }
+}
+
+function normalizePitchforksDungeonClear(
+  value: unknown,
+  journey: Pick<PitchforksPresentationJourney, 'rangeAssessedAt' | 'startedAt' | 'unlockedNotes'>,
+): PitchforksDungeonClearReceipt | undefined {
+  if (!isRecord(value) || value.version !== 1) return undefined
+  if (
+    typeof value.rangeAssessedAt !== 'string' ||
+    value.rangeAssessedAt.length === 0 ||
+    value.rangeAssessedAt !== journey.rangeAssessedAt ||
+    typeof value.startedAt !== 'string' ||
+    value.startedAt.length === 0 ||
+    value.startedAt !== journey.startedAt ||
+    typeof value.clearedAt !== 'number' ||
+    !Number.isFinite(value.clearedAt) ||
+    value.clearedAt < 0 ||
+    !isDenseArray(value.admittedNotes) ||
+    value.admittedNotes.length < 2 ||
+    value.admittedNotes.length > journey.unlockedNotes.length
+  ) {
+    return undefined
+  }
+
+  const admittedNotes: string[] = []
+  const seen = new Set<string>()
+  for (const candidate of value.admittedNotes) {
+    if (
+      typeof candidate !== 'string' ||
+      candidate.length === 0 ||
+      seen.has(candidate) ||
+      !journey.unlockedNotes.includes(candidate) ||
+      candidate !== journey.unlockedNotes[admittedNotes.length]
+    ) {
+      return undefined
+    }
+    seen.add(candidate)
+    admittedNotes.push(candidate)
+  }
+
+  return {
+    version: 1,
+    rangeAssessedAt: value.rangeAssessedAt,
+    startedAt: value.startedAt,
+    admittedNotes,
+    clearedAt: value.clearedAt,
+  }
+}
+
+function normalizePitchforksVillagePractice(
+  value: unknown,
+  journey: Pick<PitchforksPresentationJourney, 'startedAt' | 'unlockedNotes' | 'guidedNotes'>,
+  presentationOrder: readonly string[],
+): VillagePracticeReceipt[] | undefined {
+  if (!isDenseArray(value)) return undefined
+  if (value.length === 0) return []
+
+  const comfortableRange = comfortableRangeForPresentationOrder(presentationOrder)
+  if (!comfortableRange) return undefined
+
+  const assessedNotes = new Set(presentationOrder)
+  const candidateEligibility = {
+    admittedNotes: journey.unlockedNotes,
+    introducedNotes: [...journey.guidedNotes, ...journey.unlockedNotes],
+    comfortableRange,
+  }
+  let receipts: readonly VillagePracticeReceipt[] = []
+  const seenKeys = new Set<string>()
+
+  for (const candidate of value) {
+    if (!isVillagePracticeReceipt(candidate)
+      || candidate.journeyId !== journey.startedAt
+      || !assessedNotes.has(candidate.contextNote)
+      || !assessedNotes.has(candidate.targetNote)
+    ) return undefined
+
+    const key = villagePracticeKey(candidate)
+    if (seenKeys.has(key)) return undefined
+    seenKeys.add(key)
+
+    const next = recordVillagePractice(receipts, {
+      eventId: candidate.eventId,
+      journeyId: candidate.journeyId,
+      sessionId: candidate.sessionId,
+      encounterIndex: candidate.encounterIndex,
+      introducedEncounterIndex: candidate.introducedEncounterIndex,
+      timestampMs: candidate.timestampMs,
+      objective: candidate.objective,
+      contextNote: candidate.contextNote,
+      targetNote: candidate.targetNote,
+      support: candidate.support,
+      correct: true,
+      normalVoice: true,
+      demo: false,
+      simulated: false,
+      cueFree: candidate.cueFree,
+      candidateEligibility,
+    })
+    if (next.length !== receipts.length + 1) return undefined
+    receipts = next
+  }
+
+  return [...receipts]
 }
 
 export function parsePitchforksPresentationJourney(
@@ -54,40 +285,79 @@ export function parsePitchforksPresentationJourney(
 ): PitchforksPresentationJourney | null {
   if (!raw || presentationOrder.length < 2) return null
   try {
-    const parsed = JSON.parse(raw) as Partial<PitchforksPresentationJourney>
+    const parsed = JSON.parse(raw) as unknown
+    if (!isRecord(parsed)) return null
     if (parsed.version !== 1 || parsed.rangeAssessedAt !== rangeAssessedAt) return null
     if (typeof parsed.startedAt !== 'string' || !Number.isFinite(Date.parse(parsed.startedAt))) return null
-    if (!Array.isArray(parsed.unlockedNotes) || parsed.unlockedNotes.length < 2) return null
+    if (!isDenseStringArray(parsed.unlockedNotes) || parsed.unlockedNotes.length < 2) return null
     if (parsed.unlockedNotes.length > presentationOrder.length) return null
     if (parsed.unlockedNotes.some((note, index) => note !== presentationOrder[index])) return null
-    if (!Array.isArray(parsed.guidedNotes)) return null
+    if (!isDenseStringArray(parsed.guidedNotes)) return null
     if (new Set(parsed.guidedNotes).size !== parsed.guidedNotes.length) return null
-    if (parsed.guidedNotes.some(note => typeof note !== 'string' || !parsed.unlockedNotes!.includes(note))) return null
-    return {
+    if (parsed.guidedNotes.some(note => !parsed.unlockedNotes.includes(note))) return null
+    const currentLevel = parsed.currentLevel === undefined ? 1 : parsed.currentLevel
+    if (!isValidPitchforksJourneyLevel(currentLevel)) return null
+    const journey: PitchforksPresentationJourney = {
       version: 1,
+      currentLevel,
       rangeAssessedAt,
       startedAt: parsed.startedAt,
       unlockedNotes: [...parsed.unlockedNotes],
       guidedNotes: [...parsed.guidedNotes],
     }
+    const dungeonClear = normalizePitchforksDungeonClear(parsed.dungeonClear, journey)
+    const withDungeonClear = dungeonClear ? { ...journey, dungeonClear } : journey
+    const villagePractice = normalizePitchforksVillagePractice(
+      parsed.villagePractice,
+      journey,
+      presentationOrder,
+    )
+    return villagePractice === undefined
+      ? withDungeonClear
+      : { ...withDungeonClear, villagePractice }
   } catch {
     return null
   }
 }
 
+export function advancePitchforksJourneyLevel(
+  journey: PitchforksPresentationJourney,
+  completedLevel: number,
+  passed: boolean,
+): PitchforksPresentationJourney {
+  if (passed !== true || completedLevel !== journey.currentLevel) return journey
+  const nextLevel = journey.currentLevel + 1
+  if (!isValidPitchforksJourneyLevel(nextLevel)) return journey
+  return { ...journey, currentLevel: nextLevel }
+}
+
+/**
+ * Tunable initial patient pacing, not a long-term mastery policy. Keep this
+ * beginner runway deliberately free of the randomized 3/4-tine director.
+ */
+export const PATIENT_BEGINNER_LAST_WAVE = 12
+export const PATIENT_ATTACK_TIME_FLOOR_SECONDS = 32
+
 const PATIENT_WAVES: Readonly<Record<number, readonly TineCount[]>> = {
   1: [1, 1, 1, 1, 1, 1],
   2: [1, 1, 1, 1, 1, 1],
   3: [1, 1, 2, 2, 2],
-  4: [2, 2, 2, 2, 3],
-  5: [2, 2, 3, 3, 3],
+  4: [1, 2, 1, 2, 2],
+  5: [2, 1, 2, 1, 2],
+  6: [1, 2, 2, 1, 2],
+  7: [2, 1, 2, 2, 1],
+  8: [1, 2, 1, 1, 2],
+  9: [2, 2, 1, 2, 1],
+  10: [1, 1, 2, 1, 2],
+  11: [2, 1, 1, 2, 1],
+  12: [1, 2, 2, 2, 1],
 }
 
 export function curriculumStageForWave(wave: number, demo: boolean): CurriculumStage {
   if (demo) return 'showcase'
   if (wave <= 1) return 'guided-pair'
   if (wave === 2) return 'recall-pair'
-  if (wave === 3) return 'step-chain'
+  if (wave <= PATIENT_BEGINNER_LAST_WAVE) return 'step-chain'
   return 'intervals'
 }
 
@@ -158,7 +428,7 @@ export function parseCueSupportProfile(raw: string | null): CueSupportProfile {
 }
 
 export function waitForClearBeforeSpawn(wave: number, demo: boolean): boolean {
-  return demo || wave <= 3
+  return demo || wave <= PATIENT_BEGINNER_LAST_WAVE
 }
 
 export function admissionAllowedForWave(wave: number, demo: boolean, debug: boolean): boolean {
@@ -197,7 +467,13 @@ export function admissionRecallReady(
 }
 
 export function attackTimeForCurriculum(wave: number, encounterIndex: number): number {
-  const base = wave <= 1 ? 45 : wave === 2 ? 40 : wave === 3 ? 32 : wave === 4 ? 24 : wave === 5 ? 18 : 12
+  const base = wave <= 1
+    ? 45
+    : wave === 2
+      ? 40
+      : wave <= PATIENT_BEGINNER_LAST_WAVE
+        ? PATIENT_ATTACK_TIME_FLOOR_SECONDS
+        : 12
   const stagger = wave <= 3 ? 4 : 3
   return base + encounterIndex * stagger
 }
