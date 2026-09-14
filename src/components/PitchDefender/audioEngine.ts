@@ -160,9 +160,9 @@ interface PlayPianoOptions {
   exact?: boolean
 }
 
-export function playPianoNote(note: string, options?: PlayPianoOptions) {
+export function playPianoNote(note: string, options?: PlayPianoOptions): boolean {
   try {
-    if (!_pianoBus) return
+    if (!_pianoBus) return false
     const c = ctx()
     let buf: AudioBuffer | undefined
     let playbackRate = 1
@@ -171,13 +171,13 @@ export function playPianoNote(note: string, options?: PlayPianoOptions) {
       buf = direct
     } else if (options?.exact) {
       const near = findNearestBySemitones(note)
-      if (!near) return
+      if (!near) return false
       buf = near.buf
       playbackRate = Math.pow(2, near.semitones / 12)
     } else {
       buf = findPianoBuffer(note)
     }
-    if (!buf) return
+    if (!buf) return false
     const src = c.createBufferSource()
     const gain = c.createGain()
     src.buffer = buf
@@ -196,7 +196,9 @@ export function playPianoNote(note: string, options?: PlayPianoOptions) {
       ;(window as any).__pdLastToneAt = performance.now()
       ;(window as any).__pdToneSuppressMs = 350 // duration to suppress mic input
     }
-  } catch { /* Audio unavailable */ }
+    // Playback was scheduled; this does not claim that a person heard it.
+    return c.state === 'running' && _pianoBus.gain.value > 0
+  } catch { return false /* Audio unavailable */ }
 }
 
 // Piano bus volume control — used by backing-track games (SimplySing, etc.)

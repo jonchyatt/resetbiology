@@ -106,7 +106,7 @@ check(() => {
 
 check(() => {
   assert.match(spawn, /supportedLesson\?: SupportedVillageLesson|supportedLesson:/)
-  assert.match(spawn, /supportedLesson:\s*\{[\s\S]*objective:\s*supportedLesson\.objective[\s\S]*contextNote:\s*supportedLesson\.contextNote[\s\S]*targetNote:\s*supportedLesson\.targetNote/)
+  assert.match(spawn, /supportedLesson:\s*\{[\s\S]*objective:\s*returnOffer\?\.objective \?\? supportedLesson\.objective[\s\S]*contextNote:\s*returnOffer\?\.contextNote \?\? supportedLesson\.contextNote[\s\S]*targetNote:\s*returnOffer\?\.targetNote \?\? supportedLesson\.targetNote/)
   assert.match(spawn, /\.\.\.\(supportedLesson \? \{[\s\S]*supportedLesson:/)
   assert.doesNotMatch(spawn, /notes\s*=\s*\[|notes\s*=\s*pickNextNote/)
 })
@@ -162,17 +162,17 @@ check(() => {
   assert.ok(supportedStart >= 0 && supportedEnd > supportedStart)
   const supported = review.slice(supportedStart, supportedEnd)
   assert.match(supported, /recordVillagePractice\(currentVillagePractice, \{[\s\S]*objective: supportedVillageLesson\.objective[\s\S]*contextNote: supportedVillageLesson\.contextNote[\s\S]*targetNote: supportedVillageLesson\.targetNote/)
-  assert.match(supported, /support: ['"]SUPPORTED['"][\s\S]*cueFree: false/)
+  assert.match(supported, /support: earnedUnaided \? 'UNAIDED_RETURN' : 'SUPPORTED'[\s\S]*cueFree: earnedUnaided/)
   assert.match(supported, /normalVoice: normalBellRouteAvailable\(\) && lane === ['"]voice['"]/)
   assert.match(supported, /demo: demoRef\.current[\s\S]*simulated: bossSimulatingRef\.current/)
   assert.match(supported, /journeyId: journey\.startedAt[\s\S]*sessionId: practiceSessionId/)
   assert.match(supported, /getMasterySessionId\(\)[\s\S]*runGenerationRef\.current/)
   assert.match(supported, /eventId: `village-practice:\$\{practiceSessionId\}:\$\{target\.key\}`/)
-  assert.match(supported, /encounterIndex: target\.villager\.id[\s\S]*introducedEncounterIndex: target\.villager\.id/)
+  assert.match(supported, /encounterIndex: completedVillageEncounterCountRef\.current[\s\S]*introducedEncounterIndex: returnOffer\?\.enqueuedAtCompletedEncounterCount \?\? completedVillageEncounterCountRef\.current/)
   assert.match(supported, /timestampMs: Date\.now\(\)/)
   assert.match(supported, /admittedNotes: unlockedNotesRef\.current[\s\S]*introducedNotes: \[\.\.\.journey\.guidedNotes, \.\.\.journey\.unlockedNotes\][\s\S]*comfortableRange: range/)
   assert.match(supported, /if \(nextVillagePractice !== currentVillagePractice\) \{[\s\S]*const nextJourney = \{ \.\.\.journey, villagePractice: nextVillagePractice \}[\s\S]*presentationJourneyRef\.current = nextJourney[\s\S]*setPresentationJourney\(nextJourney\)[\s\S]*savePresentationJourney\(nextJourney\)/)
-  assert.doesNotMatch(supported, /UNAIDED_RETURN|gradeVoice|gradeEar|saveFsrs|recordMasteryProgressForReview|reconcileCampaignProgress|completeJourneyGuidanceForNote|saveCueSupport|recordCueSupportOutcome|cueSupportProfileRef\.current\s*=|cueSupportProfileRef\.current\.notes/)
+  assert.doesNotMatch(supported, /gradeVoice|gradeEar|saveFsrs|recordMasteryProgressForReview|reconcileCampaignProgress|completeJourneyGuidanceForNote|saveCueSupport|recordCueSupportOutcome|cueSupportProfileRef\.current\s*=|cueSupportProfileRef\.current\.notes/)
 })
 
 const supportedRange = { lowNote: 'D4', highNote: 'A4' } as const

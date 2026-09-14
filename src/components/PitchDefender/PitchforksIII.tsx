@@ -98,6 +98,13 @@ import {
 import { selectVillageLessonCandidate } from './villageLessonSelector'
 import { recordVillagePractice } from './villagePractice'
 import {
+  createVillageReturnQueue,
+  enqueueVillageReturn,
+  selectVillageReturnOffer,
+  resolveVillageReturnOffer,
+  type VillageReturnOffer,
+} from './villageReturnQueue'
+import {
   pitchforksApproaching,
   pitchforksMicUnreliable,
   pitchforksTunerFeedback,
@@ -4105,6 +4112,10 @@ export default function PitchforksIII() {
   const [masterySaveStatus, setMasterySaveStatus] = useState<'idle' | 'not-confirmed'>('idle')
   const cueSupportByTargetRef = useRef<Map<string, CueSupportLevel>>(new Map())
   const presentationVisitCountByTargetRef = useRef<Map<string, number>>(new Map())
+  const villageReturnQueueRef = useRef(createVillageReturnQueue('village-return:0'))
+  const villageReturnOffersRef = useRef(new Map<string, VillageReturnOffer>())
+  const villageReturnContextPlayedRef = useRef(new Set<string>())
+  const completedVillageEncounterCountRef = useRef(0)
   const hintedTargetKeysRef = useRef<Set<string>>(new Set())
   const waveNotesHeardRef = useRef<Set<string>>(new Set())
   const waveNotesSungRef = useRef<Set<string>>(new Set())
@@ -6091,6 +6102,9 @@ export default function PitchforksIII() {
     // protects against an echo, duplicate callback, or a delayed button tap
     // trying to rewrite the same exact-octave encounter+tine.
     if (Object.prototype.hasOwnProperty.call(levelProgressRef.current.targetOutcomes, target.key)) return false
+    if (target.villager.supportedLesson && (
+      getActiveTarget()?.villager !== target.villager || getActiveTarget()?.key !== target.key
+    )) return false
 
     if (!correct) {
       if (failureGradedKeysRef.current.has(target.key)) return false
@@ -6106,6 +6120,12 @@ export default function PitchforksIII() {
       target.villager.supportedLesson?.targetNote === target.note
       ? target.villager.supportedLesson
       : undefined
+    const returnOffer = villageReturnOffersRef.current.get(target.key)
+    if (returnOffer && (
+      returnOffer.runId !== `village-return:${runGenerationRef.current}` ||
+      getActiveTarget()?.villager !== target.villager ||
+      getActiveTarget()?.key !== target.key
+    )) return false
     const levelCredit: PitchforksLevelCredit = lane === 'buttons'
       ? 'ear'
       : supportedVillageLesson || demoRef.current || support === 'guided'
@@ -6123,32 +6143,80 @@ export default function PitchforksIII() {
     if (nextLevelProgress === levelProgressRef.current) return false
     levelProgressRef.current = nextLevelProgress
     setLevelProgress(nextLevelProgress)
+    completedVillageEncounterCountRef.current += 1
 
     if (supportedVillageLesson) {
+      const journey = presentationJourneyRef.current
+      const range = rangeProfileRef.current
+      const candidateEligibility = journey && range ? {
+        admittedNotes: unlockedNotesRef.current,
+        introducedNotes: [...journey.guidedNotes, ...journey.unlockedNotes],
+        comfortableRange: range,
+      } : null
+      const currentOffer = candidateEligibility && returnOffer
+        ? selectVillageReturnOffer({
+            ...villageReturnQueueRef.current,
+            entries: villageReturnQueueRef.current.entries.filter(entry => entry.revision === returnOffer.revision),
+          }, {
+            runId: `village-return:${runGenerationRef.current}`,
+            targetNote: target.note,
+            completedEncounterCount: completedVillageEncounterCountRef.current,
+            nowMs: performance.now(),
+            candidateEligibility,
+          })
+        : undefined
+      const unaided = !!returnOffer && currentOffer?.revision === returnOffer.revision &&
+        returnOffer.support === 'UNAIDED_RETURN' &&
+        returnOffer.targetNote === target.note &&
+        returnOffer.contextNote === supportedVillageLesson.contextNote &&
+        supportedVillageLesson.support === 'UNAIDED_RETURN' &&
+        villageReturnContextPlayedRef.current.has(target.key) && !hinted
+      const resolution = returnOffer ? resolveVillageReturnOffer(villageReturnQueueRef.current, {
+        runId: `village-return:${runGenerationRef.current}`,
+        offer: returnOffer,
+        completedEncounterCount: completedVillageEncounterCountRef.current,
+        nowMs: performance.now(),
+        correct,
+        hinted: !unaided,
+      }) : undefined
+      if (resolution?.accepted) villageReturnQueueRef.current = resolution.state
+      villageReturnOffersRef.current.delete(target.key)
+      villageReturnContextPlayedRef.current.delete(target.key)
       cueSupportByTargetRef.current.delete(target.key)
       hintedTargetKeysRef.current.delete(target.key)
       if (correct) {
-        const journey = presentationJourneyRef.current
-        const range = rangeProfileRef.current
-        if (journey && range) {
+        if (journey && range && candidateEligibility) {
           const currentVillagePractice = journey.villagePractice ?? []
           const practiceSessionId = `${getMasterySessionId()}:run:${runGenerationRef.current}`
+          const earnedUnaided = unaided && resolution?.accepted === true && resolution.support === 'UNAIDED_RETURN'
+          // Practice can already be saved from a prior run. The live return
+          // still needs its own fresh introduction, count and delay.
+          if (!returnOffer) villageReturnQueueRef.current = enqueueVillageReturn(villageReturnQueueRef.current, {
+            runId: `village-return:${runGenerationRef.current}`,
+            objective: supportedVillageLesson.objective,
+            contextNote: supportedVillageLesson.contextNote,
+            targetNote: target.note,
+            completedEncounterCount: completedVillageEncounterCountRef.current,
+            nowMs: performance.now(),
+            support: 'SUPPORTED',
+            candidateEligibility,
+          })
           const nextVillagePractice = recordVillagePractice(currentVillagePractice, {
             eventId: `village-practice:${practiceSessionId}:${target.key}`,
             journeyId: journey.startedAt,
             sessionId: practiceSessionId,
-            encounterIndex: target.villager.id,
-            introducedEncounterIndex: target.villager.id,
+            encounterIndex: completedVillageEncounterCountRef.current,
+            introducedEncounterIndex: returnOffer?.enqueuedAtCompletedEncounterCount ?? completedVillageEncounterCountRef.current,
             timestampMs: Date.now(),
             objective: supportedVillageLesson.objective,
             contextNote: supportedVillageLesson.contextNote,
             targetNote: supportedVillageLesson.targetNote,
-            support: 'SUPPORTED',
+            support: earnedUnaided ? 'UNAIDED_RETURN' : 'SUPPORTED',
             correct,
             normalVoice: normalBellRouteAvailable() && lane === 'voice',
             demo: demoRef.current,
             simulated: bossSimulatingRef.current,
-            cueFree: false,
+            cueFree: earnedUnaided,
             candidateEligibility: {
               admittedNotes: unlockedNotesRef.current,
               introducedNotes: [...journey.guidedNotes, ...journey.unlockedNotes],
@@ -6209,7 +6277,7 @@ export default function PitchforksIII() {
       if (lane === 'voice') acceptNormalBellCombatResponse(target) // Rain connector
     }
     return true
-  }, [acceptNormalBellCombatResponse, completeJourneyGuidanceForNote, getMasterySessionId, latencyForTarget, matchingSuppressedNow, normalBellRouteAvailable, recordMasteryProgressForReview, reconcileCampaignProgress, saveCueSupport, saveFsrs, savePresentationJourney])
+  }, [acceptNormalBellCombatResponse, completeJourneyGuidanceForNote, getActiveTarget, getMasterySessionId, latencyForTarget, matchingSuppressedNow, normalBellRouteAvailable, recordMasteryProgressForReview, reconcileCampaignProgress, saveCueSupport, saveFsrs, savePresentationJourney])
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
@@ -6227,6 +6295,7 @@ export default function PitchforksIII() {
       ? villager.supportedLesson
       : undefined
     const targetKey = `${villager.id}:${villager.burned}`
+    const cueRunGeneration = runGenerationRef.current
     if (mode === 'replay' && supportedLesson?.support === 'UNAIDED_RETURN') {
       // Replay is the explicit hint path. Mark the exact target before any
       // answer tone is scheduled, even when the current cue profile is Guided.
@@ -6320,6 +6389,8 @@ export default function PitchforksIII() {
       const tineIndex = supportedLesson ? villager.burned : villager.burned + toneIndex
       const id = setTimeout(() => {
         const promptOwnerKey = `${villager.id}:${tineIndex}`
+        if (cueRunGeneration !== runGenerationRef.current || phaseRef.current !== 'playing' ||
+          getActiveTarget()?.villager !== villager || getActiveTarget()?.key !== promptOwnerKey) return
         if (phaseRef.current === 'playing' && getActiveTarget()?.key === promptOwnerKey) {
           setPromptText(buttonLane
             ? 'Listen…'
@@ -6333,7 +6404,12 @@ export default function PitchforksIII() {
         }
         setPianoVolume(cueVolumeRef.current)
         try {
-          playPianoNote(note, { exact: true })
+          const emitted = playPianoNote(note, { exact: true })
+          if (emitted && unhintedUnaidedReturnCue && toneIndex === 0 &&
+            pianoSamplesReadyRef.current && audioCueRef.current && cueVolumeRef.current > 0 &&
+            villageReturnOffersRef.current.get(promptOwnerKey)?.runId === `village-return:${cueRunGeneration}`) {
+            villageReturnContextPlayedRef.current.add(promptOwnerKey)
+          }
         } finally {
           matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
           markToneEmitted(TONE_SUPPRESS_MS)
@@ -6644,6 +6720,10 @@ export default function PitchforksIII() {
       setRainState(createRainState())
       clearNextWaveTimer()
       runGenerationRef.current += 1
+      villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
+      villageReturnOffersRef.current.clear()
+      villageReturnContextPlayedRef.current.clear()
+      completedVillageEncounterCountRef.current = 0
       resetLevelProgress(1)
       for (const n of unlockedNotesRef.current) {
         ensureNoteMemory(n)
@@ -6785,6 +6865,25 @@ export default function PitchforksIII() {
           encounterIndex,
         })
       : undefined
+    // Reserve before the actor reaches the renderer, so no answer badge can
+    // precede the unaided-return concealment and no batch can reuse an offer.
+    const reservedRevisions = new Set([...villageReturnOffersRef.current.values()].map(offer => offer.revision))
+    const returnOffer = supportedLesson && range && journey
+      ? selectVillageReturnOffer({
+          ...villageReturnQueueRef.current,
+          entries: villageReturnQueueRef.current.entries.filter(entry => !reservedRevisions.has(entry.revision)),
+        }, {
+          runId: `village-return:${runGenerationRef.current}`,
+          targetNote,
+          completedEncounterCount: completedVillageEncounterCountRef.current,
+          nowMs: performance.now(),
+          candidateEligibility: {
+            admittedNotes: unlockedNotesRef.current,
+            introducedNotes: [...journey.guidedNotes, ...journey.unlockedNotes],
+            comfortableRange: range,
+          },
+        })
+      : undefined
     const attackTimer = attackTimeForWave(rt.wave, spawnIndex)
     const spriteWidth = (assetsRef.current.villagerMeta[totalTines] ?? defaultVillagerMeta).frame_w * SPRITE_SCALE
     const v: Villager = {
@@ -6809,9 +6908,10 @@ export default function PitchforksIII() {
       torchBearer: (demoRef.current || normalBellRouteAvailable()) && !bellProofRef.current && spawnIndex % 2 === 0,
       ...(supportedLesson ? {
         supportedLesson: {
-          objective: supportedLesson.objective,
-          contextNote: supportedLesson.contextNote,
-          targetNote: supportedLesson.targetNote,
+          objective: returnOffer?.objective ?? supportedLesson.objective,
+          contextNote: returnOffer?.contextNote ?? supportedLesson.contextNote,
+          targetNote: returnOffer?.targetNote ?? supportedLesson.targetNote,
+          support: returnOffer?.support ?? 'SUPPORTED',
         },
       } : {}),
     }
@@ -6841,6 +6941,7 @@ export default function PitchforksIII() {
       v.torch = createInactiveTorchState()
       v.torchBearer = false
     }
+    if (returnOffer) villageReturnOffersRef.current.set(`${v.id}:0`, returnOffer)
     rt.villagers.push(v)
     if (supportedLesson) {
       presentationVisitCountByTargetRef.current.set(
@@ -6854,6 +6955,8 @@ export default function PitchforksIII() {
 
   const startWave = useCallback((wave: number) => {
     const rt = runtimeRef.current
+    villageReturnOffersRef.current.clear()
+    villageReturnContextPlayedRef.current.clear()
     clearNextWaveTimer()
     resetCloseSmash()
     resetThunderhead()
@@ -8260,7 +8363,8 @@ export default function PitchforksIII() {
       const cueContext = cueContextForVillager(target.villager)
       if (!target.villager.sequenceCued) {
         target.villager.sequenceCued = true
-        if (inputModeRef.current === 'buttons' || (cueContext.support === 'guided' && audioCueRef.current)) {
+        if (inputModeRef.current === 'buttons' ||
+          ((cueContext.support === 'guided' || target.villager.supportedLesson) && audioCueRef.current)) {
           playVillagerSequence(target.villager, 'cue')
         } else if (
           target.villager.id === runtimeRef.current.firstVillagerId &&
@@ -9225,6 +9329,10 @@ export default function PitchforksIII() {
     clearCueTimers()
     clearNextWaveTimer()
     runGenerationRef.current += 1
+    villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
+    villageReturnOffersRef.current.clear()
+    villageReturnContextPlayedRef.current.clear()
+    completedVillageEncounterCountRef.current = 0
     sparkGuideEventsRef.current = []
     sparkGuideRef.current = createPitchforksSparkGuideState(sparkGuideRef.current.generation + 1)
     syncSparkGuideStatus('idle')
@@ -9344,6 +9452,10 @@ export default function PitchforksIII() {
     stopListening()
     resumeCueAudioFromGesture()
     runGenerationRef.current += 1
+    villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
+    villageReturnOffersRef.current.clear()
+    villageReturnContextPlayedRef.current.clear()
+    completedVillageEncounterCountRef.current = 0
     runtimeRef.current = makeInitialRuntime(true)
     resetGalvanic()
     const key = lane === 'voice' ? FSRS_DEBUG_KEY : FSRS_EAR_DEBUG_KEY
@@ -9614,6 +9726,10 @@ export default function PitchforksIII() {
     clearCueTimers()
     clearNextWaveTimer()
     runGenerationRef.current += 1
+    villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
+    villageReturnOffersRef.current.clear()
+    villageReturnContextPlayedRef.current.clear()
+    completedVillageEncounterCountRef.current = 0
     resetSparkGuide('quit')
     clearFirstMinuteTimer()
     clearNewNoteCeremony()
@@ -9666,6 +9782,10 @@ export default function PitchforksIII() {
     deferredAdmissionNotesRef.current = new Set()
     clearNextWaveTimer()
     runGenerationRef.current += 1
+    villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
+    villageReturnOffersRef.current.clear()
+    villageReturnContextPlayedRef.current.clear()
+    completedVillageEncounterCountRef.current = 0
     resetNormalBellPowerForRun(false)
     resetLevelProgress(1)
     clearNewNoteCeremony()

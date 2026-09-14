@@ -85,7 +85,8 @@ check(() => {
 check(() => {
   assert.match(source, /playVillagerSequence\(target\.villager, ['"]cue['"]\)/)
   assert.match(source, /playVillagerSequence\(active\.villager, ['"]replay['"]\)/)
-  assert.doesNotMatch(source, /villageReturnQueue/)
+  assert.match(sequence, /const emitted = playPianoNote\(note, \{ exact: true \}\)/)
+  assert.match(sequence, /emitted && unhintedUnaidedReturnCue[\s\S]*villageReturnContextPlayedRef\.current\.add\(promptOwnerKey\)/)
   assert.doesNotMatch(sequence, /recordVillagePractice|reviewTargetNote|UNAIDED_RETURN.*offer/)
 })
 
