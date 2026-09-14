@@ -7,12 +7,13 @@ export type RainViewCanvasContext = Pick<CanvasRenderingContext2D,
 }
 
 const COLORS = Object.freeze({
-  stone: '#2a2a3a', stoneDark: '#1a1a2a', stoneLight: '#606070', stoneCarve: '#11111d',
+  stone: '#4a4b55', stoneDark: '#252731', stoneLight: '#8a8790', stoneCarve: '#171820',
   water: 'rgba(154, 239, 255, 0.72)', waterBright: 'rgba(154, 239, 255, 0.98)',
   cloud: 'rgba(32, 45, 66, 0.92)', cloudEdge: 'rgba(78, 112, 139, 0.96)', seam: 'rgba(119, 220, 244, 0.9)',
   wood: '#6b4226', woodEdge: '#a66a38', spent: '#20202c', spentEdge: '#536274',
   flame: '#e8a838', flameCore: '#ffc83c', steam: 'rgba(180, 195, 230, 0.6)',
 })
+const RAIN_CLOUD_DRAW = Object.freeze({ x: 460, y: -20, width: 128, height: 43 })
 
 const RAIN_STREAKS: readonly (readonly [x: number, seed: number, length: number])[] = [
   [318, 8, 13], [342, 73, 17], [371, 32, 11], [398, 126, 15], [427, 52, 12],
@@ -69,8 +70,8 @@ function rainClockMs(state: RainState): number {
 
 function drawGargoyle(ctx: RainViewCanvasContext, gargoyle: (typeof GARGOYLES)[number], gargoyleArt?: CanvasImageSource | null): void {
   if (gargoyleArt && typeof ctx.drawImage === 'function') {
-    // The 32x24 source is rendered at 2x. Its measured mouth center (15.5, 18.5)
-    // stays exactly on the existing world-space mouth anchor.
+    // The normalized 64x48 source is rendered at native size so its carved mouth
+    // stays on the existing world-space mouth anchor.
     ctx.drawImage(gargoyleArt, gargoyle.mouthX - 31, gargoyle.mouthY - 37, 64, 48)
     return
   }
@@ -101,9 +102,10 @@ function drawCloud(
 ): void {
   if (phase !== 'gutter_fill' && phase !== 'gargoyle_release' && phase !== 'raining') return
   if (rainCloudArt && typeof ctx.drawImage === 'function') {
-    // The Nano Banana 96x32 source has measured alpha bounds x=4..91, y=6..25.
-    // Render at native size so its visible alpha ends at world y=20 above the feed gap.
-    ctx.drawImage(rainCloudArt, 476, -6, 96, 32)
+    // The normalized 96x32 source has measured alpha bottom y=30. Scale it up
+    // around the existing feed and place that bottom at world y=20, keeping the
+    // 20..39 feed gap readable while giving the cloud real visual weight.
+    ctx.drawImage(rainCloudArt, RAIN_CLOUD_DRAW.x, RAIN_CLOUD_DRAW.y, RAIN_CLOUD_DRAW.width, RAIN_CLOUD_DRAW.height)
     return
   }
   const alpha = phase === 'gutter_fill' ? 0.62 + fill * 0.25 : 0.92

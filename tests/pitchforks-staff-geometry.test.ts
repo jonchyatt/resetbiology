@@ -116,6 +116,7 @@ function renderStaffFrame(
   queue: string[],
   activeIndex: number,
   sourceNote: string | null = queue[activeIndex] ?? null,
+  renderDeviation: number | null = sourceNote === null ? null : 0,
 ) {
   const ctx = traceContext()
   const targetNote = queue[activeIndex]
@@ -125,7 +126,7 @@ function renderStaffFrame(
       visible: true,
       sourceNote,
       canUseSource: sourceNote !== null,
-      renderDeviation: sourceNote === null ? null : 0,
+      renderDeviation,
       onTarget: sourceNote !== null,
     },
     active: { villagerId: 1 },
@@ -137,14 +138,15 @@ function renderStaffFrame(
 }
 
 const expectedY: Record<string, number> = {
-  // Independent contract coordinates: bottom line E4 = 109px, half-step = 4px.
-  C4: 117,
-  E4: 109,
-  F4: 105,
-  A4: 97,
-  B4: 93,
-  C5: 89,
-  F5: 77,
+  // Independent contract coordinates: bottom line E4 = 164px, half-step = 6px.
+  C4: 176,
+  E4: 164,
+  F4: 158,
+  A4: 146,
+  B4: 140,
+  C5: 134,
+  F5: 116,
+  C3: 218,
 }
 
 const expectedStep: Record<string, number> = {
@@ -155,6 +157,7 @@ const expectedStep: Record<string, number> = {
   B4: 4,
   C5: 5,
   F5: 8,
+  C3: -9,
 }
 
 const queueX = (queueLength: number, index: number) => {
@@ -219,8 +222,8 @@ for (const [noteName, y] of Object.entries(expectedY)) {
   check(() => assert.equal(note ? staff.staffY(note) : null, y, `${noteName} staff y`))
 }
 
-check(() => assert.equal(staff.STAFF_BOTTOM_LINE_Y, 109, 'treble bottom line coordinate'))
-check(() => assert.equal(staff.STAFF_LINE_GAP, 8, 'treble line spacing'))
+check(() => assert.equal(staff.STAFF_BOTTOM_LINE_Y, 164, 'treble bottom line coordinate'))
+check(() => assert.equal(staff.STAFF_LINE_GAP, 12, 'treble line spacing'))
 check(() => assert.match(source, /if \(view\.staffNotationVisible\) drawStaffNotationView\(ctx, view\)/, 'main canvas calls staff renderer'))
 check(() => assert.match(source, /const staffCanvas = staffCanvasRef\.current[\s\S]*?drawStaffNotationView\(staffCtx, view\)/, 'portrait staff canvas calls staff renderer'))
 
@@ -240,7 +243,7 @@ for (const [activeIndex, noteName] of namedQueue.entries()) {
   ))
 }
 
-const splitSourceFrame = renderStaffFrame(namedQueue, 4, 'C5')
+const splitSourceFrame = renderStaffFrame(namedQueue, 4, 'C5', 1)
 check(() => assert.equal(Number(targetEllipse(splitSourceFrame, queueX(namedQueue.length, 4)).args[1]), expectedY.B4, 'target B4 y remains independent of heard C5'))
 check(() => assert.equal(heardDiamondCenter(splitSourceFrame, queueX(namedQueue.length, 4)), expectedY.C5, 'heard C5 uses its own source coordinate'))
 check(() => assert.deepEqual(
@@ -251,8 +254,11 @@ check(() => assert.deepEqual(
   'multi-note queue labels remain source note names',
 ))
 
+const c3FractionalFrame = renderStaffFrame(['C3'], 0, 'D3', 1.5)
+check(() => assert.equal(heardDiamondCenter(c3FractionalFrame, queueX(1, 0)), 215, 'fractional C3-to-D3 pitch stays between diatonic positions'))
+
 const ascendingQueue = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5']
-const trajectoryExpectedY = [117, 113, 109, 105, 101, 97, 93, 89, 85, 81, 77]
+const trajectoryExpectedY = [176, 170, 164, 158, 152, 146, 140, 134, 128, 122, 116]
 const ascendingRenderedY = ascendingQueue.map((noteName, activeIndex) => {
   const ctx = renderStaffFrame(ascendingQueue, activeIndex, noteName)
   const expectedX = queueX(ascendingQueue.length, activeIndex)
@@ -284,14 +290,14 @@ const singleTargetX = queueX(1, 0)
 const exactLedger = (...ys: number[]) => ys.map(y => ({ x1: singleTargetX - 11, y, x2: singleTargetX + 11 }))
 check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['C4'], 0, null)), exactLedger(expectedY.C4), 'C4 has exactly one ledger below the staff'))
 check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['E4'], 0, null)), [], 'E4 has no ledger line inside the staff'))
-check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['A5'], 0, null)), exactLedger(69), 'A5 has exactly one ledger above the staff'))
-check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['C6'], 0, null)), exactLedger(69, 61), 'C6 has exactly the two required upper ledgers'))
+check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['A5'], 0, null)), exactLedger(104), 'A5 has exactly one ledger above the staff'))
+check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['C6'], 0, null)), exactLedger(104, 92), 'C6 has exactly the two required upper ledgers'))
 // Target and heard overlay intentionally each draw their own ledger layer.
 // Matching C4 therefore has two identical segments; differing low/high notes
 // have exactly one segment at each applicable position, with no extras.
 check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['C4'], 0, 'C4')), exactLedger(expectedY.C4, expectedY.C4), 'matching C4 keeps target plus heard ledger layers'))
-check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['C4'], 0, 'A5')), exactLedger(expectedY.C4, 69), 'C4 target plus high A5 heard ledger layers'))
-check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['A5'], 0, 'C4')), exactLedger(69, expectedY.C4), 'A5 target plus low C4 heard ledger layers'))
+check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['C4'], 0, 'A5')), exactLedger(expectedY.C4, 104), 'C4 target plus high A5 heard ledger layers'))
+check(() => assert.deepEqual(ledgerSegments(renderStaffFrame(['A5'], 0, 'C4')), exactLedger(104, expectedY.C4), 'A5 target plus low C4 heard ledger layers'))
 check(() => assert.deepEqual(
   renderStaffFrame(['C4'], 0, null).calls
     .filter(call => call.kind === 'fillText' && typeof call.args[0] === 'string' && /^[A-G][#b]?-?\d+$/.test(call.args[0]))

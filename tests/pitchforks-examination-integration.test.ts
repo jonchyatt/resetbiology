@@ -60,10 +60,11 @@ function harness() {
     presentationJourneyRef: ref(journey), rangeProfileRef: ref({ assessedAt: identity.rangeAssessedAt }), unlockedNotesRef: ref(notes),
     fsrsRef: ref(memory), masteryProgressRef: ref(Object.fromEntries(notes.map(n => [n, { sessionIds: ['a', 'b', 'c'], masteredAt: now - 10 }]))),
     assetsRef: ref({ torchmasterChamberPlate: {}, bellringerChamberPlate: {}, bellringerRest: {}, bellTowerPlate: {}, cathedralPlate: {} }),
-    bossControllerRef: ref(null), bossWorldRef: ref(null), bossPracticeOnlyRef: ref(false), bossIdentityRef: ref(null), bossReceiptsRef: ref([]),
+    bossControllerRef: ref(null), bossWorldRef: ref(null), bossPracticeWorldRef: ref(null), bossPracticeOnlyRef: ref(false), bossIdentityRef: ref(null), bossReceiptsRef: ref([]),
     bossSupportedPracticeRef: ref(false), bossSimulatingRef: ref(false), bossHoldRef: ref({ heldMs: 0, matched: false }),
     bossHeardClaimRef: ref(null), bossButtonTrialRef: ref(null), bossClockRef: ref(0), bossPitchGenerationRef: ref(null),
-    pitchGenerationRef: ref(1), pitchRef: ref(null), isListeningRef: ref(true), micErrorRef: ref(null),
+    pitchGenerationRef: ref(1), pitchRef: ref(null), isListeningRef: ref(true), micErrorRef: ref(null), pausedRef: ref(false), setPaused: noop, setCloseSmashGuideOpen: noop,
+    pauseGateRef: ref({ paused: false, generation: 0, fence: 0 }), closeSmashGuidePausedBeforeOpenRef: ref(false),
     micSourceHealthRef: ref({ audioContextState: 'running', trackReadyState: 'live', trackMuted: false }),
     inputModeRef: ref('voice'), demoRef: ref(false), fsrsDebugRef: ref(false), runGenerationRef: ref(1),
     villageReturnQueueRef: ref(createVillageReturnQueue('village-return:1')), villageReturnOffersRef: ref(new Map()),
@@ -84,6 +85,12 @@ function harness() {
     'clearWaveReceipt', 'resetCloseSmash', 'resetThunderhead', 'resetBellWave', 'resetGalvanic', 'resumeCueAudioFromGesture', 'setPhase', 'loop',
     'renderBossChamber', 'resetSparkGuide', 'resetNormalBellPowerForRun', 'resetRangeMatch', 'setPendingRangeProfile', 'setRangeAssessmentError',
     'setRainState', 'resetLevelProgress', 'setMicHudState']) env[name] = noop
+  env.createPitchforksPauseGate = runInNewContext(extract('createPitchforksPauseGate'), env)
+  env.clonePitchforksPracticeStore = runInNewContext(extract('clonePitchforksPracticeStore'), env)
+  env.createPitchforksEphemeralBossPracticeStorage = runInNewContext(extract('createPitchforksEphemeralBossPracticeStorage'), env)
+  env.selectPitchforksBossRecitalStorage = runInNewContext(extract('selectPitchforksBossRecitalStorage'), env)
+  env.shouldStartPitchforksBossMicrophone = runInNewContext(extract('shouldStartPitchforksBossMicrophone'), env)
+  env.schedulePitchforksBossCueCompletion = runInNewContext(extract('schedulePitchforksBossCueCompletion'), env)
   for (const name of ['FSRS_DEBUG_KEY', 'CONFIDENCE_FLOOR', 'MATCH_TOLERANCE_CENTS', 'HOLD_MS']) env[name] = runInNewContext(extract(name), env)
   env.SONGCRAFT_STALE_AFTER_MS = runInNewContext(extract('SONGCRAFT_STALE_AFTER_MS', songAst), env)
   env.observePitchforksSongcraftGeneration = runInNewContext(extract('observePitchforksSongcraftGeneration', songAst), env)
@@ -104,13 +111,16 @@ function harness() {
 }
 
 for (const [boss, world, count] of [['torchmaster', 'village-gate', 2], ['choirmaster', 'bell-tower', 3]] as const) {
-  test(`${boss} normal supporting chamber saves voice practice without campaign writes`, () => {
+  test(`${boss} normal supporting chamber keeps voice practice ephemeral without campaign writes`, () => {
     const h = harness(), before = clone(h.env.presentationJourneyRef.current)
     h.env.beginBossPreview('voice', boss, world, true)
     assert.equal(h.env.bossControllerRef.current.state().sequence.length, count)
     assert.deepEqual(h.microphones, ['stop', 'start'])
     h.finish()
-    assert.deepEqual([...new Set(h.writes)], [FSRS_VOICE_KEY])
+    // Practice-only recitals use the same ephemeral-storage contract verified by
+    // the isolated EAR replay; no browser key or persistent store write is allowed.
+    // Receipt: data/pitchforks-repair-20260914/terra-worlds/VERDICT-20260914T045751Z-kant-isolation3020.md
+    assert.deepEqual(h.writes, [])
     assert.equal(h.journeys.length, 0)
     assert.deepEqual(clone(h.env.presentationJourneyRef.current), before)
   })

@@ -18,6 +18,7 @@ const completeArt = {
 } as const
 
 const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const chamberViewSource = readFileSync(new URL('../src/components/PitchDefender/PitchforksBossChamberView.ts', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
 let checks = 0
 const check = (run: () => void): void => {
   run()
@@ -95,13 +96,14 @@ check(() => {
   assert.match(source, /attempt: `\$\{bossId\}:\$\{runGenerationRef\.current\}:\$\{Date\.now\(\)\}`/)
   assert.match(source, /a\.bellringerChamberPlate = await loadImage\(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC\)\.catch\(\(\) => undefined\)/)
   assert.match(source, /a\.bellringerRest = await loadImage\(PITCHFORKS_BELLRINGER_REST_SRC\)\.catch\(\(\) => undefined\)/)
-  assert.match(source, /ctx\.drawImage\(assets\.bellringerRest, 540, FRANK_Y, 96, 144\)/)
+  assert.match(chamberViewSource, /ctx\.drawImage\(assets\.bellringerRest, 540, FRANK_Y, 96, 144\)/)
+  assert.match(chamberViewSource, /export function renderBossChamber\(/)
   assert.match(source, /data-testid="pf3-bellringer-enter-voice"/)
   assert.match(source, /BELLRINGER SINGING DEMO/)
   assert.match(source, /data-testid="pf3-bellringer-enter-ear"/)
   assert.match(source, /BELLRINGER LISTEN &amp; CHOOSE/)
   assert.match(source, /TWO-NOTE INTERVAL PRACTICE/)
-  assert.match(source, /earnedWorld \? true : demoRef\.current, \{[\s\S]*bellringerChamberPlate: !!assetsRef\.current\.bellringerChamberPlate/)
+  assert.match(source, /earnedWorld \|\| practiceWorld \? true : demoRef\.current, \{[\s\S]*bellringerChamberPlate: !!assetsRef\.current\.bellringerChamberPlate/)
 })
 
 check(() => {

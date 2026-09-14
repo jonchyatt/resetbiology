@@ -7,7 +7,7 @@ import sharp from 'sharp'
 
 const PRODUCT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const ASSET = resolve(PRODUCT_ROOT, 'public/images/pitchforks/storm_heart_nano.png')
-const EXPECTED_SHA256 = 'b00308fd376b0cc30bef34d8346ebd319a9db2dd9eac2d816760e0e750af789a'
+const EXPECTED_SHA256 = 'eeb0616a0d57c418258d3a3d685f69401533054fc28b40f123c92314efd9f480'
 
 async function main() {
   const bytes = readFileSync(ASSET)

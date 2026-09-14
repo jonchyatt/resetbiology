@@ -94,7 +94,7 @@ check(() => {
     const sprite = ctx.calls.find(call => call.op === 'drawImage')
     assert.ok(sprite, `${state} should draw the optional Storm Heart sprite`)
     assert.equal(sprite.args[0], image)
-    assert.deepEqual(sprite.args.slice(1), [72, 38, 112, 64])
+    assert.deepEqual(sprite.args.slice(1), [56.75, 52.25, 140, 80])
     assert.equal(ctx.calls.filter(call => call.op === 'save').length, 1)
     assert.equal(ctx.calls.filter(call => call.op === 'restore').length, 1)
     assert.equal(ctx.calls.some(call => call.op === 'imageSmoothingEnabled' && call.args[0] === false), true)
@@ -119,7 +119,7 @@ check(() => {
   const ctx = createRecordingContext()
   drawStormHeart(ctx, 'gather-3', 200, 100, image)
   const sprite = ctx.calls.find(call => call.op === 'drawImage')
-  assert.deepEqual(sprite?.args.slice(1), [144, 47, 112, 64])
+  assert.deepEqual(sprite?.args.slice(1), [128.75, 61.25, 140, 80])
 })
 
 check(() => {

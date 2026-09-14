@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "candidate-recovered-3x-1.0.0",
   "frame_w": 16,
   "frame_h": 24,
   "walk_frames": 4,
@@ -22,5 +22,14 @@
     "sourceSha256": "7725FBBDE33277712145C7B9E019ADB23A31CD365ED2A1CF6173FF74B264A59F",
     "sourceStatus": "STAGING_ONLY_NOT_INTEGRATED",
     "adaptation": "Runtime VillagerMeta shape; tines is derived from fork_base + fork.tine_tip - handle_base, and sourceStatus is provenance only."
-  }
+  },
+  "status": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC",
+  "sourceGridColumns": 5,
+  "source_frame_w": 48,
+  "source_frame_h": 72,
+  "logical_frame_w": 16,
+  "logical_frame_h": 24,
+  "sourceScale": 3,
+  "sourceArtifact": "data/pitchforks-repair-20260914/candidate-3x-roster/_normalized_villager_1tine_source.png",
+  "assembly": "existing generate-pitchforks-sprites.py 5x2 cell coordinates and chroma-key/fit helpers"
 }

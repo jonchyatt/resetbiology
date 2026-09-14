@@ -21,6 +21,8 @@ const HYSTERESIS_FRAMES = 3
 const MIN_CONFIDENCE = 0.85     // pitchy clarity threshold
 const MIN_FREQ = 60             // Hz — below this is rumble/noise
 const MAX_FREQ = 2000           // Hz — above this is noise/harmonics
+export const PITCHFORKS_MICROPHONE_REQUEST_TIMEOUT_MS = 8000
+const PITCHFORKS_MICROPHONE_REQUEST_TIMEOUT_MESSAGE = 'Microphone request timed out. Check browser permission and input device, then try again.'
 
 // Note frequencies for octaves 2-6 (covers child and adult vocal ranges)
 const NOTE_FREQS: [string, number][] = []
@@ -53,6 +55,49 @@ export interface MicSourceHealthSnapshot {
   audioContextState: string
   trackReadyState: MediaStreamTrackState | 'unavailable'
   trackMuted: boolean
+}
+
+function stopPitchforksStream(stream: MediaStream): void {
+  try {
+    stream.getTracks().forEach(track => {
+      try { track.stop() } catch {}
+    })
+  } catch {}
+}
+
+/** Bound browser permission/device requests so a pending promise cannot strand the UI. */
+export function requestPitchforksMicrophoneStream(
+  request: () => Promise<MediaStream>,
+  timeoutMs = PITCHFORKS_MICROPHONE_REQUEST_TIMEOUT_MS,
+): Promise<MediaStream> {
+  const boundedTimeoutMs = Number.isFinite(timeoutMs) && timeoutMs > 0
+    ? timeoutMs
+    : PITCHFORKS_MICROPHONE_REQUEST_TIMEOUT_MS
+  return new Promise<MediaStream>((resolve, reject) => {
+    let settled = false
+    const timer = setTimeout(() => {
+      if (settled) return
+      settled = true
+      reject(new Error(PITCHFORKS_MICROPHONE_REQUEST_TIMEOUT_MESSAGE))
+    }, boundedTimeoutMs)
+
+    Promise.resolve()
+      .then(request)
+      .then(stream => {
+        if (settled) {
+          stopPitchforksStream(stream)
+          return
+        }
+        settled = true
+        clearTimeout(timer)
+        resolve(stream)
+      }, error => {
+        if (settled) return
+        settled = true
+        clearTimeout(timer)
+        reject(error)
+      })
+  })
 }
 
 const FAIL_CLOSED_MIC_SOURCE_HEALTH: MicSourceHealthSnapshot = {
@@ -133,14 +178,14 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
   const startListening = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const stream = await requestPitchforksMicrophoneStream(() => navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
           ...audioConstraintsRef.current,
         }
-      })
+      }))
 
       const ctx = new AudioContext()
       const source = ctx.createMediaStreamSource(stream)

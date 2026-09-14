@@ -38,7 +38,7 @@ export type StormHeartCanvasContext = Pick<
   'fillStyle' | 'lineJoin' | 'lineWidth' | 'strokeStyle'
 > & Partial<Pick<
   CanvasRenderingContext2D,
-  'drawImage' | 'globalAlpha' | 'imageSmoothingEnabled'
+  'drawImage' | 'filter' | 'globalAlpha' | 'imageSmoothingEnabled'
 >>
 
 export type StormHeartImage = HTMLImageElement | CanvasImageSource
@@ -46,10 +46,12 @@ export type StormHeartImage = HTMLImageElement | CanvasImageSource
 export const STORM_HEART_CORE = Object.freeze({ x: 128, y: 91 })
 export const STORM_HEART_SEAM_WIDTH = 4
 export const STORM_HEART_CORE_DIAMETER = 14
-const STORM_HEART_SPRITE_X = 72
-const STORM_HEART_SPRITE_Y = 38
-const STORM_HEART_SPRITE_WIDTH = 112
-const STORM_HEART_SPRITE_HEIGHT = 64
+// Measured from the final Nano Banana export: the cyan heart centroid is near
+// source (57,31). Scale around that point so the authored core lands on the
+// same logical anchor as the procedural bolt/core.
+const STORM_HEART_ART_CORE = Object.freeze({ x: 57, y: 31 })
+const STORM_HEART_SPRITE_WIDTH = 140
+const STORM_HEART_SPRITE_HEIGHT = 80
 export const STORM_HEART_GATHER_THRESHOLDS = Object.freeze({
   first: 0,
   second: 0.33,
@@ -389,6 +391,7 @@ function drawGathering(
 
 function drawStormHeartSprite(
   ctx: StormHeartCanvasContext,
+  state: StormHeartState,
   image: StormHeartImage | undefined,
   offsetX: number,
   offsetY: number,
@@ -396,13 +399,19 @@ function drawStormHeartSprite(
   if (!image || typeof ctx.drawImage !== 'function') return false
   try {
     if (typeof ctx.imageSmoothingEnabled === 'boolean') ctx.imageSmoothingEnabled = false
-    ctx.drawImage(
-      image,
-      offsetX + STORM_HEART_SPRITE_X,
-      offsetY + STORM_HEART_SPRITE_Y,
-      STORM_HEART_SPRITE_WIDTH,
-      STORM_HEART_SPRITE_HEIGHT,
-    )
+    const callerAlpha = typeof ctx.globalAlpha === 'number' ? ctx.globalAlpha : undefined
+    const callerFilter = typeof ctx.filter === 'string' ? ctx.filter : undefined
+    // The Nano Banana sprite contains a bright heart core. Desaturate and
+    // darken it until gather-3 so dormant/spent states retain a readable cloud
+    // silhouette without falsely claiming an active charge.
+    if (state !== 'gather-3' && callerFilter !== undefined) ctx.filter = 'grayscale(1) saturate(0.2) brightness(0.58)'
+    const scaleX = STORM_HEART_SPRITE_WIDTH / 112
+    const scaleY = STORM_HEART_SPRITE_HEIGHT / 64
+    const spriteX = offsetX + STORM_HEART_CORE.x - STORM_HEART_ART_CORE.x * scaleX
+    const spriteY = offsetY + STORM_HEART_CORE.y - STORM_HEART_ART_CORE.y * scaleY
+    ctx.drawImage(image, spriteX, spriteY, STORM_HEART_SPRITE_WIDTH, STORM_HEART_SPRITE_HEIGHT)
+    if (callerFilter !== undefined) ctx.filter = callerFilter
+    if (callerAlpha !== undefined) ctx.globalAlpha = callerAlpha
     return true
   } catch {
     // A not-yet-decodable image is still an optional asset. Keep the procedural
@@ -437,7 +446,7 @@ export function drawStormHeart(
   ctx.save()
   try {
     if (state === 'spent' && callerAlpha !== undefined) ctx.globalAlpha = callerAlpha * 0.62
-    const spriteDrawn = drawStormHeartSprite(ctx, image, offsetX, offsetY)
+    const spriteDrawn = drawStormHeartSprite(ctx, state, image, offsetX, offsetY)
     const body = state === 'spent'
       ? SPENT_BODY
       : state === 'dormant'

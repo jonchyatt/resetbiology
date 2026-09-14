@@ -1,9 +1,14 @@
 'use client'
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { flushSync } from 'react-dom'
+import { createPortal, flushSync } from 'react-dom'
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
+import PitchforksCloseSmashGuide from './PitchforksCloseSmashGuide'
+import PitchforksPracticeArcade, { type PitchforksPracticeWorld } from './PitchforksPracticeArcade'
+import { PitchforksVillageLesson } from './PitchforksVillageLesson'
+import PitchforksBellTowerLesson from './PitchforksBellTowerLesson'
+import { renderBossChamber } from './PitchforksBossChamberView'
 import PitchforksMasteryPanel from './PitchforksMasteryPanel'
 import PitchforksCampaignJournal from './PitchforksCampaignJournal'
 import PitchforksSongcraft, { observePitchforksSongcraftGeneration, type PitchforksSongcraftGenerationState } from './PitchforksSongcraft'
@@ -613,6 +618,105 @@ export function advancePitchforksLogicalClock(logicalNowMs: number, dtMs: number
   if (paused || !Number.isFinite(dtMs) || dtMs <= 0) return now
   return now + dtMs
 }
+export type PitchforksPauseGate = Readonly<{
+  paused: boolean
+  generation: number
+  fence: number
+}>
+
+export function createPitchforksPauseGate(): PitchforksPauseGate {
+  return { paused: false, generation: 0, fence: 0 }
+}
+
+export function transitionPitchforksPauseGate(
+  gate: PitchforksPauseGate,
+  action: 'pause' | 'resume',
+): PitchforksPauseGate {
+  return {
+    paused: action === 'pause',
+    generation: action === 'resume' ? gate.generation + 1 : gate.generation,
+    fence: gate.fence + 1,
+  }
+}
+
+export function acceptsPitchforksPauseCallback(
+  gate: PitchforksPauseGate,
+  generation: number,
+  fence: number,
+): boolean {
+  return !gate.paused && gate.generation === generation && gate.fence === fence
+}
+
+export function schedulePitchforksBossCueCompletion(
+  schedule: (callback: () => void, delayMs: number) => unknown,
+  isCurrent: () => boolean,
+  isPaused: () => boolean,
+  complete: () => void,
+  initialDelayMs = 1800,
+  retryDelayMs = 100,
+): void {
+  const finish = () => {
+    if (!isCurrent()) return
+    if (isPaused()) {
+      schedule(finish, retryDelayMs)
+      return
+    }
+    complete()
+  }
+  schedule(finish, initialDelayMs)
+}
+
+export function pitchforksPracticeBossForWorld(world: PitchforksPracticeWorld): PitchforksBossId {
+  return world === 'dungeon' ? 'torchmaster' : world === 'village-gate' ? 'choirmaster' : 'bellringer'
+}
+
+export type PitchforksBossMicrophoneStartInput = Readonly<{
+  lane: 'voice' | 'ear'
+  earnedWorld: WorldId | null
+  practiceWorld: WorldId | null
+}>
+
+/** EAR answers are deliberate, but they never authorize microphone capture. */
+export function shouldStartPitchforksBossMicrophone({
+  lane,
+  earnedWorld,
+  practiceWorld,
+}: PitchforksBossMicrophoneStartInput): boolean {
+  return lane === 'voice' && Boolean(earnedWorld || practiceWorld)
+}
+
+function clonePitchforksPracticeStore(store: Record<string, NoteMemory>): Record<string, NoteMemory> {
+  const copy: Record<string, NoteMemory> = {}
+  for (const [note, memory] of Object.entries(store)) copy[note] = { ...memory }
+  return copy
+}
+
+export type PitchforksEphemeralBossPracticeStorage = PitchforksBossRecitalStorage & Readonly<{
+  snapshot: () => Record<string, NoteMemory>
+}>
+
+/** Keep practice reviews alive for this recital only; no browser key is involved. */
+export function createPitchforksEphemeralBossPracticeStorage(): PitchforksEphemeralBossPracticeStorage {
+  const practiceStore: Record<string, NoteMemory> = {}
+  const snapshot = (): Record<string, NoteMemory> => clonePitchforksPracticeStore(practiceStore)
+  return {
+    loadStore: () => snapshot(),
+    saveStore: (_, store) => {
+      for (const note of Object.keys(practiceStore)) delete practiceStore[note]
+      Object.assign(practiceStore, clonePitchforksPracticeStore(store))
+      return true
+    },
+    readback: (_, note) => practiceStore[note] ? { ...practiceStore[note] } : null,
+    snapshot,
+  }
+}
+
+export function selectPitchforksBossRecitalStorage(
+  practiceOnly: boolean,
+  durableStorage: PitchforksBossRecitalStorage,
+): PitchforksBossRecitalStorage {
+  return practiceOnly ? createPitchforksEphemeralBossPracticeStorage() : durableStorage
+}
 
 export function pitchforksWaveReceiptDue({ logicalNowMs, receiptStartedAtMs }: PitchforksWaveReceiptClockInput): boolean {
   return pitchforksWaveReceiptAgeMs({ logicalNowMs, receiptStartedAtMs }) >= PITCHFORKS_VICTORY_NEXT_WAVE_MS
@@ -724,6 +828,30 @@ type SparkGuideEvent = Readonly<{
 }>
 type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
 type VillagerState = 'waiting' | 'walking' | 'ash'
+type ArtReviewBodyState = 'walk' | 'burn-1' | 'burn-2' | 'burn-3' | 'ash'
+type ArtReviewStormState = 'dormant' | 'gather-1' | 'gather-2' | 'gather-3' | 'spent'
+
+const ART_REVIEW_BODY_STATES: readonly ArtReviewBodyState[] = ['walk', 'burn-1', 'burn-2', 'burn-3', 'ash']
+const ART_REVIEW_STORM_STATES: readonly ArtReviewStormState[] = ['dormant', 'gather-1', 'gather-2', 'gather-3', 'spent']
+const ART_REVIEW_ACTOR_X: readonly number[] = [148, 288, 428, 568]
+const ART_REVIEW_ACTOR_NOTES: readonly (readonly string[])[] = [
+  ['C4'],
+  ['D4', 'E4'],
+  ['F4', 'G4', 'A4'],
+  ['B4', 'C5', 'D5', 'E5'],
+]
+
+function parseArtReviewBodyState(value: string | null): ArtReviewBodyState {
+  return value && (ART_REVIEW_BODY_STATES as readonly string[]).includes(value)
+    ? value as ArtReviewBodyState
+    : 'walk'
+}
+
+function parseArtReviewStormState(value: string | null): ArtReviewStormState {
+  return value && (ART_REVIEW_STORM_STATES as readonly string[]).includes(value)
+    ? value as ArtReviewStormState
+    : 'dormant'
+}
 
 interface FrankMeta {
   frame_w: number
@@ -735,6 +863,8 @@ interface FrankMeta {
 interface VillagerMeta {
   frame_w: number
   frame_h: number
+  source_frame_w?: number
+  source_frame_h?: number
   walk_frames: number
   fork_base: { x: number; y: number }
   tines: Array<{ x: number; y: number }>
@@ -1750,6 +1880,147 @@ function makeInitialRuntime(demo: boolean, closeSmashProof = false, galvanicProo
 
 function createInactiveTorchState(): TorchState {
   return { ...createTorchState(), phase: 'spent' }
+}
+
+function artReviewBurnFor(totalTines: TineCount, body: ArtReviewBodyState): number {
+  if (body === 'walk') return 0
+  if (body === 'ash') return totalTines
+  return Math.min(totalTines, Number(body.slice(-1)))
+}
+
+function artReviewChargeFor(storm: ArtReviewStormState): number {
+  if (storm === 'gather-1') return 0.01
+  if (storm === 'gather-2') return 0.33
+  if (storm === 'gather-3') return 0.66
+  return 0
+}
+
+function buildArtReviewRuntime(
+  animClock: number,
+  body: ArtReviewBodyState,
+  storm: ArtReviewStormState,
+  assets: Assets,
+): Runtime {
+  const runtime = makeInitialRuntime(false)
+  const tineCounts: readonly TineCount[] = [1, 2, 3, 4]
+  runtime.animClock = animClock
+  runtime.bannerTimer = 0
+  runtime.firstVillagerId = 1
+  runtime.rain = {
+    ...runtime.rain,
+    phase: 'raining',
+    elapsedMs: 0,
+    fill: 1,
+  }
+  runtime.villagers = tineCounts.map((totalTines, index) => {
+    const burned = artReviewBurnFor(totalTines, body)
+    const state: VillagerState = burned >= totalTines ? 'ash' : 'walking'
+    const meta = assets.villagerMeta[totalTines] ?? defaultVillagerMeta
+    return {
+      id: index + 1,
+      totalTines,
+      x: ART_REVIEW_ACTOR_X[index],
+      y: GROUND_Y - meta.frame_h * SPRITE_SCALE,
+      speed: 0,
+      notes: [...ART_REVIEW_ACTOR_NOTES[index]],
+      burned,
+      state,
+      spawnIndex: index,
+      attackTimer: 30,
+      attackTimerMax: 30,
+      sequenceCued: false,
+      walkFrame: Math.floor(animClock * 4) % 4,
+      walkClock: animClock,
+      ashTimer: state === 'ash' ? 1 : 0,
+      torch: createInactiveTorchState(),
+      torchBearer: false,
+    }
+  })
+
+  const focus = runtime.villagers[runtime.villagers.length - 1]
+  const focusNote = focus.notes[Math.min(focus.burned, focus.notes.length - 1)]
+  const active: ActiveTarget = {
+    villager: focus,
+    tineIndex: Math.max(0, focus.totalTines - 1 - focus.burned),
+    note: focusNote,
+    key: `${focus.id}:${focus.burned}`,
+  }
+  if (storm === 'spent') {
+    const pivotX = FRANK_X + assets.frankMeta.rod_tip.x * FRANK_SPRITE_SCALE
+    const pivotY = FRANK_Y + assets.frankMeta.rod_tip.y * FRANK_SPRITE_SCALE
+    const target = thunderheadTargetPoint(active, assets)
+    runtime.bolts = [{
+      fromX: pivotX + FRANK_CLOUD_X_OFFSET,
+      fromY: FRANK_CLOUD_Y,
+      pivotX,
+      pivotY,
+      toX: target.x,
+      toY: target.y,
+      life: 1,
+      maxLife: BOLT_LIFE_S,
+      seed: 7,
+      hue: hueForNote(focusNote),
+      note: focusNote,
+      villagerId: focus.id,
+      tineIndex: active.tineIndex,
+      presentation: 'ordinary',
+    }]
+  }
+  return runtime
+}
+
+function buildArtReviewView(
+  runtime: Runtime,
+  storm: ArtReviewStormState,
+  activeWorld: PitchforksNormalWorld,
+): ViewState {
+  const focus = runtime.villagers[runtime.villagers.length - 1]
+  const focusNote = focus.notes[Math.min(focus.burned, focus.notes.length - 1)]
+  const active: ActiveTarget = {
+    villager: focus,
+    tineIndex: Math.max(0, focus.totalTines - 1 - focus.burned),
+    note: focusNote,
+    key: `${focus.id}:${focus.burned}`,
+  }
+  return buildViewState({
+    runtime,
+    phase: 'playing',
+    normalWorld: activeWorld,
+    inputMode: 'buttons',
+    active,
+    activeVillagerId: focus.id,
+    activeKey: active.key,
+    targetOutcomes: createPitchforksLevelProgress(1).targetOutcomes,
+    hintedTargetKeys: new Set(),
+    chargeProgress: artReviewChargeFor(storm),
+    tint: null,
+    noteNamesVisible: false,
+    staffNotationVisible: false,
+    synesthesiaOn: false,
+    reducedMotion: true,
+    timersPaused: false,
+    prompt: '',
+    tuner: EMPTY_TUNER_VIEW,
+    ceremony: { active: false, note: null, toneFired: false, tonePulseKey: 0 },
+    noteMastered: null,
+    noteMasteredAgeMs: 0,
+    frankReaction: null,
+    frankVictory: null,
+    closeSmash: createPitchforksCloseSmashState(),
+    closeSmashFallbackDueAtMs: 0,
+    closeSmashRecoilUntil: new Map(),
+    bellRecoilUntil: new Map(),
+    bellWaveClockMs: 0,
+    shake: { x: 0, y: 0 },
+    fsrsMemory: {},
+    thunderhead: createPitchforksThunderheadState(),
+    thunderheadClockMs: 0,
+    thunderheadTravelStartedAtMs: 0,
+    thunderheadTravelStart: null,
+    thunderheadTravelTarget: null,
+    bellWave: projectPitchforksBellWave(createPitchforksBellWaveState(), 0),
+    bellWaveElapsedMs: 0,
+  })
 }
 
 function colorForCents(absCents: number): string | null {
@@ -2904,6 +3175,8 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const meta = assets.villagerMeta[v.totalTines]
   const sw = meta.frame_w * SPRITE_SCALE
   const sh = meta.frame_h * SPRITE_SCALE
+  const sourceFrameW = meta.source_frame_w ?? meta.frame_w
+  const sourceFrameH = meta.source_frame_h ?? meta.frame_h
   let img: HTMLImageElement | undefined
   let strip = false
   if (v.visualState === 'ash' || v.visualBurn >= v.totalTines) {
@@ -2935,7 +3208,7 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const spriteX = v.x + offsetPx + recoilPx
   const spriteY = v.y + offsetPx * 0.35
   if (strip) {
-    ctx.drawImage(img, v.walkFrame * meta.frame_w, 0, meta.frame_w, meta.frame_h, spriteX, spriteY, sw, sh)
+    ctx.drawImage(img, v.walkFrame * sourceFrameW, 0, sourceFrameW, sourceFrameH, spriteX, spriteY, sw, sh)
   } else {
     ctx.drawImage(img, spriteX, spriteY, sw, sh)
   }
@@ -3064,13 +3337,13 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   if (v.active) {
     return {
       image: img,
-      sourceX: strip ? v.walkFrame * meta.frame_w : 0,
+      sourceX: strip ? v.walkFrame * sourceFrameW : 0,
       sourceY: 0,
-      sourceWidth: meta.frame_w,
-      sourceHeight: meta.frame_h,
+      sourceWidth: sourceFrameW,
+      sourceHeight: sourceFrameH,
       destinationX: spriteX,
       destinationY: spriteY,
-      scale: SPRITE_SCALE,
+      scale: sw / sourceFrameW,
     }
   }
 }
@@ -3200,15 +3473,17 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
   }
 }
 
-const STAFF_PANEL_X = 430
-const STAFF_PANEL_Y = 54
+const STAFF_PANEL_X = 18
+const STAFF_PANEL_Y = 76
 const STAFF_PANEL_W = 274
-const STAFF_PANEL_H = 112
+const STAFF_PANEL_H = 154
 const STAFF_LEFT = STAFF_PANEL_X + 42
 const STAFF_RIGHT = STAFF_PANEL_X + STAFF_PANEL_W - 12
-const STAFF_BOTTOM_LINE_Y = STAFF_PANEL_Y + 55
-const STAFF_LINE_GAP = 8
+const STAFF_BOTTOM_LINE_Y = STAFF_PANEL_Y + 88
+const STAFF_LINE_GAP = 12
 const STAFF_LETTER_STEP = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 } as const
+const STAFF_PITCH_CLASS: Record<string, number> = { C: 0, 'C#': 1, D: 2, 'D#': 3, E: 4, F: 5, 'F#': 6, G: 7, 'G#': 8, A: 9, 'A#': 10, B: 11 }
+const STAFF_CHROMATIC_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'] as const
 
 type StaffNote = Readonly<{
   name: string
@@ -3236,6 +3511,24 @@ function staffNote(note: string | null): StaffNote | null {
 
 function staffY(note: StaffNote): number {
   return STAFF_BOTTOM_LINE_Y - note.stepFromE4 * (STAFF_LINE_GAP / 2)
+}
+
+function staffMidi(note: StaffNote): number {
+  return note.octave * 12 + (STAFF_PITCH_CLASS[`${note.letter}${note.accidental}`] ?? STAFF_PITCH_CLASS[note.letter])
+}
+
+function staffNoteFromMidi(midi: number): StaffNote {
+  const rounded = Math.round(midi)
+  const octave = Math.floor(rounded / 12)
+  return staffNote(`${STAFF_CHROMATIC_NAMES[((rounded % 12) + 12) % 12]}${octave}`)!
+}
+
+function staffYForContinuousMidi(midi: number): number {
+  const lowerMidi = Math.floor(midi)
+  const fraction = midi - lowerMidi
+  const lowerY = staffY(staffNoteFromMidi(lowerMidi))
+  const upperY = staffY(staffNoteFromMidi(lowerMidi + 1))
+  return lowerY + (upperY - lowerY) * fraction
 }
 
 function drawLedgerLines(ctx: CanvasRenderingContext2D, x: number, note: StaffNote) {
@@ -3380,6 +3673,7 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
   }
 
   const source = staffNote(view.tuner.sourceNote)
+  const targetNote = staffNote(activeVillager?.notes[activeVillager.visualBurn] ?? null)
   if (
     source &&
     activeVillager &&
@@ -3390,8 +3684,13 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
     const targetX = queue.length === 1
       ? (queueLeft + queueRight) / 2
       : queueLeft + stepX * activeVillager.burned
-    const rawSourceY = staffY(source)
-    const sourceY = clamp(rawSourceY, STAFF_PANEL_Y + 8, STAFF_PANEL_Y + STAFF_PANEL_H - 16)
+    // Keep the exact staff mapping for the target note, then place the live
+    // detected pitch continuously around it. `renderDeviation` is the same
+    // smoothed, frequency-derived semitone distance used by the pitch bar.
+    const rawSourceY = targetNote
+      ? staffYForContinuousMidi(staffMidi(targetNote) + view.tuner.renderDeviation)
+      : staffY(source)
+    const sourceY = clamp(rawSourceY, STAFF_PANEL_Y + 8, STAFF_PANEL_Y + STAFF_PANEL_H - 12)
     const cents = Math.min(300, Math.abs(view.tuner.renderDeviation) * 100)
     const color = colorForCents(cents) ?? '#f87171'
     if (sourceY === rawSourceY) drawLedgerLines(ctx, targetX, source)
@@ -3681,6 +3980,9 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   } else {
     drawDungeonBackground(ctx, view.animClock)
   }
+  // Landscape staff lives in the left background so Frank remains the visual
+  // anchor while the larger vertical spacing makes live pitch movement legible.
+  if (view.staffNotationVisible) drawStaffNotationView(ctx, view)
   drawPitchforksBellSwing(ctx, {
     active: view.bellWave.phase === 'active' || view.bellWave.phase === 'finished',
     elapsedMs: view.bellWaveElapsedMs,
@@ -3882,7 +4184,24 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     }
   }
   drawPitchBarView(ctx, view.tuner)
-  if (view.staffNotationVisible) drawStaffNotationView(ctx, view)
+}
+
+function drawArtReviewOverlay(
+  ctx: CanvasRenderingContext2D,
+  body: ArtReviewBodyState,
+  storm: ArtReviewStormState,
+) {
+  ctx.save()
+  ctx.fillStyle = 'rgba(3, 7, 16, 0.92)'
+  ctx.fillRect(8, 8, 354, 42)
+  ctx.fillStyle = '#fef08a'
+  ctx.font = 'bold 11px monospace'
+  ctx.textAlign = 'left'
+  ctx.fillText('PRIVATE ART REVIEW · VISUAL ONLY · NO GAMEPLAY', 16, 23)
+  ctx.fillStyle = '#bae6fd'
+  ctx.font = 'bold 10px monospace'
+  ctx.fillText(`BODY ${body.toUpperCase()} · STORM ${storm.toUpperCase()} · RAINING`, 16, 40)
+  ctx.restore()
 }
 
 function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | 'recoil' | 'bell', volumePct: number, note?: string) {
@@ -4020,85 +4339,9 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | '
   window.setTimeout(() => ctx.close().catch(() => {}), closeAfterMs)
 }
 
-function renderBossChamber(
-  ctx: CanvasRenderingContext2D, assets: Assets, state: PitchforksBossRecitalState,
-  progress: number, clock: number, reducedMotion: boolean, bossId: PitchforksBossId = 'torchmaster', campaignWorld: WorldId | null = null,
-) {
-  ctx.save()
-  ctx.setTransform(1, 0, 0, 1, 0, 0)
-  ctx.imageSmoothingEnabled = false
-  ctx.fillStyle = '#070914'
-  ctx.fillRect(0, 0, W, H)
-  const chamberPlate = bossId !== 'torchmaster' ? assets.bellringerChamberPlate : assets.torchmasterChamberPlate
-  if (chamberPlate) ctx.drawImage(chamberPlate, 0, 0, W, H)
-  const fm = assets.frankMeta
-  if (bossId === 'bellringer') {
-    // The Bellringer leaf uses the original idle Frank at the unchanged
-    // battlefield anchor, plus one fixed 96x144 rest pose. It is not a
-    // spritesheet and never falls back to Torchmaster art.
-    if (assets.frankIdle) {
-      ctx.drawImage(assets.frankIdle, 0, 0, fm.frame_w, fm.frame_h,
-        FRANK_X, FRANK_Y, fm.frame_w * FRANK_SPRITE_SCALE, fm.frame_h * FRANK_SPRITE_SCALE)
-    }
-    if (assets.bellringerRest) {
-      ctx.drawImage(assets.bellringerRest, 540, FRANK_Y, 96, 144)
-    }
-  } else {
-    const pose = selectPitchforksChargePose(progress, clock, reducedMotion, !!assets.frankCharge)
-    const frank = pose.pose === 'charge' ? assets.frankCharge : assets.frankIdle
-    if (frank) {
-      ctx.drawImage(frank, (pose.frame % fm.frames) * fm.frame_w, 0, fm.frame_w, fm.frame_h,
-        FRANK_X, FRANK_Y, fm.frame_w * FRANK_SPRITE_SCALE, fm.frame_h * FRANK_SPRITE_SCALE)
-    }
-    const rodX = FRANK_X + fm.rod_tip.x * FRANK_SPRITE_SCALE
-    const rodY = FRANK_Y + fm.rod_tip.y * FRANK_SPRITE_SCALE
-    const cloudX = rodX + FRANK_CLOUD_X_OFFSET
-    drawStormHeart(ctx, selectStormHeartState({ listening: progress === 0, chargeProgress: progress, hasBolt: false, spent: false }), cloudX, FRANK_CLOUD_Y, assets.stormHeart)
-    if (progress > 0) drawCircuitLeg(ctx, cloudX, FRANK_CLOUD_Y, rodX, rodY, progress, 71, Math.floor(progress * 20), 0.6, false, false, reducedMotion)
-  }
-  if (bossId === 'choirmaster' || bossId === 'torchmaster') {
-    const actor = assets.walkLeft[1]
-    const meta = assets.villagerMeta[1]
-    if (actor && meta) {
-      const count = bossId === 'choirmaster' ? 3 : 1
-      for (let index = 0; index < count; index += 1) {
-        const x = 465 + index * 65
-        ctx.drawImage(actor, 0, 0, meta.frame_w, meta.frame_h, x, GROUND_Y - meta.frame_h * SPRITE_SCALE, meta.frame_w * SPRITE_SCALE, meta.frame_h * SPRITE_SCALE)
-        if (bossId === 'torchmaster') {
-          ctx.save()
-          ctx.translate(x + 42 - DUNGEON_TORCHES[0].x, GROUND_Y - meta.frame_h * SPRITE_SCALE + 35 - DUNGEON_TORCHES[0].y)
-          drawDungeonTorchFixture(ctx, DUNGEON_TORCHES[0], reducedMotion ? 0 : clock)
-          ctx.restore()
-        }
-      }
-    }
-  }
-  ctx.textAlign = 'center'
-  ctx.fillStyle = '#09111bea'
-  ctx.fillRect(235, 35, 250, 118)
-  ctx.strokeStyle = '#8ca6ac'
-  ctx.strokeRect(235.5, 35.5, 249, 117)
-  ctx.fillStyle = '#e5f7ed'
-  ctx.font = bossId === 'bellringer' ? 'bold 13px monospace' : 'bold 18px monospace'
-  ctx.fillText(
-    campaignWorld ? state.status === 'complete' ? 'RECITAL COMPLETE' : bossId === 'choirmaster' ? 'THE CHOIR ANSWERS' : bossId === 'torchmaster' ? 'THE TORCHMASTER' : campaignWorld === 'cathedral' ? 'THE FINAL STORM' : 'THE BELLRINGER RECITAL' : state.status === 'complete'
-      ? bossId === 'bellringer' ? 'BELLRINGER PRACTICE COMPLETE' : 'PRACTICE COMPLETE'
-      : bossId === 'bellringer' ? 'TWO-NOTE INTERVAL PRACTICE' : 'ONE NOTE. YOUR TIME.',
-    W / 2,
-    65,
-  )
-  ctx.fillStyle = progress > 0 ? '#8cf2b0' : '#f6d79a'
-  ctx.font = 'bold 48px monospace'
-  ctx.fillText(state.status === 'complete' ? '✓' : state.lane === 'ear' && !state.hinted ? '?' : state.currentNote ?? '', W / 2, 120)
-  ctx.fillStyle = '#20343a'
-  ctx.fillRect(250, 137, 220, 6)
-  ctx.fillStyle = '#8cf2b0'
-  ctx.fillRect(250, 137, Math.round(220 * progress), 6)
-  ctx.restore()
-}
-
 export default function PitchforksIII() {
   const bossWorldRef = useRef<WorldId | null>(null)
+  const bossPracticeWorldRef = useRef<WorldId | null>(null)
   const bossPracticeOnlyRef = useRef(false)
   const bossPitchGenerationRef = useRef<PitchforksSongcraftGenerationState>({ lastGeneration: null, generationObserved: false, generationObservedAt: 0 })
   const bossControllerRef = useRef<PitchforksBossRecitalController | null>(null)
@@ -4117,10 +4360,14 @@ export default function PitchforksIII() {
   const [bossSimulating, setBossSimulating] = useState(false)
   const [bossAudioBusy, setBossAudioBusy] = useState(false)
   const canvasContainerRef = useRef<HTMLDivElement>(null)
+  const playRootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const staffCanvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef = useRef(0)
   const lastTimeRef = useRef(0)
+  const pausedRef = useRef(false)
+  const pauseGateRef = useRef<PitchforksPauseGate>(createPitchforksPauseGate())
+  const loopRef = useRef<((ts: number, fence: number) => void) | null>(null)
   const runtimeRef = useRef<Runtime>(makeInitialRuntime(false))
   const rainActivationRequestedRef = useRef(false)
   const rainUiSignatureRef = useRef('')
@@ -4159,6 +4406,9 @@ export default function PitchforksIII() {
   const debugReviewSequenceRef = useRef(0)
   const closeSmashProofRef = useRef(false)
   const fsrsDebugRef = useRef(false)
+  const artReviewRef = useRef(false)
+  const artReviewBodyRef = useRef<ArtReviewBodyState>('walk')
+  const artReviewStormRef = useRef<ArtReviewStormState>('dormant')
   const promptStartedAtRef = useRef(0)
   const activePromptKeyRef = useRef('')
   const pendingMusicalPromptRef = useRef<PitchforksMusicalPromptTarget | null>(null)
@@ -4326,6 +4576,12 @@ export default function PitchforksIII() {
   const journeyResetStatusRef = useRef<HTMLDivElement>(null)
 
   const [phase, setPhase] = useState<Phase>('menu')
+  const [paused, setPaused] = useState(false)
+  const [closeSmashGuideOpen, setCloseSmashGuideOpen] = useState(false)
+  const closeSmashGuidePausedBeforeOpenRef = useRef(false)
+  const [villageLessonOpen, setVillageLessonOpen] = useState(false)
+  const [bellLessonOpen, setBellLessonOpen] = useState(false)
+  const lessonPausedBeforeOpenRef = useRef(false)
   const [assetsReady, setAssetsReady] = useState(false)
   const [selectedWorld, setSelectedWorld] = useState<PitchforksNormalWorld>('dungeon')
   const [villageGateAssetStatus, setVillageGateAssetStatus] = useState<VillageGateAssetStatus>('loading')
@@ -4343,6 +4599,9 @@ export default function PitchforksIII() {
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
+  const [artReviewMode, setArtReviewMode] = useState(false)
+  const [artReviewBody, setArtReviewBody] = useState<ArtReviewBodyState>('walk')
+  const [artReviewStorm, setArtReviewStorm] = useState<ArtReviewStormState>('dormant')
   const [geometryDebug, setGeometryDebug] = useState(false)
   const [composerSeedProofEnabled, setComposerSeedProofEnabled] = useState(false)
   const [composerSeedProofStatus, setComposerSeedProofStatus] = useState<'idle' | 'loading' | 'ready' | 'empty'>('idle')
@@ -4391,6 +4650,7 @@ export default function PitchforksIII() {
   const [rangeCuePlayed, setRangeCuePlayed] = useState(false)
   const [rangeAssessmentError, setRangeAssessmentError] = useState<string | null>(null)
   const [pendingRangeProfile, setPendingRangeProfile] = useState<PitchforksRangeProfile | null>(null)
+  const pendingPracticeWorldRef = useRef<PitchforksPracticeWorld | null>(null)
   const [manualLowNote, setManualLowNote] = useState('C4')
   const [manualHighNote, setManualHighNote] = useState('G4')
   const [journeyResetConfirm, setJourneyResetConfirm] = useState(false)
@@ -4843,7 +5103,31 @@ export default function PitchforksIII() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
+    const isArtReview = params.get('artReview') === '1'
     const isDemo = params.get('demo') === '1'
+    artReviewRef.current = isArtReview
+    if (isArtReview) {
+      const initialBody = parseArtReviewBodyState(params.get('artReviewBody'))
+      const initialStorm = parseArtReviewStormState(params.get('artReviewStorm'))
+      artReviewBodyRef.current = initialBody
+      artReviewStormRef.current = initialStorm
+      setArtReviewMode(true)
+      setArtReviewBody(initialBody)
+      setArtReviewStorm(initialStorm)
+      // This route is a private visual fixture. It deliberately exits before
+      // any profile, mastery, journey, or input preference is read or written.
+      demoRef.current = false
+      fsrsDebugRef.current = false
+      closeSmashProofRef.current = false
+      galvanicProofRef.current = false
+      bellProofRef.current = false
+      inputModeRef.current = 'buttons'
+      setDemoMode(false)
+      setFsrsDebugMode(false)
+      setInputMode('buttons')
+      setGeometryDebug(false)
+      return
+    }
     closeSmashProofRef.current = isDemo && params.get('closeSmashProof') === '1'
     galvanicProofRef.current = isDemo && params.get('galvanicProof') === '1'
     bellProofRef.current = isDemo && params.get('worldProof') === 'bell-tower'
@@ -5941,7 +6225,10 @@ export default function PitchforksIII() {
     noteMasteredRef.current = note
     noteMasteredStartedAtRef.current = performance.now()
     setNoteMastered(note)
+    const callbackGeneration = runGenerationRef.current
+    const callbackFence = pauseGateRef.current.fence
     noteMasteredTimerRef.current = setTimeout(() => {
+      if (!acceptsPitchforksPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
       clearNoteMasteredCeremony()
     }, NOTE_MASTERED_CEREMONY_MS)
   }, [clearNoteMasteredCeremony])
@@ -6010,8 +6297,11 @@ export default function PitchforksIII() {
       ? 250
       : Math.max(180, localSuppressionRemaining + 80, TONE_SUPPRESS_MS + 80)
 
+    const callbackGeneration = runGenerationRef.current
+    const callbackFence = pauseGateRef.current.fence
     ceremonyToneTimerRef.current = setTimeout(() => {
       ceremonyToneTimerRef.current = null
+      if (!acceptsPitchforksPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
       const current = ceremonyRef.current
       if (!current.active || current.note !== note || (!replay && current.toneFired)) return
       if (tryPlayCeremonyTone(note, replay) === 'played') markCeremonyToneFired(note)
@@ -6047,7 +6337,12 @@ export default function PitchforksIII() {
     deferredAdmissionNotesRef.current.delete(note)
     clearNewNoteCeremony()
     setNewNoteUnlocked(note)
-    newNoteTimerRef.current = setTimeout(() => setNewNoteUnlocked(null), NEW_NOTE_CEREMONY_MS)
+    const callbackGeneration = runGenerationRef.current
+    const callbackFence = pauseGateRef.current.fence
+    newNoteTimerRef.current = setTimeout(() => {
+      if (!acceptsPitchforksPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
+      setNewNoteUnlocked(null)
+    }, NEW_NOTE_CEREMONY_MS)
   }, [admissionMatched, clearNewNoteCeremony, ensureNoteMemory, saveFsrs, savePresentationJourneyNotes])
 
   const deferNewNoteAdmission = useCallback(() => {
@@ -6180,6 +6475,7 @@ export default function PitchforksIII() {
     correct: boolean,
     lane: PitchforksInputMode = inputModeRef.current,
   ) => {
+    if (pausedRef.current) return false
     if (!target.note) return false
     if (matchingSuppressedNow()) return false
     if (lane === 'voice' && !demoRef.current && !isListeningRef.current) return false
@@ -6382,6 +6678,7 @@ export default function PitchforksIII() {
       : undefined
     const targetKey = `${villager.id}:${villager.burned}`
     const cueRunGeneration = runGenerationRef.current
+    const cueFence = pauseGateRef.current.fence
     if (mode === 'replay' && supportedLesson?.support === 'UNAIDED_RETURN') {
       // Replay is the explicit hint path. Mark the exact target before any
       // answer tone is scheduled, even when the current cue profile is Guided.
@@ -6475,7 +6772,8 @@ export default function PitchforksIII() {
       const tineIndex = supportedLesson ? villager.burned : villager.burned + toneIndex
       const id = setTimeout(() => {
         const promptOwnerKey = `${villager.id}:${tineIndex}`
-        if (cueRunGeneration !== runGenerationRef.current || phaseRef.current !== 'playing' ||
+        if (!acceptsPitchforksPauseCallback(pauseGateRef.current, cueRunGeneration, cueFence) ||
+          cueRunGeneration !== runGenerationRef.current || phaseRef.current !== 'playing' ||
           getActiveTarget()?.villager !== villager || getActiveTarget()?.key !== promptOwnerKey) return
         if (phaseRef.current === 'playing' && getActiveTarget()?.key === promptOwnerKey) {
           setPromptText(buttonLane
@@ -6505,6 +6803,7 @@ export default function PitchforksIII() {
     })
 
     const finishCue = () => {
+      if (!acceptsPitchforksPauseCallback(pauseGateRef.current, cueRunGeneration, cueFence)) return
       if (matchingSuppressedNow()) {
         const retryId = setTimeout(finishCue, 25)
         cueTimeoutsRef.current.push(retryId)
@@ -7172,14 +7471,18 @@ export default function PitchforksIII() {
     if (villager.id === rt.firstVillagerId && villager.burned === 0) {
       clearFirstMinuteTimer()
       setFirstMinuteCoachSnapshot('strike', strikeNote)
+      const callbackGeneration = runGenerationRef.current
+      const callbackFence = pauseGateRef.current.fence
       firstMinuteTimerRef.current = setTimeout(() => {
-        if (phaseRef.current !== 'playing') {
+        if (!acceptsPitchforksPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence) ||
+          pausedRef.current || phaseRef.current !== 'playing') {
           firstMinuteTimerRef.current = null
           return
         }
         setFirstMinuteCoachSnapshot('victory', strikeNote)
         firstMinuteTimerRef.current = setTimeout(() => {
-          if (phaseRef.current === 'playing') setFirstMinuteCoachSnapshot('complete', null)
+          if (acceptsPitchforksPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence) &&
+            !pausedRef.current && phaseRef.current === 'playing') setFirstMinuteCoachSnapshot('complete', null)
           firstMinuteTimerRef.current = null
         }, 1700)
       }, 700)
@@ -7756,7 +8059,7 @@ export default function PitchforksIII() {
       if (!villager || villager.state !== 'walking' || villager.burned >= villager.totalTines) continue
       // Bell Tower villagers approach Frank from the right; the wave pushes
       // them back along the safe +X direction, never toward the player.
-      const direction: 1 = 1
+      const direction = 1 as const
       bellKnockbackRef.current.set(villager.id, Object.freeze({
         startX: villager.x,
         direction,
@@ -9177,6 +9480,7 @@ export default function PitchforksIII() {
   }, [galvanicRouteAvailable, cuePlayingNow, isListening, matchingSuppressedNow, micError, micSourceHealthRef, pitchGenerationRef, pitchRef])
 
   const acceptBossResult = useCallback((result: PitchforksBossRecitalResult) => {
+    if (pausedRef.current) return
     if (bossControllerRef.current?.state().attempt !== result.state.attempt) return
     const simulatedResponse = bossSimulatingRef.current
     if (simulatedResponse) bossSupportedPracticeRef.current = true
@@ -9236,6 +9540,7 @@ export default function PitchforksIII() {
   }, [savePresentationJourney])
 
   const resolveBossNote = useCallback((correct: boolean) => {
+    if (pausedRef.current) return
     const controller = bossControllerRef.current
     const state = controller?.state()
     if (!controller || !state?.claimId || !state.currentNote || matchingSuppressedNow()) return
@@ -9259,13 +9564,14 @@ export default function PitchforksIII() {
       const observation = observePitchforksSongcraftGeneration(bossPitchGenerationRef.current, pitchGenerationRef.current, performance.now())
       bossPitchGenerationRef.current = observation.state
       const health = micSourceHealthRef.current
-      const ready = !bossWorldRef.current || (!document.hidden && isListeningRef.current && !micErrorRef.current
+      const bossSceneWorld = bossWorldRef.current ?? bossPracticeWorldRef.current
+      const ready = !bossSceneWorld || (!document.hidden && isListeningRef.current && !micErrorRef.current
         && health.audioContextState === 'running' && health.trackReadyState === 'live' && !health.trackMuted)
       const sample = (demoRef.current && !bossSimulatingRef.current) || !ready ? null : source
-      if (bossWorldRef.current && (observation.staleRecovery || !ready)) bossHoldRef.current = { heldMs: 0, matched: false }
-      if (!bossWorldRef.current || observation.generationAdvanced) bossHoldRef.current = advanceExactPitchHold(bossHoldRef.current,
+      if (bossSceneWorld && (observation.staleRecovery || !ready)) bossHoldRef.current = { heldMs: 0, matched: false }
+      if (!bossSceneWorld || observation.generationAdvanced) bossHoldRef.current = advanceExactPitchHold(bossHoldRef.current,
         exactPitchSampleState(sample, noteToFreq(state.currentNote), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS),
-        bossWorldRef.current ? observation.freshElapsedMs : dt * 1000, HOLD_MS)
+        bossSceneWorld ? observation.freshElapsedMs : dt * 1000, HOLD_MS)
       if (bossHoldRef.current.matched) {
         resolveBossNote(true)
         state = controller.state()
@@ -9273,26 +9579,95 @@ export default function PitchforksIII() {
     }
     const bossId = bossIdentityRef.current
     if (!bossId) return
-    const chamberAssets = bossWorldRef.current ? { ...assetsRef.current,
-      bellringerChamberPlate: bossWorldRef.current === 'cathedral' ? assetsRef.current.cathedralPlate : assetsRef.current.bellTowerPlate,
-      bellringerRest: bossWorldRef.current === 'cathedral' ? undefined : assetsRef.current.bellringerRest,
+    const bossSceneWorld = bossWorldRef.current ?? bossPracticeWorldRef.current
+    const chamberAssets = bossSceneWorld ? { ...assetsRef.current,
+      bellringerChamberPlate: bossSceneWorld === 'cathedral' ? assetsRef.current.cathedralPlate : assetsRef.current.bellTowerPlate,
+      bellringerRest: bossSceneWorld === 'cathedral' ? undefined : assetsRef.current.bellringerRest,
     } : assetsRef.current
-    renderBossChamber(ctx, chamberAssets, state, bossHoldRef.current.heldMs / HOLD_MS, bossClockRef.current, reducedMotionRef.current, bossId, bossWorldRef.current)
+    renderBossChamber(ctx, chamberAssets, state, bossHoldRef.current.heldMs / HOLD_MS, bossClockRef.current, reducedMotionRef.current, bossId, bossSceneWorld)
   }, [demoPitchForTarget, matchingSuppressedNow, resolveBossNote, isListening, micError, pitchGenerationRef])
 
-  const loop = useCallback((ts: number) => {
+  const togglePause = useCallback(() => {
     if (phaseRef.current !== 'playing') return
+    const action = pausedRef.current ? 'resume' : 'pause'
+    pauseGateRef.current = transitionPitchforksPauseGate(pauseGateRef.current, action)
+    pausedRef.current = action === 'pause'
+    setPaused(pausedRef.current)
+    timersPausedRef.current = pausedRef.current
+    if (pausedRef.current) {
+      lastTimeRef.current = 0
+      return
+    }
+
+    // A resumed run starts a fresh detector/callback generation. Durable FSRS,
+    // mastery, banks, and a visible wave receipt stay in memory; stale async
+    // callbacks cannot re-enter the resumed run.
+    runGenerationRef.current += 1
+    if (runtimeRef.current.nextWavePending) {
+      runtimeRef.current.nextWaveRunGeneration = runGenerationRef.current
+    }
+    const now = performance.now()
+    lockGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: now }
+    bossPitchGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: now }
+    lastTimeRef.current = 0
+    if (loopRef.current) {
+      rafRef.current = requestAnimationFrame(nextTs => loopRef.current?.(nextTs, pauseGateRef.current.fence))
+    }
+  }, [pitchGenerationRef])
+
+  const setCloseSmashGuideDisclosure = useCallback((open: boolean) => {
+    if (open) {
+      closeSmashGuidePausedBeforeOpenRef.current = pausedRef.current
+      setCloseSmashGuideOpen(true)
+      if (!pausedRef.current) togglePause()
+      return
+    }
+    setCloseSmashGuideOpen(false)
+    if (!closeSmashGuidePausedBeforeOpenRef.current && pausedRef.current) togglePause()
+  }, [togglePause])
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.repeat || phaseRef.current !== 'playing') return
+      event.preventDefault()
+      togglePause()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [togglePause])
+
+  const loop = useCallback((ts: number, fence = pauseGateRef.current.fence) => {
+    if (phaseRef.current !== 'playing' || fence !== pauseGateRef.current.fence) return
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     const dt = lastTimeRef.current ? Math.min(0.05, (ts - lastTimeRef.current) / 1000) : 0
     lastTimeRef.current = ts
+    if (pausedRef.current) {
+      rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, fence))
+      return
+    }
+    if (artReviewRef.current) {
+      const reviewRuntime = buildArtReviewRuntime(
+        ts / 1000,
+        artReviewBodyRef.current,
+        artReviewStormRef.current,
+        assetsRef.current,
+      )
+      const reviewView = buildArtReviewView(reviewRuntime, artReviewStormRef.current, selectedWorldRef.current)
+      runtimeRef.current = reviewRuntime
+      viewStateRef.current = reviewView
+      renderView(ctx, reviewView, assetsRef.current)
+      drawArtReviewOverlay(ctx, artReviewBodyRef.current, artReviewStormRef.current)
+      rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, fence))
+      return
+    }
     // The separate recital room owns this frame. No battlefield movement,
     // attack deadlines, environmental clock, spawn or next-wave path runs.
     if (bossControllerRef.current) {
       stepBossChamber(dt, ctx)
-      rafRef.current = requestAnimationFrame(loop)
+      rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, fence))
       return
     }
     updateGame(dt)
@@ -9439,14 +9814,25 @@ export default function PitchforksIII() {
     } else {
       promptMismatchWarnedRef.current = ''
     }
-    if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(loop)
+    if (!runtimeRef.current.gameOver) rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, fence))
   }, [getActiveTarget, inputMode, stepBossChamber, syncMicHudState, updateGame, updatePitchBarState])
+  loopRef.current = loop
 
   const beginPlaying = useCallback(() => {
+    pausedRef.current = false
+    setPaused(false)
+    pauseGateRef.current = createPitchforksPauseGate()
+    setCloseSmashGuideOpen(false)
+    closeSmashGuidePausedBeforeOpenRef.current = false
+    setVillageLessonOpen(false)
+    setBellLessonOpen(false)
+    lessonPausedBeforeOpenRef.current = false
+    pendingPracticeWorldRef.current = null
     presentationVisitCountByTargetRef.current.clear()
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
     bossWorldRef.current = null
+    bossPracticeWorldRef.current = null
     bossIdentityRef.current = null
     setBossIdentity(null)
     bossSimulatingRef.current = false
@@ -9550,15 +9936,59 @@ export default function PitchforksIII() {
     phaseRef.current = 'playing'
     lastTimeRef.current = 0
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
-    rafRef.current = requestAnimationFrame(loop)
+    rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, pauseGateRef.current.fence))
   }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, ensureActiveNoteMemory, loop, normalBellRouteAvailable, resetBellWave, resetGalvanic, resetLevelProgress, resetNormalBellPowerForRun, resetRangeMatch, resetThunderhead, resumeCueAudioFromGesture, startWave, stopListening, syncSparkGuideStatus])
+
+  const beginArtReview = useCallback(() => {
+    if (!artReviewRef.current) return
+    pausedRef.current = false
+    setPaused(false)
+    pauseGateRef.current = createPitchforksPauseGate()
+    phaseRef.current = 'playing'
+    setPhase('playing')
+    lastTimeRef.current = 0
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, pauseGateRef.current.fence))
+  }, [loop])
+
+  useEffect(() => {
+    if (!artReviewMode || !assetsReady || phase !== 'menu') return
+    beginArtReview()
+  }, [artReviewMode, assetsReady, beginArtReview, phase])
 
   const startGame = useCallback(() => {
     beginPlaying()
   }, [beginPlaying])
 
-  const beginBossPreview = useCallback((lane: 'voice' | 'ear', bossId: PitchforksBossId = 'torchmaster', earnedWorld: WorldId | null = null, practiceOnly = false) => {
+  const setVillageLessonDisclosure = useCallback((open: boolean) => {
+    if (open) {
+      lessonPausedBeforeOpenRef.current = pausedRef.current
+      setVillageLessonOpen(true)
+      setBellLessonOpen(false)
+      if (!pausedRef.current) togglePause()
+      return
+    }
+    setVillageLessonOpen(false)
+    if (!lessonPausedBeforeOpenRef.current && pausedRef.current) togglePause()
+  }, [togglePause])
+
+  const setBellLessonDisclosure = useCallback((open: boolean) => {
+    if (open) {
+      lessonPausedBeforeOpenRef.current = pausedRef.current
+      setBellLessonOpen(true)
+      setVillageLessonOpen(false)
+      if (!pausedRef.current) togglePause()
+      return
+    }
+    setBellLessonOpen(false)
+    if (!lessonPausedBeforeOpenRef.current && pausedRef.current) togglePause()
+  }, [togglePause])
+
+  const beginBossPreview = useCallback((lane: 'voice' | 'ear', bossId: PitchforksBossId = 'torchmaster', earnedWorld: WorldId | null = null, practiceOnly = false, practiceWorld: WorldId | null = null) => {
     if (!isPitchforksBossId(bossId)) return
+    pausedRef.current = false
+    setPaused(false)
+    pauseGateRef.current = createPitchforksPauseGate()
     const admitted = [...unlockedNotesRef.current]
     const journey = presentationJourneyRef.current
     if (earnedWorld && (!journey || lane !== 'voice' || demoRef.current || fsrsDebugRef.current
@@ -9566,7 +9996,7 @@ export default function PitchforksIII() {
         admittedNotes: admitted, voiceMemory: fsrsRef.current, masteryRecords: masteryProgressRef.current,
         nowMs: Date.now(),
       }), projectPitchforksWorldGates(journey))))) return
-    const entry = assessPitchforksBossEntry(bossId, earnedWorld ? true : demoRef.current, {
+    const entry = assessPitchforksBossEntry(bossId, earnedWorld || practiceWorld ? true : demoRef.current, {
       torchmasterChamberPlate: !!assetsRef.current.torchmasterChamberPlate,
       bellringerChamberPlate: !!assetsRef.current.bellringerChamberPlate,
       bellringerRest: !!assetsRef.current.bellringerRest,
@@ -9593,23 +10023,25 @@ export default function PitchforksIII() {
     villageReturnOffersRef.current.clear()
     villageReturnContextPlayedRef.current.clear()
     completedVillageEncounterCountRef.current = 0
-    runtimeRef.current = makeInitialRuntime(!earnedWorld)
+    runtimeRef.current = makeInitialRuntime(!earnedWorld && !practiceWorld)
     resetGalvanic()
     bossWorldRef.current = earnedWorld
+    bossPracticeWorldRef.current = practiceWorld
     bossPracticeOnlyRef.current = practiceOnly
     bossPitchGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
     const key = earnedWorld ? FSRS_VOICE_KEY : lane === 'voice' ? FSRS_DEBUG_KEY : FSRS_EAR_DEBUG_KEY
+    const durableStorage: PitchforksBossRecitalStorage = {
+      loadStore: () => migrate(key, localStorage.getItem(key)),
+      saveStore: (_, store) => saveStore(key, store),
+      readback: (_, note) => migrate(key, localStorage.getItem(key))[note],
+    }
     const controller = createPitchforksBossRecital({
       attempt: `${bossId}:${runGenerationRef.current}:${Date.now()}`,
       lane, sequence: practiceOnly && bossId !== 'bellringer' ? entry.sequence : earnedWorld === 'bell-tower'
         ? journey!.villageClear!.bindings.flatMap(binding => [binding.contextNote, binding.targetNote])
         : earnedWorld === 'cathedral' ? [...admitted, ...admitted.slice(0, -1).reverse()] : entry.sequence,
       admittedNotes: admitted,
-      storage: {
-        loadStore: () => migrate(key, localStorage.getItem(key)),
-        saveStore: (_, store) => saveStore(key, store),
-        readback: (_, note) => migrate(key, localStorage.getItem(key))[note],
-      },
+      storage: selectPitchforksBossRecitalStorage(practiceOnly, durableStorage),
     })
     bossIdentityRef.current = bossId
     setBossIdentity(bossId)
@@ -9627,7 +10059,7 @@ export default function PitchforksIII() {
     setBossSimulating(false)
     setBossAudioBusy(false)
     setBossState(controller.state())
-    setBossMessage(practiceOnly ? bossId === 'torchmaster' ? 'The Torchmaster raises his flame. Answer one comfortable note at a time. Listen whenever you need; this chamber is practice.' : 'The Choirmaster gives the chorus its notes. Sing this short phrase at your own pace, with hints whenever you need.' : earnedWorld ? earnedWorld === 'bell-tower' ? 'The Bellringer listens. Sing back every bell you have bound, in the order you learned them. There is no clock here — only your voice.' : 'One last storm. Every note you know — out, then back. Take your time. The lightning is yours now.' : bossId === 'bellringer'
+    setBossMessage(practiceOnly ? bossId === 'torchmaster' ? 'The Torchmaster raises his flame. Answer one comfortable note at a time. Listen whenever you need; this chamber is practice.' : bossId === 'choirmaster' ? 'The Choirmaster gives the chorus its notes. Sing this short phrase at your own pace, with hints whenever you need.' : practiceWorld === 'cathedral' ? 'The Maestro gives you the phrase. Sing each note at your own pace; this chamber does not alter your journey.' : 'The Bellringer gives you the phrase. Sing each note at your own pace; this chamber does not alter your journey.' : earnedWorld ? earnedWorld === 'bell-tower' ? 'The Bellringer listens. Sing back every bell you have bound, in the order you learned them. There is no clock here — only your voice.' : 'One last storm. Every note you know — out, then back. Take your time. The lightning is yours now.' : bossId === 'bellringer'
       ? lane === 'ear'
         ? 'Bellringer two-note interval practice: hear the challenge, then choose the note. There is no timer.'
         : 'Bellringer two-note interval practice: one exact note at a time. Start the simulated voice when you are ready.'
@@ -9636,9 +10068,9 @@ export default function PitchforksIII() {
         : 'One exact note at a time. Start the simulated voice when you are ready.')
     phaseRef.current = 'playing'
     setPhase('playing')
-    if (earnedWorld) void startListening()
+    if (shouldStartPitchforksBossMicrophone({ lane, earnedWorld, practiceWorld })) void startListening()
     lastTimeRef.current = 0
-    rafRef.current = requestAnimationFrame(loop)
+    rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, pauseGateRef.current.fence))
   }, [startListening, clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, loop, resetBellWave, resetCloseSmash, resetGalvanic, resetThunderhead, resumeCueAudioFromGesture, stopListening])
 
   const rehearseCampaignRecital = useCallback((world: 'bell-tower' | 'cathedral') => {
@@ -9681,13 +10113,21 @@ export default function PitchforksIII() {
     setBossAudioBusy(true)
     setBossState(controller.state())
     const claim = state.claimId
-    cueTimeoutsRef.current.push(setTimeout(() => {
-      if (bossControllerRef.current !== controller || controller.state().claimId !== claim || phaseRef.current !== 'playing') return
-      bossHeardClaimRef.current = claim
-      bossButtonTrialRef.current = createPitchforksButtonTrial(claim)
-      setBossAudioBusy(false)
-      setBossMessage(hint ? 'Hint heard. This is supported practice—take your time.' : 'Now choose the note you heard.')
-    }, 1800))
+    schedulePitchforksBossCueCompletion(
+      (callback, delayMs) => {
+        const timer = setTimeout(callback, delayMs)
+        cueTimeoutsRef.current.push(timer)
+        return timer
+      },
+      () => bossControllerRef.current === controller && controller.state().claimId === claim && phaseRef.current === 'playing',
+      () => pausedRef.current,
+      () => {
+        bossHeardClaimRef.current = claim
+        bossButtonTrialRef.current = createPitchforksButtonTrial(claim)
+        setBossAudioBusy(false)
+        setBossMessage(hint ? 'Hint heard. This is supported practice—take your time.' : 'Now choose the note you heard.')
+      },
+    )
   }, [matchingSuppressedNow, resumeCueAudioFromGesture])
 
   const answerBossByButton = useCallback((note: string) => {
@@ -9733,6 +10173,17 @@ export default function PitchforksIII() {
     setRangeIntent('guided')
     void beginCalibration()
   }, [beginCalibration])
+
+  const enterPracticeArcade = useCallback((world: PitchforksPracticeWorld) => {
+    const lane = inputMode === 'buttons' ? 'ear' : 'voice'
+    if (lane === 'voice' && !rangeProfileRef.current) {
+      pendingPracticeWorldRef.current = world
+      setRangeIntent('guided')
+      void beginCalibration()
+      return
+    }
+    beginBossPreview(lane, pitchforksPracticeBossForWorld(world), null, true, world)
+  }, [beginBossPreview, beginCalibration, inputMode])
 
   const startSavedRangeSetup = useCallback(() => {
     if (!rangeProfileRef.current) return
@@ -9874,14 +10325,26 @@ export default function PitchforksIII() {
     if (!pendingRangeProfile) return
     applyRangeProfile(pendingRangeProfile)
     setPendingRangeProfile(null)
-    beginPlaying()
-  }, [applyRangeProfile, beginPlaying, pendingRangeProfile])
+    const practiceWorld = pendingPracticeWorldRef.current
+    pendingPracticeWorldRef.current = null
+    if (practiceWorld) {
+      beginBossPreview('voice', pitchforksPracticeBossForWorld(practiceWorld), null, true, practiceWorld)
+    } else {
+      beginPlaying()
+    }
+  }, [applyRangeProfile, beginBossPreview, beginPlaying, pendingRangeProfile])
 
   const quitToMenu = useCallback(() => {
+    pausedRef.current = false
+    setPaused(false)
+    pauseGateRef.current = createPitchforksPauseGate()
+    setCloseSmashGuideOpen(false)
+    closeSmashGuidePausedBeforeOpenRef.current = false
     presentationVisitCountByTargetRef.current.clear()
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
     bossWorldRef.current = null
+    bossPracticeWorldRef.current = null
     bossIdentityRef.current = null
     setBossIdentity(null)
     bossSimulatingRef.current = false
@@ -9981,6 +10444,7 @@ export default function PitchforksIII() {
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
     bossWorldRef.current = null
+    bossPracticeWorldRef.current = null
     bossIdentityRef.current = null
     bossSimulatingRef.current = false
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -10069,6 +10533,9 @@ export default function PitchforksIII() {
       activeEnvironmentTargetKey ?? '',
       activeEnvironmentHidden ? activeEnvironmentReturnText : null,
     )
+  const activeVillageLesson = normalVillageLessonAvailable() && inputMode === 'voice' && activeTargetForEnvironment?.villager.totalTines === 1
+    ? activeTargetForEnvironment.villager.supportedLesson ?? null
+    : null
   const galvanicAvailable = galvanicRouteAvailable()
   const thunderheadAvailable = thunderheadRouteAvailable()
   const galvanicBusy = galvanicOwnsInput()
@@ -10594,6 +11061,11 @@ export default function PitchforksIII() {
             <h2 className="font-black">THE CASTLE SINGS AGAIN</h2>
             <p className="mt-2 text-sm">Campaign complete. Revisit any world, review your notes, or make music in Songcraft.</p>
           </section>}
+          {!demoMode && !fsrsDebugMode && <>
+            {!rangeProfile && <p className="mb-2 border border-amber-700/70 bg-amber-950/20 px-3 py-2 text-xs leading-relaxed text-amber-100">All four practice chambers are available below. Listen &amp; Tap can enter immediately with deliberate answer buttons; Voice Lightning begins the required comfortable-range check. No notes are granted by practice.</p>}
+            <p className="mb-2 text-xs leading-relaxed text-cyan-100">Practice lane: <strong>{inputMode === 'buttons' ? 'LISTEN &amp; TAP · deliberate answer buttons · no microphone required' : 'VOICE LIGHTNING · real microphone · comfortable range required'}</strong>. Choose the lane above before entering a chamber.</p>
+            <PitchforksPracticeArcade onEnterPractice={enterPracticeArcade} />
+          </>}
           {!demoMode && !fsrsDebugMode && presentationJourney && (selectedWorld === 'village-gate' || selectedWorld === 'bell-tower') && <section className="mb-5 border border-amber-800 bg-amber-950/15 p-4 text-amber-100">
             <h2 className="font-bold">{selectedWorld === 'village-gate' ? 'THE TORCHMASTER' : 'THE CHOIRMASTER'}</h2>
             <p className="my-3 text-sm">Visit the practice chamber. Learn a short phrase at your own pace; hints are welcome.</p>
@@ -11355,28 +11827,35 @@ export default function PitchforksIII() {
     const supported = bossSupportedPracticeRef.current || bossReceiptsRef.current.some(receipt => receipt.persisted && receipt.supported)
     const activeBossId = bossIdentity ?? (bossState.attempt.startsWith('bellringer:') ? 'bellringer' : 'torchmaster')
     const earnedWorld = bossWorldRef.current
-    const activeBossName = activeBossId === 'choirmaster' ? 'Choirmaster' : earnedWorld === 'cathedral' ? 'Maestro' : activeBossId === 'bellringer' ? 'Bellringer' : 'Torchmaster'
+    const practiceWorld = bossPracticeWorldRef.current
+    const activeSceneWorld = earnedWorld ?? practiceWorld
+    const activeBossName = activeBossId === 'choirmaster' ? 'Choirmaster' : activeSceneWorld === 'cathedral' ? 'Maestro' : activeBossId === 'bellringer' ? 'Bellringer' : 'Torchmaster'
     const controlClass = 'min-h-12 rounded-sm border px-4 py-3 text-sm font-bold disabled:opacity-40'
     return <main data-testid="pf3-boss-room" className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#070914] text-gray-100" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
       <header className="mx-auto max-w-3xl px-4 pb-3 pt-5 text-center">
-        <p className="text-[10px] tracking-widest text-amber-200">{earnedWorld ? bossPracticeOnlyRef.current ? 'PRACTICE CHAMBER · YOUR VOICE · NO TIMER' : 'CAMPAIGN RECITAL · YOUR VOICE · NO TIMER' : 'PRIVATE DEMO · NO TIMER · SEPARATE PRACTICE HISTORY'}</p>
+        <button type="button" data-testid="pf3-pause-toggle" aria-pressed={paused} onClick={togglePause} className="absolute right-3 top-3 min-h-8 border border-cyan-500/70 bg-black/60 px-3 py-1 text-[10px] font-black tracking-widest text-cyan-100">{paused ? 'RESUME' : 'PAUSE'}</button>
+        <p className="text-[10px] tracking-widest text-amber-200">{activeSceneWorld ? bossPracticeOnlyRef.current ? 'PRACTICE CHAMBER · YOUR VOICE · NO TIMER' : 'CAMPAIGN RECITAL · YOUR VOICE · NO TIMER' : 'PRIVATE DEMO · NO TIMER · SEPARATE PRACTICE HISTORY'}</p>
         <h1 ref={bossHeadingRef} tabIndex={-1} className="mt-2 text-xl font-black tracking-widest text-amber-100">THE {activeBossName.toUpperCase()}</h1>
-        <p className="mt-2 text-xs text-gray-300">{complete ? `${activeBossName} recital complete` : `Pass-off ${bossState.cursor + 1} of ${bossState.sequence.length}`} · {earnedWorld ? 'Your exact notes · untimed' : activeBossId === 'bellringer' ? 'Two-note interval practice' : bossState.lane === 'ear' ? 'Listen and recognize' : 'Exact-note voice simulation'}</p>
+        <p className="mt-2 text-xs text-gray-300">{complete ? `${activeBossName} recital complete` : `Pass-off ${bossState.cursor + 1} of ${bossState.sequence.length}`} · {activeSceneWorld ? 'Your exact notes · untimed' : activeBossId === 'bellringer' ? 'Two-note interval practice' : bossState.lane === 'ear' ? 'Listen and recognize' : 'Exact-note voice simulation'}</p>
       </header>
       <div ref={canvasContainerRef} className="relative mx-auto w-full max-w-[720px]" style={{ aspectRatio: `${W} / ${H}` }}>
         <canvas ref={canvasRef} width={W} height={H} className="block h-full w-full" style={{ imageRendering: 'pixelated' }} aria-label={`${activeBossName} chamber with original Frankenstein and the current musical challenge`} />
+        {paused && <div data-testid="pf3-paused-overlay" role="status" aria-live="polite" className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35"><span className="border border-cyan-300/80 bg-[#070914]/90 px-4 py-2 text-xs font-black tracking-[0.2em] text-cyan-100">PAUSED · YOUR RUN IS SAFE</span></div>}
       </div>
       <section className="mx-auto max-w-2xl px-4 py-4">
         <p role="status" aria-live="polite" aria-atomic="true" data-testid="pf3-boss-status" className="min-h-12 text-center text-sm leading-relaxed text-cyan-100">{bossMessage}</p>
         {complete ? <div className="my-3 border border-green-400/50 bg-green-950/30 p-4 text-center">
           <p className="font-bold text-green-200">{activeBossId === 'bellringer' ? `Bellringer · ${supported ? 'Completed with help' : 'Completed without a hint'}` : supported ? 'Completed with help' : 'Completed without a hint'}</p>
-          <p className="mt-2 text-xs text-gray-300">{earnedWorld ? bossPracticeOnlyRef.current ? 'Your note practice is saved. This supporting chamber does not grant a world clear.' : supported ? 'Practice with help is saved. Try a fresh recital without hints to earn passage.' : 'Your journey records the earned passage when every response and save is confirmed.' : bossState.lane === 'voice' ? 'Simulated voice demonstration—not a singer assessment. No world unlock is granted.' : 'Recognition practice—not a vocal assessment. No world unlock is granted.'}</p>
+          <p className="mt-2 text-xs text-gray-300">{activeSceneWorld ? bossPracticeOnlyRef.current ? 'Your note practice is held in this run only. It does not grant a world clear or change your saved profile.' : supported ? 'Practice with help is saved. Try a fresh recital without hints to earn passage.' : 'Your journey records the earned passage when every response and save is confirmed.' : bossState.lane === 'voice' ? 'Simulated voice demonstration—not a singer assessment. No world unlock is granted.' : 'Recognition practice—not a vocal assessment. No world unlock is granted.'}</p>
         </div> : <div className="grid gap-3">
           {bossState.status === 'pending-save' ? <button type="button" data-testid="pf3-boss-retry-save" className={`${controlClass} border-amber-300 text-amber-100`} onClick={() => { const controller = bossControllerRef.current; if (controller) acceptBossResult(controller.retrySave()) }}>RETRY SAVING</button>
             : retryNote ? <button type="button" data-testid="pf3-boss-retry-note" className={`${controlClass} border-green-300 text-green-100`} onClick={() => { const controller = bossControllerRef.current; if (controller) acceptBossResult(controller.retryNote()) }}>TRY THIS NOTE AGAIN</button>
               : <>
                 {bossState.lane === 'ear' && <button type="button" data-testid="pf3-boss-hear" disabled={bossAudioBusy} className={`${controlClass} border-cyan-300 text-cyan-100`} onClick={() => playBossCue(false)}>HEAR THE CHALLENGE</button>}
-                {bossState.lane === 'voice' && earnedWorld ? <p className="p-3 text-center text-green-100">{micError ? 'Microphone unavailable. Check permission and return to retry.' : isListening ? 'Listening to your microphone. Sing when ready.' : 'Starting your microphone…'}</p> : bossState.lane === 'voice' ? <button type="button" data-testid="pf3-boss-simulate" disabled={bossAudioBusy || bossSimulating || !bossState.claimId} className={`${controlClass} border-green-300 bg-green-950/50 text-green-100`} onClick={() => {
+                {bossState.lane === 'voice' && activeSceneWorld ? <>
+                  <p className="p-3 text-center text-green-100">{micError ? 'Microphone unavailable. Your chamber is still open; retry when ready.' : isListening ? 'Listening to your microphone. Sing when ready.' : 'Microphone is still connecting. Retry here without leaving the chamber.'}</p>
+                  {(!isListening || !!micError) && <button type="button" data-testid="pf3-boss-retry-mic" onClick={() => { void startListening() }} className={`${controlClass} border-cyan-300 text-cyan-100`}>RETRY MICROPHONE</button>}
+                </> : bossState.lane === 'voice' ? <button type="button" data-testid="pf3-boss-simulate" disabled={bossAudioBusy || bossSimulating || !bossState.claimId} className={`${controlClass} border-green-300 bg-green-950/50 text-green-100`} onClick={() => {
                   if (!bossControllerRef.current?.state().claimId || matchingSuppressedNow()) return
                   demoTargetRef.current = ''
                   bossHoldRef.current = { heldMs: 0, matched: false }
@@ -11426,13 +11905,76 @@ export default function PitchforksIII() {
     )
   }
 
+  if (artReviewMode) {
+    return (
+      <main ref={playRootRef} data-testid="pf3-art-review" className="pf3-play-root fixed inset-0 flex flex-col overflow-y-auto bg-black text-gray-100" style={{ fontFamily: 'monospace' }}>
+        <header className="shrink-0 border-b border-amber-400/70 bg-[#070914] px-3 py-2">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black tracking-[0.18em] text-amber-200">PRIVATE ART REVIEW · VISUAL ONLY · NO GAMEPLAY</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-cyan-100">Real game canvas: original Frank · one non-overlapping 1/2/3/4-tine actor · rain cloud/gutter · Storm Heart states.</p>
+            </div>
+            <button type="button" data-testid="pf3-art-review-pause" aria-pressed={paused} onClick={togglePause} className="min-h-8 shrink-0 border border-cyan-500/70 bg-black/60 px-2 py-1 text-[10px] font-black tracking-widest text-cyan-100">{paused ? 'RESUME' : 'PAUSE FRAME'}</button>
+          </div>
+        </header>
+        <div ref={canvasContainerRef} data-testid="pf3-art-review-stage" className="relative flex min-h-0 flex-1 items-center justify-center bg-[#05070d]" style={{ minHeight: STAGE_MIN_HEIGHT_CSS }}>
+          <canvas
+            ref={canvasRef}
+            width={W}
+            height={H}
+            className="block object-contain mx-auto"
+            style={{ width: canvasDisplaySize.width, height: canvasDisplaySize.height, imageRendering: 'pixelated' }}
+            aria-label="Private Pitchforks art review canvas with original Frankenstein, one actor of each tine count, rain architecture, and Storm Heart state"
+          />
+          {paused && <div data-testid="pf3-art-review-paused" role="status" className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35"><span className="border border-cyan-300/80 bg-[#070914]/90 px-4 py-2 text-xs font-black tracking-[0.16em] text-cyan-100">PAUSED · REVIEW FRAME HELD</span></div>}
+        </div>
+        <section aria-label="Private art review controls" className="shrink-0 border-t border-gray-800 bg-[#070914] px-3 py-3">
+          <div className="mx-auto flex w-full max-w-[760px] flex-col gap-2 text-[11px]">
+            <div role="group" aria-label="Villager lifecycle state" className="flex flex-wrap items-center gap-1.5">
+              <span className="mr-1 font-black tracking-widest text-amber-200">BODY</span>
+              {ART_REVIEW_BODY_STATES.map(state => (
+                <button
+                  key={state}
+                  type="button"
+                  data-testid={`pf3-art-review-body-${state}`}
+                  aria-pressed={artReviewBody === state}
+                  onClick={() => { artReviewBodyRef.current = state; setArtReviewBody(state) }}
+                  className="min-h-9 border border-amber-400/70 px-2 py-1 font-black tracking-wide text-amber-100 aria-pressed:bg-amber-200 aria-pressed:text-[#071018]"
+                >
+                  {state === 'walk' ? 'WALK' : state === 'ash' ? 'ASH' : state.replace('-', ' ').toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <div role="group" aria-label="Storm Heart state" className="flex flex-wrap items-center gap-1.5">
+              <span className="mr-1 font-black tracking-widest text-cyan-200">STORM</span>
+              {ART_REVIEW_STORM_STATES.map(state => (
+                <button
+                  key={state}
+                  type="button"
+                  data-testid={`pf3-art-review-storm-${state}`}
+                  aria-pressed={artReviewStorm === state}
+                  onClick={() => { artReviewStormRef.current = state; setArtReviewStorm(state) }}
+                  className="min-h-9 border border-cyan-400/70 px-2 py-1 font-black tracking-wide text-cyan-100 aria-pressed:bg-cyan-200 aria-pressed:text-[#071018]"
+                >
+                  {state.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] leading-relaxed text-gray-400">Run-local fixture only. It does not start the microphone, read or write profile/unlock storage, grant gameplay credit, or alter the default game route.</p>
+          </div>
+        </section>
+      </main>
+    )
+  }
+
   return (
-    <div className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-black text-gray-100 flex flex-col" style={{ fontFamily: 'monospace' }}>
+    <div ref={playRootRef} className="pf3-play-root fixed inset-0 bg-black text-gray-100 flex flex-col" style={{ fontFamily: 'monospace' }}>
       <header data-testid="pf3-play-status" className="shrink-0 border-b border-gray-800 bg-[#070914] px-3 py-1 text-[11px]">
         <div className="flex min-h-6 items-center justify-between gap-2">
           <span>Score {hud.score}</span>
           <span>Level {levelProgress.level}</span>
           {hud.streak >= 3 && <span className="text-yellow-200">{hud.streak}x combo</span>}
+          <button type="button" data-testid="pf3-pause-toggle" aria-pressed={paused} onClick={togglePause} className="min-h-7 border border-cyan-500/70 bg-black/60 px-2 text-[10px] font-black tracking-widest text-cyan-100">{paused ? 'RESUME' : 'PAUSE'}</button>
           <span className={`inline-flex items-center gap-1 font-bold ${activeInputHud.className}`} title={activeInputHud.label}>
             <span className={`h-2 w-2 rounded-full ${activeInputHud.dotClassName}`} />
             {demoMode ? 'DEMO' : activeInputHud.label}
@@ -11456,6 +11998,40 @@ export default function PitchforksIII() {
           className="block object-contain mx-auto"
           style={{ width: canvasDisplaySize.width, height: canvasDisplaySize.height, imageRendering: 'pixelated' }}
         />
+        {paused && <div data-testid="pf3-paused-overlay" role="status" aria-live="polite" className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/35"><span className="border border-cyan-300/80 bg-[#070914]/90 px-4 py-2 text-xs font-black tracking-[0.2em] text-cyan-100">PAUSED · YOUR RUN IS SAFE</span></div>}
+
+        {paused && villageLessonOpen && activeVillageLesson && (
+          <div className="absolute bottom-3 left-1/2 z-30 w-[min(92vw,760px)] -translate-x-1/2 shadow-2xl">
+            <PitchforksVillageLesson
+              objective={activeVillageLesson.objective}
+              contextNote={activeVillageLesson.contextNote}
+              targetNote={activeVillageLesson.targetNote}
+              support={activeEnvironmentHidden ? 'UNAIDED_RETURN' : 'SUPPORTED'}
+              onReplay={() => {
+                if (cuePlaybackActive || strikePresentationPending()) return
+                const active = getActiveTarget()
+                if (!active) return
+                pauseSparkGuide('replay')
+                playVillagerSequence(active.villager, 'replay')
+              }}
+            />
+          </div>
+        )}
+        {paused && bellLessonOpen && normalBell && (
+          <div className="absolute bottom-3 left-1/2 z-30 w-[min(92vw,760px)] -translate-x-1/2 shadow-2xl">
+            <PitchforksBellTowerLesson
+              open
+              onOpenChange={setBellLessonDisclosure}
+              voiceMode={inputMode === 'voice'}
+              charge={normalBellState?.charge}
+              requiredResponses={normalBellState?.requiredResponses}
+              taughtPair={normalBellState?.taughtPair ?? null}
+              powerPhase={normalBellState?.phase ?? null}
+              wavePhase={bellWaveState.phase}
+              contactCount={bellWaveState.contactedStableIDs.length}
+            />
+          </div>
+        )}
 
         {newNoteCeremonyBanner}
       </div>
@@ -11588,10 +12164,11 @@ export default function PitchforksIII() {
             <span className="sr-only">First storm: </span>{firstMinuteCopy}
           </div>
         )}
+        <div data-testid="pf3-action-toolbar">
         <div className="grid w-full max-w-[760px] sm:grid-cols-4 grid-cols-2 gap-2" data-testid="pf3-ability-dock">
         <div
           data-testid="pf3-close-smash-control"
-          className="col-span-1 flex min-h-12 min-w-0 w-full flex-col gap-2 border border-fuchsia-900/70 bg-fuchsia-950/15 px-2 py-2"
+          className="relative col-span-1 flex min-h-12 min-w-0 w-full flex-col gap-2 border border-fuchsia-900/70 bg-fuchsia-950/15 px-2 py-2"
           aria-label="Close Smash earned ability"
         >
           <div
@@ -11618,6 +12195,15 @@ export default function PitchforksIII() {
               className="min-h-12 min-w-[48px] shrink-0 border border-fuchsia-200 bg-fuchsia-200 px-3 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#180719] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-100"
             >
               {closeSmashReady ? `SMASH · ${closeSmashState.receipt?.pitch ?? ''}` : 'CLOSE SMASH'}
+            </button>
+            <button
+              type="button"
+              data-testid="pf3-close-smash-help"
+              aria-expanded={closeSmashGuideOpen}
+              onClick={() => setCloseSmashGuideDisclosure(!closeSmashGuideOpen)}
+              className="min-h-12 min-w-[48px] shrink-0 border border-fuchsia-300/80 px-3 py-1 text-center text-xs font-black tracking-wide text-fuchsia-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-100"
+            >
+              HELP
             </button>
           </div>
         </div>
@@ -11860,7 +12446,9 @@ export default function PitchforksIII() {
           </div>
         </section>}
         </div>
-        <div className="flex w-full max-w-[760px] items-stretch justify-center gap-2">
+        <div data-testid="pf3-secondary-actions" className="flex w-full max-w-[760px] items-stretch justify-center gap-2">
+          {activeVillageLesson && <button type="button" data-testid="pf3-village-lesson-help" onClick={() => setVillageLessonDisclosure(!villageLessonOpen)} className="min-h-12 min-w-[76px] border border-amber-400/70 px-2 text-xs font-black tracking-wider text-amber-100">LESSON</button>}
+          {normalBell && <button type="button" data-testid="pf3-bell-lesson-help" onClick={() => setBellLessonDisclosure(!bellLessonOpen)} className="min-h-12 min-w-[76px] border border-cyan-400/70 px-2 text-xs font-black tracking-wider text-cyan-100">BELL HELP</button>}
           <button
             type="button"
             disabled={cuePlaybackActive || strikePresentationPending()}
@@ -11907,6 +12495,17 @@ export default function PitchforksIII() {
                 OPTIONS
               </button>
         </div>
+        </div>
+        {closeSmashGuideOpen && typeof document !== 'undefined' && playRootRef.current && createPortal(
+          <div className="fixed bottom-[max(env(safe-area-inset-bottom),1rem)] left-1/2 z-[100] w-[min(92vw,760px)] -translate-x-1/2 shadow-2xl">
+            <PitchforksCloseSmashGuide
+              open
+              onOpenChange={setCloseSmashGuideDisclosure}
+              voiceMode={inputMode === 'voice'}
+            />
+          </div>,
+          playRootRef.current ?? document.body,
+        )}
 
         {layoutMode === 'portrait' && staffNotationOn && portraitDockPanel === 'staff' && portraitStaffDisplaySize.height >= 64 && (
           <div

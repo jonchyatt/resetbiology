@@ -1,0 +1,370 @@
+.playRoot {
+  --play-gutter: clamp(0.5rem, 1.5vw, 0.875rem);
+  min-width: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.playRoot [data-testid='pf3-play-status'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem var(--play-gutter);
+  padding-inline: var(--play-gutter);
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+
+.playRoot [data-testid='pf3-play-status'] > div:first-child {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+.playRoot [data-testid='pf3-level-progress'] {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  text-align: right;
+}
+
+.playRoot [data-testid='pf3-stage'] {
+  flex: 0 0 auto;
+  width: 100%;
+  height: min(clamp(11.25rem, 56.25vw, 25.3125rem), calc(100dvh - 9.25rem));
+  min-height: 0 !important;
+  max-height: calc(100dvh - 9.25rem);
+  overflow: hidden;
+}
+
+.playRoot [data-testid='pf3-stage'] canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.playRoot [data-testid='pf3-tuner-feedback'] {
+  flex: 0 0 auto;
+  padding: 0.35rem var(--play-gutter);
+  line-height: 1.25;
+}
+
+.playRoot [data-testid='pf3-tuner-feedback']:not([data-receipt-state]) > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  height: auto;
+  min-height: 2.75rem;
+  max-height: none;
+  padding-block: 0.25rem;
+}
+
+.playRoot [data-testid='pf3-tuner-feedback']:not([data-receipt-state]) > div > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.playRoot [data-testid='pf3-tuner-feedback'][data-receipt-state] > div {
+  min-height: 5rem;
+}
+
+.playRoot [data-testid='pf3-learning-dock'] {
+  display: grid;
+  grid-template-columns: minmax(10rem, 13rem) minmax(0, 1fr);
+  align-items: stretch;
+  justify-items: stretch;
+  min-width: 0;
+  gap: 0.5rem;
+  padding: 0.5rem var(--play-gutter) max(env(safe-area-inset-bottom), 0.75rem);
+}
+
+.playRoot [data-testid='pf3-learning-dock'] > [data-testid='pf3-button-answer-row'],
+.playRoot [data-testid='pf3-learning-dock'] > [data-testid='pf3-first-minute-coach'],
+.playRoot [data-testid='pf3-learning-dock'] > [data-testid='pf3-portrait-staff-band'],
+.playRoot [data-testid='pf3-learning-dock'] > [data-testid='pf3-portrait-options-panel'] {
+  grid-column: 1 / -1;
+}
+
+/* The parent owns this wrapper so the ability cards and secondary actions share
+   one scroll surface and never form separate phone lanes. */
+.playRoot [data-testid='pf3-action-toolbar'] {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 760px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: visible;
+  overscroll-behavior-x: contain;
+  padding: 0.125rem 0.125rem 0.25rem;
+  scrollbar-width: thin;
+}
+
+.playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'],
+.playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] {
+  display: contents;
+}
+
+.playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'] > [data-testid],
+.playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > button {
+  flex: 0 0 auto;
+}
+
+.playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'] > [data-testid] {
+  width: 11rem;
+  min-width: 11rem;
+  max-width: 13rem;
+}
+
+.playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > button {
+  min-width: 4.75rem;
+  min-height: 3rem;
+  padding-inline: 0.5rem;
+  white-space: nowrap;
+}
+
+.playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > [data-testid='pf3-replay-notes'] {
+  min-width: 8.5rem;
+}
+
+.playRoot [data-testid='pf3-button-answer-row'] {
+  gap: 0.5rem;
+}
+
+.playRoot [data-testid='pf3-button-answer-row'] > button,
+.playRoot [data-testid='pf3-ability-dock'] button {
+  min-height: 3rem;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] {
+  grid-column: 1;
+  display: flex;
+  flex: 0 1 auto;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  gap: 0.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-block: 0.125rem;
+  scrollbar-width: thin;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] + div {
+  grid-column: 2;
+  display: flex;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  gap: 0.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] + div > button {
+  min-height: 3rem;
+  min-width: 2.75rem;
+  flex: 0 0 auto;
+  padding-inline: 0.5rem;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] + div > [data-testid='pf3-replay-notes'] {
+  flex: 0 0 8.5rem;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] > [data-testid] {
+  display: flex;
+  flex: 0 0 100%;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-height: 3rem;
+  min-width: 0;
+  width: auto;
+  padding: 0.375rem 0.5rem;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] > [data-testid] > [data-testid$='status'] {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] > [data-testid] > div:nth-child(2) {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] button {
+  min-width: 3rem;
+  padding: 0.375rem 0.625rem;
+  white-space: nowrap;
+}
+
+.playRoot [data-testid='pf3-ability-dock'] > [data-testid] > div:nth-child(2) > button {
+  align-self: flex-start;
+}
+
+/* Keep the four primary phone actions together; optional ability/help actions
+   stay after them on the same horizontal surface when the route exposes them. */
+@media (max-width: 37.5rem) {
+  .playRoot [data-testid='pf3-action-toolbar'] {
+    gap: 0.25rem;
+    padding-inline: 0;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'] > [data-testid] {
+    order: 2;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'] > [data-testid='pf3-close-smash-control'] {
+    order: 1;
+    flex: 0 0 7.25rem;
+    width: 7.25rem;
+    min-width: 7.25rem;
+    max-width: 7.25rem;
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'] > [data-testid='pf3-close-smash-control'] > [data-testid='pf3-close-smash-status'] {
+    font-size: 0.65rem;
+    line-height: 1.1;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'] > [data-testid='pf3-close-smash-control'] > div:nth-child(2) {
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-ability-dock'] > [data-testid='pf3-close-smash-control'] > div:nth-child(2) > button {
+    flex: 1 1 0%;
+    min-width: 0;
+    padding-inline: 0.25rem;
+    font-size: 0.6rem;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > button {
+    order: 2;
+    min-width: 0;
+    padding-inline: 0.25rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > [data-testid='pf3-replay-notes'],
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > [data-testid='pf3-staff-drawer-toggle'],
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > [data-testid='pf3-options-drawer-toggle'] {
+    order: 1;
+    flex: 0 0 auto;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > [data-testid='pf3-replay-notes'] {
+    min-width: 5.25rem;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > [data-testid='pf3-staff-drawer-toggle'],
+  .playRoot [data-testid='pf3-action-toolbar'] > [data-testid='pf3-secondary-actions'] > [data-testid='pf3-options-drawer-toggle'] {
+    min-width: 4rem;
+  }
+}
+
+/* Help is portaled into the existing play root so the route module can isolate
+   its panel without widening the selector beyond this surface. */
+.playRoot [data-testid='pitchforks-close-smash-guide'] {
+  box-sizing: border-box;
+  max-height: calc(100dvh - max(env(safe-area-inset-bottom), 1rem) - 1rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: #180719;
+  isolation: isolate;
+}
+
+/* In short landscape viewports the fixed play root cannot expose a page
+   scrollbar. Make the dock itself the bounded vertical scroll surface. */
+@media (orientation: landscape) and (max-height: 30rem) {
+  .playRoot > :global(.pf3-play-root) {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .playRoot [data-testid='pf3-learning-dock'] {
+    flex: 0 0 auto;
+    min-height: auto;
+    overflow-y: visible;
+    overflow-x: hidden;
+    align-content: start;
+    padding-block: 0.25rem max(env(safe-area-inset-bottom), 0.25rem);
+    gap: 0.25rem;
+  }
+
+  .playRoot [data-testid='pf3-tuner-feedback'] {
+    padding-block: 0.25rem;
+  }
+
+  .playRoot [data-testid='pf3-tuner-feedback']:not([data-receipt-state]) > div {
+    min-height: 2.5rem;
+  }
+}
+
+@media (min-width: 60rem) {
+  .playRoot [data-testid='pf3-learning-dock'] {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .playRoot [data-testid='pf3-ability-dock'] {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow-x: visible;
+  }
+
+  .playRoot [data-testid='pf3-ability-dock'] > [data-testid] {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .playRoot [data-testid='pf3-ability-dock'] + div {
+    max-width: 760px;
+  }
+
+  .playRoot [data-testid='pf3-action-toolbar'] {
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 37.5rem) {
+  .playRoot [data-testid='pf3-play-status'] > div:first-child {
+    flex-basis: 100%;
+  }
+
+  .playRoot [data-testid='pf3-level-progress'] {
+    flex-basis: 100%;
+    text-align: left;
+  }
+
+  .playRoot [data-testid='pf3-ability-dock'] > [data-testid] {
+    flex-basis: 100%;
+  }
+
+  .playRoot [data-testid='pf3-ability-dock'] + div {
+    flex: 0 0 auto;
+  }
+}

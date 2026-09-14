@@ -65,7 +65,7 @@ for (const phase of ['charging', 'ready', 'gutter_fill', 'gargoyle_release', 'ra
   drawRainArchitecture(ctx, { ...createRainState(), phase, fill: phase === 'gutter_fill' ? 0.5 : 1 }, false, null, rainCloudArt)
   const cloudImages = calls.filter(row => row[0] === 'drawImage' && row[1] === rainCloudArt)
   const expected = phase === 'gutter_fill' || phase === 'gargoyle_release' || phase === 'raining'
-    ? [['drawImage', rainCloudArt, 476, -6, 96, 32]]
+    ? [['drawImage', rainCloudArt, 460, -20, 128, 43]]
     : []
   assert.deepEqual(cloudImages, expected, `native rain cloud art is phase-gated (${phase})`)
   checks++

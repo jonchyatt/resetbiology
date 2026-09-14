@@ -24,5 +24,15 @@
       "x": 14,
       "y": 8
     }
-  ]
+  ],
+  "schemaVersion": "candidate-recovered-3x-1.0.0",
+  "status": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC",
+  "sourceGridColumns": 5,
+  "source_frame_w": 48,
+  "source_frame_h": 72,
+  "logical_frame_w": 16,
+  "logical_frame_h": 24,
+  "sourceScale": 3,
+  "sourceArtifact": "data/pitchforks-rework/art-tests/villager-c11c/villager-3tine-lifecycle-source.png",
+  "assembly": "existing generate-pitchforks-sprites.py 5x2 cell coordinates and chroma-key/fit helpers"
 }

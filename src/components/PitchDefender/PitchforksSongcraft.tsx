@@ -1,6 +1,8 @@
 'use client'
 
 import {
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -43,8 +45,16 @@ import { pitchforksMicUnreliable } from './pitchforksTunerFeedback'
 import { loadSongcraftPresets } from './pitchforksSongcraftPresets'
 import { SONGCRAFT_PRESET_CATALOG } from './pitchforksSongcraftPresetCatalog'
 import type { PitchforksMasteryProjection } from './pitchforksMasteryProjection'
-import { PitchforksTempoEncore } from './PitchforksTempoEncorePanel'
 import { canEnterTempoEncore } from './pitchforksTempoEncore'
+
+// Keep the untimed Songcraft route free of the optional panel's runtime cycle:
+// PitchforksTempoEncorePanel imports Songcraft's detector helpers. Loading it
+// only after the untimed gate is true keeps the real Tempo Encore surface while
+// preventing its module from being evaluated during Ear start.
+const PitchforksTempoEncore = lazy(async () => {
+  const tempoEncoreModule = await import('./PitchforksTempoEncorePanel')
+  return { default: tempoEncoreModule.PitchforksTempoEncore }
+})
 
 /** The only microphone surface this leaf accepts: the parent owns the hook. */
 export interface PitchforksSongcraftMicrophone {
@@ -74,6 +84,15 @@ export interface PitchforksSongcraftConnectorProps {
 }
 
 export type PitchforksSongcraftProps = PitchforksSongcraftConnectorProps
+
+/** Additive controlled actions consumed by the parallel Songcraft panel leaf. */
+export interface PitchforksSongcraftConnectedPanelProps extends PitchforksSongcraftPanelProps {
+  readonly paused: boolean
+  readonly hasNextSong: boolean
+  readonly onTogglePause: () => void
+  readonly onReplayPhrase: () => void
+  readonly onNextSong: () => void
+}
 
 export const SONGCRAFT_CONFIDENCE_FLOOR = 0.75
 export const SONGCRAFT_MATCH_TOLERANCE_CENTS = 70
@@ -106,6 +125,41 @@ export interface PitchforksSongcraftGenerationObservation {
   readonly staleRecovery: boolean
   /** Elapsed time since the previous fresh detector observation, never stale-gap time. */
   readonly freshElapsedMs: number
+}
+
+/**
+ * Songcraft has its own route-level pause because the parent's ordinary-wave
+ * pause control is not rendered while the game is in the Songcraft phase.
+ * The shape mirrors the existing parent pause fence without importing the
+ * parent component or changing its owned surface.
+ */
+export type PitchforksSongcraftPauseGate = Readonly<{
+  paused: boolean
+  generation: number
+  fence: number
+}>
+
+export function createPitchforksSongcraftPauseGate(): PitchforksSongcraftPauseGate {
+  return { paused: false, generation: 0, fence: 0 }
+}
+
+export function transitionPitchforksSongcraftPauseGate(
+  gate: PitchforksSongcraftPauseGate,
+  action: 'pause' | 'resume',
+): PitchforksSongcraftPauseGate {
+  return {
+    paused: action === 'pause',
+    generation: action === 'resume' ? gate.generation + 1 : gate.generation,
+    fence: gate.fence + 1,
+  }
+}
+
+export function acceptsPitchforksSongcraftPauseCallback(
+  gate: PitchforksSongcraftPauseGate,
+  generation: number,
+  fence: number,
+): boolean {
+  return !gate.paused && gate.generation === generation && gate.fence === fence
 }
 
 /**
@@ -320,6 +374,15 @@ export function isPitchforksSongcraftPresetReady(phrase: SongcraftPhrase, admitt
     && isPitchforksSongcraftAdmittedNote(occurrence.pitchName, admittedNotes))
 }
 
+/** Return the next actually loaded Composer/preset phrase in library order. */
+export function nextPitchforksSongcraftSourceKey(
+  songs: readonly Pick<SongcraftPhrase, 'sourceKey'>[],
+  selectedKey: string,
+): string | null {
+  const index = songs.findIndex(song => song.sourceKey === selectedKey)
+  return index >= 0 ? songs[index + 1]?.sourceKey ?? null : null
+}
+
 /** Composer stays first; built-in exercises must fit the already-confirmed range exactly. */
 export async function loadPitchforksSongcraftLibrary(
   admittedNotes: readonly string[],
@@ -484,6 +547,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   const [lane, setLane] = useState<PitchforksSongcraftLane>('voice')
   const [practiceState, setPracticeState] = useState<SongcraftPracticeState | null>(null)
   const [tempoEncore, setTempoEncore] = useState(false)
+  const [paused, setPaused] = useState(false)
   const [audioBusy, setAudioBusy] = useState(false)
   const [micStartPending, setMicStartPending] = useState(false)
   const [, setUiVersion] = useState(0)
@@ -502,6 +566,8 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   const practiceStateRef = useRef<SongcraftPracticeState | null>(null)
   practiceStateRef.current = practiceState
   const controllerRef = useRef<SongcraftPracticeController | null>(null)
+  const pauseGateRef = useRef<PitchforksSongcraftPauseGate>(createPitchforksSongcraftPauseGate())
+  const pausedRef = useRef(false)
   const sessionTokenRef = useRef(0)
   const voiceTargetKeyRef = useRef('')
   const rafRef = useRef<number | null>(null)
@@ -581,6 +647,20 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     }
   }, [requestUi])
 
+  /** Keep a cue's local busy lock until the parent's exact-audio suppression ends. */
+  const releaseAudioWhenIdle = useCallback((fence: number) => {
+    const check = () => {
+      if (!mountedRef.current || pauseGateRef.current.fence !== fence) return
+      if (pauseGateRef.current.paused || matchingSuppressedNow()) {
+        cueTimerRef.current = setTimeout(check, 50)
+        return
+      }
+      cueTimerRef.current = null
+      setLocalAudioBusy(false)
+    }
+    cueTimerRef.current = setTimeout(check, 0)
+  }, [matchingSuppressedNow, setLocalAudioBusy])
+
   const applyResult = useCallback((result: SongcraftPracticeResult) => {
     const next = result.state
     setPracticeSnapshot(next)
@@ -607,6 +687,10 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     if (controllerRef.current) return
     const phrase = songsRef.current.find(value => value.sourceKey === selectedKeyRef.current)
     if (!phrase || !isPitchforksSongcraftPresetReady(phrase, propsRef.current.admittedNotes)) return
+
+    pauseGateRef.current = createPitchforksSongcraftPauseGate()
+    pausedRef.current = false
+    if (mountedRef.current) setPaused(false)
 
     let attemptId: string | null = null
     try {
@@ -664,7 +748,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   const startMic = useCallback(() => {
     const controller = controllerRef.current
     const state = controller?.state()
-    if (!controller || !state || state.status !== 'active' || state.lane !== 'voice'
+    if (pausedRef.current || !controller || !state || state.status !== 'active' || state.lane !== 'voice'
       || state.current.kind !== 'note' || state.current.identity.claimId === null) return
     const microphone = microphoneRef.current
     if (micStartPendingRef.current || microphone.isListening) return
@@ -675,6 +759,8 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     if (mountedRef.current) setMicStartPending(true)
     requestUi(true)
     const token = sessionTokenRef.current
+    const callbackGeneration = pauseGateRef.current.generation
+    const callbackFence = pauseGateRef.current.fence
 
     let started: Promise<void>
     try {
@@ -690,13 +776,15 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
 
     void Promise.resolve(started).then(
       () => {
-        if (!mountedRef.current || token !== sessionTokenRef.current) return
+        if (!mountedRef.current || token !== sessionTokenRef.current
+          || !acceptsPitchforksSongcraftPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
         micStartPendingRef.current = false
         setMicStartPending(false)
         requestUi(true)
       },
       error => {
-        if (!mountedRef.current || token !== sessionTokenRef.current) return
+        if (!mountedRef.current || token !== sessionTokenRef.current
+          || !acceptsPitchforksSongcraftPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
         micStartPendingRef.current = false
         setMicStartPending(false)
         micStartErrorRef.current = error instanceof Error ? error.message : 'Microphone access failed'
@@ -708,7 +796,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   const playCue = useCallback((forceHint: boolean) => {
     const controller = controllerRef.current
     const state = controller?.state()
-    if (!controller || !state || state.status !== 'active' || state.current.kind !== 'note'
+    if (pausedRef.current || !controller || !state || state.status !== 'active' || state.current.kind !== 'note'
       || state.current.identity.claimId === null || audioBusyRef.current || matchingSuppressedNow()) return
 
     const current = state.current
@@ -733,6 +821,8 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     }
 
     const session = sessionTokenRef.current
+    const callbackGeneration = pauseGateRef.current.generation
+    const callbackFence = pauseGateRef.current.fence
     const claimId = current.identity.claimId
     clearCueTimers()
     const ownedCueToken = ++cueTokenRef.current
@@ -750,7 +840,8 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     }
 
     const armEarAnswer = () => {
-      if (!mountedRef.current || session !== sessionTokenRef.current || ownedCueToken !== cueTokenRef.current) return
+      if (!mountedRef.current || session !== sessionTokenRef.current || ownedCueToken !== cueTokenRef.current
+        || !acceptsPitchforksSongcraftPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
       const live = controllerRef.current?.state()
       if (!live || live.current.kind !== 'note' || live.current.identity.claimId !== claimId || live.lane !== 'ear') return
       if (matchingSuppressedNow() || !pageIsVisible()) {
@@ -766,7 +857,8 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     }
 
     cueTimerRef.current = setTimeout(() => {
-      if (!mountedRef.current || session !== sessionTokenRef.current || ownedCueToken !== cueTokenRef.current) return
+      if (!mountedRef.current || session !== sessionTokenRef.current || ownedCueToken !== cueTokenRef.current
+        || !acceptsPitchforksSongcraftPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
       cueTimerRef.current = null
       setLocalAudioBusy(false)
       if (state.lane === 'ear') armEarAnswer()
@@ -779,7 +871,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   const answer = useCallback((answeredNote: string) => {
     const controller = controllerRef.current
     const state = controller?.state()
-    if (!controller || !state || state.status !== 'active' || state.lane !== 'ear'
+    if (pausedRef.current || !controller || !state || state.status !== 'active' || state.lane !== 'ear'
       || state.current.kind !== 'note' || state.current.identity.claimId === null
       || earAnswerClaimRef.current !== state.current.identity.claimId
       || audioBusyRef.current || matchingSuppressedNow() || !pageIsVisible()) return
@@ -800,11 +892,13 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   }, [applyResult, clearHold, matchingSuppressedNow])
 
   const acknowledge = useCallback(() => {
+    if (pausedRef.current) return
     const result = acknowledgePitchforksSongcraftRenderedState(controllerRef.current, practiceState)
     if (result) applyResult(result)
   }, [applyResult, practiceState])
 
   const retrySave = useCallback(() => {
+    if (pausedRef.current) return
     const controller = controllerRef.current
     if (!controller) return
     clearHold()
@@ -812,15 +906,17 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   }, [applyResult, clearHold])
 
   const retryNote = useCallback(() => {
+    if (pausedRef.current) return
     const controller = controllerRef.current
     if (!controller) return
     clearHold()
     applyResult(controller.retryNote())
   }, [applyResult, clearHold])
 
-  const returnToMenu = useCallback(() => {
+  /** Fence a completed/abandoned attempt without touching shared mastery. */
+  const resetPracticeAttempt = useCallback(() => {
     sessionTokenRef.current += 1
-    controllerRef.current?.cancel()
+    try { controllerRef.current?.cancel() } catch {}
     controllerRef.current = null
     cancelVoiceLoop()
     clearCueTimers()
@@ -831,14 +927,76 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     micStartPendingRef.current = false
     micStartErrorRef.current = null
     audioBusyRef.current = false
+    pauseGateRef.current = createPitchforksSongcraftPauseGate()
+    pausedRef.current = false
     if (mountedRef.current) {
       setMicStartPending(false)
       setAudioBusy(false)
+      setPaused(false)
       setPracticeSnapshot(null)
     }
     try { microphoneRef.current.stop() } catch {}
-    propsRef.current.onReturn()
   }, [cancelVoiceLoop, clearCueTimers, clearHold, setPracticeSnapshot])
+
+  const replayPhrase = useCallback(() => {
+    const state = controllerRef.current?.state()
+    if (pausedRef.current || !state || state.status !== 'complete') return
+    setTempoEncore(false)
+    resetPracticeAttempt()
+    beginPractice()
+  }, [beginPractice, resetPracticeAttempt])
+
+  const nextSong = useCallback(() => {
+    const state = controllerRef.current?.state()
+    if (pausedRef.current || !state || state.status !== 'complete') return
+    const nextKey = nextPitchforksSongcraftSourceKey(songsRef.current, selectedKeyRef.current)
+    if (!nextKey) return
+    setTempoEncore(false)
+    resetPracticeAttempt()
+    selectedKeyRef.current = nextKey
+    setSelectedKey(nextKey)
+    beginPractice()
+  }, [beginPractice, resetPracticeAttempt])
+
+  const togglePause = useCallback(() => {
+    const state = controllerRef.current?.state()
+    if (!state || (state.status !== 'active' && state.status !== 'pending-save')) return
+
+    const action = pauseGateRef.current.paused ? 'resume' : 'pause'
+    const nextGate = transitionPitchforksSongcraftPauseGate(pauseGateRef.current, action)
+    pauseGateRef.current = nextGate
+    pausedRef.current = nextGate.paused
+    sessionTokenRef.current += 1
+    clearCueTimers()
+    cancelVoiceLoop()
+    clearHold()
+    micStartPendingRef.current = false
+    if (mountedRef.current) setMicStartPending(false)
+
+    const reset = resetPitchforksSongcraftVisibilityState(safeGeneration(microphoneRef.current))
+    holdRef.current = reset.hold
+    holdProgressRef.current = reset.holdProgress
+    dropoutFramesRef.current = reset.dropoutFrames
+    lastGenerationRef.current = reset.generation.lastGeneration
+    generationObservedRef.current = reset.generation.generationObserved
+    generationObservedAtRef.current = reset.generation.generationObservedAt
+    voiceFeedbackRef.current = null
+
+    if (action === 'pause') {
+      // Parent playback cannot be stopped through this connector. Keep the
+      // local busy lock until its global suppression window is actually clear.
+      if (!matchingSuppressedNow()) setLocalAudioBusy(false)
+    } else if (audioBusyRef.current) {
+      releaseAudioWhenIdle(nextGate.fence)
+    }
+    if (mountedRef.current) setPaused(nextGate.paused)
+    requestUi(true)
+  }, [cancelVoiceLoop, clearCueTimers, clearHold, matchingSuppressedNow, releaseAudioWhenIdle, requestUi, setLocalAudioBusy])
+
+  const returnToMenu = useCallback(() => {
+    resetPracticeAttempt()
+    propsRef.current.onReturn()
+  }, [resetPracticeAttempt])
 
   const resetVoiceOnVisibilityHidden = useCallback(() => {
     if (typeof document !== 'undefined' && document.visibilityState !== 'hidden') return
@@ -910,7 +1068,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   const processVoiceFrame = useCallback((timestamp: number) => {
     const controller = controllerRef.current
     const state = practiceStateRef.current
-    if (!controller || !state || state.status !== 'active' || state.lane !== 'voice'
+    if (pausedRef.current || !controller || !state || state.status !== 'active' || state.lane !== 'voice'
       || state.current.kind !== 'note' || state.current.identity.claimId === null
       || practiceCurrentKey(state) !== voiceTargetKeyRef.current) {
       clearHold(false)
@@ -1044,7 +1202,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   }, [applyResult, clearHold, matchingSuppressedNow, requestUi])
 
   useEffect(() => {
-    if (!voiceTargetKey || typeof requestAnimationFrame !== 'function') return
+    if (paused || !voiceTargetKey || typeof requestAnimationFrame !== 'function') return
     const token = sessionTokenRef.current
     let running = true
     // A claim starts from the detector generation that already exists. The
@@ -1065,7 +1223,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
       cancelVoiceLoop()
       clearHold(false)
     }
-  }, [cancelVoiceLoop, clearHold, processVoiceFrame, voiceTargetKey])
+  }, [cancelVoiceLoop, clearHold, paused, processVoiceFrame, voiceTargetKey])
 
   const view = useMemo<SongcraftPanelView | null>(() => {
     const state = practiceState
@@ -1078,7 +1236,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
       && current.identity.claimId === null
       && state.recitalState?.lastReceipt?.correct === false
       && state.recitalState.lastReceipt.persisted
-    const busy = audioBusy || micStartPending
+    const busy = audioBusy || micStartPending || paused
     const currentKey = practiceCurrentKey(state)
     const micStatus: SongcraftPanelView['micStatus'] = state.lane !== 'voice'
       ? 'off'
@@ -1096,6 +1254,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
       && !busy
       && !pendingSave
       && !needsRetry
+      && !paused
       && !matchingSuppressedNow()
       && pageIsVisible()
     const progress01 = current.kind === 'complete'
@@ -1103,7 +1262,8 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
       : clampProgress((state.cursor + (state.lane === 'voice' && current.kind === 'note' ? holdProgressRef.current : 0)) / total)
 
     let message = ''
-    if (pendingSave) message = 'Your answer is held, but saving is not confirmed. Retry saving; do not answer again.'
+    if (paused) message = 'Paused. Your phrase progress and mastery are safe; resume when you are ready.'
+    else if (pendingSave) message = 'Your answer is held, but saving is not confirmed. Retry saving; do not answer again.'
     else if (needsRetry) message = 'That answer was saved for review. Try this note again when you are ready.'
     else if (current.kind === 'rest') message = 'Rest — continue when ready.'
     else if (current.kind === 'unsupported') message = 'This authored note is outside your current practice range. Continue without credit.'
@@ -1157,9 +1317,9 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
       pendingSave,
       needsRetry,
     }
-  }, [audioBusy, lane, matchingSuppressedNow, micStartPending, practiceState, props.microphone, uiLastUpdatedAtRef])
+  }, [audioBusy, matchingSuppressedNow, micStartPending, paused, practiceState, props.microphone])
 
-  const panelProps: PitchforksSongcraftPanelProps = {
+  const panelProps: PitchforksSongcraftConnectedPanelProps = {
     songs: songs.map((phrase): PitchforksSongcraftSong => ({ sourceKey: phrase.sourceKey, title: phrase.title, source: phrase.provenance.source })),
     selectedKey,
     onSelect: selectSong,
@@ -1175,16 +1335,23 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     onRetrySave: retrySave,
     onRetryNote: retryNote,
     onReturn: returnToMenu,
+    paused,
+    hasNextSong: nextPitchforksSongcraftSourceKey(songs, selectedKey) !== null,
+    onTogglePause: togglePause,
+    onReplayPhrase: replayPhrase,
+    onNextSong: nextSong,
   }
 
-  if (tempoEncore && practiceState) return <PitchforksTempoEncore
-    completedPractice={practiceState}
-    masteryProjection={props.masteryProjection}
-    admittedNotes={props.admittedNotes}
-    microphone={props.microphone}
-    matchingSuppressed={props.matchingSuppressed}
-    onReturnUntimed={() => setTempoEncore(false)}
-  />
+  if (tempoEncore && practiceState) return <Suspense fallback={<main className="fixed inset-0 overflow-y-auto bg-[#070914] p-4 text-white"><p className="mx-auto max-w-2xl rounded-2xl border border-amber-400/40 bg-slate-950 p-4">Loading optional Tempo Encore…</p></main>}>
+    <PitchforksTempoEncore
+      completedPractice={practiceState}
+      masteryProjection={props.masteryProjection}
+      admittedNotes={props.admittedNotes}
+      microphone={props.microphone}
+      matchingSuppressed={props.matchingSuppressed}
+      onReturnUntimed={() => setTempoEncore(false)}
+    />
+  </Suspense>
 
   const encoreEligible = practiceState && canEnterTempoEncore(practiceState.phrase, practiceState, props.masteryProjection)
   if (!encoreEligible) return <PitchforksSongcraftPanel {...panelProps} />

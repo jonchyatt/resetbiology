@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import styles from '@/components/PitchDefender/PitchforksPlayLayout.module.css'
 
 const PitchforksIII = dynamic(
   () => import('@/components/PitchDefender/PitchforksIII'),
@@ -14,5 +15,9 @@ const PitchforksIII = dynamic(
 )
 
 export default function PitchforksIIIPage() {
-  return <PitchforksIII />
+  return (
+    <div className={styles.playRoot}>
+      <PitchforksIII />
+    </div>
+  )
 }
