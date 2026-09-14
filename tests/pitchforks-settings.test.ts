@@ -112,7 +112,7 @@ check(() => assert.equal(savePitchforksSettings(failingStorage, bothOff), false)
 const componentSource = readFileSync(
   new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 check(() => assert.match(componentSource, /loadPitchforksSettings\(localStorage\)/))
 check(() => assert.match(componentSource, /savePitchforksSettings\(localStorage,/))
 check(() => assert.match(componentSource, /settings: normalizePitchforksSettings\(/))
@@ -120,7 +120,7 @@ check(() => assert.match(componentSource, /data-testid="pf3-note-names-toggle"[\
 check(() => assert.match(componentSource, /data-testid="pf3-reference-audio-toggle"[\s\S]*?aria-pressed=\{props\.audioCueOn\}/))
 check(() => assert.match(componentSource, /\(!userRequested && !audioCueRef\.current\)/))
 check(() => assert.match(componentSource, /inputMode === 'buttons' \? false : noteNamesRef\.current/))
-check(() => assert.match(componentSource, /cueContext\.support === 'guided' && audioCueRef\.current/))
+check(() => assert.match(componentSource, /\(cueContext\.support === 'guided' \|\| target\.villager\.supportedLesson\) && audioCueRef\.current/))
 check(() => assert.match(componentSource, /observationGainPct: microphoneGain/))
 check(() => assert.match(componentSource, /data-testid="pf3-reference-gain"[\s\S]*?aria-valuetext=\{`\$\{props\.cueVolume\}%`\}/))
 check(() => assert.match(componentSource, /data-testid="pf3-microphone-gain"[\s\S]*?aria-valuetext=\{`\$\{props\.microphoneGain\}%`\}/))
@@ -144,7 +144,7 @@ check(() => assert.match(rangeToneSource, /cueVolumeRef\.current <= 0/))
 const detectorSource = readFileSync(
   new URL('../src/components/PitchDefender/usePitchDetection.ts', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 check(() => assert.match(detectorSource, /observationGainPct\?: number/))
 check(() => assert.match(detectorSource, /source\.connect\(observationGain\)/))
 check(() => assert.match(detectorSource, /observationGain\.connect\(analyser\)/))

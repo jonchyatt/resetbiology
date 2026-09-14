@@ -80,10 +80,12 @@ function harness() {
     pickVillagerNotes: () => [chosenNote], attackTimeForWave: () => 10, villagerEntryX: () => 800,
     createTorchState: () => ({}), createInactiveTorchState: () => ({}), ensureActiveNoteMemory: noop,
     normalBellRouteAvailable: () => !env.demoRef.current && !env.bossSimulatingRef.current,
+    normalVillageLessonAvailable: () => !env.demoRef.current && !env.bossSimulatingRef.current,
+    galvanicOwnsInput: () => env.galvanicProofRef.current,
     getActiveTarget: () => active, latencyForTarget: () => 500,
     levelProgressRef: ref(createPitchforksLevelProgress()), failureGradedKeysRef: ref(new Set()),
     cueSupportByTargetRef: ref(new Map()), hintedTargetKeysRef: ref(new Set()), waveNotesSungRef: ref(new Set()),
-    setLevelProgress: noop, setPresentationJourney: noop, getMasterySessionId: () => 'session',
+    reconcileCampaignProgress: noop, setLevelProgress: noop, setPresentationJourney: noop, getMasterySessionId: () => 'session',
     savePresentationJourney: (journey: any) => saves.push(journey), acceptNormalBellCombatResponse: noop,
     gradeVoice: forbidden, gradeEar: forbidden, saveFsrs: forbidden, recordMasteryProgressForReview: forbidden,
     strikePresentationPending: () => false, matchingSuppressedNow: () => now < env.matchingSuppressedUntilRef.current,
@@ -106,7 +108,7 @@ function harness() {
     createRainState: () => ({}), rainActivationRequestedRef: ref(false), rainUiSignatureRef: ref(''),
     setRainState: noop, activeKeyRef: ref(''), lockHeldMsRef: ref(0), lockProgressRef: ref(0), tintRef: ref(null), setHud: noop,
     resetLevelProgress: (wave: number) => { env.levelProgressRef.current = createPitchforksLevelProgress(wave) },
-    bossControllerRef: ref(null), bossIdentityRef: ref(null), setBossIdentity: noop, setBossState: noop,
+    bossWorldRef: ref(null), bossPracticeOnlyRef: ref(false), bossControllerRef: ref(null), bossIdentityRef: ref(null), setBossIdentity: noop, setBossState: noop,
     setBossAudioBusy: noop, rafRef: ref(null), cancelAnimationFrame: noop, setPhase: noop, resumeCueAudioFromGesture: noop,
   }
   const spawnCallback = runInNewContext(executable('spawnVillager'), env)

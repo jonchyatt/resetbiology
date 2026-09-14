@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import ts from 'typescript'
+import { projectPitchforksWorldGates } from '../src/components/PitchDefender/pitchforksCampaignProgress'
+import { isWorldUnlocked } from '../src/components/PitchDefender/pitchforks3WorldRegistry'
 
 import { observePitchforksSongcraftGeneration } from '../src/components/PitchDefender/PitchforksSongcraft'
 import { pitchforksMicUnreliable } from '../src/components/PitchDefender/pitchforksTunerFeedback'
@@ -15,7 +18,7 @@ import { exactCents, noteToFreq } from '../src/components/PitchDefender/pitchMat
 const source = readFileSync(
   resolve(process.cwd(), 'src/components/PitchDefender/PitchforksIII.tsx'),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 const processLockStart = source.indexOf('const processLock = useCallback((dt: number) => {')
 assert.ok(processLockStart >= 0, 'mounted processLock callback is present')
 const processLockBodyStart = source.indexOf('{', processLockStart) + 1
@@ -206,6 +209,15 @@ function makeHarness(options: {
     return true
   }
   const env: Record<string, unknown> = {
+    // This fixture exercises ordinary Dungeon and Bell proof freshness. Earned
+    // routes and their boundaries are exercised by earned-power-access.
+    selectedWorldRef: makeRef('dungeon'),
+    presentationJourneyRef: makeRef(null),
+    fsrsDebugRef: makeRef(false),
+    bossSimulatingRef: makeRef(false),
+    bellPowerStateRef: makeRef(null),
+    projectPitchforksWorldGates,
+    isWorldUnlocked,
     ceremonyRef,
     pauseSparkGuide: () => undefined,
     activeKeyRef,
@@ -291,6 +303,21 @@ function makeHarness(options: {
     document: documentRef,
     waveReceiptRef,
     victoryCancelledReceiptIdRef,
+  }
+
+  // Bind the actual route callbacks, as in earned-power-access; do not mirror
+  // their policy with hard-coded allow/deny stubs.
+  const tree = ts.createSourceFile('PitchforksIII.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
+  for (const name of ['normalBellRouteAvailable', 'normalGalvanicRouteAvailable', 'galvanicRouteAvailable']) {
+    const callbacks: ts.Node[] = []
+    const visit = (node: ts.Node) => {
+      if (ts.isVariableDeclaration(node) && node.name.getText(tree) === name && node.initializer && ts.isCallExpression(node.initializer)) callbacks.push(node.initializer.arguments[0])
+      ts.forEachChild(node, visit)
+    }
+    visit(tree)
+    assert.equal(callbacks.length, 1, `unique runtime route callback ${name}`)
+    const expression = ts.transpileModule(`(${callbacks[0].getText(tree)})`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText.trim().replace(/;$/, '')
+    env[name] = new Function('env', `with (env) { return ${expression} }`)(env)
   }
 
   // A Proxy is only used to make missing closure names fail naturally as

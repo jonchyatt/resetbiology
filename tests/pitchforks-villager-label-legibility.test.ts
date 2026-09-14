@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
-const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8')
-const badgeBlock = source.match(/if \(v\.active && view\.noteNamesVisible\) \{[\s\S]*?\r?\n  \}\r?\n\r?\n  if \(v\.active\) \{/)
+const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
+const badgeBlock = source.match(/if \(v\.active && v\.answerVisible && view\.noteNamesVisible\) \{[\s\S]*?\r?\n  \}\r?\n\r?\n  if \(v\.active\) \{/)
 assert.ok(badgeBlock, 'villager note-label block is present')
 const badgeSource = badgeBlock[0]
 let checks = 0

@@ -9,7 +9,7 @@ import {
   resetPitchforksBellWaveState,
 } from '../src/components/PitchDefender/pitchforksBellWave'
 
-const source = readFileSync(resolve(process.cwd(), 'src/components/PitchDefender/PitchforksIII.tsx'), 'utf8')
+const source = readFileSync(resolve(process.cwd(), 'src/components/PitchDefender/PitchforksIII.tsx'), 'utf8').replace(/\r\n/g, '\n')
 let checks = 0
 const check = (run: () => void): void => {
   run()
@@ -21,7 +21,7 @@ const roster = (...villagers: Array<{ stableID: string; x: number; y: number; wa
 check(() => {
   assert.match(source, /from ['"]\.\/pitchforksBellWave['"]/, 'runtime imports the pure Bell lifecycle')
   assert.match(source, /from ['"]\.\/pitchforksBellWaveView['"]/, 'runtime imports the pure wave renderer')
-  assert.match(source, /params\.get\('worldProof'\) === 'bell-tower'/, 'Bell controls are private-proof gated')
+  assert.match(source, /params\.get\('worldProof'\) === 'bell-tower'/, 'Bell proof flag remains explicitly selected; normal access is covered by earned-power-access')
   assert.match(source, /const BELL_WAVE_ORIGIN = Object\.freeze\(\{ x: 274\.5, y: 61\.5 \}\)/, 'measured Bell origin is explicit')
   assert.match(source, /data-testid="pf3-bell-arm"/, 'charge control has a stable recorder hook')
   assert.match(source, /data-testid="pf3-bell-release"/, 'release control has a stable recorder hook')
@@ -60,7 +60,7 @@ check(() => {
   const thunderheadGate = lockPath.indexOf("pauseSparkGuide('thunderhead-lifecycle')")
   assert.ok(bellGate >= 0 && bellGate < closeGate && bellGate < thunderheadGate, 'Bell owns processLock before competing abilities')
   assert.match(lockPath, /confirmBellCharge\(target/, 'exact hold resolves through Bell charge consumer')
-  assert.match(lockPath, /return\n\s*}\n\s*if \(galvanicProofRef\.current/, 'Bell charge returns before Galvanic or ordinary fallback')
+  assert.match(lockPath, /return\n\s*}\n\s*if \(galvanicRouteAvailable\(\)/, 'Bell charge returns before Galvanic or ordinary fallback')
 })
 
 check(() => {

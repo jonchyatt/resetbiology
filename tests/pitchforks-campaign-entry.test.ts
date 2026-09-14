@@ -113,7 +113,7 @@ check(() => {
 const source = readFileSync(
   new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 
 check(() => assert.match(source, /advancePitchforksCampaignProgress/))
 check(() => assert.match(source, /rangeAssessedAt: rangeProfile\.assessedAt/))
@@ -166,7 +166,9 @@ boundedGuard(worldMapSegment.includes('onClick={() =>'), 'World Map selection ha
 boundedGuard(worldMapSegment.includes('disabled={!selectable}'), 'World Map disabled condition must remain')
 boundedGuard(worldMapSegment.includes("? selected ? 'Ready to play.' : 'Choose this world.'"), 'selected and available World Map copy must remain concise')
 boundedGuard(worldMapSegment.includes("'Master your current notes to unlock.'"), 'Village Gate locked copy must remain concise')
-boundedGuard(worldMapSegment.includes("'Opens later in your adventure.'"), 'future-world copy must remain concise')
+boundedGuard(worldMapSegment.includes("'Complete your Village interval journey.'"), 'Bell Tower locked copy names its earned prerequisite')
+boundedGuard(worldMapSegment.includes("'Pass the Bellringer recital.'"), 'Cathedral locked copy names its earned prerequisite')
+boundedGuard(worldMapSegment.includes("'Earned · Scene loading.'"), 'earned later-world artwork loading remains distinct from locked')
 boundedGuard(worldMapSegment.includes('villageGateAssetStatus === \'missing\''), 'Village Gate missing distinction must remain')
 boundedGuard(worldMapSegment.includes("'Earned · Village Gate scene loading.'"), 'Village Gate loading distinction must remain')
 boundedGuard(worldMapSegment.includes('className="min-h-28 flex flex-col"'), 'World Map wrappers must align cards in a column')

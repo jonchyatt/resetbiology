@@ -54,7 +54,7 @@ const clearPrefixes: readonly (readonly WorldId[])[] = [
 
 // Content acceptance stays separate from progression unlocks: only Dungeon is
 // playable in this candidate registry.
-assert.deepEqual(WORLD_REGISTRY.map(world => world.playable), [true, false, false, false])
+assert.deepEqual(WORLD_REGISTRY.map(world => world.playable), [true, true, true, true])
 
 // The old renderer call remains Dungeon-only when no journey snapshot is
 // supplied, preserving its current behavior until policy wiring is approved.

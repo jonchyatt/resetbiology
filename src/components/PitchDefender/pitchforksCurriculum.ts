@@ -1,3 +1,4 @@
+import { getVillageLessonCandidates } from './villageLessonSelector'
 import { PITCHFORKS_RANGE_NOTES } from './pitchforksRange'
 import {
   recordVillagePractice,
@@ -31,6 +32,29 @@ export interface PitchforksDungeonClearReceipt {
   clearedAt: number
 }
 
+export type PitchforksVillageBinding = Readonly<Pick<
+  VillagePracticeReceipt, 'objective' | 'contextNote' | 'targetNote'
+>>
+
+export interface PitchforksVillageCurriculum {
+  version: 1
+  rangeAssessedAt: string
+  startedAt: string
+  bindings: readonly PitchforksVillageBinding[]
+  boundAt: number
+}
+
+export interface PitchforksVillageClearReceipt {
+  version: 1
+  rangeAssessedAt: string
+  startedAt: string
+  bindings: readonly PitchforksVillageBinding[]
+  clearedAt: number
+}
+
+export type PitchforksBellTowerClearReceipt = PitchforksDungeonClearReceipt
+export type PitchforksCathedralClearReceipt = PitchforksDungeonClearReceipt
+
 export interface PitchforksPresentationJourney {
   version: 1
   currentLevel: number
@@ -39,6 +63,10 @@ export interface PitchforksPresentationJourney {
   unlockedNotes: string[]
   guidedNotes: string[]
   dungeonClear?: PitchforksDungeonClearReceipt
+  villageCurriculum?: PitchforksVillageCurriculum
+  villageClear?: PitchforksVillageClearReceipt
+  bellTowerClear?: PitchforksBellTowerClearReceipt
+  cathedralClear?: PitchforksCathedralClearReceipt
   villagePractice?: readonly VillagePracticeReceipt[]
 }
 
@@ -55,6 +83,10 @@ export function createPitchforksPresentationJourney(input: {
   guidedNotes?: readonly string[]
   startedAt?: string
   dungeonClear?: PitchforksDungeonClearReceipt
+  villageCurriculum?: PitchforksVillageCurriculum
+  villageClear?: PitchforksVillageClearReceipt
+  bellTowerClear?: PitchforksBellTowerClearReceipt
+  cathedralClear?: PitchforksCathedralClearReceipt
   villagePractice?: readonly VillagePracticeReceipt[]
 }): PitchforksPresentationJourney {
   const journey: PitchforksPresentationJourney = {
@@ -70,6 +102,7 @@ export function createPitchforksPresentationJourney(input: {
   const villagePractice = input.villagePractice ? [...input.villagePractice] : undefined
   return {
     ...journey,
+    ...normalizeCampaignReceipts(input, journey, journey.unlockedNotes),
     ...(dungeonClear ? { dungeonClear } : {}),
     ...(villagePractice ? { villagePractice } : {}),
   }
@@ -178,6 +211,7 @@ function comfortableRangeForPresentationOrder(
 function normalizePitchforksDungeonClear(
   value: unknown,
   journey: Pick<PitchforksPresentationJourney, 'rangeAssessedAt' | 'startedAt' | 'unlockedNotes'>,
+  requirePrefix = true,
 ): PitchforksDungeonClearReceipt | undefined {
   if (!isRecord(value) || value.version !== 1) return undefined
   if (
@@ -205,7 +239,7 @@ function normalizePitchforksDungeonClear(
       candidate.length === 0 ||
       seen.has(candidate) ||
       !journey.unlockedNotes.includes(candidate) ||
-      candidate !== journey.unlockedNotes[admittedNotes.length]
+      (requirePrefix && candidate !== journey.unlockedNotes[admittedNotes.length])
     ) {
       return undefined
     }
@@ -220,6 +254,69 @@ function normalizePitchforksDungeonClear(
     admittedNotes,
     clearedAt: value.clearedAt,
   }
+}
+
+function normalizeVillageBindings(
+  value: unknown,
+  journey: PitchforksPresentationJourney,
+  presentationOrder: readonly string[],
+): PitchforksVillageBinding[] | undefined {
+  if (!isDenseArray(value) || value.length === 0) return undefined
+  const comfortableRange = comfortableRangeForPresentationOrder(presentationOrder)
+  if (!comfortableRange) return undefined
+  const candidates = getVillageLessonCandidates({
+    admittedNotes: journey.unlockedNotes,
+    introducedNotes: journey.unlockedNotes,
+    comfortableRange,
+  })
+  const bindings: PitchforksVillageBinding[] = []
+  const seen = new Set<string>()
+  for (const binding of value) {
+    if (!isRecord(binding)) return undefined
+    const match = candidates.find(candidate => candidate.bothVoiceAdmitted
+      && candidate.objective === binding.objective
+      && candidate.contextNote === binding.contextNote
+      && candidate.targetNote === binding.targetNote)
+    if (!match || seen.has(match.objective)
+      || !presentationOrder.includes(match.contextNote)
+      || !presentationOrder.includes(match.targetNote)) return undefined
+    seen.add(match.objective)
+    bindings.push({ objective: match.objective, contextNote: match.contextNote, targetNote: match.targetNote })
+  }
+  return bindings
+}
+
+function normalizeCampaignReceipts(
+  input: {
+    villageCurriculum?: unknown
+    villageClear?: unknown
+    bellTowerClear?: unknown
+    cathedralClear?: unknown
+  },
+  journey: PitchforksPresentationJourney,
+  presentationOrder: readonly string[],
+): Partial<Pick<PitchforksPresentationJourney,
+  'villageCurriculum' | 'villageClear' | 'bellTowerClear' | 'cathedralClear'>> {
+  const result: ReturnType<typeof normalizeCampaignReceipts> = {}
+  for (const field of ['villageCurriculum', 'villageClear'] as const) {
+    const value = input[field]
+    const timestampKey = field === 'villageCurriculum' ? 'boundAt' : 'clearedAt'
+    if (!isRecord(value) || value.version !== 1
+      || !isTrimmedIdentifier(value.rangeAssessedAt) || value.rangeAssessedAt !== journey.rangeAssessedAt
+      || !isTrimmedIdentifier(value.startedAt) || value.startedAt !== journey.startedAt) continue
+    const timestamp = value[timestampKey]
+    if (!isFiniteNonNegative(timestamp)) continue
+    const bindings = normalizeVillageBindings(value.bindings, journey, presentationOrder)
+    if (!bindings) continue
+    const identity = { version: 1 as const, rangeAssessedAt: value.rangeAssessedAt, startedAt: value.startedAt, bindings }
+    if (field === 'villageCurriculum') result.villageCurriculum = { ...identity, boundAt: timestamp }
+    else result.villageClear = { ...identity, clearedAt: timestamp }
+  }
+  for (const field of ['bellTowerClear', 'cathedralClear'] as const) {
+    const receipt = normalizePitchforksDungeonClear(input[field], journey, false)
+    if (receipt) result[field] = receipt
+  }
+  return result
 }
 
 function normalizePitchforksVillagePractice(
@@ -307,7 +404,11 @@ export function parsePitchforksPresentationJourney(
       guidedNotes: [...parsed.guidedNotes],
     }
     const dungeonClear = normalizePitchforksDungeonClear(parsed.dungeonClear, journey)
-    const withDungeonClear = dungeonClear ? { ...journey, dungeonClear } : journey
+    const withDungeonClear = {
+      ...journey,
+      ...normalizeCampaignReceipts(parsed, journey, presentationOrder),
+      ...(dungeonClear ? { dungeonClear } : {}),
+    }
     const villagePractice = normalizePitchforksVillagePractice(
       parsed.villagePractice,
       journey,

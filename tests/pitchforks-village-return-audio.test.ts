@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 const source = readFileSync(
   new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 
 let checks = 0
 const check = (run: () => void): void => {
@@ -76,9 +76,9 @@ check(() => {
 })
 
 check(() => {
-  assert.match(spark, /const unhintedUnaidedReturn = normalBellRouteAvailable\(\)[\s\S]*target\.villager\.totalTines === 1[\s\S]*support === ['"]UNAIDED_RETURN['"][\s\S]*targetNote === target\.note[\s\S]*!hintedTargetKeysRef\.current\.has\(target\.key\)/)
+  assert.match(spark, /const unhintedUnaidedReturn = normalVillageLessonAvailable\(\)[\s\S]*target\.villager\.totalTines === 1[\s\S]*support === ['"]UNAIDED_RETURN['"][\s\S]*targetNote === target\.note[\s\S]*!hintedTargetKeysRef\.current\.has\(target\.key\)/)
   assert.match(spark, /!unhintedUnaidedReturn/)
-  assert.match(spark, /stillEligible[\s\S]*!\(normalBellRouteAvailable\(\)[\s\S]*support === ['"]UNAIDED_RETURN['"][\s\S]*!hintedTargetKeysRef\.current\.has\(liveTarget\.key\)\)/)
+  assert.match(spark, /stillEligible[\s\S]*!\(normalVillageLessonAvailable\(\)[\s\S]*support === ['"]UNAIDED_RETURN['"][\s\S]*!hintedTargetKeysRef\.current\.has\(liveTarget\.key\)\)/)
   assert.match(spark, /waveNotesHeardRef\.current\.add\(liveTarget\.note\)/)
 })
 

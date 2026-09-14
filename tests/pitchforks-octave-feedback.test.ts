@@ -34,7 +34,7 @@ const listen = pitchforksTunerFeedback({
 })
 assert.equal(listen.kind, 'listen')
 
-const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8')
+const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
 assert.match(source, /const tunerTargetKeyRef = useRef\(''\)/)
 assert.match(source, /const tunerNeedsRebaseRef = useRef\(false\)/)
 assert.match(source, /if \(targetChanged\) \{[\s\S]*?pitchTrailRef\.current = \[\][\s\S]*?barDotDeviationRef\.current = null/)
@@ -42,7 +42,7 @@ assert.match(source, /smoothDevRef\.current = tunerNeedsRebaseRef\.current[\s\S]
 assert.match(source, /data-testid="pf3-tuner-feedback"/)
 assert.match(source, /aria-live="polite"/)
 assert.match(source, /matchingSuppressedUntilRef\.current = now \+ suppressMs/)
-assert.match(source, /setPromptText\(`\$\{mode === 'replay' \? 'Replay' : 'Listen'\}: \$\{liveNotes\[0\]\}`\)/)
+assert.match(source, /setPromptText\(supportedCueText\s*\? `\$\{mode === 'replay' \? 'Replay: ' : ''\}\$\{supportedCueText\}`\s*:\s*`\$\{mode === 'replay' \? 'Replay' : 'Listen'\}: \$\{liveNotes\[0\]\}`\)/)
 assert.match(source, /const finishCue = \(\) => \{[\s\S]*?if \(matchingSuppressedNow\(\)\)[\s\S]*?setTimeout\(finishCue, 25\)/)
 assert.match(source, /flushSync\(\(\) => setTunerFeedback\(view\.tuner\.feedback\)\)/)
 assert.ok(

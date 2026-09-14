@@ -42,6 +42,9 @@ import { PITCHFORKS_RANGE_NOTES } from './pitchforksRange'
 import { pitchforksMicUnreliable } from './pitchforksTunerFeedback'
 import { loadSongcraftPresets } from './pitchforksSongcraftPresets'
 import { SONGCRAFT_PRESET_CATALOG } from './pitchforksSongcraftPresetCatalog'
+import type { PitchforksMasteryProjection } from './pitchforksMasteryProjection'
+import { PitchforksTempoEncore } from './PitchforksTempoEncorePanel'
+import { canEnterTempoEncore } from './pitchforksTempoEncore'
 
 /** The only microphone surface this leaf accepts: the parent owns the hook. */
 export interface PitchforksSongcraftMicrophone {
@@ -55,6 +58,8 @@ export interface PitchforksSongcraftMicrophone {
 }
 
 export interface PitchforksSongcraftConnectorProps {
+  /** Read-only existing mastery snapshot; omission keeps Tempo Encore unavailable. */
+  readonly masteryProjection?: PitchforksMasteryProjection
   /** The parent's already-admitted comfortable-range notes, snapshotted at Begin. */
   readonly admittedNotes: readonly string[]
   /** Existing family persistence ports; the connector never grades or writes directly. */
@@ -478,6 +483,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   const [selectedKey, setSelectedKey] = useState('')
   const [lane, setLane] = useState<PitchforksSongcraftLane>('voice')
   const [practiceState, setPracticeState] = useState<SongcraftPracticeState | null>(null)
+  const [tempoEncore, setTempoEncore] = useState(false)
   const [audioBusy, setAudioBusy] = useState(false)
   const [micStartPending, setMicStartPending] = useState(false)
   const [, setUiVersion] = useState(0)
@@ -1171,7 +1177,29 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     onReturn: returnToMenu,
   }
 
-  return <PitchforksSongcraftPanel {...panelProps} />
+  if (tempoEncore && practiceState) return <PitchforksTempoEncore
+    completedPractice={practiceState}
+    masteryProjection={props.masteryProjection}
+    admittedNotes={props.admittedNotes}
+    microphone={props.microphone}
+    matchingSuppressed={props.matchingSuppressed}
+    onReturnUntimed={() => setTempoEncore(false)}
+  />
+
+  const encoreEligible = practiceState && canEnterTempoEncore(practiceState.phrase, practiceState, props.masteryProjection)
+  if (!encoreEligible) return <PitchforksSongcraftPanel {...panelProps} />
+  return <div className="fixed inset-0 overflow-y-auto bg-[#070914] [&>main]:static">
+    <PitchforksSongcraftPanel {...panelProps} />
+    {practiceState && canEnterTempoEncore(practiceState.phrase, practiceState, props.masteryProjection) && <div className="mx-auto max-w-2xl p-4 text-center">
+      <button type="button" onClick={() => {
+        if (!canEnterTempoEncore(practiceState.phrase, practiceState, propsRef.current.masteryProjection)) return
+        cancelVoiceLoop()
+        clearCueTimers()
+        clearHold()
+        setTempoEncore(true)
+      }} className="rounded-lg border border-amber-300 bg-slate-950 px-5 py-3 text-amber-100">Try optional Tempo Encore</button>
+    </div>}
+  </div>
 }
 
 export default PitchforksSongcraft

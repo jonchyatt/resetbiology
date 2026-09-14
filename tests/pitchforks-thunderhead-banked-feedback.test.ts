@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
-const source = readFileSync('src/components/PitchDefender/PitchforksIII.tsx', 'utf8')
+const source = readFileSync('src/components/PitchDefender/PitchforksIII.tsx', 'utf8').replace(/\r\n/g, '\n')
 const start = source.indexOf('    const storedThunderhead =')
 const end = source.indexOf('    return {\n      visible,', start)
 assert.ok(start > 0 && end > start)

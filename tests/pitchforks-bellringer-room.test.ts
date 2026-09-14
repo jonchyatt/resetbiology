@@ -17,7 +17,7 @@ const completeArt = {
   bellringerRest: true,
 } as const
 
-const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8')
+const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n')
 let checks = 0
 const check = (run: () => void): void => {
   run()
@@ -29,8 +29,11 @@ check(() => {
   assert.equal(PITCHFORKS_BELLRINGER_REST_SRC, '/images/pitchforks/bellringer_rest.png')
   assert.equal(isPitchforksBossId('torchmaster'), true)
   assert.equal(isPitchforksBossId('bellringer'), true)
-  assert.equal(isPitchforksBossId('choirmaster'), false)
-  assert.equal(selectPitchforksBossSequence('choirmaster', ['C4', 'A4']), null)
+  assert.equal(isPitchforksBossId('choirmaster'), true)
+  assert.equal(isPitchforksBossId('unknown-boss'), false)
+  assert.deepEqual(selectPitchforksBossSequence('choirmaster', ['C4', 'A4', 'C4', 'E4']), ['C4', 'A4', 'E4'])
+  assert.equal(selectPitchforksBossSequence('unknown-boss', ['C4', 'A4']), null)
+  assert.equal(selectPitchforksBossSequence('choirmaster', []), null)
 })
 
 check(() => {
@@ -88,7 +91,7 @@ check(() => {
   // exercised by the mounted component/browser gate, not by regex alone.
   assert.match(source, /const beginBossPreview = useCallback\(\(lane: 'voice' \| 'ear', bossId: PitchforksBossId = 'torchmaster'/)
   assert.match(source, /if \(!entry\.available \|\| !entry\.sequence\.length\) return/)
-  assert.match(source, /lane, sequence: entry\.sequence, admittedNotes: admitted/)
+  assert.match(source, /lane, sequence: practiceOnly && bossId !== 'bellringer' \? entry\.sequence : earnedWorld === 'bell-tower'[\s\S]*?: entry\.sequence,\s*admittedNotes: admitted/)
   assert.match(source, /attempt: `\$\{bossId\}:\$\{runGenerationRef\.current\}:\$\{Date\.now\(\)\}`/)
   assert.match(source, /a\.bellringerChamberPlate = await loadImage\(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC\)\.catch\(\(\) => undefined\)/)
   assert.match(source, /a\.bellringerRest = await loadImage\(PITCHFORKS_BELLRINGER_REST_SRC\)\.catch\(\(\) => undefined\)/)
@@ -98,7 +101,19 @@ check(() => {
   assert.match(source, /data-testid="pf3-bellringer-enter-ear"/)
   assert.match(source, /BELLRINGER LISTEN &amp; CHOOSE/)
   assert.match(source, /TWO-NOTE INTERVAL PRACTICE/)
-  assert.match(source, /demoRef\.current, \{[\s\S]*bellringerChamberPlate: !!assetsRef\.current\.bellringerChamberPlate/)
+  assert.match(source, /earnedWorld \? true : demoRef\.current, \{[\s\S]*bellringerChamberPlate: !!assetsRef\.current\.bellringerChamberPlate/)
+})
+
+check(() => {
+  // The existing examination-integration AST harness owns earned recital
+  // policy. Supporting practice must keep its explicit no-world-award guard.
+  const acceptStart = source.indexOf('const acceptBossResult')
+  const acceptEnd = source.indexOf('}, [savePresentationJourney])', acceptStart)
+  assert.ok(acceptStart >= 0 && acceptEnd > acceptStart)
+  const accept = source.slice(acceptStart, acceptEnd)
+  assert.match(accept, /if \(\(world === 'bell-tower' \|\| world === 'cathedral'\) && !bossPracticeOnlyRef\.current && journey && range && result\.completed && result\.outcome === 'success'\)/)
+  assert.match(source, /bossPracticeOnlyRef\.current = practiceOnly/)
+  assert.match(source, /beginBossPreview\('voice', selectedWorld === 'village-gate' \? 'torchmaster' : 'choirmaster', selectedWorld, true\)/)
 })
 
 console.log(`pitchforks Bellringer room integration: ${checks}/${checks} PASS (pure entry/sequence behavior + labeled source contract)`)

@@ -50,7 +50,7 @@ async function main() {
 const loaderSource = readFileSync(
   new URL('../src/components/PitchDefender/pitchforks3SongSequence.ts', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 const hashedLoader = loaderSource.slice(
   loaderSource.indexOf('export async function loadHashedComposedSongs'),
   loaderSource.indexOf('export interface SongSequenceState'),
@@ -62,13 +62,16 @@ check(() => assert.doesNotMatch(hashedLoader, /\.setItem\(|\.removeItem\(|\.clea
 const componentSource = readFileSync(
   new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 const proofStart = componentSource.indexOf('data-testid="pf3-composer-seed-proof"')
-const proofEnd = componentSource.indexOf('aria-label="World Map"', proofStart)
+const proofEnd = componentSource.indexOf('</section>', proofStart)
 const proofPanel = componentSource.slice(proofStart, proofEnd)
 check(() => assert.ok(proofStart > 0 && proofEnd > proofStart))
 check(() => assert.match(componentSource, /get\('composerSeedProof'\) !== '1'/))
-check(() => assert.match(componentSource, /composerSeedProofEnabled \? '' : 'sm:items-center'/))
+// The campaign menu is top-aligned for both proof and ordinary entry (see campaign-entry).
+const menuShell = componentSource.slice(componentSource.indexOf('<div data-testid="pf3-menu"'), componentSource.indexOf('{newNoteCeremonyBanner}', componentSource.indexOf('<div data-testid="pf3-menu"')))
+check(() => assert.match(menuShell, /items-start/))
+check(() => assert.doesNotMatch(menuShell, /sm:items-center/))
 check(() => assert.match(proofPanel, /READ-ONLY COMPOSER CHECK/))
 check(() => assert.match(proofPanel, /Proof only — this score does not control this run\./))
 check(() => assert.match(proofPanel, /Extracted notes:/))

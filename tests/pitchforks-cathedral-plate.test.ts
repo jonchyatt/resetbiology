@@ -31,6 +31,6 @@ assert.equal(plate.readUInt32BE(16), 240)
 assert.equal(plate.readUInt32BE(20), 135)
 assert.equal(createHash('sha256').update(plate).digest('hex'), 'c135b7ca814a2b5d7de12ef2e0cd3c899bab62730d996e2f82052b8a617abddf')
 
-assert.deepEqual(WORLD_REGISTRY.map(world => world.playable), [true, false, false, false])
+assert.deepEqual(WORLD_REGISTRY.map(world => world.playable), [true, true, true, true])
 
 console.log('Cathedral private plate selector, existing private routes, fallback, registry playability, and native asset checks PASS; runtime/browser acceptance not claimed')

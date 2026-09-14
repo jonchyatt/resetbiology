@@ -17,7 +17,7 @@ import {
 // This is a runtime-source integration check: helper plans are executable,
 // while component assertions prove the real import and dispatch seams. It does
 // not claim mounted gameplay or browser acceptance.
-const source = readFileSync(resolve(process.cwd(), 'src/components/PitchDefender/PitchforksIII.tsx'), 'utf8')
+const source = readFileSync(resolve(process.cwd(), 'src/components/PitchDefender/PitchforksIII.tsx'), 'utf8').replace(/\r\n/g, '\n')
 
 let checks = 0
 const check = (condition: boolean, message: string) => {
@@ -197,8 +197,8 @@ check(
     exactGalvanicBranch >= 0 &&
     processSource.includes('confirmGalvanicLock(target)') &&
     processSource.indexOf('confirmGalvanicLock(target)') < ordinaryCredit &&
-    processSource.includes("galvanicProofRef.current && galvanicBanksRef.current.length > 0") &&
-    processSource.includes("return\n        }\n        // A private demo arming request"),
+    processSource.includes("galvanicRouteAvailable() && galvanicBanksRef.current.length > 0") &&
+    processSource.includes("return\n        }\n        // A Thunderhead arming request"),
   're-onset samples after target-change/suppression and the armed Galvanic branch returns before ordinary credit',
 )
 check(
@@ -211,13 +211,13 @@ check(
   getActiveTargetSource.includes('const candidates = liveGalvanicTargets') &&
     getActiveTargetSource.includes('return candidates.find(target => !bankedKeys.has(target.key)) ?? null') &&
     !getActiveTargetSource.includes('length >= GALVANIC_BANK_CAPACITY) return null') &&
-    processSource.includes('if (galvanicProofRef.current && galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY)') &&
+    processSource.includes('if (galvanicRouteAvailable() && galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY)') &&
     processSource.includes('this frame cannot mint a third'),
   'full-bank processing keeps an upstream next unbanked live target for real source/re-onset sampling while blocking third and ordinary credit',
 )
 
 const proofControlsSource = source.slice(
-  source.indexOf('const galvanicProof = demoMode && galvanicProofRef.current'),
+  source.indexOf('const galvanicAvailable = galvanicRouteAvailable()'),
   source.indexOf('const rainPhaseCopy = rainState.phase'),
 )
 const closeSmashArmSource = source.slice(
@@ -242,14 +242,14 @@ const galvanicReleaseSource = source.slice(
 )
 check(
   proofControlsSource.includes('const thunderheadArmDisabled =') &&
-    proofControlsSource.includes('!thunderheadArmReady || galvanicProof') &&
-    thunderheadArmSource.includes('galvanicProofRef.current') &&
+    proofControlsSource.includes('!thunderheadArmReady || galvanicBusy') &&
+    thunderheadArmSource.includes('galvanicOwnsInput()') &&
     galvanicArmSource.includes('thunderheadArmPending') &&
     galvanicArmSource.includes('thunderheadArmRequestedRef.current') &&
     galvanicReleaseSource.includes('thunderheadArmRequestedRef.current') &&
-    closeSmashArmSource.includes('galvanicProofRef.current') &&
-    closeSmashRequestSource.includes('galvanicProofRef.current'),
-  'private Galvanic ownership disables the competing Thunderhead affordance and rejects both pending Thunderhead and Close Smash handler paths',
+    closeSmashArmSource.includes('galvanicOwnsInput()') &&
+    closeSmashRequestSource.includes('galvanicOwnsInput()'),
+  'active Galvanic ownership disables the competing Thunderhead affordance and rejects both pending Thunderhead and Close Smash handler paths',
 )
 
 check(
@@ -328,11 +328,11 @@ check(
   source.includes('data-testid="pf3-galvanic-bank"') &&
     source.includes('data-testid="pf3-galvanic-release"') &&
     source.includes('data-testid="pf3-galvanic-cancel"') &&
-    source.includes('{galvanicProof && <section') &&
+    source.includes('{galvanicAvailable && <section') &&
     source.includes('galvanicProjection.bankCount === 1') &&
     source.includes('2 BANKS') &&
     source.includes('bank.note'),
-  'proof-only controls are readable, focusable, touch-sized, and label one/two exact bank notes',
+  'earned-route or explicit proof controls are readable, focusable, touch-sized, and label one/two exact bank notes',
 )
 
 check(

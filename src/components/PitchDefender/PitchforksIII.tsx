@@ -5,8 +5,9 @@ import { flushSync } from 'react-dom'
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
 import PitchforksMasteryPanel from './PitchforksMasteryPanel'
+import PitchforksCampaignJournal from './PitchforksCampaignJournal'
 import PitchforksSongcraft, { observePitchforksSongcraftGeneration, type PitchforksSongcraftGenerationState } from './PitchforksSongcraft'
-import { advancePitchforksCampaignProgress } from './pitchforksCampaignProgress'
+import { advancePitchforksCampaignProgress, bindPitchforksVillageCurriculum, advancePitchforksVillageProgress, advancePitchforksExaminationProgress, projectPitchforksWorldGates } from './pitchforksCampaignProgress'
 import { projectPitchforksMastery } from './pitchforksMasteryProjection'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 import { createPitchforksMicrophoneOwner, type PitchforksMicrophoneOwner } from './pitchforksMicrophoneOwner'
@@ -60,7 +61,7 @@ import { INTRO_ORDER } from './types'
 import { selectPitchforksChargePose } from './pitchforksChargePose'
 import { drawStormHeart, selectStormHeartState } from './pitchforksStormHeart'
 import { getPitchforksThunderheadPathPosition, getPitchforksThunderheadCaptionRect, PITCHFORKS_THUNDERHEAD_CLEAR_LANE_Y } from './pitchforksThunderheadPath'
-import { WORLD_REGISTRY } from './pitchforks3WorldRegistry'
+import { WORLD_REGISTRY, isWorldUnlocked, isBossAvailable, type WorldId } from './pitchforks3WorldRegistry'
 import {
   PITCHFORKS_RANGE_NOTES,
   PITCHFORKS_RANGE_PROFILE_KEY,
@@ -256,7 +257,7 @@ const CUE_SUPPORT_KEY = 'pitchforks3_cue_support_v1'
 const CUE_SUPPORT_DEBUG_KEY = 'pitchforks3_cue_support_debug_v1'
 const STARTING_NOTES = [INTRO_ORDER[0], INTRO_ORDER[1]]
 
-export type PitchforksBossId = 'torchmaster' | 'bellringer'
+export type PitchforksBossId = 'torchmaster' | 'bellringer' | 'choirmaster'
 
 export type PitchforksBossEntryAssets = Readonly<{
   torchmasterChamberPlate: boolean
@@ -275,7 +276,7 @@ export type PitchforksBossEntryStatus = Readonly<{
 }>
 
 export function isPitchforksBossId(value: unknown): value is PitchforksBossId {
-  return value === 'torchmaster' || value === 'bellringer'
+  return value === 'torchmaster' || value === 'bellringer' || value === 'choirmaster'
 }
 
 /** Preserve literal note identity and admitted order; no octave folding or transposition. */
@@ -292,7 +293,7 @@ export function distinctPitchforksAdmittedNotes(admittedNotes: readonly string[]
 export function selectPitchforksBossSequence(bossId: unknown, admittedNotes: readonly string[]): readonly string[] | null {
   if (!isPitchforksBossId(bossId) || !Array.isArray(admittedNotes)) return null
   const snapshot = [...admittedNotes]
-  const sequence = bossId === 'bellringer'
+  const sequence = bossId === 'choirmaster' ? distinctPitchforksAdmittedNotes(snapshot).slice(0, 3) : bossId === 'bellringer'
     ? distinctPitchforksAdmittedNotes(snapshot).slice(0, 2)
     : snapshot.slice(0, 2)
   return sequence.length > 0 ? Object.freeze(sequence) : null
@@ -515,7 +516,8 @@ const CLOSE_SMASH_RECOIL_RADIUS_Y = 84
 // used as the deterministic energy origin for the contact-only presentation.
 const CLOSE_SMASH_HANDS_X = 68
 const CLOSE_SMASH_HANDS_Y = 88
-// Thunderhead is a private demo-only receipt. The cloud uses the existing
+// Thunderhead shares one receipt lifecycle between demo and earned Village-clear
+// access. Rune naming remains unresolved. The cloud uses the existing
 // Storm Heart envelope and deterministic circuit renderer; no new asset or
 // timer engine is introduced.
 const THUNDERHEAD_CEILING_Y = PITCHFORKS_THUNDERHEAD_CLEAR_LANE_Y
@@ -745,7 +747,7 @@ interface ForkMeta {
   tine_tips: Array<{ x: number; y: number }>
 }
 
-type PitchforksNormalWorld = 'dungeon' | 'village-gate'
+type PitchforksNormalWorld = WorldId
 type VillageGateAssetStatus = 'loading' | 'ready' | 'missing'
 
 interface Assets {
@@ -755,6 +757,8 @@ interface Assets {
   bellBackdrop?: HTMLImageElement
   gargoyleSpout?: HTMLImageElement
   rainCloud?: HTMLImageElement
+  bellTowerPlate?: HTMLImageElement
+  cathedralPlate?: HTMLImageElement
   villageGatePlate?: HTMLImageElement
   privatePlate?: HTMLImageElement
   torchmasterChamberPlate?: HTMLImageElement
@@ -3667,6 +3671,10 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     // Only the explicit demo art-proof route loads this candidate plate.
     ctx.imageSmoothingEnabled = false
     ctx.drawImage(assets.privatePlate, 0, 0, W, H)
+  } else if (view.normalWorld === 'bell-tower' && assets.bellTowerPlate) {
+    ctx.drawImage(assets.bellTowerPlate, 0, 0, W, H)
+  } else if (view.normalWorld === 'cathedral' && assets.cathedralPlate) {
+    ctx.drawImage(assets.cathedralPlate, 0, 0, W, H)
   } else if (view.normalWorld === 'village-gate' && assets.villageGatePlate) {
     ctx.imageSmoothingEnabled = false
     ctx.drawImage(assets.villageGatePlate, 0, 0, W, H)
@@ -4014,14 +4022,14 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | '
 
 function renderBossChamber(
   ctx: CanvasRenderingContext2D, assets: Assets, state: PitchforksBossRecitalState,
-  progress: number, clock: number, reducedMotion: boolean, bossId: PitchforksBossId = 'torchmaster',
+  progress: number, clock: number, reducedMotion: boolean, bossId: PitchforksBossId = 'torchmaster', campaignWorld: WorldId | null = null,
 ) {
   ctx.save()
   ctx.setTransform(1, 0, 0, 1, 0, 0)
   ctx.imageSmoothingEnabled = false
   ctx.fillStyle = '#070914'
   ctx.fillRect(0, 0, W, H)
-  const chamberPlate = bossId === 'bellringer' ? assets.bellringerChamberPlate : assets.torchmasterChamberPlate
+  const chamberPlate = bossId !== 'torchmaster' ? assets.bellringerChamberPlate : assets.torchmasterChamberPlate
   if (chamberPlate) ctx.drawImage(chamberPlate, 0, 0, W, H)
   const fm = assets.frankMeta
   if (bossId === 'bellringer') {
@@ -4048,6 +4056,23 @@ function renderBossChamber(
     drawStormHeart(ctx, selectStormHeartState({ listening: progress === 0, chargeProgress: progress, hasBolt: false, spent: false }), cloudX, FRANK_CLOUD_Y, assets.stormHeart)
     if (progress > 0) drawCircuitLeg(ctx, cloudX, FRANK_CLOUD_Y, rodX, rodY, progress, 71, Math.floor(progress * 20), 0.6, false, false, reducedMotion)
   }
+  if (bossId === 'choirmaster' || bossId === 'torchmaster') {
+    const actor = assets.walkLeft[1]
+    const meta = assets.villagerMeta[1]
+    if (actor && meta) {
+      const count = bossId === 'choirmaster' ? 3 : 1
+      for (let index = 0; index < count; index += 1) {
+        const x = 465 + index * 65
+        ctx.drawImage(actor, 0, 0, meta.frame_w, meta.frame_h, x, GROUND_Y - meta.frame_h * SPRITE_SCALE, meta.frame_w * SPRITE_SCALE, meta.frame_h * SPRITE_SCALE)
+        if (bossId === 'torchmaster') {
+          ctx.save()
+          ctx.translate(x + 42 - DUNGEON_TORCHES[0].x, GROUND_Y - meta.frame_h * SPRITE_SCALE + 35 - DUNGEON_TORCHES[0].y)
+          drawDungeonTorchFixture(ctx, DUNGEON_TORCHES[0], reducedMotion ? 0 : clock)
+          ctx.restore()
+        }
+      }
+    }
+  }
   ctx.textAlign = 'center'
   ctx.fillStyle = '#09111bea'
   ctx.fillRect(235, 35, 250, 118)
@@ -4056,7 +4081,7 @@ function renderBossChamber(
   ctx.fillStyle = '#e5f7ed'
   ctx.font = bossId === 'bellringer' ? 'bold 13px monospace' : 'bold 18px monospace'
   ctx.fillText(
-    state.status === 'complete'
+    campaignWorld ? state.status === 'complete' ? 'RECITAL COMPLETE' : bossId === 'choirmaster' ? 'THE CHOIR ANSWERS' : bossId === 'torchmaster' ? 'THE TORCHMASTER' : campaignWorld === 'cathedral' ? 'THE FINAL STORM' : 'THE BELLRINGER RECITAL' : state.status === 'complete'
       ? bossId === 'bellringer' ? 'BELLRINGER PRACTICE COMPLETE' : 'PRACTICE COMPLETE'
       : bossId === 'bellringer' ? 'TWO-NOTE INTERVAL PRACTICE' : 'ONE NOTE. YOUR TIME.',
     W / 2,
@@ -4073,6 +4098,9 @@ function renderBossChamber(
 }
 
 export default function PitchforksIII() {
+  const bossWorldRef = useRef<WorldId | null>(null)
+  const bossPracticeOnlyRef = useRef(false)
+  const bossPitchGenerationRef = useRef<PitchforksSongcraftGenerationState>({ lastGeneration: null, generationObserved: false, generationObservedAt: 0 })
   const bossControllerRef = useRef<PitchforksBossRecitalController | null>(null)
   const bossIdentityRef = useRef<PitchforksBossId | null>(null)
   const bossReceiptsRef = useRef<PitchforksBossRecitalReceipt[]>([])
@@ -4698,7 +4726,7 @@ export default function PitchforksIII() {
     const rangeProfile = rangeProfileRef.current
     if (!rangeProfile) return
 
-    const result = advancePitchforksCampaignProgress({
+    const dungeonResult = advancePitchforksCampaignProgress({
       journey,
       rangeAssessedAt: rangeProfile.assessedAt,
       startedAt: journey.startedAt,
@@ -4708,6 +4736,13 @@ export default function PitchforksIII() {
       masteryRecords: masteryProgressRef.current,
       nowMs: Date.now(),
     })
+    const villageResult = advancePitchforksVillageProgress({
+      journey: dungeonResult.journey, rangeAssessedAt: rangeProfile.assessedAt,
+      startedAt: journey.startedAt, demo: false, simulated: false,
+      normalVoice: inputModeRef.current === 'voice', comfortableRange: rangeProfile,
+      voiceMemory: fsrsRef.current, masteryRecords: masteryProgressRef.current, nowMs: Date.now(),
+    })
+    const result = villageResult.changed ? villageResult : dungeonResult
     if (!result.changed) return
 
     // Keep the receipt live even when persistence is unavailable; the existing
@@ -4742,7 +4777,9 @@ export default function PitchforksIII() {
   const savePresentationJourneyNotes = useCallback((notes: readonly string[]) => {
     const current = presentationJourneyRef.current
     if (!current) return
-    const next = { ...current, unlockedNotes: [...notes] }
+    const expanded = { ...current, unlockedNotes: [...notes] }
+    const next = current.villageCurriculum && rangeProfileRef.current
+      ? bindPitchforksVillageCurriculum(expanded, rangeProfileRef.current, Date.now()) : expanded
     presentationJourneyRef.current = next
     setPresentationJourney(next)
     savePresentationJourney(next)
@@ -4975,6 +5012,11 @@ export default function PitchforksIII() {
           a.villageGatePlate = await loadImage(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC).catch(() => undefined)
           if (!cancelled) setVillageGateAssetStatus(a.villageGatePlate ? 'ready' : 'missing')
         }
+        a.bellTowerPlate = await loadImage(`${ASSET_BASE}/bell_tower_plate.png`).catch(() => undefined)
+        a.cathedralPlate = await loadImage(`${ASSET_BASE}/cathedral_plate.png`).catch(() => undefined)
+        a.bellringerChamberPlate = await loadImage(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC).catch(() => undefined)
+        a.bellringerRest = await loadImage(PITCHFORKS_BELLRINGER_REST_SRC).catch(() => undefined)
+        a.torchmasterChamberPlate = await loadImage(`${ASSET_BASE}/torchmaster_chamber_plate.png`).catch(() => undefined)
         const artProof = new URLSearchParams(window.location.search)
         if (artProof.get('demo') === '1') {
           a.torchmasterChamberPlate = await loadImage(`${ASSET_BASE}/torchmaster_chamber_plate.png`).catch(() => undefined)
@@ -5094,14 +5136,25 @@ export default function PitchforksIII() {
   }, [])
 
   const selectNormalWorld = useCallback((world: PitchforksNormalWorld) => {
-    if (
-      world === 'village-gate' &&
-      (demoRef.current || fsrsDebugRef.current || !presentationJourneyRef.current?.dungeonClear || villageGateAssetStatus !== 'ready' || !assetsRef.current.villageGatePlate)
-    ) return
+    const journey = presentationJourneyRef.current
+    if (world !== 'dungeon' && (demoRef.current || fsrsDebugRef.current || !journey
+      || !isWorldUnlocked(world, projectPitchforksWorldGates(journey)))) return
+    if (world === 'village-gate' && !assetsRef.current.villageGatePlate) return
+    if (world === 'bell-tower' && !assetsRef.current.bellTowerPlate) return
+    if (world === 'cathedral' && !assetsRef.current.cathedralPlate) return
+    if (world === 'village-gate' && journey && rangeProfileRef.current) {
+      const bound = bindPitchforksVillageCurriculum(journey, rangeProfileRef.current, Date.now())
+      if (bound !== journey) {
+        presentationJourneyRef.current = bound
+        setPresentationJourney(bound)
+        savePresentationJourney(bound)
+      }
+      reconcileCampaignProgress(bound)
+    }
     if (world !== 'village-gate') resetNormalBellPowerForRun(false)
     selectedWorldRef.current = world
     setSelectedWorld(world)
-  }, [resetNormalBellPowerForRun, villageGateAssetStatus])
+  }, [resetNormalBellPowerForRun, savePresentationJourney, reconcileCampaignProgress])
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -5215,6 +5268,33 @@ export default function PitchforksIII() {
     }
   }, [])
 
+  const normalThunderheadRouteAvailable = useCallback(() => (
+    !demoRef.current && !fsrsDebugRef.current && !bossSimulatingRef.current &&
+    !!presentationJourneyRef.current &&
+    isWorldUnlocked('bell-tower', projectPitchforksWorldGates(presentationJourneyRef.current))
+  ), [])
+
+  const normalGalvanicRouteAvailable = useCallback(() => (
+    !demoRef.current && !fsrsDebugRef.current && !bossSimulatingRef.current &&
+    !!presentationJourneyRef.current &&
+    isWorldUnlocked('cathedral', projectPitchforksWorldGates(presentationJourneyRef.current))
+  ), [])
+
+  const thunderheadRouteAvailable = useCallback(() => (
+    demoRef.current || normalThunderheadRouteAvailable()
+  ), [normalThunderheadRouteAvailable])
+
+  const galvanicRouteAvailable = useCallback(() => (
+    galvanicProofRef.current || normalGalvanicRouteAvailable()
+  ), [normalGalvanicRouteAvailable])
+
+  // Entitlement alone does not own the input: other earned powers still work.
+  const galvanicOwnsInput = useCallback(() => (
+    galvanicProofRef.current || galvanicArmRequestedRef.current ||
+    galvanicReleaseRequestedRef.current || galvanicBanksRef.current.length > 0 ||
+    galvanicAwaitingSilenceRef.current
+  ), [])
+
   const publishGalvanicProjection = useCallback(() => {
     setGalvanicProjection(buildGalvanicDebugProjection(
       galvanicProofRef.current,
@@ -5295,7 +5375,7 @@ export default function PitchforksIII() {
       const receipt = thunderheadState.receipt ?? thunderheadState.bank
       return receipt ? activeTargetForThunderheadReceipt(runtimeRef.current.villagers, receipt) : null
     }
-    if (galvanicProofRef.current) {
+    if (galvanicOwnsInput()) {
       if (galvanicReleaseRequestedRef.current) return null
       const candidates = liveGalvanicTargets(runtimeRef.current.villagers)
       if (galvanicArmRequestedRef.current) {
@@ -5310,7 +5390,7 @@ export default function PitchforksIII() {
     const villager = getActiveVillager()
     if (!villager) return null
     return activeTargetFromLiveVillager(villager)
-  }, [getActiveVillager])
+  }, [galvanicOwnsInput, getActiveVillager])
 
   const syncRainSnapshot = useCallback((next: RainState) => {
     const active = getActiveTarget()
@@ -5344,7 +5424,7 @@ export default function PitchforksIII() {
     // owned by processLock; this callback only packages its immutable receipt.
     const existingCloseBoundaryEligible = target.villager.x <= FRANK_REACH_X + 0.5
     if (
-      galvanicProofRef.current ||
+      galvanicOwnsInput() ||
       bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
       bellArmRequestedRef.current ||
       bellChargeReceiptRef.current !== null ||
@@ -5373,7 +5453,7 @@ export default function PitchforksIII() {
     if (demoRef.current) demoStepRef.current = 'close-smash-ready-showcase'
     setPromptText(`CLOSE SMASH READY · ${target.note}`)
     return true
-  }, [commitCloseSmashState, getActiveTarget, setPromptText])
+  }, [commitCloseSmashState, galvanicOwnsInput, getActiveTarget, setPromptText])
 
   const setActiveCueContextSnapshot = useCallback((next: ActiveCueContext) => {
     const current = activeCueContextRef.current
@@ -5529,9 +5609,14 @@ export default function PitchforksIII() {
     !demoRef.current &&
     !fsrsDebugRef.current &&
     !bossSimulatingRef.current &&
-    selectedWorldRef.current === 'village-gate' &&
-    presentationJourneyRef.current?.dungeonClear !== undefined
+    (selectedWorldRef.current === 'village-gate' || selectedWorldRef.current === 'bell-tower' || selectedWorldRef.current === 'cathedral') &&
+    presentationJourneyRef.current?.dungeonClear !== undefined &&
+    isWorldUnlocked(selectedWorldRef.current, projectPitchforksWorldGates(presentationJourneyRef.current))
   ), [])
+
+  const normalVillageLessonAvailable = useCallback(() => (
+    selectedWorldRef.current === 'village-gate' && normalBellRouteAvailable()
+  ), [normalBellRouteAvailable])
 
   const updateSparkGuide = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
@@ -5542,7 +5627,7 @@ export default function PitchforksIII() {
     const suppressed = cuePlaying || matchingSuppressedNow()
     const usable = !!source?.isActive && source.confidence >= CONFIDENCE_FLOOR && source.frequency > 0
     const inWindow = usable && Math.abs(exactCents(source.frequency, noteToFreq(target.note))) <= MATCH_TOLERANCE_CENTS
-    const unhintedUnaidedReturn = normalBellRouteAvailable() &&
+    const unhintedUnaidedReturn = normalVillageLessonAvailable() &&
       inputModeRef.current === 'voice' &&
       target.villager.totalTines === 1 &&
       target.villager.supportedLesson?.support === 'UNAIDED_RETURN' &&
@@ -5605,7 +5690,7 @@ export default function PitchforksIII() {
       activeCueContextRef.current.noteCount === 1 &&
       audioCueRef.current &&
       cueVolumeRef.current > 0 &&
-      !(normalBellRouteAvailable() &&
+      !(normalVillageLessonAvailable() &&
         liveTarget.villager.totalTines === 1 &&
         liveTarget.villager.supportedLesson?.support === 'UNAIDED_RETURN' &&
         liveTarget.villager.supportedLesson.contextNote !== liveTarget.note &&
@@ -5644,7 +5729,7 @@ export default function PitchforksIII() {
     if (decision.state.autoPulseCount >= PITCHFORKS_SPARK_MAX_AUTO_PULSES) {
       recordSparkGuideEvent('capped', 'automatic-limit-after-pulse')
     }
-  }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, normalBellRouteAvailable, presentMusicalPrompt, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText, syncSparkGuideStatus])
+  }, [normalVillageLessonAvailable, cuePlayingNow, getActiveTarget, matchingSuppressedNow, normalBellRouteAvailable, presentMusicalPrompt, recordSparkGuideEvent, setFirstMinuteCoachSnapshot, setPromptText, syncSparkGuideStatus])
 
   const resetRangeMatch = useCallback((candidate: string | null = null) => {
     rangeHeldMsRef.current = 0
@@ -6114,7 +6199,7 @@ export default function PitchforksIII() {
     const latencyMs = latencyForTarget(target)
     const support = cueSupportByTargetRef.current.get(target.key) ?? 'guided'
     const hinted = hintedTargetKeysRef.current.has(target.key)
-    const supportedVillageLesson = normalBellRouteAvailable() &&
+    const supportedVillageLesson = normalVillageLessonAvailable() &&
       lane === 'voice' &&
       target.villager.totalTines === 1 &&
       target.villager.supportedLesson?.targetNote === target.note
@@ -6213,7 +6298,7 @@ export default function PitchforksIII() {
             targetNote: supportedVillageLesson.targetNote,
             support: earnedUnaided ? 'UNAIDED_RETURN' : 'SUPPORTED',
             correct,
-            normalVoice: normalBellRouteAvailable() && lane === 'voice',
+            normalVoice: normalVillageLessonAvailable() && lane === 'voice',
             demo: demoRef.current,
             simulated: bossSimulatingRef.current,
             cueFree: earnedUnaided,
@@ -6228,6 +6313,7 @@ export default function PitchforksIII() {
             presentationJourneyRef.current = nextJourney
             setPresentationJourney(nextJourney)
             savePresentationJourney(nextJourney)
+            reconcileCampaignProgress(nextJourney)
           }
         }
         waveNotesSungRef.current.add(target.note)
@@ -6277,7 +6363,7 @@ export default function PitchforksIII() {
       if (lane === 'voice') acceptNormalBellCombatResponse(target) // Rain connector
     }
     return true
-  }, [acceptNormalBellCombatResponse, completeJourneyGuidanceForNote, getActiveTarget, getMasterySessionId, latencyForTarget, matchingSuppressedNow, normalBellRouteAvailable, recordMasteryProgressForReview, reconcileCampaignProgress, saveCueSupport, saveFsrs, savePresentationJourney])
+  }, [normalVillageLessonAvailable, acceptNormalBellCombatResponse, completeJourneyGuidanceForNote, getActiveTarget, getMasterySessionId, latencyForTarget, matchingSuppressedNow, normalBellRouteAvailable, recordMasteryProgressForReview, reconcileCampaignProgress, saveCueSupport, saveFsrs, savePresentationJourney])
 
   const playVillagerSequence = useCallback((villager: Villager, mode: 'cue' | 'replay') => {
     if (!villager.notes.length) return
@@ -6285,7 +6371,7 @@ export default function PitchforksIII() {
     clearCueTimers()
     const liveNotes = villager.notes.slice(villager.burned)
     if (!liveNotes.length) return
-    const supportedLesson = normalBellRouteAvailable() &&
+    const supportedLesson = normalVillageLessonAvailable() &&
       inputModeRef.current === 'voice' &&
       villager.totalTines === 1 &&
       liveNotes.length === 1 &&
@@ -6454,7 +6540,7 @@ export default function PitchforksIII() {
     }
     const doneId = setTimeout(finishCue, suppressMs)
     cueTimeoutsRef.current.push(doneId)
-  }, [clearCueTimers, cuePlayingNow, getActiveTarget, matchingSuppressedNow, normalBellRouteAvailable, presentMusicalPrompt, recordSparkGuideEvent, setPromptText, strikePresentationPending])
+  }, [clearCueTimers, cuePlayingNow, getActiveTarget, matchingSuppressedNow, normalVillageLessonAvailable, presentMusicalPrompt, recordSparkGuideEvent, setPromptText, strikePresentationPending])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -6851,7 +6937,7 @@ export default function PitchforksIII() {
     const encounterIndex = presentationVisitCountByTargetRef.current.get(targetNote) ?? 0
     const range = rangeProfileRef.current
     const journey = presentationJourneyRef.current
-    const supportedLesson = normalBellRouteAvailable() &&
+    const supportedLesson = normalVillageLessonAvailable() &&
       inputModeRef.current === 'voice' &&
       totalTines === 1 &&
       !!range &&
@@ -6951,7 +7037,7 @@ export default function PitchforksIII() {
     }
     if (rt.firstVillagerId === null) rt.firstVillagerId = v.id
     rt.spawned += 1
-  }, [ensureActiveNoteMemory, normalBellRouteAvailable, pickVillagerNotes])
+  }, [normalVillageLessonAvailable, ensureActiveNoteMemory, normalBellRouteAvailable, pickVillagerNotes])
 
   const startWave = useCallback((wave: number) => {
     const rt = runtimeRef.current
@@ -7154,7 +7240,7 @@ export default function PitchforksIII() {
     logicalNowMs: number,
   ) => {
     if (
-      !demoRef.current ||
+      !thunderheadRouteAvailable() ||
       inputModeRef.current !== 'voice' ||
       !thunderheadArmRequestedRef.current ||
       (thunderheadStateRef.current.phase !== 'idle' && thunderheadStateRef.current.phase !== 'consumed')
@@ -7212,13 +7298,13 @@ export default function PitchforksIII() {
     if (demoRef.current) demoStepRef.current = 'thunderhead-banked'
     setPromptText(`THUNDERHEAD BANKED · ${target.note}`)
     return true
-  }, [resetThunderhead, setPromptText, transitionThunderhead])
+  }, [thunderheadRouteAvailable, resetThunderhead, setPromptText, transitionThunderhead])
 
   const confirmGalvanicLock = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
   ) => {
     if (
-      !galvanicProofRef.current ||
+      !galvanicRouteAvailable() ||
       phaseRef.current !== 'playing' ||
       inputModeRef.current !== 'voice' ||
       !galvanicArmRequestedRef.current ||
@@ -7262,7 +7348,7 @@ export default function PitchforksIII() {
     publishGalvanicProjection()
     setPromptText(`GALVANIC BANKED · ${receipt.note} · ${galvanicBanksRef.current.length}/${GALVANIC_BANK_CAPACITY}`)
     return true
-  }, [matchingSuppressedNow, publishGalvanicProjection, setPromptText])
+  }, [galvanicRouteAvailable, matchingSuppressedNow, publishGalvanicProjection, setPromptText])
 
   const confirmBellCharge = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
@@ -7703,13 +7789,13 @@ export default function PitchforksIII() {
   }, [])
 
   const cancelGalvanic = useCallback((reason: string = 'cancelled') => {
-    if (!galvanicProofRef.current) return
+    if (!galvanicRouteAvailable()) return
     resetGalvanic(false)
     galvanicLastReasonRef.current = reason
     publishGalvanicProjection()
     if (demoRef.current) demoStepRef.current = 'galvanic-cancelled'
     setPromptText(`GALVANIC CANCELLED · ${reason}`)
-  }, [publishGalvanicProjection, resetGalvanic, setPromptText])
+  }, [galvanicRouteAvailable, publishGalvanicProjection, resetGalvanic, setPromptText])
 
   const cancelThunderhead = useCallback((reason: PitchforksThunderheadTransitionReason) => {
     resetThunderhead()
@@ -7720,7 +7806,7 @@ export default function PitchforksIII() {
 
   const advanceThunderheadLifecycle = useCallback((logicalNowMs: number, paused: boolean) => {
     const current = thunderheadStateRef.current
-    if (!demoRef.current || inputModeRef.current !== 'voice') {
+    if (!thunderheadRouteAvailable() || inputModeRef.current !== 'voice') {
       if (current.phase !== 'idle' && current.phase !== 'consumed') resetThunderhead()
       return
     }
@@ -7820,7 +7906,7 @@ export default function PitchforksIII() {
     }
     if (demoRef.current) demoStepRef.current = 'thunderhead-consumed'
     setPromptText(`THUNDERHEAD CONSUMED · ${strike.intent.note}`)
-  }, [cancelThunderhead, getActiveTarget, resetThunderhead, setPromptText, strikeActiveTine, transitionThunderhead])
+  }, [thunderheadRouteAvailable, cancelThunderhead, getActiveTarget, resetThunderhead, setPromptText, strikeActiveTine, transitionThunderhead])
 
   const arbitrateCloseSmash = useCallback((logicalNowMs: number) => {
     const current = closeSmashStateRef.current
@@ -7946,7 +8032,7 @@ export default function PitchforksIII() {
     const state = closeSmashStateRef.current
     const target = getActiveTarget()
     if (
-      galvanicProofRef.current ||
+      galvanicOwnsInput() ||
       bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
       bellArmRequestedRef.current ||
       bellChargeReceiptRef.current !== null ||
@@ -7965,13 +8051,15 @@ export default function PitchforksIII() {
       targetKey: state.receipt.targetKey,
       requestedAtMs: performance.now(),
     })
-  }, [getActiveTarget])
+  }, [galvanicOwnsInput, getActiveTarget])
 
   const requestThunderheadArm = useCallback(() => {
     const state = thunderheadStateRef.current
     if (
-      !demoRef.current ||
-      galvanicProofRef.current ||
+      !thunderheadRouteAvailable() ||
+      galvanicOwnsInput() ||
+      bellPowerStateRef.current?.phase === 'activating' ||
+      bellPowerStateRef.current?.phase === 'pending' ||
       bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
       bellArmRequestedRef.current ||
       bellChargeReceiptRef.current !== null ||
@@ -7983,13 +8071,15 @@ export default function PitchforksIII() {
     thunderheadArmRequestedRef.current = true
     if (demoRef.current) demoStepRef.current = 'thunderhead-armed'
     setPromptText('THUNDERHEAD ARMED · HOLD THE EXACT NOTE')
-  }, [setPromptText])
+  }, [galvanicOwnsInput, thunderheadRouteAvailable, setPromptText])
 
   const requestThunderheadRelease = useCallback(() => {
     const state = thunderheadStateRef.current
     if (
-      !demoRef.current ||
-      galvanicProofRef.current ||
+      !thunderheadRouteAvailable() ||
+      galvanicOwnsInput() ||
+      bellPowerStateRef.current?.phase === 'activating' ||
+      bellPowerStateRef.current?.phase === 'pending' ||
       bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
       bellArmRequestedRef.current ||
       bellChargeReceiptRef.current !== null ||
@@ -8002,14 +8092,14 @@ export default function PitchforksIII() {
     thunderheadReleaseRequestedRef.current = true
     if (demoRef.current) demoStepRef.current = 'thunderhead-release-queued'
     setPromptText(`THUNDERHEAD RELEASE QUEUED · ${state.bank.note}`)
-  }, [setPromptText])
+  }, [galvanicOwnsInput, thunderheadRouteAvailable, setPromptText])
 
   const requestGalvanicArm = useCallback(() => {
     const target = getActiveTarget()
     const thunderheadBusy = thunderheadStateRef.current.phase !== 'idle' && thunderheadStateRef.current.phase !== 'consumed'
     const thunderheadArmPending = thunderheadArmRequestedRef.current
     if (
-      !galvanicProofRef.current ||
+      !galvanicRouteAvailable() ||
       bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
       bellArmRequestedRef.current ||
       bellChargeReceiptRef.current !== null ||
@@ -8040,11 +8130,11 @@ export default function PitchforksIII() {
     if (demoRef.current) demoStepRef.current = 'galvanic-armed'
     publishGalvanicProjection()
     setPromptText(`GALVANIC ARMED · HOLD ${target.note} FOR ${HOLD_MS} MS`)
-  }, [cuePlayingNow, getActiveTarget, matchingSuppressedNow, publishGalvanicProjection, setPromptText, strikePresentationPending])
+  }, [galvanicRouteAvailable, cuePlayingNow, getActiveTarget, matchingSuppressedNow, publishGalvanicProjection, setPromptText, strikePresentationPending])
 
   const requestGalvanicRelease = useCallback(() => {
     if (
-      !galvanicProofRef.current ||
+      !galvanicRouteAvailable() ||
       bellWaveStateRef.current.phase !== 'idle' && bellWaveStateRef.current.phase !== 'finished' ||
       bellArmRequestedRef.current ||
       bellChargeReceiptRef.current !== null ||
@@ -8064,10 +8154,10 @@ export default function PitchforksIII() {
     if (demoRef.current) demoStepRef.current = 'galvanic-release-queued'
     publishGalvanicProjection()
     setPromptText(`GALVANIC RELEASE QUEUED · ${galvanicBanksRef.current.length} BANK${galvanicBanksRef.current.length === 1 ? '' : 'S'}`)
-  }, [publishGalvanicProjection, setPromptText, strikePresentationPending])
+  }, [galvanicRouteAvailable, publishGalvanicProjection, setPromptText, strikePresentationPending])
 
   const advanceGalvanicRelease = useCallback((logicalNowMs: number) => {
-    if (!galvanicProofRef.current || inputModeRef.current !== 'voice') {
+    if (!galvanicRouteAvailable() || inputModeRef.current !== 'voice') {
       galvanicReleaseRequestedRef.current = false
       return
     }
@@ -8147,7 +8237,7 @@ export default function PitchforksIII() {
       }
     }
     if (recoilPresented) localSfx('recoil', sfxVolumeRef.current)
-  }, [publishGalvanicProjection, resetGalvanic, setPromptText, strikeActiveTine])
+  }, [galvanicRouteAvailable, publishGalvanicProjection, resetGalvanic, setPromptText, strikeActiveTine])
 
   const answerWithButton = useCallback((answeredNote: string) => {
     if (phaseRef.current !== 'playing' || inputModeRef.current !== 'buttons') return
@@ -8543,8 +8633,8 @@ export default function PitchforksIII() {
       return
     }
 
-    if (galvanicProofRef.current && galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY) {
-      // Capacity is a hard private-proof boundary. The upstream target remains
+    if (galvanicRouteAvailable() && galvanicBanksRef.current.length >= GALVANIC_BANK_CAPACITY) {
+      // Capacity is a hard bank boundary. The upstream target remains
       // available for source observation, but this frame cannot mint a third
       // Galvanic bank or fall through to ordinary/Close Smash credit.
       lockHeldMsRef.current = 0
@@ -8554,11 +8644,11 @@ export default function PitchforksIII() {
       return
     }
 
-    // Once a proof bank exists, ordinary exact input is presentation-only
+    // Once a bank exists, ordinary exact input is presentation-only
     // until the player deliberately releases the sweep or arms the next
     // target. Source observation still runs, but no ordinary credit can leak
     // through while a receipt waits.
-    if (galvanicProofRef.current && galvanicBanksRef.current.length > 0 && !galvanicArmRequestedRef.current) {
+    if (galvanicRouteAvailable() && galvanicBanksRef.current.length > 0 && !galvanicArmRequestedRef.current) {
       lockHeldMsRef.current = 0
       lockProgressRef.current = 0
       tintRef.current = null
@@ -8577,24 +8667,24 @@ export default function PitchforksIII() {
       lockHeldMsRef.current = Math.min(HOLD_MS, lockHeldMsRef.current + holdElapsedMs)
       lockProgressRef.current = Math.min(1, lockHeldMsRef.current / HOLD_MS)
       if (lockProgressRef.current >= 1) {
-        // Galvanic is a proof-only exact-hold consumer. It is deliberately
+        // Galvanic is an exclusive exact-hold consumer. It is deliberately
         // first at this seam and returns so ordinary, Close Smash, and
         // Thunderhead credit cannot also consume the same held sample.
         if (galvanicArmRequestedRef.current) {
           confirmGalvanicLock(target)
           return
         }
-        if (galvanicProofRef.current && galvanicBanksRef.current.length > 0) {
+        if (galvanicRouteAvailable() && galvanicBanksRef.current.length > 0) {
           lockHeldMsRef.current = 0
           lockProgressRef.current = 0
           tintRef.current = null
           return
         }
-        // A private demo arming request gets first refusal at the exact
+        // A Thunderhead arming request gets first refusal at the exact
         // 300 ms lock. It banks the existing receipt rather than invoking
         // ordinary strike or Close Smash; buttons/EAR never enter this path.
         if (thunderheadArmRequestedRef.current) {
-          // An armed demo lock is exclusive: invalid/rejected receipts must
+          // An armed Thunderhead lock is exclusive: invalid/rejected receipts must
           // not fall through to ordinary strike authority.
           confirmThunderheadLock(target, thunderheadClockMsRef.current)
           return
@@ -8620,6 +8710,7 @@ export default function PitchforksIII() {
       }
     }
   }, [
+    galvanicRouteAvailable,
     cueContextForVillager,
     cuePlayingNow,
     flushPendingMusicalPrompt,
@@ -9036,7 +9127,7 @@ export default function PitchforksIII() {
       toleranceSemis: MATCH_TOLERANCE_CENTS / 100,
     })
     const bankedGalvanicNotes = galvanicBanksRef.current.map(bank => bank.note).join(' · ')
-    const galvanicBanked = galvanicProofRef.current &&
+    const galvanicBanked = galvanicRouteAvailable() &&
       inputModeRef.current === 'voice' &&
       galvanicBanksRef.current.length > 0
     const storedThunderhead = thunderheadStateRef.current.bank
@@ -9083,9 +9174,12 @@ export default function PitchforksIII() {
       trail: pitchTrailRef.current,
       feedback: thunderheadReadyFeedback ?? presentationFeedback,
     }
-  }, [cuePlayingNow, isListening, matchingSuppressedNow, micError, micSourceHealthRef, pitchGenerationRef, pitchRef])
+  }, [galvanicRouteAvailable, cuePlayingNow, isListening, matchingSuppressedNow, micError, micSourceHealthRef, pitchGenerationRef, pitchRef])
 
   const acceptBossResult = useCallback((result: PitchforksBossRecitalResult) => {
+    if (bossControllerRef.current?.state().attempt !== result.state.attempt) return
+    const simulatedResponse = bossSimulatingRef.current
+    if (simulatedResponse) bossSupportedPracticeRef.current = true
     bossSimulatingRef.current = false
     setBossSimulating(false)
     bossHoldRef.current = { heldMs: 0, matched: false }
@@ -9110,11 +9204,36 @@ export default function PitchforksIII() {
             ? 'Practice complete. Unaided notes were saved; helped notes did not count as unaided recall.'
             : 'You finished the recital. Your practice is saved.'
           : 'That note is saved. The next note is ready when you are.')
+      const world = bossWorldRef.current
+      const journey = presentationJourneyRef.current
+      const range = rangeProfileRef.current
+      if ((world === 'bell-tower' || world === 'cathedral') && !bossPracticeOnlyRef.current && journey && range && result.completed && result.outcome === 'success') {
+        fsrsRef.current = loadStore(FSRS_VOICE_KEY)
+        const successful = new Set(bossReceiptsRef.current.filter(receipt =>
+          receipt.persisted && receipt.correct && !receipt.supported
+          && receipt.attempt === result.state.attempt && receipt.lane === 'voice').map(receipt => receipt.cursor))
+        const passed = !bossSupportedPracticeRef.current && successful.size === result.state.sequence.length
+        const clear = advancePitchforksExaminationProgress({
+          journey, rangeAssessedAt: range.assessedAt, startedAt: journey.startedAt,
+          world, normalVoice: inputModeRef.current === 'voice', passed,
+          demo: demoRef.current || fsrsDebugRef.current, simulated: simulatedResponse,
+          admittedNotes: [...new Set(result.state.sequence)], voiceMemory: fsrsRef.current,
+          masteryRecords: masteryProgressRef.current, nowMs: Date.now(),
+        })
+        if (clear.changed) {
+          presentationJourneyRef.current = clear.journey
+          setPresentationJourney(clear.journey)
+          savePresentationJourney(clear.journey)
+          setBossMessage(world === 'cathedral'
+            ? 'The storm breaks. The bells ring in your voice — every note earned. Campaign complete. Return anytime to keep making music.'
+            : 'The Bellringer steps aside. The Cathedral is open, and your earned passage is saved in this journey.')
+        }
+      }
     } else if (result.kind === 'retry-note') setBossMessage('A fresh try, on the same note. There is no timer.')
     else if (result.kind === 'storage-error') setBossMessage('Your saved history could not be read. Nothing was replaced. Try again or return safely.')
     else if (result.kind === 'conflict') setBossMessage('Newer practice was found. It has not been overwritten. Return safely and reopen the room.')
     else if (result.kind === 'save-failed' || result.kind === 'readback-mismatch') setBossMessage('Your answer is held, but saving is not confirmed. Retry saving; do not sing it again.')
-  }, [])
+  }, [savePresentationJourney])
 
   const resolveBossNote = useCallback((correct: boolean) => {
     const controller = bossControllerRef.current
@@ -9137,9 +9256,16 @@ export default function PitchforksIII() {
         : pitchRef.current
       // DEMO silence is genuinely unavailable input unless the visible sample
       // control is running; no hidden automatic success is synthesized.
-      const sample = demoRef.current && !bossSimulatingRef.current ? null : source
-      bossHoldRef.current = advanceExactPitchHold(bossHoldRef.current,
-        exactPitchSampleState(sample, noteToFreq(state.currentNote), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS), dt * 1000, HOLD_MS)
+      const observation = observePitchforksSongcraftGeneration(bossPitchGenerationRef.current, pitchGenerationRef.current, performance.now())
+      bossPitchGenerationRef.current = observation.state
+      const health = micSourceHealthRef.current
+      const ready = !bossWorldRef.current || (!document.hidden && isListeningRef.current && !micErrorRef.current
+        && health.audioContextState === 'running' && health.trackReadyState === 'live' && !health.trackMuted)
+      const sample = (demoRef.current && !bossSimulatingRef.current) || !ready ? null : source
+      if (bossWorldRef.current && (observation.staleRecovery || !ready)) bossHoldRef.current = { heldMs: 0, matched: false }
+      if (!bossWorldRef.current || observation.generationAdvanced) bossHoldRef.current = advanceExactPitchHold(bossHoldRef.current,
+        exactPitchSampleState(sample, noteToFreq(state.currentNote), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS),
+        bossWorldRef.current ? observation.freshElapsedMs : dt * 1000, HOLD_MS)
       if (bossHoldRef.current.matched) {
         resolveBossNote(true)
         state = controller.state()
@@ -9147,8 +9273,12 @@ export default function PitchforksIII() {
     }
     const bossId = bossIdentityRef.current
     if (!bossId) return
-    renderBossChamber(ctx, assetsRef.current, state, bossHoldRef.current.heldMs / HOLD_MS, bossClockRef.current, reducedMotionRef.current, bossId)
-  }, [demoPitchForTarget, matchingSuppressedNow, resolveBossNote])
+    const chamberAssets = bossWorldRef.current ? { ...assetsRef.current,
+      bellringerChamberPlate: bossWorldRef.current === 'cathedral' ? assetsRef.current.cathedralPlate : assetsRef.current.bellTowerPlate,
+      bellringerRest: bossWorldRef.current === 'cathedral' ? undefined : assetsRef.current.bellringerRest,
+    } : assetsRef.current
+    renderBossChamber(ctx, chamberAssets, state, bossHoldRef.current.heldMs / HOLD_MS, bossClockRef.current, reducedMotionRef.current, bossId, bossWorldRef.current)
+  }, [demoPitchForTarget, matchingSuppressedNow, resolveBossNote, isListening, micError, pitchGenerationRef])
 
   const loop = useCallback((ts: number) => {
     if (phaseRef.current !== 'playing') return
@@ -9316,6 +9446,7 @@ export default function PitchforksIII() {
     presentationVisitCountByTargetRef.current.clear()
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
+    bossWorldRef.current = null
     bossIdentityRef.current = null
     setBossIdentity(null)
     bossSimulatingRef.current = false
@@ -9426,10 +9557,16 @@ export default function PitchforksIII() {
     beginPlaying()
   }, [beginPlaying])
 
-  const beginBossPreview = useCallback((lane: 'voice' | 'ear', bossId: PitchforksBossId = 'torchmaster') => {
+  const beginBossPreview = useCallback((lane: 'voice' | 'ear', bossId: PitchforksBossId = 'torchmaster', earnedWorld: WorldId | null = null, practiceOnly = false) => {
     if (!isPitchforksBossId(bossId)) return
     const admitted = [...unlockedNotesRef.current]
-    const entry = assessPitchforksBossEntry(bossId, demoRef.current, {
+    const journey = presentationJourneyRef.current
+    if (earnedWorld && (!journey || lane !== 'voice' || demoRef.current || fsrsDebugRef.current
+      || inputModeRef.current !== 'voice' || !(practiceOnly ? isWorldUnlocked(earnedWorld, projectPitchforksWorldGates(journey)) : isBossAvailable(earnedWorld, projectPitchforksMastery({
+        admittedNotes: admitted, voiceMemory: fsrsRef.current, masteryRecords: masteryProgressRef.current,
+        nowMs: Date.now(),
+      }), projectPitchforksWorldGates(journey))))) return
+    const entry = assessPitchforksBossEntry(bossId, earnedWorld ? true : demoRef.current, {
       torchmasterChamberPlate: !!assetsRef.current.torchmasterChamberPlate,
       bellringerChamberPlate: !!assetsRef.current.bellringerChamberPlate,
       bellringerRest: !!assetsRef.current.bellringerRest,
@@ -9456,12 +9593,18 @@ export default function PitchforksIII() {
     villageReturnOffersRef.current.clear()
     villageReturnContextPlayedRef.current.clear()
     completedVillageEncounterCountRef.current = 0
-    runtimeRef.current = makeInitialRuntime(true)
+    runtimeRef.current = makeInitialRuntime(!earnedWorld)
     resetGalvanic()
-    const key = lane === 'voice' ? FSRS_DEBUG_KEY : FSRS_EAR_DEBUG_KEY
+    bossWorldRef.current = earnedWorld
+    bossPracticeOnlyRef.current = practiceOnly
+    bossPitchGenerationRef.current = { lastGeneration: pitchGenerationRef.current, generationObserved: false, generationObservedAt: 0 }
+    const key = earnedWorld ? FSRS_VOICE_KEY : lane === 'voice' ? FSRS_DEBUG_KEY : FSRS_EAR_DEBUG_KEY
     const controller = createPitchforksBossRecital({
       attempt: `${bossId}:${runGenerationRef.current}:${Date.now()}`,
-      lane, sequence: entry.sequence, admittedNotes: admitted,
+      lane, sequence: practiceOnly && bossId !== 'bellringer' ? entry.sequence : earnedWorld === 'bell-tower'
+        ? journey!.villageClear!.bindings.flatMap(binding => [binding.contextNote, binding.targetNote])
+        : earnedWorld === 'cathedral' ? [...admitted, ...admitted.slice(0, -1).reverse()] : entry.sequence,
+      admittedNotes: admitted,
       storage: {
         loadStore: () => migrate(key, localStorage.getItem(key)),
         saveStore: (_, store) => saveStore(key, store),
@@ -9484,7 +9627,7 @@ export default function PitchforksIII() {
     setBossSimulating(false)
     setBossAudioBusy(false)
     setBossState(controller.state())
-    setBossMessage(bossId === 'bellringer'
+    setBossMessage(practiceOnly ? bossId === 'torchmaster' ? 'The Torchmaster raises his flame. Answer one comfortable note at a time. Listen whenever you need; this chamber is practice.' : 'The Choirmaster gives the chorus its notes. Sing this short phrase at your own pace, with hints whenever you need.' : earnedWorld ? earnedWorld === 'bell-tower' ? 'The Bellringer listens. Sing back every bell you have bound, in the order you learned them. There is no clock here — only your voice.' : 'One last storm. Every note you know — out, then back. Take your time. The lightning is yours now.' : bossId === 'bellringer'
       ? lane === 'ear'
         ? 'Bellringer two-note interval practice: hear the challenge, then choose the note. There is no timer.'
         : 'Bellringer two-note interval practice: one exact note at a time. Start the simulated voice when you are ready.'
@@ -9493,9 +9636,27 @@ export default function PitchforksIII() {
         : 'One exact note at a time. Start the simulated voice when you are ready.')
     phaseRef.current = 'playing'
     setPhase('playing')
+    if (earnedWorld) void startListening()
     lastTimeRef.current = 0
     rafRef.current = requestAnimationFrame(loop)
-  }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, loop, resetBellWave, resetCloseSmash, resetGalvanic, resetThunderhead, resumeCueAudioFromGesture, stopListening])
+  }, [startListening, clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, loop, resetBellWave, resetCloseSmash, resetGalvanic, resetThunderhead, resumeCueAudioFromGesture, stopListening])
+
+  const rehearseCampaignRecital = useCallback((world: 'bell-tower' | 'cathedral') => {
+    const journey = presentationJourneyRef.current
+    if (!journey || !isWorldUnlocked(world, projectPitchforksWorldGates(journey))
+      || !pianoSamplesReadyRef.current || phaseRef.current !== 'menu') return
+    clearCueTimers()
+    resumeCueAudioFromGesture()
+    const notes = world === 'bell-tower'
+      ? journey.villageClear?.bindings.flatMap(binding => [binding.contextNote, binding.targetNote]) ?? []
+      : [...journey.unlockedNotes, ...journey.unlockedNotes.slice(0, -1).reverse()]
+    const run = runGenerationRef.current
+    notes.forEach((note, index) => cueTimeoutsRef.current.push(setTimeout(() => {
+      if (runGenerationRef.current !== run || phaseRef.current !== 'menu') return
+      playPianoNote(note, { exact: true })
+      matchingSuppressedUntilRef.current = performance.now() + 1800
+    }, index * 1800)))
+  }, [clearCueTimers, resumeCueAudioFromGesture])
 
   const playBossCue = useCallback((hint: boolean) => {
     const controller = bossControllerRef.current
@@ -9505,7 +9666,10 @@ export default function PitchforksIII() {
       setBossMessage('Reference audio is still loading. Please wait before listening.')
       return
     }
-    if (hint) controller.hint({ attempt: state.attempt, lane: state.lane, cursor: state.cursor, note: state.currentNote, claimId: state.claimId })
+    if (hint) {
+      bossSupportedPracticeRef.current = true
+      controller.hint({ attempt: state.attempt, lane: state.lane, cursor: state.cursor, note: state.currentNote, claimId: state.claimId })
+    }
     bossSimulatingRef.current = false
     setBossSimulating(false)
     bossHoldRef.current = { heldMs: 0, matched: false }
@@ -9717,6 +9881,7 @@ export default function PitchforksIII() {
     presentationVisitCountByTargetRef.current.clear()
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
+    bossWorldRef.current = null
     bossIdentityRef.current = null
     setBossIdentity(null)
     bossSimulatingRef.current = false
@@ -9815,6 +9980,7 @@ export default function PitchforksIII() {
   useEffect(() => () => {
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
+    bossWorldRef.current = null
     bossIdentityRef.current = null
     bossSimulatingRef.current = false
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -9903,7 +10069,9 @@ export default function PitchforksIII() {
       activeEnvironmentTargetKey ?? '',
       activeEnvironmentHidden ? activeEnvironmentReturnText : null,
     )
-  const galvanicProof = demoMode && galvanicProofRef.current
+  const galvanicAvailable = galvanicRouteAvailable()
+  const thunderheadAvailable = thunderheadRouteAvailable()
+  const galvanicBusy = galvanicOwnsInput()
   const bellProof = demoMode && bellProofRef.current
   const normalBell = normalBellRouteAvailable()
   const bellringerEntry = assessPitchforksBossEntry('bellringer', demoMode, {
@@ -10005,7 +10173,7 @@ export default function PitchforksIII() {
     closeSmashState.phase === 'ready' &&
     !!closeSmashState.receipt &&
     activeTargetForEnvironment?.key === closeSmashState.receipt?.targetKey
-  const closeSmashActionDisabled = phase !== 'playing' || !closeSmashReady || galvanicProof
+  const closeSmashActionDisabled = phase !== 'playing' || !closeSmashReady || galvanicBusy
   const closeSmashStatusCopy = inputMode !== 'voice'
     ? 'CLOSE SMASH · VOICE LOCK REQUIRED'
     : closeSmashState.phase === 'ready' && closeSmashState.receipt
@@ -10025,11 +10193,12 @@ export default function PitchforksIII() {
           ? 'SETTLING'
           : 'EARN LOCK'
   const thunderheadArmReady = thunderheadState.phase === 'idle' || thunderheadState.phase === 'consumed'
-  const thunderheadArmDisabled = !demoMode || phase !== 'playing' || inputMode !== 'voice' || !thunderheadArmReady || galvanicProof
-  const thunderheadReleaseDisabled = !demoMode || phase !== 'playing' || inputMode !== 'voice' || thunderheadState.phase !== 'banked' || !thunderheadState.bank || galvanicProof
+  const bellActivationBusy = normalBellState?.phase === 'activating' || normalBellState?.phase === 'pending'
+  const thunderheadArmDisabled = !thunderheadAvailable || phase !== 'playing' || inputMode !== 'voice' || !thunderheadArmReady || galvanicBusy || bellActivationBusy
+  const thunderheadReleaseDisabled = !thunderheadAvailable || phase !== 'playing' || inputMode !== 'voice' || thunderheadState.phase !== 'banked' || !thunderheadState.bank || galvanicBusy || bellActivationBusy
   const thunderheadStatusCopy = inputMode !== 'voice'
     ? 'THUNDERHEAD · VOICE ONLY'
-    : galvanicProof
+    : galvanicBusy
       ? 'DISABLED · GALVANIC OWNS SWEEP'
       : thunderheadState.phase === 'banked' && thunderheadBank
         ? `BANKED · ${thunderheadBankNote ?? 'THE EXACT NOTE'} · RELEASE WHEN READY`
@@ -10065,7 +10234,7 @@ export default function PitchforksIII() {
     strikePresentationPending() ||
     cuePlayingNow() ||
     matchingSuppressedNow()
-  const galvanicBankDisabled = !galvanicProof ||
+  const galvanicBankDisabled = !galvanicAvailable ||
     phase !== 'playing' ||
     inputMode !== 'voice' ||
     !activeTargetForEnvironment ||
@@ -10075,7 +10244,7 @@ export default function PitchforksIII() {
     galvanicProjection.awaitingSilence ||
     galvanicReleaseRequestedRef.current ||
     galvanicLifecycleBusy
-  const galvanicReleaseDisabled = !galvanicProof ||
+  const galvanicReleaseDisabled = !galvanicAvailable ||
     phase !== 'playing' ||
     inputMode !== 'voice' ||
     galvanicProjection.bankCount < 1 ||
@@ -10083,8 +10252,8 @@ export default function PitchforksIII() {
     galvanicProjection.armed ||
     galvanicReleaseRequestedRef.current ||
     galvanicLifecycleBusy
-  const galvanicCancelDisabled = !galvanicProof || phase !== 'playing'
-  const galvanicCoachCopy = galvanicProof && inputMode === 'voice' && galvanicProjection.bankCount > 0
+  const galvanicCancelDisabled = !galvanicAvailable || phase !== 'playing'
+  const galvanicCoachCopy = galvanicAvailable && inputMode === 'voice' && galvanicProjection.bankCount > 0
     ? galvanicProjection.armed
       ? `GALVANIC ARMED · HOLD ${activeEnvironmentNoteLabel ?? 'THE EXACT NOTE'}`
       : galvanicStatusCopy
@@ -10346,6 +10515,8 @@ export default function PitchforksIII() {
     return (
       <PitchforksSongcraft
         admittedNotes={unlockedNotes}
+        masteryProjection={projectPitchforksMastery({ admittedNotes: unlockedNotes, voiceMemory: fsrsRef.current,
+          masteryRecords: masteryProgressRef.current, nowMs: Date.now() })}
         storage={songcraftStorage}
         microphone={{
           pitchRef,
@@ -10419,9 +10590,26 @@ export default function PitchforksIII() {
               )}
             </section>
           )}
+          {presentationJourney?.cathedralClear && <section role="status" className="mb-5 border border-green-400 p-4 text-green-100">
+            <h2 className="font-black">THE CASTLE SINGS AGAIN</h2>
+            <p className="mt-2 text-sm">Campaign complete. Revisit any world, review your notes, or make music in Songcraft.</p>
+          </section>}
+          {!demoMode && !fsrsDebugMode && presentationJourney && (selectedWorld === 'village-gate' || selectedWorld === 'bell-tower') && <section className="mb-5 border border-amber-800 bg-amber-950/15 p-4 text-amber-100">
+            <h2 className="font-bold">{selectedWorld === 'village-gate' ? 'THE TORCHMASTER' : 'THE CHOIRMASTER'}</h2>
+            <p className="my-3 text-sm">Visit the practice chamber. Learn a short phrase at your own pace; hints are welcome.</p>
+            <button type="button" disabled={inputMode !== 'voice'} className="min-h-12 w-full border border-amber-400 p-3 font-bold disabled:opacity-50" onClick={() => beginBossPreview('voice', selectedWorld === 'village-gate' ? 'torchmaster' : 'choirmaster', selectedWorld, true)}>VISIT THE PRACTICE CHAMBER</button>
+          </section>}
+          {(selectedWorld === 'bell-tower' || selectedWorld === 'cathedral') && !demoMode && !fsrsDebugMode && <section className="mb-5 border border-cyan-700 p-4 text-cyan-100">
+            <h2 className="font-bold">{selectedWorld === 'bell-tower' ? 'THE BELLRINGER' : 'THE MAESTRO · FINAL RECITAL'}</h2>
+            <p className="my-3 text-sm">An untimed musical examination using your admitted notes. Practice with hints, then return for an unaided pass.</p>
+            <button type="button" className="mb-3 min-h-12 w-full border border-amber-500 p-3 font-bold" onClick={() => rehearseCampaignRecital(selectedWorld)}>LEARN THE RECITAL · HEAR ALL NOTES</button>
+            <button type="button" className="min-h-12 w-full border border-cyan-300 p-3 font-bold disabled:opacity-50" disabled={inputMode !== 'voice' || !presentationJourney || !isBossAvailable(selectedWorld, projectPitchforksMastery({admittedNotes: unlockedNotes, voiceMemory: fsrsRef.current, masteryRecords: masteryProgressRef.current, nowMs: Date.now()}), projectPitchforksWorldGates(presentationJourney))} onClick={() => beginBossPreview('voice', 'bellringer', selectedWorld)}>ENTER THE RECITAL</button>
+            {presentationJourney && (selectedWorld === 'bell-tower' ? presentationJourney.bellTowerClear : presentationJourney.cathedralClear) && <button type="button" className="mt-3 min-h-12 w-full border border-green-500 p-3 font-bold" disabled={inputMode !== 'voice'} onClick={() => beginBossPreview('voice', 'bellringer', selectedWorld, true)}>REVISIT FOR PRACTICE</button>}
+            {inputMode !== 'voice' && <p className="mt-2 text-sm">Choose voice mode for the campaign examination.</p>}
+          </section>}
           <div className="mb-5" aria-label="World Map">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm font-black uppercase tracking-widest text-orange-100">
-              <span data-testid="pf3-selected-world">SELECTED WORLD · {selectedWorld === 'village-gate' ? 'THE VILLAGE GATE' : 'THE DUNGEON'}</span>
+              <span data-testid="pf3-selected-world">SELECTED WORLD · {WORLD_REGISTRY.find(world => world.id === selectedWorld)?.name.toUpperCase()}</span>
               <span className="text-gray-400">
                 {selectedWorld === 'village-gate' ? 'Available after the Dungeon clear.' : 'Available now.'}
               </span>
@@ -10430,14 +10618,14 @@ export default function PitchforksIII() {
               {WORLD_REGISTRY.map(world => {
                 const isDungeon = world.id === 'dungeon'
                 const isVillageGate = world.id === 'village-gate'
-                const normalWorld: PitchforksNormalWorld | null = isDungeon
-                  ? 'dungeon'
-                  : isVillageGate
-                    ? 'village-gate'
-                    : null
+                const normalWorld: PitchforksNormalWorld = world.id
                 const hasDungeonClear = !demoMode && !fsrsDebugMode && Boolean(presentationJourney?.dungeonClear)
-                const villageGateAvailable = isVillageGate && hasDungeonClear && villageGateAssetStatus === 'ready' && !!assetsRef.current.villageGatePlate
-                const selectable = isDungeon || villageGateAvailable
+                const unlocked = isDungeon || (!demoMode && !fsrsDebugMode && !!presentationJourney
+                  && isWorldUnlocked(world.id, projectPitchforksWorldGates(presentationJourney)))
+                const artReady = isDungeon || (isVillageGate ? !!assetsRef.current.villageGatePlate
+                  : world.id === 'bell-tower' ? !!assetsRef.current.bellTowerPlate : !!assetsRef.current.cathedralPlate)
+                const villageGateAvailable = isVillageGate && unlocked && artReady
+                const selectable = unlocked && artReady
                 const selected = normalWorld !== null && selectedWorld === normalWorld
                 const stateCopy = isDungeon
                   ? selected ? 'Ready to play.' : 'Choose this world.'
@@ -10451,11 +10639,11 @@ export default function PitchforksIII() {
                         : selected
                           ? 'Ready to play.'
                           : 'Choose this world.'
-                    : 'Opens later in your adventure.'
+                    : selectable ? selected ? 'Ready to play.' : 'Choose this world.' : unlocked ? 'Earned · Scene loading.' : world.id === 'bell-tower' ? 'Complete your Village interval journey.' : 'Pass the Bellringer recital.'
 
                 return (
                   <div key={world.id} className="min-h-28 flex flex-col">
-                    {isDungeon || isVillageGate ? (
+                    {normalWorld ? (
                       <button
                         type="button"
                         data-testid={`pf3-world-${world.id}`}
@@ -10521,6 +10709,26 @@ export default function PitchforksIII() {
               })}
             </div>
           </div>
+          {!demoMode && !fsrsDebugMode && <button type="button" data-testid="pf3-play-selected-world"
+            disabled={!assetsReady}
+            onClick={() => {
+              if (!rangeProfile) { phaseRef.current = 'tutorial'; setPhase('tutorial') }
+              else if (inputMode === 'buttons') beginPlaying()
+              else startSavedRangeSetup()
+            }}
+            className="mb-5 min-h-14 w-full border-2 border-cyan-100 bg-cyan-200 px-4 py-3 text-base font-black text-[#071018] disabled:opacity-50">
+            PLAY {WORLD_REGISTRY.find(world => world.id === selectedWorld)?.name.toUpperCase()}
+          </button>}
+          {!demoMode && !fsrsDebugMode && presentationJourney && <PitchforksCampaignJournal
+            journey={presentationJourney}
+            projection={projectPitchforksMastery({
+              admittedNotes: unlockedNotes,
+              voiceMemory: fsrsRef.current,
+              earMemory: earFsrsRef.current,
+              masteryRecords: masteryProgressRef.current,
+              nowMs: Date.now(),
+            })}
+          />}
           <div className="mb-5">
             {rangeProfile || demoMode ? (
               <>
@@ -11146,13 +11354,14 @@ export default function PitchforksIII() {
     const retryNote = !bossState.claimId && bossState.status === 'active' && bossState.lastReceipt?.correct === false
     const supported = bossSupportedPracticeRef.current || bossReceiptsRef.current.some(receipt => receipt.persisted && receipt.supported)
     const activeBossId = bossIdentity ?? (bossState.attempt.startsWith('bellringer:') ? 'bellringer' : 'torchmaster')
-    const activeBossName = activeBossId === 'bellringer' ? 'Bellringer' : 'Torchmaster'
+    const earnedWorld = bossWorldRef.current
+    const activeBossName = activeBossId === 'choirmaster' ? 'Choirmaster' : earnedWorld === 'cathedral' ? 'Maestro' : activeBossId === 'bellringer' ? 'Bellringer' : 'Torchmaster'
     const controlClass = 'min-h-12 rounded-sm border px-4 py-3 text-sm font-bold disabled:opacity-40'
     return <main data-testid="pf3-boss-room" className="fixed inset-0 overflow-y-auto overflow-x-hidden bg-[#070914] text-gray-100" style={{ fontFamily: 'monospace', paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)' }}>
       <header className="mx-auto max-w-3xl px-4 pb-3 pt-5 text-center">
-        <p className="text-[10px] tracking-widest text-amber-200">PRIVATE DEMO · NO TIMER · SEPARATE PRACTICE HISTORY</p>
+        <p className="text-[10px] tracking-widest text-amber-200">{earnedWorld ? bossPracticeOnlyRef.current ? 'PRACTICE CHAMBER · YOUR VOICE · NO TIMER' : 'CAMPAIGN RECITAL · YOUR VOICE · NO TIMER' : 'PRIVATE DEMO · NO TIMER · SEPARATE PRACTICE HISTORY'}</p>
         <h1 ref={bossHeadingRef} tabIndex={-1} className="mt-2 text-xl font-black tracking-widest text-amber-100">THE {activeBossName.toUpperCase()}</h1>
-        <p className="mt-2 text-xs text-gray-300">{complete ? `${activeBossName} practice complete` : `Pass-off ${bossState.cursor + 1} of ${bossState.sequence.length}`} · {activeBossId === 'bellringer' ? 'Two-note interval practice' : bossState.lane === 'ear' ? 'Listen and recognize' : 'Exact-note voice simulation'}</p>
+        <p className="mt-2 text-xs text-gray-300">{complete ? `${activeBossName} recital complete` : `Pass-off ${bossState.cursor + 1} of ${bossState.sequence.length}`} · {earnedWorld ? 'Your exact notes · untimed' : activeBossId === 'bellringer' ? 'Two-note interval practice' : bossState.lane === 'ear' ? 'Listen and recognize' : 'Exact-note voice simulation'}</p>
       </header>
       <div ref={canvasContainerRef} className="relative mx-auto w-full max-w-[720px]" style={{ aspectRatio: `${W} / ${H}` }}>
         <canvas ref={canvasRef} width={W} height={H} className="block h-full w-full" style={{ imageRendering: 'pixelated' }} aria-label={`${activeBossName} chamber with original Frankenstein and the current musical challenge`} />
@@ -11161,13 +11370,13 @@ export default function PitchforksIII() {
         <p role="status" aria-live="polite" aria-atomic="true" data-testid="pf3-boss-status" className="min-h-12 text-center text-sm leading-relaxed text-cyan-100">{bossMessage}</p>
         {complete ? <div className="my-3 border border-green-400/50 bg-green-950/30 p-4 text-center">
           <p className="font-bold text-green-200">{activeBossId === 'bellringer' ? `Bellringer · ${supported ? 'Completed with help' : 'Completed without a hint'}` : supported ? 'Completed with help' : 'Completed without a hint'}</p>
-          <p className="mt-2 text-xs text-gray-300">{bossState.lane === 'voice' ? 'Simulated voice demonstration—not a singer assessment.' : 'Recognition practice—not a vocal assessment.'} No world or skill unlock is granted by this preview.</p>
+          <p className="mt-2 text-xs text-gray-300">{earnedWorld ? bossPracticeOnlyRef.current ? 'Your note practice is saved. This supporting chamber does not grant a world clear.' : supported ? 'Practice with help is saved. Try a fresh recital without hints to earn passage.' : 'Your journey records the earned passage when every response and save is confirmed.' : bossState.lane === 'voice' ? 'Simulated voice demonstration—not a singer assessment. No world unlock is granted.' : 'Recognition practice—not a vocal assessment. No world unlock is granted.'}</p>
         </div> : <div className="grid gap-3">
           {bossState.status === 'pending-save' ? <button type="button" data-testid="pf3-boss-retry-save" className={`${controlClass} border-amber-300 text-amber-100`} onClick={() => { const controller = bossControllerRef.current; if (controller) acceptBossResult(controller.retrySave()) }}>RETRY SAVING</button>
             : retryNote ? <button type="button" data-testid="pf3-boss-retry-note" className={`${controlClass} border-green-300 text-green-100`} onClick={() => { const controller = bossControllerRef.current; if (controller) acceptBossResult(controller.retryNote()) }}>TRY THIS NOTE AGAIN</button>
               : <>
                 {bossState.lane === 'ear' && <button type="button" data-testid="pf3-boss-hear" disabled={bossAudioBusy} className={`${controlClass} border-cyan-300 text-cyan-100`} onClick={() => playBossCue(false)}>HEAR THE CHALLENGE</button>}
-                {bossState.lane === 'voice' ? <button type="button" data-testid="pf3-boss-simulate" disabled={bossAudioBusy || bossSimulating || !bossState.claimId} className={`${controlClass} border-green-300 bg-green-950/50 text-green-100`} onClick={() => {
+                {bossState.lane === 'voice' && earnedWorld ? <p className="p-3 text-center text-green-100">{micError ? 'Microphone unavailable. Check permission and return to retry.' : isListening ? 'Listening to your microphone. Sing when ready.' : 'Starting your microphone…'}</p> : bossState.lane === 'voice' ? <button type="button" data-testid="pf3-boss-simulate" disabled={bossAudioBusy || bossSimulating || !bossState.claimId} className={`${controlClass} border-green-300 bg-green-950/50 text-green-100`} onClick={() => {
                   if (!bossControllerRef.current?.state().claimId || matchingSuppressedNow()) return
                   demoTargetRef.current = ''
                   bossHoldRef.current = { heldMs: 0, matched: false }
@@ -11182,7 +11391,7 @@ export default function PitchforksIII() {
                 </div>
               </>}
         </div>}
-        <button type="button" data-testid="pf3-boss-return" onClick={quitToMenu} className={`${controlClass} mt-4 w-full border-gray-600 text-gray-300`}>RETURN TO THE DUNGEON</button>
+        <button type="button" data-testid="pf3-boss-return" onClick={quitToMenu} className={`${controlClass} mt-4 w-full border-gray-600 text-gray-300`}>RETURN TO THE WORLD MAP</button>
       </section>
     </main>
   }
@@ -11428,7 +11637,7 @@ export default function PitchforksIII() {
               onClick={activateRaincall}
               disabled={raincallActionDisabled}
               aria-describedby={demoMode ? 'pf3-raincall-status pf3-torch-status' : 'pf3-raincall-status'}
-              title={demoMode || normalBell ? 'Fill the gutter, then douse the torches.' : 'Raincall is unavailable outside the eligible Village route.'}
+              title={demoMode || normalBell ? 'Fill the gutter, then douse the torches.' : 'Raincall requires an eligible campaign route.'}
               className="min-h-12 min-w-[48px] shrink-0 border border-cyan-200 bg-cyan-200 px-3 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#071018] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80"
             >
               {demoMode || normalBell ? 'CALL RAIN' : 'DEMO ONLY'}
@@ -11437,7 +11646,7 @@ export default function PitchforksIII() {
           <p id="pf3-raincall-status" data-testid="pf3-raincall-status" className="sr-only">
             {demoMode || normalBell
               ? `${rainPhaseCopy}. Fill the gutter, then douse the torches. Keep singing to break the forks${rainEffects.slowFactor < 1 ? ' · movement slowed' : ''}. ${torchPhaseCopy} Raincall is environmental only and never grants musical tine credit.`
-              : 'Raincall is unavailable outside the eligible Village route.'}
+              : 'Raincall requires an eligible campaign route.'}
           </p>
           {(demoMode || normalBell) && (
             <p id="pf3-torch-status" data-testid="pf3-torch-status" className="sr-only">
@@ -11532,7 +11741,7 @@ export default function PitchforksIII() {
               aria-describedby="pf3-bell-status"
               title={bellProof
                 ? bellReleaseDisabled ? 'Charge one exact note before ringing the Bell Tower wave.' : 'Release the charged Bell Tower wave.'
-                : bellReleaseDisabled ? 'Sing the taught pair first; a failed release keeps readiness for retry.' : 'Release the normal Village Bell wave.'}
+                : bellReleaseDisabled ? 'Sing the taught pair first; a failed release keeps readiness for retry.' : 'Release the Bell wave.'}
               onClick={requestBellRelease}
               className="min-h-12 min-w-[48px] shrink-0 border border-yellow-100 bg-yellow-100 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#1a1102] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-100"
             >
@@ -11551,9 +11760,9 @@ export default function PitchforksIII() {
             )}
           </div>
         </section>}
-        {galvanicProof && <section
+        {galvanicAvailable && <section
           data-testid="pf3-galvanic-control"
-          aria-label="Galvanic private proof controls"
+          aria-label="Galvanic controls"
           className="col-span-2 flex min-h-12 min-w-0 w-full max-w-[760px] flex-col gap-2 border border-emerald-700/80 bg-emerald-950/25 px-2 py-2 text-emerald-50"
         >
           <div
@@ -11576,7 +11785,7 @@ export default function PitchforksIII() {
               data-testid="pf3-galvanic-bank"
               disabled={galvanicBankDisabled}
               aria-describedby="pf3-galvanic-status"
-              title={galvanicBankDisabled ? 'Banking requires the next exact voice hold in the private proof.' : 'Arm the next exact voice hold for Galvanic.'}
+              title={galvanicBankDisabled ? 'Banking requires the next exact voice hold.' : 'Arm the next exact voice hold for Galvanic.'}
               onClick={requestGalvanicArm}
               className="min-h-12 min-w-[48px] shrink-0 border border-emerald-200 bg-emerald-200 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-[#06150d] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-100"
             >
@@ -11598,7 +11807,7 @@ export default function PitchforksIII() {
               data-testid="pf3-galvanic-cancel"
               disabled={galvanicCancelDisabled}
               aria-describedby="pf3-galvanic-status"
-              title="Discard all pending Galvanic banks and return to ordinary proof play."
+              title="Discard all pending Galvanic banks and return to ordinary play."
               onClick={() => cancelGalvanic()}
               className="min-h-12 min-w-[48px] shrink-0 border border-emerald-300 bg-emerald-950/70 px-2 py-1 text-center text-sm font-black leading-tight tracking-wide text-emerald-100 disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-400 disabled:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-100"
             >
@@ -11606,9 +11815,9 @@ export default function PitchforksIII() {
             </button>
           </div>
         </section>}
-        {demoMode && <section
+        {thunderheadAvailable && <section
           data-testid="pf3-thunderhead-control"
-          aria-label="Thunderhead private demo control"
+          aria-label="Thunderhead controls"
           className="col-span-2 flex min-h-12 min-w-0 w-full max-w-[760px] flex-col gap-2 border border-sky-700/80 bg-sky-950/25 px-2 py-2 text-sky-50"
         >
           <div

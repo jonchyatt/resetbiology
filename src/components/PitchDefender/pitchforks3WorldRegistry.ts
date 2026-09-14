@@ -13,7 +13,7 @@ export interface WorldDef {
   // 'dungeon' TODAY but are two different axes — playable = "content is built",
   // unlocked = "curriculum gate passed". They coincide now; Act II can diverge them
   // (a world mastery-unlocked but not yet content-built). Keep both, don't collapse.
-  playable: boolean      // true ONLY for 'dungeon' today
+  playable: boolean      // content availability; earned access remains a separate gate
   gateLabel: string       // generic copy, no invented thresholds, e.g. "Curriculum-gated — unlocks as this world's notes are mastered"
 }
 
@@ -61,9 +61,8 @@ function worldIndex(id: unknown): number {
   return typeof id === 'string' ? WORLD_ORDER.indexOf(id as WorldId) : -1
 }
 
-// This is a pure candidate policy. The normal renderer still calls the
-// backwards-compatible one-argument form until the journey policy is approved
-// and wired to its caller-provided save snapshot.
+// Normal campaign callers project validated journey receipts into this gate.
+// The one-argument form remains locked beyond the Dungeon.
 export function isWorldUnlocked(
   id: WorldId,
   input: WorldGateInput = EMPTY_WORLD_GATE_INPUT,
@@ -94,7 +93,7 @@ export function isBossAvailable(
 
 export const WORLD_REGISTRY: WorldDef[] = [
   { id: 'dungeon',      name: 'The Dungeon',      playable: true,  gateLabel: '' },
-  { id: 'village-gate', name: 'The Village Gate',  playable: false, gateLabel: 'Curriculum-gated — unlocks as this world\'s notes are mastered' },
-  { id: 'bell-tower',   name: 'The Bell Tower',    playable: false, gateLabel: 'Curriculum-gated — unlocks as this world\'s notes are mastered' },
-  { id: 'cathedral',    name: 'The Cathedral',     playable: false, gateLabel: 'Curriculum-gated — unlocks as this world\'s notes are mastered' },
+  { id: 'village-gate', name: 'The Village Gate',  playable: true, gateLabel: 'Curriculum-gated — unlocks as this world\'s notes are mastered' },
+  { id: 'bell-tower',   name: 'The Bell Tower',    playable: true, gateLabel: 'Curriculum-gated — unlocks as this world\'s notes are mastered' },
+  { id: 'cathedral',    name: 'The Cathedral',     playable: true, gateLabel: 'Curriculum-gated — unlocks as this world\'s notes are mastered' },
 ]

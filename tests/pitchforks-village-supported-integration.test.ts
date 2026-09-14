@@ -18,7 +18,7 @@ import { recordVillagePractice } from '../src/components/PitchDefender/villagePr
 const source = readFileSync(
   new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 
 let checks = 0
 const check = (run: () => void): void => {
@@ -63,7 +63,7 @@ check(() => {
 check(() => {
   assert.match(spawn, /const range = rangeProfileRef\.current/)
   assert.match(spawn, /const journey = presentationJourneyRef\.current/)
-  assert.match(spawn, /normalBellRouteAvailable\(\)\s*&&[\s\S]*inputModeRef\.current === ['"]voice['"][\s\S]*totalTines === 1[\s\S]*!!range/)
+  assert.match(spawn, /normalVillageLessonAvailable\(\)\s*&&[\s\S]*inputModeRef\.current === ['"]voice['"][\s\S]*totalTines === 1[\s\S]*!!range/)
   assert.match(spawn, /admittedNotes:\s*unlockedNotesRef\.current/)
   assert.match(spawn, /introducedNotes:\s*\[\.\.\.journey\.guidedNotes, \.\.\.journey\.unlockedNotes\]/)
   assert.match(spawn, /comfortableRange:\s*range/)
@@ -124,7 +124,7 @@ check(() => {
 })
 
 check(() => {
-  assert.match(review, /const supportedVillageLesson = normalBellRouteAvailable\(\)[\s\S]*lane === ['"]voice['"][\s\S]*target\.villager\.totalTines === 1[\s\S]*target\.villager\.supportedLesson\?\.targetNote === target\.note/)
+  assert.match(review, /const supportedVillageLesson = normalVillageLessonAvailable\(\)[\s\S]*lane === ['"]voice['"][\s\S]*target\.villager\.totalTines === 1[\s\S]*target\.villager\.supportedLesson\?\.targetNote === target\.note/)
   assert.match(review, /supportedVillageLesson \|\| demoRef\.current \|\| support === ['"]guided['"]/
   )
 })
@@ -137,7 +137,7 @@ check(() => {
   assert.match(supported, /if \(correct\)[\s\S]*waveNotesSungRef\.current\.add\(target\.note\)[\s\S]*acceptNormalBellCombatResponse\(target\)[\s\S]*\}\s*return true/)
   assert.match(supported, /cueSupportByTargetRef\.current\.delete\(target\.key\)/)
   assert.match(supported, /hintedTargetKeysRef\.current\.delete\(target\.key\)/)
-  assert.doesNotMatch(supported, /gradeVoice|gradeEar|saveFsrs|recordMasteryProgressForReview|reconcileCampaignProgress|completeJourneyGuidanceForNote|saveCueSupport|recordCueSupportOutcome|cueSupportProfileRef\.current\s*=|cueSupportProfileRef\.current\.notes/)
+  assert.doesNotMatch(supported, /gradeVoice|gradeEar|saveFsrs|recordMasteryProgressForReview|completeJourneyGuidanceForNote|saveCueSupport|recordCueSupportOutcome|cueSupportProfileRef\.current\s*=|cueSupportProfileRef\.current\.notes/)
 })
 
 check(() => {
@@ -146,6 +146,10 @@ check(() => {
   assert.ok(supportedStart >= 0 && supportedEnd > supportedStart)
   const supported = review.slice(supportedStart, supportedEnd)
   assert.match(supported, /if \(correct\)/)
+  // Connected-campaign and examination-integration exercise the earned gates.
+  // Reconciliation consumes saved practice; it must not grant direct mastery.
+  assert.match(supported, /if \(nextVillagePractice !== currentVillagePractice\) \{[\s\S]*savePresentationJourney\(nextJourney\)\s*reconcileCampaignProgress\(nextJourney\)\s*\}/)
+  assert.doesNotMatch(supported, /villageClear\s*:|bellTowerClear\s*:|cathedralClear\s*:/)
   assert.match(supported, /acceptNormalBellCombatResponse\(target\)/)
   const ordinary = review.slice(supportedEnd)
   assert.match(ordinary, /gradeEar\(earFsrsRef\.current/)
@@ -163,7 +167,7 @@ check(() => {
   const supported = review.slice(supportedStart, supportedEnd)
   assert.match(supported, /recordVillagePractice\(currentVillagePractice, \{[\s\S]*objective: supportedVillageLesson\.objective[\s\S]*contextNote: supportedVillageLesson\.contextNote[\s\S]*targetNote: supportedVillageLesson\.targetNote/)
   assert.match(supported, /support: earnedUnaided \? 'UNAIDED_RETURN' : 'SUPPORTED'[\s\S]*cueFree: earnedUnaided/)
-  assert.match(supported, /normalVoice: normalBellRouteAvailable\(\) && lane === ['"]voice['"]/)
+  assert.match(supported, /normalVoice: normalVillageLessonAvailable\(\) && lane === ['"]voice['"]/)
   assert.match(supported, /demo: demoRef\.current[\s\S]*simulated: bossSimulatingRef\.current/)
   assert.match(supported, /journeyId: journey\.startedAt[\s\S]*sessionId: practiceSessionId/)
   assert.match(supported, /getMasterySessionId\(\)[\s\S]*runGenerationRef\.current/)
@@ -172,7 +176,7 @@ check(() => {
   assert.match(supported, /timestampMs: Date\.now\(\)/)
   assert.match(supported, /admittedNotes: unlockedNotesRef\.current[\s\S]*introducedNotes: \[\.\.\.journey\.guidedNotes, \.\.\.journey\.unlockedNotes\][\s\S]*comfortableRange: range/)
   assert.match(supported, /if \(nextVillagePractice !== currentVillagePractice\) \{[\s\S]*const nextJourney = \{ \.\.\.journey, villagePractice: nextVillagePractice \}[\s\S]*presentationJourneyRef\.current = nextJourney[\s\S]*setPresentationJourney\(nextJourney\)[\s\S]*savePresentationJourney\(nextJourney\)/)
-  assert.doesNotMatch(supported, /gradeVoice|gradeEar|saveFsrs|recordMasteryProgressForReview|reconcileCampaignProgress|completeJourneyGuidanceForNote|saveCueSupport|recordCueSupportOutcome|cueSupportProfileRef\.current\s*=|cueSupportProfileRef\.current\.notes/)
+  assert.doesNotMatch(supported, /gradeVoice|gradeEar|saveFsrs|recordMasteryProgressForReview|completeJourneyGuidanceForNote|saveCueSupport|recordCueSupportOutcome|cueSupportProfileRef\.current\s*=|cueSupportProfileRef\.current\.notes/)
 })
 
 const supportedRange = { lowNote: 'D4', highNote: 'A4' } as const
@@ -285,7 +289,7 @@ check(() => {
 check(() => {
   // The context lesson is an exact normal Village voice-only projection of
   // the already-selected target; every other branch keeps ordinary playback.
-  assert.match(sequence, /const supportedLesson = normalBellRouteAvailable\(\)[\s\S]*inputModeRef\.current === ['"]voice['"][\s\S]*villager\.totalTines === 1[\s\S]*liveNotes\.length === 1[\s\S]*villager\.supportedLesson\?\.contextNote[\s\S]*villager\.supportedLesson\.targetNote === liveNotes\[0\]/)
+  assert.match(sequence, /const supportedLesson = normalVillageLessonAvailable\(\)[\s\S]*inputModeRef\.current === ['"]voice['"][\s\S]*villager\.totalTines === 1[\s\S]*liveNotes\.length === 1[\s\S]*villager\.supportedLesson\?\.contextNote[\s\S]*villager\.supportedLesson\.targetNote === liveNotes\[0\]/)
   assert.match(sequence, /const playbackNotes = supportedLesson\s*\?\s*\[supportedLesson\.contextNote, supportedLesson\.targetNote\]\s*:\s*liveNotes/)
   assert.doesNotMatch(sequence, /villager\.notes\s*=|liveNotes\s*=\s*\[/)
 })

@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 const source = readFileSync(
   new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url),
   'utf8',
-)
+).replace(/\r\n/g, '\n')
 const dockStart = source.indexOf('className="grid w-full max-w-[760px] sm:grid-cols-4 grid-cols-2 gap-2" data-testid="pf3-ability-dock"')
 const dockEnd = source.indexOf('data-testid="pf3-replay-notes"', dockStart)
 assert.ok(dockStart > 0 && dockEnd > dockStart, 'ability dock must precede the native replay row')
@@ -15,6 +15,7 @@ const actionContracts = [
   ['pf3-raincall-action', 'raincallActionDisabled', 'onClick={activateRaincall}'],
   ['pf3-bell-arm', 'bellArmDisabled', 'onClick={requestBellArm}'],
   ['pf3-bell-release', 'bellReleaseDisabled', 'onClick={requestBellRelease}'],
+  ['pf3-bell-cancel', null, 'onClick={cancelBellActivation}'],
   ['pf3-galvanic-bank', 'galvanicBankDisabled', 'onClick={requestGalvanicArm}'],
   ['pf3-galvanic-release', 'galvanicReleaseDisabled', 'onClick={requestGalvanicRelease}'],
   ['pf3-galvanic-cancel', 'galvanicCancelDisabled', 'onClick={() => cancelGalvanic()}'],
@@ -31,13 +32,18 @@ for (const [testId, disabledExpression, handler] of actionContracts) {
   const buttonEnd = dock.indexOf('</button>', buttonStart)
   assert.ok(buttonStart >= 0 && buttonEnd > buttonStart, `${testId} must remain a button`)
   const button = dock.slice(buttonStart, buttonEnd)
-  assert.match(button, new RegExp(`disabled=\\{${disabledExpression}\\}`), `${testId} keeps its disabled expression`)
+  if (disabledExpression !== null) assert.match(button, new RegExp(`disabled=\\{${disabledExpression}\\}`), `${testId} keeps its disabled expression`)
   assert.ok(button.includes(handler), `${testId} keeps its existing handler`)
   assert.match(button, /aria-describedby=/, `${testId} remains associated with status`) 
   assert.match(button, /min-h-12/, `${testId} keeps a 48px minimum height`)
   assert.match(button, /min-w-\[48px\]/, `${testId} keeps a 48px minimum width`)
   assert.match(button, /text-sm/, `${testId} keeps a readable visible label`)
 }
+
+// Cancel is available only during normal activation; it must remain usable.
+assert.match(dock, /!bellProof && normalBellState\?\.phase === 'activating' && \([\s\S]*?data-testid="pf3-bell-cancel"/)
+const cancelButton = dock.slice(dock.indexOf('data-testid="pf3-bell-cancel"'), dock.indexOf('</button>', dock.indexOf('data-testid="pf3-bell-cancel"')))
+assert.doesNotMatch(cancelButton, /\bdisabled=/)
 
 const statusContracts = [
   ['pf3-close-smash-status', 'pf3-close-smash-control', 'pf3-close-smash-action'],
@@ -76,11 +82,12 @@ for (const diagnostic of [
 }
 
 for (const condition of [
-  '{bellProof && <section',
-  '{galvanicProof && <section',
-  '{demoMode && <section',
+  '{bellControlVisible && <section',
+  '{galvanicAvailable && <section',
+  '{thunderheadAvailable && <section',
+  '{(demoMode || normalBell) && <section',
 ]) {
-  assert.ok(dock.includes(condition), `${condition} keeps its private proof gate`)
+  assert.ok(dock.includes(condition), `${condition} keeps its earned-route or explicit proof gate`)
 }
 
 assert.match(dock, /className="grid w-full max-w-\[760px\] sm:grid-cols-4 grid-cols-2 gap-2" data-testid="pf3-ability-dock"/)

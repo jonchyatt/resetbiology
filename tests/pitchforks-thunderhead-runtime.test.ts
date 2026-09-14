@@ -10,7 +10,7 @@ import {
 } from '../src/components/PitchDefender/pitchforksThunderhead'
 import { advancePitchforksLogicalClock } from '../src/components/PitchDefender/PitchforksIII'
 
-const source = readFileSync(resolve(process.cwd(), 'src/components/PitchDefender/PitchforksIII.tsx'), 'utf8')
+const source = readFileSync(resolve(process.cwd(), 'src/components/PitchDefender/PitchforksIII.tsx'), 'utf8').replace(/\r\n/g, '\n')
 const ordinaryCloudSource = source.slice(
   source.indexOf('function drawStormCloudView('),
   source.indexOf('function drawThunderheadCloudView('),
