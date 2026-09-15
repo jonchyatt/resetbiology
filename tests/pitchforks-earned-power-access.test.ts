@@ -132,6 +132,78 @@ test('receipt access ratchets without changing proof flags or allocating charges
   assert.equal(e.demoRef.current, false); assert.equal(e.galvanicProofRef.current, false)
   assert.equal(e.thunderheadStateRef.current.bank, null); assert.equal(e.galvanicBanksRef.current.length, 0)
 })
+
+test('a 23-wave Dungeon run reaches and fires both powers after their campaign gates', () => {
+  const h = harness(), e = h.e
+  e.selectedWorldRef.current = 'dungeon'
+
+  // Exercise the shipped wave director and live-target port for the same
+  // number of Dungeon levels observed in the campaign audit. These waves do
+  // not mint power access; the ordered campaign receipts do.
+  const plans: any[] = []
+  for (let wave = 1; wave <= 23; wave++) {
+    e.runtimeRef.current.wave = wave
+    const plan = e.fixedWaveDirector(wave, false, false, false)
+    plans.push(plan)
+    e.runtimeRef.current.villagers = []
+    for (let index = 0; index < plan.count; index++) {
+      const firstNote = index % 2 === 0 ? 'C4' : 'E4'
+      const actor = h.add(firstNote)
+      actor.totalTines = plan.tineCounts[index]
+      actor.notes = Array.from({ length: actor.totalTines }, (_unused, tine) => tine === 0 ? firstNote : 'E4')
+    }
+    assert.equal(e.runtimeRef.current.villagers.length, plan.count)
+    assert.equal(e.normalThunderheadRouteAvailable(), false)
+    assert.equal(e.normalGalvanicRouteAvailable(), false)
+  }
+  assert.equal(plans.length, 23)
+
+  // The production route gates are receipt-driven: Dungeon clear opens the
+  // Village prefix, Village clear opens Bell Tower/Thunderhead, and Bell Tower
+  // clear opens Cathedral/Galvanic. The campaign receipt suites prove how
+  // those receipts are earned; this run connects that boundary to the actual
+  // extracted component controls and effects.
+  h.earn('dungeon')
+  assert.equal(e.normalThunderheadRouteAvailable(), false)
+  h.earn('village')
+  e.selectedWorldRef.current = 'bell-tower'
+  assert.equal(e.normalThunderheadRouteAvailable(), true)
+
+  e.runtimeRef.current.wave = 24
+  e.runtimeRef.current.villagers = []
+  e.resetThunderhead()
+  h.add('C4')
+  e.requestThunderheadArm()
+  assert.equal(e.thunderheadArmRequestedRef.current, true)
+  assert.equal(e.confirmThunderheadLock(e.getActiveTarget(), 1000), true)
+  e.requestThunderheadRelease()
+  e.advanceThunderheadLifecycle(1000, true)
+  e.advanceThunderheadLifecycle(1000, false)
+  e.advanceThunderheadLifecycle(1900, false)
+  e.advanceThunderheadLifecycle(2100, false)
+  e.advanceThunderheadLifecycle(2200, false)
+  assert.deepEqual(h.strikes, ['thunderhead:1:0'])
+
+  h.earn()
+  e.selectedWorldRef.current = 'cathedral'
+  assert.equal(e.normalGalvanicRouteAvailable(), true)
+  e.runtimeRef.current.wave = 25
+  e.runtimeRef.current.villagers = []
+  e.resetGalvanic()
+  h.add('C4'); h.add('C4'); h.add('E4')
+  for (let index = 0; index < 2; index++) {
+    e.requestGalvanicArm()
+    assert.equal(e.confirmGalvanicLock(e.getActiveTarget()), false)
+    e.galvanicAwaitingSilenceRef.current = false
+    assert.equal(e.confirmGalvanicLock(e.getActiveTarget()), true)
+    e.galvanicAwaitingSilenceRef.current = false
+  }
+  e.requestGalvanicRelease()
+  e.advanceGalvanicRelease(1000)
+  e.advanceGalvanicRelease(1100)
+  assert.deepEqual(h.strikes, ['thunderhead:1:0', 'galvanic:1:0', 'galvanic:2:0'])
+})
+
 for (const taint of ['fsrsDebugRef', 'bossSimulatingRef']) test(`normal access rejects ${taint}`, () => {
   const h = harness(); h.earn(); h.add(); const e = h.e; e[taint].current = true
   assert.equal(e.normalBellRouteAvailable(), false)
