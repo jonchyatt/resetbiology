@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { createNote, pickNextNote, type NoteMemory } from '../src/lib/fsrs'
 import {
   admissionAllowedForWave,
   admissionRecallReady,
@@ -11,6 +12,8 @@ import {
   PATIENT_ATTACK_TIME_FLOOR_SECONDS,
   patientTineCountsForWave,
   replayLabelForCueSupport,
+  STEP_CHAIN_MAX_SCALE_STEPS,
+  stepChainCandidatePool,
   villagerEntryX,
   waitForClearBeforeSpawn,
 } from '../src/components/PitchDefender/pitchforksCurriculum'
@@ -127,6 +130,72 @@ assert.equal(replayLabelForCueSupport('guided', 2), '🔊 REPLAY NOTES')
 assert.equal(replayLabelForCueSupport('recall', 1), '💡 HINT · HEAR NOTE')
 assert.equal(replayLabelForCueSupport('recall', 2), '💡 HINT · HEAR CHAIN')
 
+const sequencePool = ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4']
+const makeMemory = (notes: readonly string[]): Record<string, NoteMemory> => (
+  Object.fromEntries(notes.map(note => [note, createNote(note)])) as Record<string, NoteMemory>
+)
+
+const stepChainMemory = makeMemory(sequencePool)
+for (const memory of Object.values(stepChainMemory)) {
+  memory.due = 0
+  memory.lastReview = 1
+  memory.S = 1
+}
+
+const pickSequence = (wave: number, previousNote: string | null, memory: Record<string, NoteMemory>): string[] => {
+  const stage = curriculumStageForWave(wave, false)
+  let exclude = previousNote
+  const sequence: string[] = []
+  for (let index = 0; index < 5; index += 1) {
+    const candidates = stage === 'step-chain'
+      ? stepChainCandidatePool(sequencePool, exclude)
+      : [...sequencePool]
+    const nextNote = pickNextNote(candidates, memory, exclude)
+    sequence.push(nextNote)
+    exclude = nextNote
+  }
+  return sequence
+}
+
+const stepChainSequence = pickSequence(4, 'C4', stepChainMemory)
+for (let index = 1; index < stepChainSequence.length; index += 1) {
+  const previousIndex = sequencePool.indexOf(stepChainSequence[index - 1])
+  const currentIndex = sequencePool.indexOf(stepChainSequence[index])
+  assert.ok(
+    Math.abs(currentIndex - previousIndex) <= STEP_CHAIN_MAX_SCALE_STEPS,
+    `step-chain jump too large: ${stepChainSequence[index - 1]} -> ${stepChainSequence[index]}`,
+  )
+}
+assert.equal(curriculumStageForWave(12, false), 'step-chain')
+assert.equal(curriculumStageForWave(13, false), 'intervals')
+assert.deepEqual(stepChainCandidatePool(['C3', 'G4'], 'C4'), ['C3', 'G4'], 'empty nearby set must fall back to full pool')
+
+const duePriorityMemory = makeMemory(['C4', 'D4', 'E4', 'G4'])
+const now = Date.now()
+for (const memory of Object.values(duePriorityMemory)) {
+  memory.due = now + 60_000
+  memory.lastReview = now
+  memory.S = 100
+}
+duePriorityMemory.D4.due = now - 1
+duePriorityMemory.D4.lastReview = now - 86_400_000
+duePriorityMemory.D4.S = 10
+duePriorityMemory.E4.due = now - 1
+duePriorityMemory.E4.lastReview = now - 10 * 86_400_000
+duePriorityMemory.E4.S = 1
+const nearbyDueWinner = pickNextNote(stepChainCandidatePool(['C4', 'D4', 'E4', 'G4'], 'C4'), duePriorityMemory, 'C4')
+assert.equal(nearbyDueWinner, 'E4', 'FSRS due-priority must choose the more urgent nearby note')
+
+const intervalsMemory = makeMemory(sequencePool)
+for (const memory of Object.values(intervalsMemory)) {
+  memory.due = now + 60_000
+  memory.lastReview = now
+  memory.S = 100
+}
+intervalsMemory.G4.due = now - 1
+assert.equal(pickSequence(13, 'C3', intervalsMemory)[0], 'G4', 'intervals stage must retain full-pool FSRS jumps')
+assert.ok(sequencePool.indexOf('G4') - sequencePool.indexOf('C3') > STEP_CHAIN_MAX_SCALE_STEPS)
+
 const source = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8')
 // Admission now follows measured accuracy plus independent arsenal recall,
 // not an additional arbitrary wave-number delay (Jon's 95% advancement rule).
@@ -137,6 +206,8 @@ assert.match(source, /cueSupportForNote\(/)
 assert.doesNotMatch(source, /automaticCueForWave\(/)
 assert.match(source, /const waitForClear = waitForClearBeforeSpawn\(rt\.wave, demoRef\.current\)/)
 assert.match(source, /pickVillagerNotes\(totalTines, rt\.wave, spawnIndex\)/)
+assert.match(source, /curriculumStageForWave\(wave, demoRef\.current\)/)
+assert.match(source, /stepChainCandidatePool\(candidatePool, exclude\)/)
 // The isolated sweep fixture has its own spawn positions; ordinary play must
 // still enter through the same patient-curriculum boundary.
 assert.match(source, /x: galvanicProofRef\.current && rt\.wave === 1\s*\? GALVANIC_PROOF_X\[spawnIndex\] \?\? W - 150\s*: demoRef\.current \? W - 150 : villagerEntryX\(W, spriteWidth\)/)

@@ -463,6 +463,28 @@ export function curriculumStageForWave(wave: number, demo: boolean): CurriculumS
   return 'intervals'
 }
 
+/**
+ * Step-chain candidates stay within two positions of the prior target in the
+ * canonical playable range order. That gives beginners adjacent or
+ * near-adjacent scale steps without changing FSRS's due-priority picker.
+ */
+export const STEP_CHAIN_MAX_SCALE_STEPS = 2
+
+export function stepChainCandidatePool(
+  pool: readonly string[],
+  previousNote: string | null,
+): string[] {
+  if (!previousNote) return [...pool]
+  const previousIndex = PITCHFORKS_RANGE_NOTES.indexOf(previousNote)
+  if (previousIndex < 0) return [...pool]
+
+  const nearby = pool.filter(note => {
+    const noteIndex = PITCHFORKS_RANGE_NOTES.indexOf(note)
+    return noteIndex >= 0 && Math.abs(noteIndex - previousIndex) <= STEP_CHAIN_MAX_SCALE_STEPS
+  })
+  return nearby.length > 0 ? nearby : [...pool]
+}
+
 export function patientTineCountsForWave(wave: number): readonly TineCount[] | null {
   return PATIENT_WAVES[wave] ?? null
 }

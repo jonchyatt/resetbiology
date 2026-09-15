@@ -86,6 +86,7 @@ import {
   attackTimeForCurriculum,
   createPitchforksPresentationJourney,
   cueSupportForNote,
+  curriculumStageForWave,
   deterministicPairNotes,
   firstMinuteCoachCopy,
   parseCueSupportProfile,
@@ -93,6 +94,7 @@ import {
   patientTineCountsForWave,
   recordCueSupportOutcome,
   replayLabelForCueSupport,
+  stepChainCandidatePool,
   villagerEntryX,
   waitForClearBeforeSpawn,
   type CueSupportLevel,
@@ -1088,6 +1090,7 @@ interface Runtime {
   animClock: number
   gameOver: boolean
   firstVillagerId: number | null
+  lastPickedVillagerNote: string | null
   rain: RainState
 }
 
@@ -1876,6 +1879,7 @@ function makeInitialRuntime(demo: boolean, closeSmashProof = false, galvanicProo
     animClock: 0,
     gameOver: false,
     firstVillagerId: null,
+    lastPickedVillagerNote: null,
     rain: createRainState(),
   }
 }
@@ -7121,6 +7125,7 @@ export default function PitchforksIII() {
       masteryProgressRef.current = {}
     cueSupportProfileRef.current = { version: 1, notes: {} }
     unlockedNotesRef.current = [...STARTING_NOTES]
+    runtimeRef.current.lastPickedVillagerNote = null
     setUnlockedNotes([...STARTING_NOTES])
     resetThunderhead()
     resetBellWave()
@@ -7202,7 +7207,23 @@ export default function PitchforksIII() {
     for (const note of pool) ensureActiveNoteMemory(note)
 
     const patientNotes = deterministicPairNotes(pool, wave, encounterIndex, totalTines, demoRef.current)
-    if (patientNotes) return patientNotes
+    if (patientNotes) {
+      runtimeRef.current.lastPickedVillagerNote = patientNotes[patientNotes.length - 1] ?? null
+      return patientNotes
+    }
+
+    const stage = curriculumStageForWave(wave, demoRef.current)
+    let exclude: string | null = stage === 'step-chain' ? runtimeRef.current.lastPickedVillagerNote : null
+    const pickFromPool = (candidatePool: string[]) => {
+      const narrowedPool = stage === 'step-chain'
+        ? stepChainCandidatePool(candidatePool, exclude)
+        : candidatePool
+      const nextNote = pickNextNote(narrowedPool, fsrsStore, exclude)
+      ensureActiveNoteMemory(nextNote)
+      exclude = nextNote
+      runtimeRef.current.lastPickedVillagerNote = nextNote
+      return nextNote
+    }
 
     if (totalTines > 1) {
       const isMasteredNote = (note: string) => {
@@ -7215,20 +7236,15 @@ export default function PitchforksIII() {
       if (masteredPool.length > 0) {
         const weakPool = pool.filter(note => !isMasteredNote(note))
         const notes: string[] = []
-        let exclude: string | null = null
 
         if (weakPool.length > 0) {
-          const weakNote = pickNextNote(weakPool, fsrsStore, exclude)
-          ensureActiveNoteMemory(weakNote)
+          const weakNote = pickFromPool(weakPool)
           notes.push(weakNote)
-          exclude = weakNote
         }
 
         while (notes.length < totalTines) {
-          const masteredNote = pickNextNote(masteredPool, fsrsStore, exclude)
-          ensureActiveNoteMemory(masteredNote)
+          const masteredNote = pickFromPool(masteredPool)
           notes.push(masteredNote)
-          exclude = masteredNote
         }
 
         return notes
@@ -7236,12 +7252,9 @@ export default function PitchforksIII() {
     }
 
     const notes: string[] = []
-    let exclude: string | null = null
     for (let i = 0; i < totalTines; i++) {
-      const nextNote = pickNextNote(pool, fsrsStore, exclude)
-      ensureActiveNoteMemory(nextNote)
+      const nextNote = pickFromPool(pool)
       notes.push(nextNote)
-      exclude = nextNote
     }
     return notes
   }, [activeFsrsStore, ensureActiveNoteMemory])
@@ -9855,6 +9868,7 @@ export default function PitchforksIII() {
     lessonPausedBeforeOpenRef.current = false
     pendingPracticeWorldRef.current = null
     presentationVisitCountByTargetRef.current.clear()
+    runtimeRef.current.lastPickedVillagerNote = null
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
     bossWorldRef.current = null
@@ -10376,6 +10390,7 @@ export default function PitchforksIII() {
     setCloseSmashGuideOpen(false)
     closeSmashGuidePausedBeforeOpenRef.current = false
     presentationVisitCountByTargetRef.current.clear()
+    runtimeRef.current.lastPickedVillagerNote = null
     bossControllerRef.current?.cancel()
     bossControllerRef.current = null
     bossWorldRef.current = null
