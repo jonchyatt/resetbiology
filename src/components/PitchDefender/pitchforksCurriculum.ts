@@ -5,7 +5,7 @@ import {
   type VillagePracticeReceipt,
 } from './villagePractice'
 
-export type TineCount = 1 | 2 | 3 | 4
+export type TineCount = 1 | 2 | 3 | 4 | 5
 export type CurriculumStage = 'showcase' | 'guided-pair' | 'recall-pair' | 'step-chain' | 'intervals'
 export type CueSupportLevel = 'guided' | 'recall'
 export type CueSupportOutcome = 'guided-success' | 'hinted-success' | 'recall-success' | 'miss'

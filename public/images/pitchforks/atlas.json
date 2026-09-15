@@ -20,6 +20,52 @@
         "normal": "fork_<n>tine_b<k>.png",
         "glow": "fork_<n>tine_b<k>_glow.png",
         "meta": "forks.json"
+      },
+      "supported_tine_counts": [1, 2, 3, 4, 5],
+      "concrete_coverage": {
+        "5tine": {
+          "villagers": {
+            "facing_right": "villager_5tine_walk.png",
+            "facing_left": "villager_5tine_walk_left.png",
+            "burned": [
+              "villager_5tine_burned_1.png",
+              "villager_5tine_burned_2.png",
+              "villager_5tine_burned_3.png",
+              "villager_5tine_burned_4.png"
+            ],
+            "burned_left": [
+              "villager_5tine_burned_1_left.png",
+              "villager_5tine_burned_2_left.png",
+              "villager_5tine_burned_3_left.png",
+              "villager_5tine_burned_4_left.png"
+            ],
+            "ash": "villager_5tine_ash.png",
+            "ash_left": "villager_5tine_ash_left.png",
+            "meta": "villager_5tine.json",
+            "burnFrameCount": 4,
+            "ashOnStrike": 5
+          },
+          "forks": {
+            "normal": [
+              "fork_5tine_b0.png",
+              "fork_5tine_b1.png",
+              "fork_5tine_b2.png",
+              "fork_5tine_b3.png",
+              "fork_5tine_b4.png",
+              "fork_5tine_b5.png"
+            ],
+            "glow": [
+              "fork_5tine_b0_glow.png",
+              "fork_5tine_b1_glow.png",
+              "fork_5tine_b2_glow.png",
+              "fork_5tine_b3_glow.png",
+              "fork_5tine_b4_glow.png",
+              "fork_5tine_b5_glow.png"
+            ],
+            "meta": "forks.json",
+            "concreteMeta": "fork_5tine.json"
+          }
+        }
       }
     },
     "fps": {

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "candidate-recovered-3x-1.0.0",
+  "frame_w": 16,
+  "frame_h": 24,
+  "walk_frames": 4,
+  "facing": "right",
+  "fork_base": {
+    "x": 14,
+    "y": 11
+  },
+  "tines": [
+    {
+      "x": 10,
+      "y": -4
+    },
+    {
+      "x": 12,
+      "y": -4
+    },
+    {
+      "x": 14,
+      "y": -4
+    },
+    {
+      "x": 16,
+      "y": -4
+    },
+    {
+      "x": 18,
+      "y": -4
+    }
+  ],
+  "burnFrameCount": 4,
+  "ashOnStrike": 5,
+  "sourceProvenance": {
+    "receipt": "C:/Users/jonch/Projects/jarvis/data/pitchforks-rework/runtime-logs/c13-p4-1-5/P4-ART-PROOF-RECEIPT.md",
+    "archive": "C:/Users/jonch/Projects/rb-pitchforks-release-20260913/data/pitchforks-rework/art-tests/villager-p4-1-5/native-codex-5-final/villager_5tine.json",
+    "sourceSha256": "B737C5AB1B699BA865741963A63B407621B187624A0E4DAF8D7110C5175CB500",
+    "sourceStatus": "STAGING_ONLY_NOT_INTEGRATED",
+    "adaptation": "Runtime VillagerMeta shape; tines are derived from fork_base + fork.tine_tips - handle_base; the approved N-tine lifecycle uses N-1 burn frames then ash on strike N; sourceStatus is provenance only."
+  }
+}

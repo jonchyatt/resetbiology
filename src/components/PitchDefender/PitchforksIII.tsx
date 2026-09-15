@@ -1723,14 +1723,26 @@ const defaultForkMeta: ForkMeta = {
   tine_tips: [{ x: 1, y: 0 }, { x: 3, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }],
 }
 
+const defaultFiveVillagerMeta: VillagerMeta = {
+  ...defaultVillagerMeta,
+  tines: [{ x: 10, y: -4 }, { x: 12, y: -4 }, { x: 14, y: -4 }, { x: 16, y: -4 }, { x: 18, y: -4 }],
+}
+
+const defaultFiveForkMeta: ForkMeta = {
+  ...defaultForkMeta,
+  frame_w: 12,
+  handle_base: { x: 5, y: 15 },
+  tine_tips: [{ x: 1, y: 0 }, { x: 3, y: 0 }, { x: 5, y: 0 }, { x: 7, y: 0 }, { x: 9, y: 0 }],
+}
+
 function emptyAssets(): Assets {
   return {
     frankMeta: defaultFrankMeta,
-    villagerMeta: { 1: defaultVillagerMeta, 2: defaultVillagerMeta, 3: defaultVillagerMeta, 4: defaultVillagerMeta },
-    forkMeta: { 1: defaultForkMeta, 2: defaultForkMeta, 3: defaultForkMeta, 4: defaultForkMeta },
-    walkLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined },
+    villagerMeta: { 1: defaultVillagerMeta, 2: defaultVillagerMeta, 3: defaultVillagerMeta, 4: defaultVillagerMeta, 5: defaultFiveVillagerMeta },
+    forkMeta: { 1: defaultForkMeta, 2: defaultForkMeta, 3: defaultForkMeta, 4: defaultForkMeta, 5: defaultFiveForkMeta },
+    walkLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined, 5: undefined },
     burnedLeft: {},
-    ashLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined },
+    ashLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined, 5: undefined },
     fork: {},
     forkGlow: {},
   }
@@ -1882,14 +1894,16 @@ function fixedWaveDirector(wave: number, demo: boolean, closeSmashProof = false,
   if (early) {
     return { wave, count: early.length, spawnInterval: demo ? 0.01 : Math.max(1.4, 3.2 - (wave - 1) * 0.3), speed, tineCounts: [...early] }
   }
-  // Wave 6+: probabilistic, slowly harder; 4-tine stays rare.
+  // After the patient wave-12 runway: probabilistic, slowly harder; 4- and
+  // 5-tine encounters stay rare.
   const count = Math.min(4 + Math.floor((wave - 5) / 2), 6)
   const spawnInterval = demo ? 0.01 : Math.max(0.9, 2.2 - (wave - 6) * 0.15)
   const p4 = Math.min(0.34, 0.12 + (wave - 6) * 0.03)
+  const p5 = Math.min(0.12, 0.04 + Math.max(0, wave - 13) * 0.02)
   const tineCounts: TineCount[] = []
   for (let i = 0; i < count; i++) {
     const roll = Math.random()
-    tineCounts.push(roll < 0.45 ? 2 : roll < 1 - p4 ? 3 : 4)
+    tineCounts.push(roll < 0.45 ? 2 : roll < 1 - p4 - p5 ? 3 : roll < 1 - p5 ? 4 : 5)
   }
   return { wave, count, spawnInterval, speed, tineCounts }
 }
@@ -5429,6 +5443,7 @@ export default function PitchforksIII() {
               2: parsed['2tine'] ?? defaultForkMeta,
               3: parsed['3tine'] ?? defaultForkMeta,
               4: parsed['4tine'] ?? defaultForkMeta,
+              5: parsed['5tine'] ?? defaultFiveForkMeta,
             }
           }
         } catch {}
@@ -5437,7 +5452,7 @@ export default function PitchforksIII() {
         if (!oneTineForkMeta.ok) throw new Error('Single-tine fork metadata failed to load')
         a.forkMeta[1] = await oneTineForkMeta.json()
 
-        for (const n of [1, 2, 3, 4] as const) {
+        for (const n of [1, 2, 3, 4, 5] as const) {
           a.walkLeft[n] = await loadImage(`${ASSET_BASE}/villager_${n}tine_walk_left.png`)
           a.ashLeft[n] = await loadImage(`${ASSET_BASE}/villager_${n}tine_ash_left.png`)
           for (let k = 1; k < n; k++) {
@@ -7460,7 +7475,13 @@ export default function PitchforksIII() {
         ? earFsrsRef.current[note]?.phase === 'review'
         : masteryProgressRef.current[note]?.masteredAt !== null && masteryProgressRef.current[note]?.masteredAt !== undefined
     )).length
-    const maxTines: TineCount = masteredAdmittedNotes >= 3 ? 4 : masteredAdmittedNotes >= 2 ? 3 : 2
+    const maxTines: TineCount = masteredAdmittedNotes >= 4
+      ? 5
+      : masteredAdmittedNotes >= 3
+        ? 4
+        : masteredAdmittedNotes >= 2
+          ? 3
+          : 2
     const plan = !demoRef.current && wave >= 6
       ? { ...rawPlan, tineCounts: rawPlan.tineCounts.map(count => count > maxTines ? maxTines : count) }
       : rawPlan
