@@ -4712,6 +4712,13 @@ export default function PitchforksIII() {
     observationGainPct: microphoneGain,
   })
 
+  // The detector publishes a new PitchInfo object for every analyser frame.
+  // These effects only need scalar observations; depending on the object
+  // itself couples their reruns to every object publication and state update.
+  const pitchIsActive = pitch?.isActive ?? false
+  const pitchFrequency = pitch?.frequency ?? 0
+  const pitchConfidence = pitch?.confidence ?? 0
+
   const microphoneOwnerRef = useRef<PitchforksMicrophoneOwner | null>(null)
   if (!microphoneOwnerRef.current) {
     microphoneOwnerRef.current = createPitchforksMicrophoneOwner({
@@ -4823,7 +4830,7 @@ export default function PitchforksIII() {
     if (micCheckStep !== 'voice') return
     const next = coachPitchforksVoice({
       room: roomReadiness,
-      voiceHeard: !!pitch?.isActive,
+      voiceHeard: pitchIsActive,
       elapsedMs: now - voiceCheckStartedAtRef.current,
     })
     setMicReadiness(next)
@@ -4831,7 +4838,7 @@ export default function PitchforksIII() {
     heardYouRef.current = true
     setHeardYou(true)
     setMicCheckStep('ready')
-  }, [isListening, micCheckStep, phase, pitch, roomReadiness, signalDbRef])
+  }, [isListening, micCheckStep, phase, pitchIsActive, roomReadiness, signalDbRef])
 
   useLayoutEffect(() => {
     const syncLayoutMode = () => {
@@ -6058,7 +6065,7 @@ export default function PitchforksIII() {
 
   useEffect(() => {
     if (phase !== 'range_assessment' || rangeStep === 'summary') return
-    const source = pitch
+    const source = pitchRef.current
     const now = performance.now()
     let candidate = rangeCandidate
 
@@ -6097,7 +6104,7 @@ export default function PitchforksIII() {
     rangeHeldMsRef.current = next.heldMs
     setRangeMatchProgress(next.heldMs / HOLD_MS)
     setRangeMatched(next.matched)
-  }, [matchingSuppressedNow, phase, pitch, rangeCandidate, rangeCuePlayed, rangeMatched, rangeStep, resetRangeMatch])
+  }, [matchingSuppressedNow, phase, pitchConfidence, pitchFrequency, pitchIsActive, pitchRef, rangeCandidate, rangeCuePlayed, rangeMatched, rangeStep, resetRangeMatch])
 
   useEffect(() => {
     if (phase !== 'range_assessment' && phase !== 'range_manual') return
@@ -6440,13 +6447,11 @@ export default function PitchforksIII() {
   }, [ceremony.active, ceremony.note, scheduleCeremonyTone])
 
   useEffect(() => {
+    if (!ceremony.active || !ceremony.note || !admissionCuePlayed) return
     const note = ceremony.note
-    const sourcePitch = pitch
+    const sourcePitch = pitchRef.current
     const now = performance.now()
-    const canEvaluate = ceremony.active &&
-      !!note &&
-      admissionCuePlayed &&
-      !matchingSuppressedNow()
+    const canEvaluate = !matchingSuppressedNow()
 
     const sampleState = canEvaluate && note
       ? exactPitchSampleState(sourcePitch, noteToFreq(note), CONFIDENCE_FLOOR, MATCH_TOLERANCE_CENTS)
@@ -6465,7 +6470,7 @@ export default function PitchforksIII() {
     admissionHeldMsRef.current = next.heldMs
     setAdmissionMatchProgress(next.heldMs / HOLD_MS)
     setAdmissionMatched(next.matched)
-  }, [admissionCuePlayed, admissionMatched, ceremony.active, ceremony.note, matchingSuppressedNow, pitch])
+  }, [admissionCuePlayed, admissionMatched, ceremony.active, ceremony.note, matchingSuppressedNow, pitchConfidence, pitchFrequency, pitchIsActive, pitchRef])
 
   const latencyForTarget = useCallback((target: NonNullable<ReturnType<typeof getActiveTarget>>) => {
     if (activePromptKeyRef.current === target.key && promptStartedAtRef.current > 0) {

@@ -18,6 +18,13 @@ function shouldHideHeader(pathname: string | null): boolean {
 
 export function Header() {
   const pathname = usePathname()
+  // Full-screen tools intentionally render no site header. Keep the Auth0
+  // profile hook out of those routes so they do not make an unused request.
+  if (shouldHideHeader(pathname)) return null
+  return <HeaderContent />
+}
+
+function HeaderContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const { user, isLoading } = useUser()
@@ -33,11 +40,6 @@ export function Header() {
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isUserMenuOpen])
-
-  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
-  // the content. Each such route owns its own navigation (← Back links).
-  // Must come after all hooks above so hook order never depends on pathname.
-  if (shouldHideHeader(pathname)) return null
 
   return (
     <header

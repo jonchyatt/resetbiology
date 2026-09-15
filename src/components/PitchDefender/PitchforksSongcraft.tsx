@@ -893,9 +893,12 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
 
   const acknowledge = useCallback(() => {
     if (pausedRef.current) return
+    const wasListening = microphoneRef.current.isListening
     const result = acknowledgePitchforksSongcraftRenderedState(controllerRef.current, practiceState)
-    if (result) applyResult(result)
-  }, [applyResult, practiceState])
+    if (!result) return
+    applyResult(result)
+    if (wasListening && result.state.lane === 'voice' && result.state.current.kind === 'note') startMic()
+  }, [applyResult, practiceState, startMic])
 
   const retrySave = useCallback(() => {
     if (pausedRef.current) return
