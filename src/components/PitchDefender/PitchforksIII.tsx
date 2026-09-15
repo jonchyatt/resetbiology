@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal, flushSync } from 'react-dom'
 import Link from 'next/link'
 import { Mic, RotateCcw } from 'lucide-react'
@@ -1348,6 +1348,36 @@ interface HudState {
 }
 
 type MicHudState = 'demo' | 'cue' | 'listening' | 'waiting' | 'blocked'
+
+export type PitchforksBossMicrophoneStatusProps = Readonly<{
+  isListening: boolean
+  isStarting: boolean
+  error: string | null
+  onRetry: () => void
+  buttonClassName: string
+}>
+
+export function PitchforksBossMicrophoneStatus({
+  isListening,
+  isStarting,
+  error,
+  onRetry,
+  buttonClassName,
+}: PitchforksBossMicrophoneStatusProps) {
+  const message = isListening
+    ? 'Listening to your microphone. Sing when ready.'
+    : isStarting
+      ? 'Starting microphone...'
+      : error
+        ? 'Microphone unavailable. Your chamber is still open; retry when ready.'
+        : 'Microphone is not active. Start it when ready.'
+  const showRetry = !isListening && !isStarting && !!error
+
+  return <>
+    <p className="p-3 text-center text-green-100">{message}</p>
+    {showRetry && <button type="button" data-testid="pf3-boss-retry-mic" onClick={onRetry} className={`${buttonClassName} border-cyan-300 text-cyan-100`}>RETRY MICROPHONE</button>}
+  </>
+}
 
 type Pf3ResetReason = 'confident-wrong' | 'silence' | null
 
@@ -4679,6 +4709,7 @@ export default function PitchforksIII() {
   const [admissionMatched, setAdmissionMatched] = useState(false)
   const [admissionMatchProgress, setAdmissionMatchProgress] = useState(0)
   const [micHudState, setMicHudState] = useState<MicHudState>('waiting')
+  const [micStartPending, setMicStartPending] = useState(false)
   const [heardYou, setHeardYou] = useState(false)
   const [micCheckStep, setMicCheckStep] = useState<MicCheckStep>('room')
   const [roomReadiness, setRoomReadiness] = useState<PitchforksRoomReadiness>('checking-room')
@@ -4720,6 +4751,7 @@ export default function PitchforksIII() {
   const pitchConfidence = pitch?.confidence ?? 0
 
   const microphoneOwnerRef = useRef<PitchforksMicrophoneOwner | null>(null)
+  const microphoneStartPromiseRef = useRef<Promise<void> | null>(null)
   if (!microphoneOwnerRef.current) {
     microphoneOwnerRef.current = createPitchforksMicrophoneOwner({
       start: startMicrophoneRaw,
@@ -4727,8 +4759,29 @@ export default function PitchforksIII() {
       isLive: () => micSourceHealthRef.current.trackReadyState === 'live',
     })
   }
-  const startListening = useCallback(() => microphoneOwnerRef.current!.start(), [])
-  const stopListening = useCallback(() => microphoneOwnerRef.current!.stop(), [])
+  const startListening = useCallback(() => {
+    let startPromise: Promise<void>
+    try {
+      startPromise = microphoneOwnerRef.current!.start()
+    } catch (error) {
+      setMicStartPending(false)
+      return Promise.reject(error)
+    }
+    microphoneStartPromiseRef.current = startPromise
+    setMicStartPending(true)
+    const clearPending = () => {
+      if (microphoneStartPromiseRef.current !== startPromise) return
+      microphoneStartPromiseRef.current = null
+      setMicStartPending(false)
+    }
+    void startPromise.then(clearPending, clearPending)
+    return startPromise
+  }, [])
+  const stopListening = useCallback(() => {
+    microphoneStartPromiseRef.current = null
+    microphoneOwnerRef.current!.stop()
+    setMicStartPending(false)
+  }, [])
 
   useEffect(() => {
     noteNamesRef.current = noteNamesOn
@@ -11930,10 +11983,13 @@ export default function PitchforksIII() {
             : retryNote ? <button type="button" data-testid="pf3-boss-retry-note" className={`${controlClass} border-green-300 text-green-100`} onClick={() => { const controller = bossControllerRef.current; if (controller) acceptBossResult(controller.retryNote()) }}>TRY THIS NOTE AGAIN</button>
               : <>
                 {bossState.lane === 'ear' && <button type="button" data-testid="pf3-boss-hear" disabled={bossAudioBusy} className={`${controlClass} border-cyan-300 text-cyan-100`} onClick={() => playBossCue(false)}>HEAR THE CHALLENGE</button>}
-                {bossState.lane === 'voice' && activeSceneWorld ? <>
-                  <p className="p-3 text-center text-green-100">{micError ? 'Microphone unavailable. Your chamber is still open; retry when ready.' : isListening ? 'Listening to your microphone. Sing when ready.' : 'Microphone is still connecting. Retry here without leaving the chamber.'}</p>
-                  {(!isListening || !!micError) && <button type="button" data-testid="pf3-boss-retry-mic" onClick={() => { void startListening() }} className={`${controlClass} border-cyan-300 text-cyan-100`}>RETRY MICROPHONE</button>}
-                </> : bossState.lane === 'voice' ? <button type="button" data-testid="pf3-boss-simulate" disabled={bossAudioBusy || bossSimulating || !bossState.claimId} className={`${controlClass} border-green-300 bg-green-950/50 text-green-100`} onClick={() => {
+                {bossState.lane === 'voice' && activeSceneWorld ? <PitchforksBossMicrophoneStatus
+                  isListening={isListening}
+                  isStarting={micStartPending}
+                  error={micError}
+                  onRetry={() => { void startListening() }}
+                  buttonClassName={controlClass}
+                /> : bossState.lane === 'voice' ? <button type="button" data-testid="pf3-boss-simulate" disabled={bossAudioBusy || bossSimulating || !bossState.claimId} className={`${controlClass} border-green-300 bg-green-950/50 text-green-100`} onClick={() => {
                   if (!bossControllerRef.current?.state().claimId || matchingSuppressedNow()) return
                   demoTargetRef.current = ''
                   bossHoldRef.current = { heldMs: 0, matched: false }
