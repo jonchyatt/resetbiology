@@ -1,6 +1,6 @@
 import type { NoteMemory } from '../../lib/fsrs'
 
-const MASTERY_SESSION_COUNT = 3
+export const PITCHFORKS_MASTERY_SESSION_COUNT = 3
 
 // These are the existing source keys. The projection reads caller-provided
 // snapshots only; it never opens either key or creates another one.
@@ -189,7 +189,7 @@ function readVoiceMastery(
     && validNow
     && masteredAt !== null
     && masteredAt <= nowMs
-    && sessionIds.length >= MASTERY_SESSION_COUNT
+    && sessionIds.length >= PITCHFORKS_MASTERY_SESSION_COUNT
 
   return { evidence, everMastered }
 }

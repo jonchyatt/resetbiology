@@ -11,6 +11,7 @@ import PitchforksBellTowerLesson from './PitchforksBellTowerLesson'
 import { renderBossChamber } from './PitchforksBossChamberView'
 import PitchforksMasteryPanel from './PitchforksMasteryPanel'
 import PitchforksCampaignJournal from './PitchforksCampaignJournal'
+import PitchforksWorldUnlockProgress from './PitchforksWorldUnlockProgress'
 import PitchforksSongcraft, { observePitchforksSongcraftGeneration, type PitchforksSongcraftGenerationState } from './PitchforksSongcraft'
 import { advancePitchforksCampaignProgress, bindPitchforksVillageCurriculum, advancePitchforksVillageProgress, advancePitchforksExaminationProgress, projectPitchforksWorldGates } from './pitchforksCampaignProgress'
 import { projectPitchforksMastery } from './pitchforksMasteryProjection'
@@ -883,6 +884,15 @@ interface ForkMeta {
 
 type PitchforksNormalWorld = WorldId
 type VillageGateAssetStatus = 'loading' | 'ready' | 'missing'
+
+export function pitchforksMicReadyActionLabel(
+  rangeIntent: 'guided' | 'saved',
+  selectedWorld: WorldId,
+): string {
+  if (rangeIntent === 'guided') return 'Begin comfortable range check'
+  const chamber = WORLD_REGISTRY.find(world => world.id === selectedWorld)?.name.replace(/^The\s+/i, '')
+  return `Enter the ${chamber ?? 'Dungeon'}`
+}
 
 interface Assets {
   frankIdle?: HTMLImageElement
@@ -11232,6 +11242,17 @@ export default function PitchforksIII() {
                 )
               })}
             </div>
+            {!demoMode && !fsrsDebugMode && presentationJourney && (
+              <PitchforksWorldUnlockProgress
+                projection={projectPitchforksMastery({
+                  admittedNotes: presentationJourney.unlockedNotes,
+                  voiceMemory: fsrsRef.current,
+                  earMemory: earFsrsRef.current,
+                  masteryRecords: masteryProgressRef.current,
+                  nowMs: Date.now(),
+                })}
+              />
+            )}
           </div>
           {!demoMode && !fsrsDebugMode && <button type="button" data-testid="pf3-play-selected-world"
             disabled={!assetsReady}
@@ -11713,7 +11734,7 @@ export default function PitchforksIII() {
             disabled={!calibrationReady}
             className="min-h-12 w-full py-3 text-sm font-black tracking-widest border border-green-200 bg-green-300 text-[#071018] transition active:scale-[0.99] disabled:border-gray-700 disabled:bg-gray-800 disabled:text-gray-500 disabled:opacity-70"
           >
-            {rangeIntent === 'guided' ? 'Begin comfortable range check' : 'Enter the Village'}
+            {pitchforksMicReadyActionLabel(rangeIntent, selectedWorld)}
           </button>
 
           <button
