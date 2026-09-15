@@ -51,6 +51,12 @@ export function PitchforksWorldUnlockProgress({ projection }: PitchforksWorldUnl
       <p className="mt-1 text-sm leading-relaxed text-gray-300">
         Complete {PITCHFORKS_MASTERY_SESSION_COUNT} distinct voice mastery sessions for each admitted note.
       </p>
+      <p
+        data-testid="pf3-world-unlock-progress-input-note"
+        className="mt-2 border border-cyan-800/80 bg-black/20 px-3 py-2 text-xs leading-relaxed text-cyan-50"
+      >
+        Listen &amp; Tap builds recognition practice; those sessions do not currently count toward World Map unlocks. Voice Lightning sessions are required for campaign progress and new-area unlocks.
+      </p>
       {notes.length === 0 ? (
         <p
           data-testid="pf3-world-unlock-progress-empty"

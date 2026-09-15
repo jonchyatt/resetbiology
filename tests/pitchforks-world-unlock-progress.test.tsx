@@ -35,6 +35,8 @@ const markup = renderToStaticMarkup(createElement(PitchforksWorldUnlockProgress,
 
 assert.equal(projection.worldClear, false)
 assert.match(markup, /data-testid="pf3-world-unlock-progress"/)
+assert.match(markup, /data-testid="pf3-world-unlock-progress-input-note"/)
+assert.match(markup, /Listen &amp; Tap builds recognition practice; those sessions do not currently count toward World Map unlocks\. Voice Lightning sessions are required for campaign progress and new-area unlocks\./)
 assert.match(markup, /2\/6 voice mastery sessions/)
 assert.match(markup, /D4.*2\/3 sessions/)
 assert.match(markup, /G4.*0\/3 sessions/)
