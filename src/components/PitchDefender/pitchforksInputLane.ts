@@ -17,6 +17,34 @@ export interface PitchforksButtonDecision {
   next: PitchforksButtonTrial
 }
 
+export interface PitchforksAttackTimerPauseInput {
+  ceremonyActive: boolean
+  matchingSuppressed: boolean
+  micUnavailable: boolean
+  firstLockGrace: boolean
+  buttonReplayPending: boolean
+}
+
+/**
+ * Button Replay is an answer affordance, not an environmental pause. The
+ * attack clock must keep running after a wrong tap, just as it does after a
+ * wrong voice sample; otherwise a wrong tap followed by endless Replay can
+ * make the encounter impossible to lose.
+ */
+export function shouldPausePitchforksAttackTimer(input: PitchforksAttackTimerPauseInput): boolean {
+  return input.ceremonyActive || input.matchingSuppressed || input.micUnavailable || input.firstLockGrace
+}
+
+export interface PitchforksAttackTimeoutResult {
+  health: number
+  gameOver: boolean
+}
+
+export function resolvePitchforksAttackTimeout(healthBefore: number): PitchforksAttackTimeoutResult {
+  const health = Math.max(0, healthBefore - 1)
+  return { health, gameOver: health === 0 }
+}
+
 export function parsePitchforksInputMode(raw: string | null): PitchforksInputMode {
   return raw === 'buttons' ? 'buttons' : 'voice'
 }

@@ -6,6 +6,8 @@ import {
   decidePitchforksButtonAnswer,
   parsePitchforksInputMode,
   replayPitchforksButtonTrial,
+  resolvePitchforksAttackTimeout,
+  shouldPausePitchforksAttackTimer,
 } from '../src/components/PitchDefender/pitchforksInputLane'
 import {
   FSRS_EAR_KEY,
@@ -32,6 +34,23 @@ check(() => assert.equal(wrong.correct, false))
 check(() => assert.equal(wrong.shouldGrade, true))
 check(() => assert.equal(wrong.shouldStrike, false))
 check(() => assert.equal(wrong.next.requiresReplay, true))
+check(() => assert.equal(shouldPausePitchforksAttackTimer({
+  ceremonyActive: false,
+  matchingSuppressed: false,
+  micUnavailable: false,
+  firstLockGrace: false,
+  buttonReplayPending: wrong.next.requiresReplay,
+}), false))
+
+let healthAfterTimeouts = 5
+let gameOverAfterTimeouts = false
+for (let failure = 0; failure < 5; failure += 1) {
+  const timeout = resolvePitchforksAttackTimeout(healthAfterTimeouts)
+  healthAfterTimeouts = timeout.health
+  gameOverAfterTimeouts = timeout.gameOver
+}
+check(() => assert.equal(healthAfterTimeouts, 0))
+check(() => assert.equal(gameOverAfterTimeouts, true))
 
 const blockedBeforeReplay = decidePitchforksButtonAnswer(wrong.next, 'C4', 'C4')
 check(() => assert.equal(blockedBeforeReplay.accepted, false))
@@ -64,6 +83,9 @@ check(() => assert.match(source, /gradeEar/))
 check(() => assert.match(source, /data-testid="pf3-button-answer-row"/))
 check(() => assert.match(source, /LISTEN & TAP/))
 check(() => assert.match(source, /LISTEN, THEN CHOOSE THE NOTE/))
+check(() => assert.match(source, /shouldPausePitchforksAttackTimer\(/))
+check(() => assert.match(source, /const timeout = resolvePitchforksAttackTimeout\(rt\.health\)/))
+check(() => assert.match(source, /if \(timeout\.gameOver\) \{[\s\S]*setPhase\('game_over'\)/))
 check(() => assert.match(source, /inputMode === 'buttons' \? false : noteNamesRef\.current/))
 check(() => assert.match(source, /inputMode === 'buttons' \? false : staffNotationRef\.current/))
 check(() => assert.doesNotMatch(source, /aria-pressed=.*pf3-button-answer/))

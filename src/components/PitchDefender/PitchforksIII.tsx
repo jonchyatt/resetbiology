@@ -130,6 +130,8 @@ import {
   decidePitchforksButtonAnswer,
   parsePitchforksInputMode,
   replayPitchforksButtonTrial,
+  resolvePitchforksAttackTimeout,
+  shouldPausePitchforksAttackTimer,
   type PitchforksButtonTrial,
   type PitchforksInputMode,
 } from './pitchforksInputLane'
@@ -6118,14 +6120,21 @@ export default function PitchforksIII() {
   const timersPausedNow = useCallback(() => {
     const active = getActiveTarget()
     const micUnavailable = inputModeRef.current === 'voice' && !demoRef.current && (!isListeningRef.current || !!micErrorRef.current)
-    const awaitingButtonReplay = inputModeRef.current === 'buttons' &&
+    const buttonReplayPending = inputModeRef.current === 'buttons' &&
       !!active &&
       buttonTrialRef.current?.targetKey === active.key &&
       buttonTrialRef.current.requiresReplay
     const firstLockGrace = firstLockGraceRef.current &&
       !!active &&
       active.villager.id === runtimeRef.current.firstVillagerId
-    const paused = ceremonyRef.current.active || matchingSuppressedNow() || micUnavailable || firstLockGrace || awaitingButtonReplay
+    const environmentalPause = ceremonyRef.current.active || matchingSuppressedNow()
+    const paused = shouldPausePitchforksAttackTimer({
+      ceremonyActive: ceremonyRef.current.active,
+      matchingSuppressed: environmentalPause,
+      micUnavailable,
+      firstLockGrace,
+      buttonReplayPending,
+    })
     timersPausedRef.current = paused
     return paused
   }, [getActiveTarget, matchingSuppressedNow])
@@ -9256,6 +9265,7 @@ export default function PitchforksIII() {
             }
             reviewTargetNote(unresolvedTarget, false)
           }
+          const timeout = resolvePitchforksAttackTimeout(rt.health)
           if (inputModeRef.current === 'buttons') {
             setButtonFeedback({ kind: 'wrong', text: `TIME EXPIRED · THE NOTE WAS ${active.note}` })
           }
@@ -9263,7 +9273,7 @@ export default function PitchforksIII() {
           frankReactionStartedAtRef.current = performance.now()
           v.state = 'ash'
           v.ashTimer = 0.9
-          rt.health = Math.max(0, rt.health - 1)
+          rt.health = timeout.health
           rt.streak = 0
           activeKeyRef.current = ''
           activeVillagerIdRef.current = null
@@ -9273,7 +9283,7 @@ export default function PitchforksIII() {
           setPromptText('')
           localSfx('hurt', sfxVolumeRef.current)
           setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
-          if (rt.health <= 0) {
+          if (timeout.gameOver) {
             rt.gameOver = true
             resetSparkGuide('game-over')
             phaseRef.current = 'game_over'
