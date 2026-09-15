@@ -74,6 +74,10 @@ function harness() {
     rangeProfileRef: ref({ lowNote: 'D4', highNote: 'A4' }),
     presentationJourneyRef: ref({ startedAt: 'journey', guidedNotes: ['D4', 'F4'], unlockedNotes: ['D4', 'F4'], villagePractice: [] }),
     unlockedNotesRef: ref(['D4', 'F4']), inputModeRef: ref('voice'), isListeningRef: ref(true),
+    pausedRef: ref(false), setPaused: noop, setCloseSmashGuideOpen: noop,
+    pauseGateRef: ref({ paused: false, generation: 0, fence: 0 }), closeSmashGuidePausedBeforeOpenRef: ref(false),
+    selectedWorldRef: ref('dungeon'), lessonPausedBeforeOpenRef: ref(false), pendingPracticeWorldRef: ref(null),
+    songcraftEntryModeRef: ref('practice'),
     demoRef: ref(false), bossSimulatingRef: ref(false), galvanicProofRef: ref(false), bellProofRef: ref(false),
     closeSmashProofRef: ref(false), nextIdRef: ref(40), assetsRef: ref({ villagerMeta: {} }),
     defaultVillagerMeta: { frame_w: 1, frame_h: 1 }, SPRITE_SCALE: 1, W: 800, GROUND_Y: 400,
@@ -108,9 +112,15 @@ function harness() {
     createRainState: () => ({}), rainActivationRequestedRef: ref(false), rainUiSignatureRef: ref(''),
     setRainState: noop, activeKeyRef: ref(''), lockHeldMsRef: ref(0), lockProgressRef: ref(0), tintRef: ref(null), setHud: noop,
     resetLevelProgress: (wave: number) => { env.levelProgressRef.current = createPitchforksLevelProgress(wave) },
-    bossWorldRef: ref(null), bossPracticeOnlyRef: ref(false), bossControllerRef: ref(null), bossIdentityRef: ref(null), setBossIdentity: noop, setBossState: noop,
-    setBossAudioBusy: noop, rafRef: ref(null), cancelAnimationFrame: noop, setPhase: noop, resumeCueAudioFromGesture: noop,
+    bossWorldRef: ref(null), bossPracticeWorldRef: ref(null), bossPracticeOnlyRef: ref(false), bossControllerRef: ref(null), bossIdentityRef: ref(null), setBossIdentity: noop, setBossState: noop,
+    setBossAudioBusy: noop, setVillageLessonOpen: noop, setBellLessonOpen: noop, setSongcraftCompletionMessage: noop,
+    rafRef: ref(null), cancelAnimationFrame: noop, setPhase: noop, resumeCueAudioFromGesture: noop,
   }
+  env.createPitchforksPauseGate = runInNewContext(executable('createPitchforksPauseGate'), env)
+  env.acceptsPitchforksPauseCallback = runInNewContext(executable('acceptsPitchforksPauseCallback'), env)
+  // This harness starts inside run 1. Seed the real pause gate to that active
+  // run so delayed callbacks still execute through the production fence.
+  env.pauseGateRef.current = { ...env.createPitchforksPauseGate(), generation: env.runGenerationRef.current }
   const spawnCallback = runInNewContext(executable('spawnVillager'), env)
   const review = runInNewContext(executable('reviewTargetNote'), env)
   const play = runInNewContext(executable('playVillagerSequence'), env)

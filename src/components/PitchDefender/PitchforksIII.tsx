@@ -624,8 +624,8 @@ export type PitchforksPauseGate = Readonly<{
   fence: number
 }>
 
-export function createPitchforksPauseGate(): PitchforksPauseGate {
-  return { paused: false, generation: 0, fence: 0 }
+export function createPitchforksPauseGate(generation = 0): PitchforksPauseGate {
+  return { paused: false, generation, fence: 0 }
 }
 
 export function transitionPitchforksPauseGate(
@@ -4953,7 +4953,18 @@ export default function PitchforksIII() {
   const chooseInputMode = useCallback((mode: PitchforksInputMode) => {
     inputModeRef.current = mode
     setInputMode(mode)
-    try { localStorage.setItem(PITCHFORKS_INPUT_MODE_KEY, mode) } catch {}
+    try {
+      localStorage.setItem(PITCHFORKS_INPUT_MODE_KEY, mode)
+      const nextUrl = new URL(window.location.href)
+      if (nextUrl.searchParams.has('input')) {
+        nextUrl.searchParams.delete('input')
+        window.history.replaceState(
+          window.history.state,
+          '',
+          `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`,
+        )
+      }
+    } catch {}
   }, [])
 
   const saveMasteryProgress = useCallback(() => {
@@ -5140,9 +5151,14 @@ export default function PitchforksIII() {
       try { return loadPitchforksSettings(localStorage) }
       catch { return normalizePitchforksSettings(null) }
     })()
-    const restoredInput = requestedInput === 'buttons' || requestedInput === 'voice'
-      ? requestedInput
-      : parsePitchforksInputMode(storedInput)
+    // A saved choice always wins over the URL: otherwise re-opening the same
+    // canonical link (bookmark, shared link, home-screen icon) with an old
+    // ?input= value snaps a returning player back out of their chosen lane.
+    const restoredInput = storedInput === 'buttons' || storedInput === 'voice'
+      ? storedInput
+      : requestedInput === 'buttons' || requestedInput === 'voice'
+        ? requestedInput
+        : parsePitchforksInputMode(storedInput)
     demoRef.current = isDemo
     fsrsDebugRef.current = isFsrsDebug
     inputModeRef.current = restoredInput
@@ -6337,10 +6353,10 @@ export default function PitchforksIII() {
     deferredAdmissionNotesRef.current.delete(note)
     clearNewNoteCeremony()
     setNewNoteUnlocked(note)
-    const callbackGeneration = runGenerationRef.current
-    const callbackFence = pauseGateRef.current.fence
+    // Dismissing this cosmetic banner is always safe, even across a level/wave change
+    // (unlike gameplay callbacks) — do not gate it on run-generation staleness, or a
+    // level advance inside the ceremony window strands the banner on screen forever.
     newNoteTimerRef.current = setTimeout(() => {
-      if (!acceptsPitchforksPauseCallback(pauseGateRef.current, callbackGeneration, callbackFence)) return
       setNewNoteUnlocked(null)
     }, NEW_NOTE_CEREMONY_MS)
   }, [admissionMatched, clearNewNoteCeremony, ensureNoteMemory, saveFsrs, savePresentationJourneyNotes])
@@ -7105,6 +7121,7 @@ export default function PitchforksIII() {
       setRainState(createRainState())
       clearNextWaveTimer()
       runGenerationRef.current += 1
+      pauseGateRef.current = createPitchforksPauseGate(runGenerationRef.current)
       villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
       villageReturnOffersRef.current.clear()
       villageReturnContextPlayedRef.current.clear()
@@ -9821,7 +9838,6 @@ export default function PitchforksIII() {
   const beginPlaying = useCallback(() => {
     pausedRef.current = false
     setPaused(false)
-    pauseGateRef.current = createPitchforksPauseGate()
     setCloseSmashGuideOpen(false)
     closeSmashGuidePausedBeforeOpenRef.current = false
     setVillageLessonOpen(false)
@@ -9846,6 +9862,7 @@ export default function PitchforksIII() {
     clearCueTimers()
     clearNextWaveTimer()
     runGenerationRef.current += 1
+    pauseGateRef.current = createPitchforksPauseGate(runGenerationRef.current)
     villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
     villageReturnOffersRef.current.clear()
     villageReturnContextPlayedRef.current.clear()
@@ -9943,7 +9960,7 @@ export default function PitchforksIII() {
     if (!artReviewRef.current) return
     pausedRef.current = false
     setPaused(false)
-    pauseGateRef.current = createPitchforksPauseGate()
+    pauseGateRef.current = createPitchforksPauseGate(runGenerationRef.current)
     phaseRef.current = 'playing'
     setPhase('playing')
     lastTimeRef.current = 0
@@ -9988,7 +10005,6 @@ export default function PitchforksIII() {
     if (!isPitchforksBossId(bossId)) return
     pausedRef.current = false
     setPaused(false)
-    pauseGateRef.current = createPitchforksPauseGate()
     const admitted = [...unlockedNotesRef.current]
     const journey = presentationJourneyRef.current
     if (earnedWorld && (!journey || lane !== 'voice' || demoRef.current || fsrsDebugRef.current
@@ -10019,6 +10035,7 @@ export default function PitchforksIII() {
     stopListening()
     resumeCueAudioFromGesture()
     runGenerationRef.current += 1
+    pauseGateRef.current = createPitchforksPauseGate(runGenerationRef.current)
     villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
     villageReturnOffersRef.current.clear()
     villageReturnContextPlayedRef.current.clear()
@@ -10168,6 +10185,15 @@ export default function PitchforksIII() {
     if (phaseRef.current !== 'calibrating') return
     roomCheckStartedAtRef.current = performance.now()
   }, [beginPlaying, startListening])
+
+  const restartGameAfterGameOver = useCallback(() => {
+    setRangeIntent('saved')
+    if (inputModeRef.current === 'buttons') {
+      beginPlaying()
+      return
+    }
+    void beginCalibration()
+  }, [beginCalibration, beginPlaying])
 
   const startGuidedRangeSetup = useCallback(() => {
     setRangeIntent('guided')
@@ -10337,7 +10363,6 @@ export default function PitchforksIII() {
   const quitToMenu = useCallback(() => {
     pausedRef.current = false
     setPaused(false)
-    pauseGateRef.current = createPitchforksPauseGate()
     setCloseSmashGuideOpen(false)
     closeSmashGuidePausedBeforeOpenRef.current = false
     presentationVisitCountByTargetRef.current.clear()
@@ -10354,6 +10379,7 @@ export default function PitchforksIII() {
     clearCueTimers()
     clearNextWaveTimer()
     runGenerationRef.current += 1
+    pauseGateRef.current = createPitchforksPauseGate(runGenerationRef.current)
     villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
     villageReturnOffersRef.current.clear()
     villageReturnContextPlayedRef.current.clear()
@@ -10410,6 +10436,7 @@ export default function PitchforksIII() {
     deferredAdmissionNotesRef.current = new Set()
     clearNextWaveTimer()
     runGenerationRef.current += 1
+    pauseGateRef.current = createPitchforksPauseGate(runGenerationRef.current)
     villageReturnQueueRef.current = createVillageReturnQueue(`village-return:${runGenerationRef.current}`)
     villageReturnOffersRef.current.clear()
     villageReturnContextPlayedRef.current.clear()
@@ -11888,10 +11915,7 @@ export default function PitchforksIII() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => {
-                setRangeIntent('saved')
-                void beginCalibration()
-              }}
+              onClick={restartGameAfterGameOver}
               className="min-h-11 flex-1 py-2 bg-orange-200 text-[#071018] font-bold border border-orange-100"
             >
               AGAIN

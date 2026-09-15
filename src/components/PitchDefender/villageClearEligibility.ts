@@ -4,6 +4,7 @@ import {
 } from './pitchforksMasteryProjection'
 import { getVillageLessonCandidates } from './villageLessonSelector'
 import type { VillagePracticeReceipt } from './villagePractice'
+import { VILLAGE_RETURN_REQUIRED_OTHER_ENCOUNTERS } from './villageReturnQueue'
 
 export type VillageClearBinding = Readonly<Pick<
   VillagePracticeReceipt, 'objective' | 'contextNote' | 'targetNote'
@@ -32,6 +33,11 @@ const RECEIPT_KEYS: readonly (keyof VillagePracticeReceipt)[] = [
   'introducedEncounterIndex', 'timestampMs', 'objective', 'contextNote',
   'targetNote', 'support', 'cueFree',
 ]
+
+// MAIN advances the completed counter before writing the return receipt. The
+// queue's three "other encounter" delay therefore occupies n+1..n+3, and the
+// unaided return itself is recorded at n+4 or later.
+const MIN_UNAIDED_RETURN_INDEX_DISTANCE = VILLAGE_RETURN_REQUIRED_OTHER_ENCOUNTERS + 1
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -83,10 +89,16 @@ export function projectVillageClearEligibility(
     comfortableRange: input.comfortableRange,
   })
   const endpoints = new Set<string>()
+  const bindingKeys = new Set<string>()
   for (const binding of input.bindings) {
     if (!isRecord(binding) || !candidates.some(candidate =>
       candidate.bothVoiceAdmitted && matches(candidate, binding),
     )) return result(false, 'Every binding must match an admitted directed interval within the assessed range.')
+    const bindingKey = `${binding.objective}\u0000${binding.contextNote}\u0000${binding.targetNote}`
+    if (bindingKeys.has(bindingKey)) {
+      return result(false, 'Village clear bindings must name each directed interval only once.')
+    }
+    bindingKeys.add(bindingKey)
     endpoints.add(binding.contextNote)
     endpoints.add(binding.targetNote)
   }
@@ -120,7 +132,8 @@ export function projectVillageClearEligibility(
       || !candidates.some(candidate => matches(candidate, receipt))
       || (receipt.support === 'SUPPORTED'
         ? receipt.encounterIndex < receipt.introducedEncounterIndex
-        : receipt.encounterIndex <= receipt.introducedEncounterIndex || !receipt.cueFree)
+        : receipt.encounterIndex - receipt.introducedEncounterIndex < MIN_UNAIDED_RETURN_INDEX_DISTANCE
+          || !receipt.cueFree)
     ) return result(false, 'Village practice contains an invalid receipt.')
 
     if (receipt.journeyId !== input.journeyId) continue

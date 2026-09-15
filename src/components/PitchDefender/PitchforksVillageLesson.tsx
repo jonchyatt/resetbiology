@@ -11,6 +11,8 @@ export type PitchforksVillageLessonProps = Readonly<{
   contextNote: string
   targetNote: string
   support: PitchforksVillageLessonSupport
+  /** Optional caller-owned copy for a more specific normal-route handoff. */
+  nextStep?: string
   onReplay: () => void
 }>
 
@@ -50,6 +52,9 @@ export function PitchforksVillageLesson(props: PitchforksVillageLessonProps) {
   const shapeLabel = blindProtected
     ? `Directional interval shape: from ${props.contextNote} ${direction} by a ${objectiveLabel.toLowerCase()}`
     : `Directional interval shape: from ${props.contextNote} ${direction} to ${props.targetNote}, a ${objectiveLabel.toLowerCase()}`
+  const nextStep = props.nextStep?.trim() || (blindProtected
+    ? 'Finish this return from memory. A correct unhinted return records practice for this Village interval.'
+    : 'Finish supported practice, then wait for the delayed return before trying this interval without the target cue.')
 
   return (
     <section
@@ -105,6 +110,16 @@ export function PitchforksVillageLesson(props: PitchforksVillageLessonProps) {
         {blindProtected
           ? `Start on ${props.contextNote}. Move ${direction} a ${objectiveLabel.toLowerCase()}. Sing the return from memory.`
           : `Hear ${props.contextNote}, then sing ${props.targetNote}: a ${objectiveLabel.toLowerCase()} ${direction}.`}
+      </p>
+
+      <div data-testid="pf3-village-lesson-torch" className="mt-2 border border-orange-300/60 bg-orange-950/30 px-2 py-2 text-[10px] leading-relaxed text-orange-100">
+        <strong className="font-black tracking-widest text-orange-200">TORCH ECOLOGY</strong>
+        <span className="ml-2">An active flame needs an extended exact-note hold until it is fully out. Rain may douse it, but it never grants tine credit.</span>
+      </div>
+
+      <p data-testid="pf3-village-lesson-next-step" className="mt-2 border border-lime-300/50 bg-lime-950/20 px-2 py-2 text-[10px] leading-relaxed text-lime-100">
+        <strong className="font-black tracking-widest text-lime-200">NEXT STEP</strong>
+        <span className="ml-2">{nextStep}</span>
       </p>
 
       <button
