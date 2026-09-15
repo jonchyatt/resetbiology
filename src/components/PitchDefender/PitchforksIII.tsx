@@ -104,6 +104,7 @@ import {
   type PitchforksPresentationJourney,
   type TineCount,
 } from './pitchforksCurriculum'
+import { speedBonusForLatencyMs } from './pitchforksScoring'
 import { selectVillageLessonCandidate } from './villageLessonSelector'
 import { recordVillagePractice } from './villagePractice'
 import {
@@ -7590,6 +7591,7 @@ export default function PitchforksIII() {
     const { villager, tineIndex } = target
     const strikeNote = target.note ?? villager.notes[villager.burned]
     const strikeHue = hueForNote(strikeNote)
+    const speedBonus = speedBonusForLatencyMs(latencyForTarget(target))
     if (gradeReview) reviewTargetNote(target, true)
     lastStrikeNoteRef.current = strikeNote ?? null
     lastStrikeHueRef.current = strikeHue
@@ -7616,6 +7618,7 @@ export default function PitchforksIII() {
       }, 700)
     }
     villager.burned += 1
+    rt.score += speedBonus
     burnedTinesRef.current += 1
     lockHeldMsRef.current = 0
     lockProgressRef.current = 0
@@ -7662,9 +7665,10 @@ export default function PitchforksIII() {
           firstMinute: villager.id === runtimeRef.current.firstVillagerId,
         })
       }
+      setHud({ wave: rt.wave, health: rt.health, score: rt.score, streak: rt.streak })
     }
     if (firstLockGraceRef.current) firstLockGraceRef.current = false
-  }, [addBolt, addBurst, clearFirstMinuteTimer, matchingSuppressedNow, presentMusicalPrompt, reviewTargetNote, setFirstMinuteCoachSnapshot, setPromptText])
+  }, [addBolt, addBurst, clearFirstMinuteTimer, latencyForTarget, matchingSuppressedNow, presentMusicalPrompt, reviewTargetNote, setFirstMinuteCoachSnapshot, setPromptText])
 
   const confirmThunderheadLock = useCallback((
     target: NonNullable<ReturnType<typeof getActiveTarget>>,
