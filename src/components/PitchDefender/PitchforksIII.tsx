@@ -2010,8 +2010,8 @@ function buildArtReviewRuntime(
     key: `${focus.id}:${focus.burned}`,
   }
   if (storm === 'spent') {
-    const pivotX = FRANK_X + assets.frankMeta.hand_tip.x * FRANK_SPRITE_SCALE
-    const pivotY = FRANK_Y + assets.frankMeta.hand_tip.y * FRANK_SPRITE_SCALE
+    const pivotX = FRANK_X + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
+    const pivotY = FRANK_Y + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).y * FRANK_SPRITE_SCALE
     const target = thunderheadTargetPoint(active, assets)
     runtime.bolts = [{
       fromX: pivotX + FRANK_CLOUD_X_OFFSET,
@@ -2710,8 +2710,8 @@ function drawStormCloudView(ctx: CanvasRenderingContext2D, view: ViewState, asse
   if (bolt?.presentation === 'thunderhead' || thunderheadLifecycleActive) return
   const charge = view.charge.progress
   if (view.phase !== 'playing' || (!view.active && !bolt)) return
-  const pivotX = FRANK_X + assets.frankMeta.hand_tip.x * FRANK_SPRITE_SCALE
-  const pivotY = FRANK_Y + assets.frankMeta.hand_tip.y * FRANK_SPRITE_SCALE
+  const pivotX = FRANK_X + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
+  const pivotY = FRANK_Y + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).y * FRANK_SPRITE_SCALE
   const cloudX = bolt?.fromX ?? pivotX + FRANK_CLOUD_X_OFFSET
   const cloudY = bolt?.fromY ?? FRANK_CLOUD_Y
   const boltAge = bolt ? clamp(bolt.life / bolt.maxLife, 0, 1) : 0
@@ -2961,8 +2961,8 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
   const rawY = villager.y + tine.y * SPRITE_SCALE
   const target = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 
-  const pivotX = FRANK_X + assets.frankMeta.hand_tip.x * FRANK_SPRITE_SCALE
-  const pivotY = FRANK_Y + assets.frankMeta.hand_tip.y * FRANK_SPRITE_SCALE
+  const pivotX = FRANK_X + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
+  const pivotY = FRANK_Y + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).y * FRANK_SPRITE_SCALE
   const originX = pivotX + CIRCUIT_RELAY_X
   const originY = pivotY + CIRCUIT_RELAY_Y
   const dischargeProgress = clamp((progress - CHARGE_DISCHARGE_START) / (1 - CHARGE_DISCHARGE_START), 0, 1)
@@ -6990,7 +6990,7 @@ export default function PitchforksIII() {
         : thunderheadPhase === 'target_match' || thunderheadPhase === 'strike' || thunderheadPhase === 'consumed'
           ? 1
           : 0
-      const thunderheadTravelStart = thunderheadTravelStartRef.current ?? { x: FRANK_X + assetsRef.current.frankMeta.hand_tip.x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET, y: FRANK_CLOUD_Y }
+      const thunderheadTravelStart = thunderheadTravelStartRef.current ?? { x: FRANK_X + (assetsRef.current.frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET, y: FRANK_CLOUD_Y }
       const thunderheadTravelTarget = thunderheadTravelTargetRef.current ?? thunderheadTravelStart
       const thunderheadPosition = getPitchforksThunderheadPathPosition(thunderheadTravelStart, thunderheadTravelTarget.x, thunderheadTravelProgress) ?? thunderheadTravelStart
       const thunderheadCloudX = thunderheadPosition.x
@@ -7535,8 +7535,8 @@ export default function PitchforksIII() {
     const frankMeta = a.frankMeta
     const vMeta = a.villagerMeta[villager.totalTines]
     const tine = vMeta.tines[Math.max(0, Math.min(tineIndex, vMeta.tines.length - 1))]
-    const pivotX = FRANK_X + frankMeta.hand_tip.x * FRANK_SPRITE_SCALE
-    const pivotY = FRANK_Y + frankMeta.hand_tip.y * FRANK_SPRITE_SCALE
+    const pivotX = FRANK_X + (frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
+    const pivotY = FRANK_Y + (frankMeta.hand_tip ?? { x: 28, y: 10 }).y * FRANK_SPRITE_SCALE
     const forkPivotX = villager.x + (vMeta.frame_w - vMeta.fork_base.x) * SPRITE_SCALE
     const forkPivotY = villager.y + vMeta.fork_base.y * SPRITE_SCALE
     const rawToX = villager.x + (vMeta.frame_w - tine.x) * SPRITE_SCALE
@@ -7725,7 +7725,7 @@ export default function PitchforksIII() {
     thunderheadTravelStartedAtRef.current = 0
     const frankMeta = assetsRef.current.frankMeta
     const start = Object.freeze({
-      x: FRANK_X + frankMeta.hand_tip.x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET,
+      x: FRANK_X + (frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET,
       y: FRANK_CLOUD_Y,
     })
     const targetPoint = thunderheadTargetPoint(target, assetsRef.current)
@@ -8301,7 +8301,7 @@ export default function PitchforksIII() {
         cancelThunderhead(matched.reason)
         return
       }
-      const start = thunderheadTravelStartRef.current ?? { x: FRANK_X + assetsRef.current.frankMeta.hand_tip.x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET, y: FRANK_CLOUD_Y }
+      const start = thunderheadTravelStartRef.current ?? { x: FRANK_X + (assetsRef.current.frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE + FRANK_CLOUD_X_OFFSET + THUNDERHEAD_BANK_X_OFFSET, y: FRANK_CLOUD_Y }
       const targetPoint = thunderheadTravelTargetRef.current ?? { x: start.x, y: THUNDERHEAD_CEILING_Y }
       thunderheadStrikeOriginRef.current = Object.freeze({ x: targetPoint.x, y: targetPoint.y })
       thunderheadMatchDueAtRef.current = logicalNowMs + THUNDERHEAD_MATCH_SETTLE_MS
