@@ -35,7 +35,7 @@ const bodyStates = descendants(source, ts.isVariableDeclaration)
 assert.ok(bodyStates?.initializer && ts.isArrayLiteralExpression(bodyStates.initializer), 'body review states must be explicit')
 assert.deepEqual(
   bodyStates.initializer.elements.map(element => ts.isStringLiteral(element) ? element.text : null),
-  ['walk', 'burn-1', 'burn-2', 'burn-3', 'ash'],
+  ['walk', 'burn-1', 'burn-2', 'burn-3', 'burn-4', 'ash'],
 )
 
 const stormStates = descendants(source, ts.isVariableDeclaration)

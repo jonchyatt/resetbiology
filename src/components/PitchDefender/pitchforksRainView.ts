@@ -3,6 +3,7 @@ import { type RainState, type TorchState } from './pitchforksRainEcology'
 export type RainViewCanvasContext = Pick<CanvasRenderingContext2D,
   'beginPath' | 'ellipse' | 'fill' | 'lineTo' | 'moveTo' | 'restore' | 'save' | 'stroke'
 > & Pick<CanvasRenderingContext2D, 'fillStyle' | 'lineJoin' | 'lineWidth' | 'strokeStyle'> & {
+  globalCompositeOperation?: CanvasRenderingContext2D['globalCompositeOperation']
   readonly drawImage?: CanvasRenderingContext2D['drawImage']
 }
 
@@ -94,6 +95,129 @@ function drawGutter(ctx: RainViewCanvasContext, fill: number): void {
   polygon(ctx, [[316, 58], [right, 58], [right, 74], [316, 74]], COLORS.water)
   line(ctx, [[316, 58], [right, 58]], COLORS.waterBright, 2)
 }
+// Authored stone cistern, one per world (public/images/pitchforks/rain_gutter*.png
+// + .json, built by scripts/pitchforks-art-repair/build-rain-gutter.py). Its open
+// channel is a hole in the sprite, so water is drawn first and the carved lip
+// sits in front. Placement and channel come from the art's own metadata.
+export interface RainGutterArt {
+  readonly image: CanvasImageSource
+  readonly drawX: number
+  readonly drawY: number
+  readonly width: number
+  readonly height: number
+  /** Channel opening in sprite-local pixels (x1/y1 exclusive). */
+  readonly channel: { readonly x0: number; readonly x1: number; readonly y0: number; readonly y1: number }
+  /** Only the dungeon has wall torches under the cistern. */
+  readonly torchUnderlight: boolean
+}
+const RAIN_GUTTER_FILES = {
+  dungeon: 'rain_gutter',
+  'village-gate': 'rain_gutter_village-gate',
+  cathedral: 'rain_gutter_cathedral',
+  'bell-tower': 'rain_gutter_bell-tower',
+} as const
+type RainGutterWorld = keyof typeof RAIN_GUTTER_FILES
+/** Loads every world's cistern art + metadata. Missing pieces are skipped (procedural fallback). */
+export async function loadRainGutterArt(
+  assetBase: string,
+  loadImage: (src: string) => Promise<CanvasImageSource>,
+): Promise<Partial<Record<RainGutterWorld, RainGutterArt>>> {
+  const out: Partial<Record<RainGutterWorld, RainGutterArt>> = {}
+  await Promise.all((Object.keys(RAIN_GUTTER_FILES) as RainGutterWorld[]).map(async world => {
+    try {
+      const file = RAIN_GUTTER_FILES[world]
+      const [response, image] = await Promise.all([fetch(`${assetBase}/${file}.json`), loadImage(`${assetBase}/${file}.png`)])
+      if (!response.ok) return
+      const meta = await response.json()
+      out[world] = {
+        image, drawX: meta.drawX, drawY: meta.drawY, width: meta.width, height: meta.height,
+        channel: meta.channel, torchUnderlight: meta.torchUnderlight === true,
+      }
+    } catch {
+      // optional art: the renderer keeps the procedural gutter
+    }
+  }))
+  return out
+}
+// Bottom of the carved front face (sprite row 43); the cast shadow below ties it to the wall.
+const GUTTER_FACE_BOTTOM_ROW = 43
+// Water enters under the rain cloud's feed and runs outward to both gargoyles.
+const GUTTER_FEED_X = 524
+// Dungeon wall torches directly below the cistern (PitchforksIII DUNGEON_TORCHES).
+const GUTTER_UNDERLIGHT_X = [358, 594] as const
+/** Water extent for a fill level: width is exactly proportional to fill (it is the charge meter). */
+export function gutterWaterExtent(gutter: RainGutterArt, fill: number): { left: number; right: number; top: number; bottom: number } | null {
+  const level = clamp01(fill)
+  const x0 = gutter.drawX + gutter.channel.x0
+  const x1 = gutter.drawX + gutter.channel.x1
+  const y0 = gutter.drawY + gutter.channel.y0
+  const y1 = gutter.drawY + gutter.channel.y1
+  if (level <= 0) return null
+  const feed = Math.max(x0, Math.min(x1, GUTTER_FEED_X))
+  const left = Math.round(feed - level * (feed - x0))
+  const right = Math.round(feed + level * (x1 - feed))
+  const depth = Math.max(2, Math.round((y1 - y0) * (0.35 + 0.65 * level)))
+  return { left, right, top: y1 - depth, bottom: y1 }
+}
+function drawGutterArt(
+  ctx: RainViewCanvasContext,
+  gutter: RainGutterArt,
+  fill: number,
+  clockMs: number,
+  reducedMotion: boolean,
+): void {
+  const x0 = gutter.drawX + gutter.channel.x0
+  const x1 = gutter.drawX + gutter.channel.x1
+  const y0 = gutter.drawY + gutter.channel.y0
+  const y1 = gutter.drawY + gutter.channel.y1
+  const faceBottom = gutter.drawY + GUTTER_FACE_BOTTOM_ROW
+  const left = gutter.drawX + 4
+  const right = gutter.drawX + gutter.width - 4
+  polygon(ctx, [[left, faceBottom - 2], [right, faceBottom - 2], [right - 14, faceBottom + 9], [left + 14, faceBottom + 9]], 'rgba(0, 0, 0, 0.38)')
+  polygon(ctx, [[left + 14, faceBottom + 9], [right - 14, faceBottom + 9], [right - 28, faceBottom + 15], [left + 28, faceBottom + 15]], 'rgba(0, 0, 0, 0.18)')
+  polygon(ctx, [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], '#0b0d0c')
+  line(ctx, [[x0, y0 + 0.5], [x1, y0 + 0.5]], '#050606', 1)
+  const water = gutterWaterExtent(gutter, fill)
+  if (water) {
+    const { left: wl, right: wr, top } = water
+    polygon(ctx, [[wl, top], [wr, top], [wr, y1], [wl, y1]], 'rgba(30, 78, 90, 0.95)')
+    polygon(ctx, [[wl, top + 3], [wr, top + 3], [wr, y1], [wl, y1]], 'rgba(12, 34, 42, 0.55)')
+    // Meniscus: water climbs one pixel where it meets the stone at each end.
+    polygon(ctx, [[wl, top - 1], [wl + 2, top - 1], [wl + 2, top], [wl, top]], 'rgba(126, 206, 220, 0.7)')
+    polygon(ctx, [[wr - 2, top - 1], [wr, top - 1], [wr, top], [wr - 2, top]], 'rgba(126, 206, 220, 0.7)')
+    const wave = reducedMotion ? 0 : Math.floor(clockMs / 220) % 12
+    for (let x = wl; x < wr; x += 12) {
+      const crest = Math.min(wr, x + 6)
+      const lift = ((x - wl) / 12 + wave) % 2 === 0 ? 0 : 1
+      line(ctx, [[x, top + 0.5 + lift], [crest, top + 0.5 + lift]], 'rgba(126, 206, 220, 0.85)', 1)
+      line(ctx, [[crest, top + 1.5 - lift], [Math.min(wr, crest + 6), top + 1.5 - lift]], 'rgba(92, 170, 186, 0.7)', 1)
+    }
+    const span = wr - wl - 4
+    const drift = reducedMotion ? 0 : Math.floor(clockMs / 90)
+    for (let index = 0; span > 0 && index < 9; index += 1) {
+      const offset = (((index * 47 + drift * (index % 2 === 0 ? 1 : -1)) % span) + span) % span
+      line(ctx, [[wl + 1 + offset, top + 2.5], [wl + 3 + offset, top + 2.5]], 'rgba(190, 240, 248, 0.45)', 1)
+    }
+  }
+  ctx.drawImage!(gutter.image, gutter.drawX, gutter.drawY, gutter.width, gutter.height)
+  // Carved alcove behind each gargoyle: a dark niche cut through the block
+  // courses with a lit lintel, so the head sits IN the stone, not on it.
+  for (const gargoyle of GARGOYLES) {
+    const nx = gargoyle.mouthX + 1
+    polygon(ctx, [[nx - 25, faceBottom], [nx - 25, 52], [nx - 18, 47], [nx + 18, 47], [nx + 25, 52], [nx + 25, faceBottom]], '#060706')
+    line(ctx, [[nx - 26, 52.5], [nx - 19, 46.5], [nx + 19, 46.5], [nx + 26, 52.5]], 'rgba(150, 146, 132, 0.5)', 1)
+    line(ctx, [[nx - 25.5, 53], [nx - 25.5, faceBottom]], 'rgba(0, 0, 0, 0.9)', 1)
+  }
+  if (gutter.torchUnderlight) {
+    // Warm torch under-light, kept inside the bottom courses so it never smears onto the wall.
+    ctx.globalCompositeOperation = 'lighter'
+    for (const x of GUTTER_UNDERLIGHT_X) {
+      polygon(ctx, [[x - 46, faceBottom - 7], [x + 46, faceBottom - 7], [x + 40, faceBottom - 1], [x - 40, faceBottom - 1]], 'rgba(92, 46, 14, 0.12)')
+      polygon(ctx, [[x - 24, faceBottom - 4], [x + 24, faceBottom - 4], [x + 20, faceBottom - 1], [x - 20, faceBottom - 1]], 'rgba(130, 66, 20, 0.14)')
+    }
+    ctx.globalCompositeOperation = 'source-over'
+  }
+}
 function drawCloud(
   ctx: RainViewCanvasContext,
   phase: RainPhase,
@@ -150,6 +274,7 @@ export function drawRainArchitecture(
   reducedMotion: boolean,
   gargoyleArt?: CanvasImageSource | null,
   rainCloudArt?: CanvasImageSource | null,
+  gutterArt?: RainGutterArt | null,
 ): void {
   if (!state || typeof state !== 'object' || !isRainPhase(state.phase)) return
   const fill = clamp01(state.fill)
@@ -159,7 +284,9 @@ export function drawRainArchitecture(
     // Feed is deliberately behind the cloud and gutter masks. Native art and
     // the bounded fallback both cover the origins; the lip covers endpoints.
     drawRainFeed(ctx, state.phase, rainClockMs(state), reducedMotion === true)
-    drawGutter(ctx, activeFill)
+    if (gutterArt && typeof ctx.drawImage === 'function') {
+      drawGutterArt(ctx, gutterArt, activeFill, rainClockMs(state), reducedMotion === true)
+    } else drawGutter(ctx, activeFill)
     for (const gargoyle of GARGOYLES) drawGargoyle(ctx, gargoyle, gargoyleArt)
     drawCloud(ctx, state.phase, activeFill, rainCloudArt)
     if (state.phase === 'gargoyle_release' || state.phase === 'raining') drawSpouts(ctx, state.phase)

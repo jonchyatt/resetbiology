@@ -173,7 +173,7 @@ import {
   type RainState,
   type TorchState,
 } from './pitchforksRainEcology'
-import { drawRainArchitecture, drawVillagerTorch } from './pitchforksRainView'
+import { drawRainArchitecture, drawVillagerTorch, loadRainGutterArt, type RainGutterArt } from './pitchforksRainView'
 import { drawPitchforksTargetContour, type PitchforksTargetContourDescriptor } from './pitchforksTargetContourView'
 import {
   armPitchforksCloseSmash,
@@ -750,6 +750,10 @@ const PITCH_BAR_H = 12
 const PITCH_BAR_X = 34
 const PITCH_BAR_W = W - PITCH_BAR_X * 2
 const DUNGEON_FLOOR_Y = GROUND_Y - 42
+// Ground covered by one full walk cycle (both steps). Tuned to the 48x72 villager
+// stride so planted feet do not visibly slide at the wave speeds (15-56 px/s).
+const WALK_CYCLE_PX = 30
+
 const DUNGEON_TORCHES = [
   { x: 126, y: 126, phase: 0.2 },
   { x: 358, y: 104, phase: 1.9 },
@@ -769,6 +773,15 @@ function layoutModeForViewport(width: number, height: number): LayoutMode {
 // vertical rod. Pivots around the villager's own fork_base anchor (rotation-invariant;
 // strike/tineIndex targeting never reads rendered fork pixels, only villagerMeta.tines).
 const FORK_LEAN_DEG = -18
+
+// Pixel offset from the static fork_base to this walk frame's grip. Burned and ash
+// sprites are single authored poses gripping at fork_base, so they get no offset.
+function villagerForkOffset(meta: VillagerMeta, walkFrame: number, onWalkStrip: boolean): { x: number; y: number } {
+  const frames = meta.fork_base_frames
+  if (!onWalkStrip || !frames || frames.length === 0) return { x: 0, y: 0 }
+  const grip = frames[((walkFrame % frames.length) + frames.length) % frames.length]
+  return { x: (meta.fork_base.x - grip.x) * SPRITE_SCALE, y: (grip.y - meta.fork_base.y) * SPRITE_SCALE }
+}
 
 function rotateAroundPivot(px: number, py: number, cx: number, cy: number, deg: number) {
   const rad = (deg * Math.PI) / 180
@@ -834,23 +847,36 @@ type SparkGuideEvent = Readonly<{
 }>
 type LightningPhase = 'idle' | 'charge-cloud' | 'charge-leader' | 'charge-discharge' | 'strike-leader' | 'strike-receipt' | 'strike-discharge' | 'strike-impact'
 type VillagerState = 'waiting' | 'walking' | 'ash'
-type ArtReviewBodyState = 'walk' | 'burn-1' | 'burn-2' | 'burn-3' | 'ash'
+type ArtReviewBodyState = 'walk' | 'burn-1' | 'burn-2' | 'burn-3' | 'burn-4' | 'ash'
 type ArtReviewStormState = 'dormant' | 'gather-1' | 'gather-2' | 'gather-3' | 'spent'
 
-const ART_REVIEW_BODY_STATES: readonly ArtReviewBodyState[] = ['walk', 'burn-1', 'burn-2', 'burn-3', 'ash']
+const ART_REVIEW_BODY_STATES: readonly ArtReviewBodyState[] = ['walk', 'burn-1', 'burn-2', 'burn-3', 'burn-4', 'ash']
 const ART_REVIEW_STORM_STATES: readonly ArtReviewStormState[] = ['dormant', 'gather-1', 'gather-2', 'gather-3', 'spent']
-const ART_REVIEW_ACTOR_X: readonly number[] = [148, 288, 428, 568]
+const ART_REVIEW_ACTOR_X: readonly number[] = [148, 262, 376, 490, 604]
 const ART_REVIEW_ACTOR_NOTES: readonly (readonly string[])[] = [
   ['C4'],
   ['D4', 'E4'],
   ['F4', 'G4', 'A4'],
   ['B4', 'C5', 'D5', 'E5'],
+  ['F5', 'G5', 'A5', 'B5', 'C6'],
 ]
 
 function parseArtReviewBodyState(value: string | null): ArtReviewBodyState {
   return value && (ART_REVIEW_BODY_STATES as readonly string[]).includes(value)
     ? value as ArtReviewBodyState
     : 'walk'
+}
+
+// Private fixture only: pins the gutter/rain phase and fill so each charge
+// state of the rain architecture can be inspected on the real renderer.
+type ArtReviewRain = { phase: RainState['phase']; fill: number }
+const ART_REVIEW_RAIN_PHASES: readonly RainState['phase'][] = ['charging', 'ready', 'gutter_fill', 'gargoyle_release', 'raining', 'cooldown']
+const ART_REVIEW_WORLDS: readonly PitchforksNormalWorld[] = ['dungeon', 'village-gate', 'bell-tower', 'cathedral']
+function parseArtReviewRain(phase: string | null, fill: string | null): ArtReviewRain | null {
+  if (!phase || !(ART_REVIEW_RAIN_PHASES as readonly string[]).includes(phase)) return null
+  // An omitted fill means a full gutter (Number(null) would silently be 0).
+  const parsed = fill === null || fill.trim() === '' ? 1 : Number(fill)
+  return { phase: phase as RainState['phase'], fill: Number.isFinite(parsed) ? Math.max(0, Math.min(1, parsed)) : 1 }
 }
 
 function parseArtReviewStormState(value: string | null): ArtReviewStormState {
@@ -874,6 +900,8 @@ interface VillagerMeta {
   source_frame_h?: number
   walk_frames: number
   fork_base: { x: number; y: number }
+  /** Per-walk-frame grip point (logical px). The fork and its tine targets follow the hand. */
+  fork_base_frames?: readonly { x: number; y: number }[]
   tines: Array<{ x: number; y: number }>
 }
 
@@ -904,6 +932,7 @@ interface Assets {
   bellBackdrop?: HTMLImageElement
   gargoyleSpout?: HTMLImageElement
   rainCloud?: HTMLImageElement
+  rainGutters?: Partial<Record<WorldId, RainGutterArt>>
   bellTowerPlate?: HTMLImageElement
   cathedralPlate?: HTMLImageElement
   villageGatePlate?: HTMLImageElement
@@ -1964,9 +1993,10 @@ function buildArtReviewRuntime(
   body: ArtReviewBodyState,
   storm: ArtReviewStormState,
   assets: Assets,
+  rain: ArtReviewRain | null = null,
 ): Runtime {
   const runtime = makeInitialRuntime(false)
-  const tineCounts: readonly TineCount[] = [1, 2, 3, 4]
+  const tineCounts: readonly TineCount[] = [1, 2, 3, 4, 5]
   runtime.animClock = animClock
   runtime.bannerTimer = 0
   runtime.firstVillagerId = 1
@@ -1976,6 +2006,7 @@ function buildArtReviewRuntime(
     elapsedMs: 0,
     fill: 1,
   }
+  if (rain) runtime.rain = { ...runtime.rain, phase: rain.phase, fill: rain.fill }
   runtime.villagers = tineCounts.map((totalTines, index) => {
     const burned = artReviewBurnFor(totalTines, body)
     const state: VillagerState = burned >= totalTines ? 'ash' : 'walking'
@@ -1993,7 +2024,7 @@ function buildArtReviewRuntime(
       attackTimer: 30,
       attackTimerMax: 30,
       sequenceCued: false,
-      walkFrame: Math.floor(animClock * 4) % 4,
+      walkFrame: Math.floor(animClock * 8) % (assets.villagerMeta[totalTines]?.walk_frames ?? 4),
       walkClock: animClock,
       ashTimer: state === 'ash' ? 1 : 0,
       torch: createInactiveTorchState(),
@@ -2228,10 +2259,11 @@ function activeTargetForThunderheadReceipt(
 function thunderheadTargetPoint(target: ActiveTarget, assets: Assets): ThunderheadPoint {
   const meta = assets.villagerMeta[target.villager.totalTines]
   const tine = meta.tines[Math.max(0, Math.min(target.tineIndex, meta.tines.length - 1))]
-  const forkPivotX = target.villager.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-  const forkPivotY = target.villager.y + meta.fork_base.y * SPRITE_SCALE
-  const rawX = target.villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-  const rawY = target.villager.y + tine.y * SPRITE_SCALE
+  const grip = villagerForkOffset(meta, target.villager.walkFrame, target.villager.burned === 0 && target.villager.state === 'walking')
+  const forkPivotX = target.villager.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+  const forkPivotY = target.villager.y + grip.y + meta.fork_base.y * SPRITE_SCALE
+  const rawX = target.villager.x + grip.x + (meta.frame_w - tine.x) * SPRITE_SCALE
+  const rawY = target.villager.y + grip.y + tine.y * SPRITE_SCALE
   return rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 }
 
@@ -2955,10 +2987,11 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
   if (!villager) return
   const meta = assets.villagerMeta[villager.totalTines]
   const tine = meta.tines[Math.max(0, Math.min(view.active.tineIndex, meta.tines.length - 1))]
-  const forkPivotX = villager.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-  const forkPivotY = villager.y + meta.fork_base.y * SPRITE_SCALE
-  const rawX = villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-  const rawY = villager.y + tine.y * SPRITE_SCALE
+  const grip = villagerForkOffset(meta, villager.walkFrame, villager.visualBurn === 0 && villager.visualState === 'walking')
+  const forkPivotX = villager.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+  const forkPivotY = villager.y + grip.y + meta.fork_base.y * SPRITE_SCALE
+  const rawX = villager.x + grip.x + (meta.frame_w - tine.x) * SPRITE_SCALE
+  const rawY = villager.y + grip.y + tine.y * SPRITE_SCALE
   const target = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
 
   const pivotX = FRANK_X + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
@@ -3311,10 +3344,12 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const forkMeta = assets.forkMeta[v.totalTines]
   const forkW = forkMeta.frame_w * SPRITE_SCALE
   const forkH = forkMeta.frame_h * SPRITE_SCALE
-  const fx = v.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE - (forkMeta.frame_w - forkMeta.handle_base.x) * SPRITE_SCALE
-  const fy = v.y + meta.fork_base.y * SPRITE_SCALE - forkMeta.handle_base.y * SPRITE_SCALE
-  const forkPivotX = v.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-  const forkPivotY = v.y + meta.fork_base.y * SPRITE_SCALE
+  // The fork rides the hand, including the walk's arm swing and body bob.
+  const grip = villagerForkOffset(meta, v.walkFrame, strip)
+  const fx = v.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE - (forkMeta.frame_w - forkMeta.handle_base.x) * SPRITE_SCALE
+  const fy = v.y + grip.y + meta.fork_base.y * SPRITE_SCALE - forkMeta.handle_base.y * SPRITE_SCALE
+  const forkPivotX = v.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+  const forkPivotY = v.y + grip.y + meta.fork_base.y * SPRITE_SCALE
 
   if (baseImg) {
     ctx.save()
@@ -4051,7 +4086,7 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     renderResting: view.normalWorld === 'village-gate',
   })
   drawStormCloudView(ctx, view, assets)
-  drawRainArchitecture(ctx, view.rain, view.reducedMotion, assets.gargoyleSpout, assets.rainCloud)
+  drawRainArchitecture(ctx, view.rain, view.reducedMotion, assets.gargoyleSpout, assets.rainCloud, assets.rainGutters?.[view.normalWorld])
   // Stored-note identity and its lightning origin stay in front of the gutter.
   drawThunderheadCloudView(ctx, view, assets.stormHeart)
 
@@ -4235,10 +4270,11 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
     if (villager) {
       const meta = assets.villagerMeta[villager.totalTines]
       const tine = meta.tines[Math.max(0, Math.min(view.active.tineIndex, meta.tines.length - 1))]
-      const forkPivotX = villager.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-      const forkPivotY = villager.y + meta.fork_base.y * SPRITE_SCALE
-      const rawX = villager.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-      const rawY = villager.y + tine.y * SPRITE_SCALE
+      const grip = villagerForkOffset(meta, villager.walkFrame, villager.visualBurn === 0 && villager.visualState === 'walking')
+      const forkPivotX = villager.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
+      const forkPivotY = villager.y + grip.y + meta.fork_base.y * SPRITE_SCALE
+      const rawX = villager.x + grip.x + (meta.frame_w - tine.x) * SPRITE_SCALE
+      const rawY = villager.y + grip.y + tine.y * SPRITE_SCALE
       const { x, y } = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
       ctx.strokeStyle = view.charge.tint ?? 'rgba(160,210,255,0.62)'
       ctx.lineWidth = 1.5
@@ -4254,6 +4290,7 @@ function drawArtReviewOverlay(
   ctx: CanvasRenderingContext2D,
   body: ArtReviewBodyState,
   storm: ArtReviewStormState,
+  rain: ArtReviewRain | null = null,
 ) {
   ctx.save()
   ctx.fillStyle = 'rgba(3, 7, 16, 0.92)'
@@ -4264,7 +4301,8 @@ function drawArtReviewOverlay(
   ctx.fillText('PRIVATE ART REVIEW · VISUAL ONLY · NO GAMEPLAY', 16, 23)
   ctx.fillStyle = '#bae6fd'
   ctx.font = 'bold 10px monospace'
-  ctx.fillText(`BODY ${body.toUpperCase()} · STORM ${storm.toUpperCase()} · RAINING`, 16, 40)
+  const rainLabel = rain ? `${rain.phase.toUpperCase()} ${Math.round(rain.fill * 100)}%` : 'RAINING'
+  ctx.fillText(`BODY ${body.toUpperCase()} · STORM ${storm.toUpperCase()} · ${rainLabel}`, 16, 40)
   ctx.restore()
 }
 
@@ -4473,6 +4511,7 @@ export default function PitchforksIII() {
   const artReviewRef = useRef(false)
   const artReviewBodyRef = useRef<ArtReviewBodyState>('walk')
   const artReviewStormRef = useRef<ArtReviewStormState>('dormant')
+  const artReviewRainRef = useRef<ArtReviewRain | null>(null)
   const promptStartedAtRef = useRef(0)
   const activePromptKeyRef = useRef('')
   const pendingMusicalPromptRef = useRef<PitchforksMusicalPromptTarget | null>(null)
@@ -5216,6 +5255,11 @@ export default function PitchforksIII() {
       const initialStorm = parseArtReviewStormState(params.get('artReviewStorm'))
       artReviewBodyRef.current = initialBody
       artReviewStormRef.current = initialStorm
+      artReviewRainRef.current = parseArtReviewRain(params.get('artReviewRain'), params.get('artReviewFill'))
+      const reviewWorld = params.get('artReviewWorld')
+      if (reviewWorld && (ART_REVIEW_WORLDS as readonly string[]).includes(reviewWorld)) {
+        selectedWorldRef.current = reviewWorld as PitchforksNormalWorld
+      }
       setArtReviewMode(true)
       setArtReviewBody(initialBody)
       setArtReviewStorm(initialStorm)
@@ -5403,6 +5447,7 @@ export default function PitchforksIII() {
         }
         a.gargoyleSpout = await loadImage(`${ASSET_BASE}/gargoyle_spout_idle.png`).catch(() => undefined)
         a.rainCloud = await loadImage(`${ASSET_BASE}/rain_cloud.png`).catch(() => undefined)
+        a.rainGutters = await loadRainGutterArt(ASSET_BASE, loadImage)
         if (!demoRef.current && !fsrsDebugRef.current) {
           a.villageGatePlate = await loadImage(PITCHFORKS_BELLRINGER_CHAMBER_PLATE_SRC).catch(() => undefined)
           if (!cancelled) setVillageGateAssetStatus(a.villageGatePlate ? 'ready' : 'missing')
@@ -7537,10 +7582,11 @@ export default function PitchforksIII() {
     const tine = vMeta.tines[Math.max(0, Math.min(tineIndex, vMeta.tines.length - 1))]
     const pivotX = FRANK_X + (frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
     const pivotY = FRANK_Y + (frankMeta.hand_tip ?? { x: 28, y: 10 }).y * FRANK_SPRITE_SCALE
-    const forkPivotX = villager.x + (vMeta.frame_w - vMeta.fork_base.x) * SPRITE_SCALE
-    const forkPivotY = villager.y + vMeta.fork_base.y * SPRITE_SCALE
-    const rawToX = villager.x + (vMeta.frame_w - tine.x) * SPRITE_SCALE
-    const rawToY = villager.y + tine.y * SPRITE_SCALE
+    const grip = villagerForkOffset(vMeta, villager.walkFrame, villager.burned === 0 && villager.state === 'walking')
+    const forkPivotX = villager.x + grip.x + (vMeta.frame_w - vMeta.fork_base.x) * SPRITE_SCALE
+    const forkPivotY = villager.y + grip.y + vMeta.fork_base.y * SPRITE_SCALE
+    const rawToX = villager.x + grip.x + (vMeta.frame_w - tine.x) * SPRITE_SCALE
+    const rawToY = villager.y + grip.y + tine.y * SPRITE_SCALE
     const { x: toX, y: toY } = rotateAroundPivot(rawToX, rawToY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
     runtimeRef.current.bolts.push({
       // Ordinary strikes originate at the shipped cloud relay. Smash contact
@@ -9278,11 +9324,16 @@ export default function PitchforksIII() {
 
     for (const v of rt.villagers) {
       if (v.state === 'walking') {
+        const previousX = v.x
         v.x = Math.max(FRANK_REACH_X, v.x - v.speed * rainEffects.slowFactor * dt)
-        v.walkClock += dt
-        if (v.walkClock >= 0.16) {
-          v.walkClock = 0
-          v.walkFrame = (v.walkFrame + 1) % 4
+        // Feet are driven by ground covered, not wall-clock time, so rain slowdown
+        // and stopping at Frank never make the villager moonwalk or skate.
+        const frames = assetsRef.current.villagerMeta[v.totalTines]?.walk_frames ?? 4
+        v.walkClock += previousX - v.x
+        const stride = WALK_CYCLE_PX / frames
+        while (v.walkClock >= stride) {
+          v.walkClock -= stride
+          v.walkFrame = (v.walkFrame + 1) % frames
         }
       } else if (v.state === 'ash') {
         v.ashTimer -= dt
@@ -9791,12 +9842,13 @@ export default function PitchforksIII() {
         artReviewBodyRef.current,
         artReviewStormRef.current,
         assetsRef.current,
+        artReviewRainRef.current,
       )
       const reviewView = buildArtReviewView(reviewRuntime, artReviewStormRef.current, selectedWorldRef.current)
       runtimeRef.current = reviewRuntime
       viewStateRef.current = reviewView
       renderView(ctx, reviewView, assetsRef.current)
-      drawArtReviewOverlay(ctx, artReviewBodyRef.current, artReviewStormRef.current)
+      drawArtReviewOverlay(ctx, artReviewBodyRef.current, artReviewStormRef.current, artReviewRainRef.current)
       rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, fence))
       return
     }

@@ -41,23 +41,31 @@ const SOURCE_ROOT = 'C:/Users/jonch/Projects/jarvis/data/codex-sidequests/worktr
 const FIVE_TINE_SOURCE_ROOT = 'C:/Users/jonch/Projects/rb-pitchforks-release-20260913/data/pitchforks-rework/art-tests/villager-p4-1-5/native-codex-5-final'
 const COMPONENT_SOURCE = readFileSync(join(PRODUCT_ROOT, 'src', 'components', 'PitchDefender', 'PitchforksIII.tsx'), 'utf8').replaceAll('\r\n', '\n')
 
+// Handoff #18 (2026-09-16): 8-frame alternating walk strips for the whole roster and a
+// full-detail 48x72 Forge Elder lifecycle replaced the coarse 4-frame / 16x24 art.
+// Build receipts: scripts/pitchforks-art-repair/{walk-pose-guide,build-walk-strip,build-lifecycle-cells}.py
+const WALK8_SOURCE_ROOT = join(PRODUCT_ROOT, 'data', 'pitchforks-rework', 'art-tests', 'villager-h18-walk8')
+function walk8Asset(file: string, width: number, height: number, sha256: string) {
+  return { file, source: join(WALK8_SOURCE_ROOT, file), width, height, sha256 }
+}
+
 function fiveTineAsset(file: string, width: number, height: number, sha256: string, sourceDirectory = '') {
   return { file, source: join(FIVE_TINE_SOURCE_ROOT, sourceDirectory, file), width, height, sha256 }
 }
 
 const fiveTineAssets = [
-  fiveTineAsset('villager_5tine_walk.png', 64, 24, '6389B901C1A9553FDDECC0AA80F821254EF094683FD6C2053E7B5A886C17D524'),
-  fiveTineAsset('villager_5tine_walk_left.png', 64, 24, '790A75DD63BEA3D26E0B18DAC43B8A8F3CDF7070E1203CB186101C9A2811F1F7'),
-  fiveTineAsset('villager_5tine_burned_1.png', 16, 24, '474F6DE0BD8832DC87D4F3526A49E2905971D8D5F1995A24766437D39E2DAC93'),
-  fiveTineAsset('villager_5tine_burned_1_left.png', 16, 24, 'E00054AC847D858B25C3EE246DD9F79E5E15221E3D2B8624A6E20D0A617F0BCD'),
-  fiveTineAsset('villager_5tine_burned_2.png', 16, 24, '34272204AF21C4DBBD07303E875512AC290691B53CF836A3AB848F3627E7C5F1'),
-  fiveTineAsset('villager_5tine_burned_2_left.png', 16, 24, '129BBF02BB90FB4B0FFC9F3A6CD7ABB547A0ABDEDD4340378471670EDB2749D8'),
-  fiveTineAsset('villager_5tine_burned_3.png', 16, 24, 'C5064947C30F8A9D88ACD299A4ECAD998CB436EF74F1E19AC1F16233E629298A'),
-  fiveTineAsset('villager_5tine_burned_3_left.png', 16, 24, 'AA94F666B8AC1FE17F807BF95D36BDA57F209E812FDCF46AD4FE470AB0010433'),
-  fiveTineAsset('villager_5tine_burned_4.png', 16, 24, '92469944674DB1C480E6BFDA032F6C777C784BF41A69AC2C54045C6F54F69407'),
-  fiveTineAsset('villager_5tine_burned_4_left.png', 16, 24, '1CF399C07FBB7F7FF8D1C20E486DDF8DDD1B1F851E58BD6BC5F21A49D9460C37'),
-  fiveTineAsset('villager_5tine_ash.png', 16, 24, 'DC750025727785F88509A0ADC36AA7F7A59F4AC0BC1C0FFA6FCF680F2123555B'),
-  fiveTineAsset('villager_5tine_ash_left.png', 16, 24, '8945A21695C77E58FE7DC4B5D18655690F2C6B224C979EE676ED5F16CA8AFB09'),
+  walk8Asset('villager_5tine_walk.png', 384, 72, '3F1909FF29E799CBBBD29026AD8263CB80F201E08CB2260AD9D6C3D6F85F3919'),
+  walk8Asset('villager_5tine_walk_left.png', 384, 72, '2EECF95251CFD97A4904C60BE47A1FAA6086453632108D0945BD9C977FAAA294'),
+  walk8Asset('villager_5tine_burned_1.png', 48, 72, '001A138424ED4355CA8155B002F6073DF037110FA3D9371F0CA38E8057CA64FF'),
+  walk8Asset('villager_5tine_burned_1_left.png', 48, 72, 'E021E94BC642139065A0B6FA84FEF29D2C5ADDCC25EEF54719D1ED0C299B9D52'),
+  walk8Asset('villager_5tine_burned_2.png', 48, 72, '313D353CD7ECE99F41CCD16C82B5FA4F443A9311C74692A42EE67B535D0CC00A'),
+  walk8Asset('villager_5tine_burned_2_left.png', 48, 72, '4C738E4CDAA3910E1296C652C96B30260A2AC6512B302E4771A4262AABC138DC'),
+  walk8Asset('villager_5tine_burned_3.png', 48, 72, '600B35E28308C4306B17116EFC0CCC8727E10856FA6ABC5012FCEBE81ADFDE6C'),
+  walk8Asset('villager_5tine_burned_3_left.png', 48, 72, '2B619F9F6AA1B71A209F4CAFB4784B3C998C74B4811F6524323167DA752D6D32'),
+  walk8Asset('villager_5tine_burned_4.png', 48, 72, 'ECA8BBCAC118B27FC3211B48A7D71DA128B052ED668F4D5694F251DE9AD45908'),
+  walk8Asset('villager_5tine_burned_4_left.png', 48, 72, 'A90FB4E2F33F5D71D8084A5B66974797F543E2DCEEA3E17A3A1429613253668F'),
+  walk8Asset('villager_5tine_ash.png', 48, 72, 'A57AD57D151D22F6174342C452306E31A4C001E38FDCC72A94515FFA1E96899C'),
+  walk8Asset('villager_5tine_ash_left.png', 48, 72, '12AD066B8561D780883139C9B5DAF34DC099F57AF3C90AE1A663F7B07511C36E'),
   fiveTineAsset('fork_5tine_b0.png', 12, 16, '3B4A4544CDB5E378BCE24D2F2DB857C003D255195B279E5FC85D0BD4E0293696', 'forks'),
   fiveTineAsset('fork_5tine_b0_glow.png', 12, 16, '14E22E44F1B2230FF3A8CADDC1DA240047698EDE5550875338DEA6209B1294BB', 'forks'),
   fiveTineAsset('fork_5tine_b1.png', 12, 16, '258AA30DB0FE0999A8FDF1B01D10B0304364D10D9ED274304A647C8168A88E97', 'forks'),
@@ -74,20 +82,9 @@ const fiveTineAssets = [
 
 const acceptedAssets = [
   ...fiveTineAssets,
-  {
-    file: 'villager_1tine_walk_left.png',
-    source: join(SOURCE_ROOT, 'villager_1tine_walk_left.png'),
-    width: 64,
-    height: 24,
-    sha256: 'CD4C4CA90F8868416CCFF1A2CEF0BD2C2112CEEB305C2409774E5F0FCB54857E',
-  },
-  {
-    file: 'villager_1tine_ash_left.png',
-    source: join(SOURCE_ROOT, 'villager_1tine_ash_left.png'),
-    width: 16,
-    height: 24,
-    sha256: '09B105D7ADEDEA55DB75216DBBFD8D052BEEE4E1F6F4A2790A00939E854ED343',
-  },
+  walk8Asset('villager_1tine_walk_left.png', 384, 72, '93BEE029D647F982CADEBD5F6F8B1BE565C6AEA903407090DBC0E08CA111E527'),
+  // current shipped ash (recovered roster, 0a3d6bf04) — the old 16x24 pin predated it
+  walk8Asset('villager_1tine_ash_left.png', 48, 72, 'CF6FC145AFB79B222A16542734C50F97B04CBF80D3472DA4AF6FC822B9E075C8'),
   {
     file: 'fork_1tine_b0.png',
     source: join(SOURCE_ROOT, 'forks', 'fork_1tine_b0.png'),
@@ -174,8 +171,13 @@ async function main() {
 
   assert.deepEqual(
     { frame_w: villagerMeta.frame_w, frame_h: villagerMeta.frame_h, walk_frames: villagerMeta.walk_frames, fork_base: villagerMeta.fork_base },
-    { frame_w: 16, frame_h: 24, walk_frames: 4, fork_base: { x: 14, y: 11 } },
+    { frame_w: 16, frame_h: 24, walk_frames: 8, fork_base: { x: 14, y: 11 } },
   )
+  for (const [label, meta] of [['1tine', villagerMeta], ['5tine', fiveVillagerMeta]] as const) {
+    const grips = (meta as VillagerMetaFixture & { fork_base_frames?: Point[] }).fork_base_frames
+    assert.equal(grips?.length, 8, `${label}: one fork grip per walk frame`)
+    for (const grip of grips ?? []) assert.ok(grip.x > 6 && grip.x < 16 && grip.y > 6 && grip.y < 18, `${label}: grip stays in the hand zone`)
+  }
   assert.deepEqual(villagerMeta.tines, [{ x: 14, y: -4 }])
   assert.notEqual(typeof villagerMeta.tines, 'number')
   assert.equal(villagerMeta.burnFrameCount, 0)
@@ -193,7 +195,7 @@ async function main() {
 
   assert.deepEqual(
     { frame_w: fiveVillagerMeta.frame_w, frame_h: fiveVillagerMeta.frame_h, walk_frames: fiveVillagerMeta.walk_frames, fork_base: fiveVillagerMeta.fork_base },
-    { frame_w: 16, frame_h: 24, walk_frames: 4, fork_base: { x: 14, y: 11 } },
+    { frame_w: 16, frame_h: 24, walk_frames: 8, fork_base: { x: 14, y: 11 } },
   )
   assert.deepEqual(fiveVillagerMeta.tines, [
     { x: 10, y: -4 },
@@ -275,14 +277,17 @@ async function main() {
   // Keep this test bound to the real renderer's left-mirror + lean path and
   // the addBolt path's authoritative villagerMeta.tines endpoint. This is a
   // contract check only; it does not modify the protected component.
-  assert.match(COMPONENT_SOURCE, /const forkPivotX = v\.x \+ \(meta\.frame_w - meta\.fork_base\.x\) \* SPRITE_SCALE/)
-  assert.match(COMPONENT_SOURCE, /const forkPivotY = v\.y \+ meta\.fork_base\.y \* SPRITE_SCALE/)
+  assert.match(COMPONENT_SOURCE, /const grip = villagerForkOffset\(meta, v\.walkFrame, strip\)/)
+  assert.match(COMPONENT_SOURCE, /const forkPivotX = v\.x \+ grip\.x \+ \(meta\.frame_w - meta\.fork_base\.x\) \* SPRITE_SCALE/)
+  assert.match(COMPONENT_SOURCE, /const forkPivotY = v\.y \+ grip\.y \+ meta\.fork_base\.y \* SPRITE_SCALE/)
   assert.match(COMPONENT_SOURCE, /ctx\.translate\(fx \+ forkW, fy\)\s*ctx\.scale\(-1, 1\)/)
-  assert.match(COMPONENT_SOURCE, /const rawToX = villager\.x \+ \(vMeta\.frame_w - tine\.x\) \* SPRITE_SCALE/)
-  assert.match(COMPONENT_SOURCE, /const rawToY = villager\.y \+ tine\.y \* SPRITE_SCALE/)
+  assert.match(COMPONENT_SOURCE, /const rawToX = villager\.x \+ grip\.x \+ \(vMeta\.frame_w - tine\.x\) \* SPRITE_SCALE/)
+  assert.match(COMPONENT_SOURCE, /const rawToY = villager\.y \+ grip\.y \+ tine\.y \* SPRITE_SCALE/)
   assert.match(COMPONENT_SOURCE, /rotateAroundPivot\(rawToX, rawToY, forkPivotX, forkPivotY, FORK_LEAN_DEG\)/)
 
   const scale = 3
+  // A walk frame's grip is one shared translation of pivot, fork art and tine
+  // endpoint (source pins above), so the frame-0 geometry proves every frame.
   const villager = { x: 100, y: 200 }
   const forkPivot = {
     x: villager.x + (villagerMeta.frame_w - villagerMeta.fork_base.x) * scale,
