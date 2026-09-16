@@ -3305,7 +3305,6 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
   const progress = v.active ? view.charge.progress : 0
   const forkKey = `${v.totalTines}_${v.displayBurn}`
   const baseImg = assets.fork[forkKey] ?? assets.fork[`${v.totalTines}_${v.visualBurn}`]
-  const glowImg = assets.forkGlow[forkKey] ?? assets.forkGlow[`${v.totalTines}_${v.visualBurn}`]
   const forkMeta = assets.forkMeta[v.totalTines]
   const forkW = forkMeta.frame_w * SPRITE_SCALE
   const forkH = forkMeta.frame_h * SPRITE_SCALE
@@ -3322,10 +3321,6 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
     ctx.translate(fx + forkW, fy)
     ctx.scale(-1, 1)
     ctx.drawImage(baseImg, 0, 0, forkW, forkH)
-    if (v.active && glowImg) {
-      ctx.globalAlpha = clamp(0.25 + progress * 0.75 + agitation * 0.15 * (1 - calm * 0.5), 0, 1)
-      ctx.drawImage(glowImg, 0, 0, forkW, forkH)
-    }
     ctx.restore()
   }
 
