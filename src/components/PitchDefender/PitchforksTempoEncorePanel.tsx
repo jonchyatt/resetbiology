@@ -12,7 +12,7 @@ import {
 import { PITCHFORKS_PITCH_PROFILE } from './pitchDetectionSmoothing'
 import { pitchforksMicUnreliable } from './pitchforksTunerFeedback'
 import { advanceTempoEncore, canEnterTempoEncore, startTempoEncore, tempoEncoreCurrent,
-  tempoEncoreRawOffsets, tempoEncoreReceipt, type TempoEncoreState } from './pitchforksTempoEncore'
+  tempoEncoreInitialBpm, tempoEncoreRawOffsets, tempoEncoreReceipt, type TempoEncoreState } from './pitchforksTempoEncore'
 
 export interface PitchforksTempoEncoreProps {
   readonly completedPractice: SongcraftPracticeState
@@ -25,7 +25,8 @@ export interface PitchforksTempoEncoreProps {
 
 /** No persistence or audio playback port is accepted by this practice leaf. */
 export function PitchforksTempoEncore(props: PitchforksTempoEncoreProps) {
-  const [bpm, setBpm] = useState(60)
+  const phrase = props.completedPractice.phrase
+  const [bpm, setBpm] = useState(() => tempoEncoreInitialBpm(phrase))
   const [session, setSession] = useState<TempoEncoreState | null>(null)
   const [pending, setPending] = useState(false)
   const [message, setMessage] = useState('Start your microphone, then begin when ready.')
@@ -43,7 +44,6 @@ export function PitchforksTempoEncore(props: PitchforksTempoEncoreProps) {
   const hold = useRef({ heldMs: 0, matched: false })
   const dropout = useRef(0)
   const generation = useRef(resetPitchforksSongcraftVisibilityState(0).generation)
-  const phrase = props.completedPractice.phrase
   const eligible = canEnterTempoEncore(phrase, props.completedPractice, props.masteryProjection)
     && phrase.occurrences.every(note => note.isRest || props.admittedNotes.includes(note.pitchName ?? ''))
 
@@ -226,6 +226,7 @@ export function PitchforksTempoEncore(props: PitchforksTempoEncoreProps) {
   return <main className="fixed inset-0 overflow-y-auto bg-[#070914] p-4 text-white"><section aria-label="Optional Tempo Encore" className="mx-auto w-full max-w-2xl space-y-4 rounded-2xl border border-amber-400/40 bg-slate-950 p-4 text-white">
     <h2 className="text-xl font-semibold">Tempo Encore · optional practice</h2>
     <p>{phrase.title}</p>
+    {phrase.sourceTempoBpm !== undefined && <p>Song tempo {phrase.sourceTempoBpm} BPM</p>}
     <p className="text-sm text-white">Uncalibrated practice timing. A visual beat for a phrase you already practised. No timing grade or mastery award. No reference tone plays during measurement.</p>
     <label className="flex flex-wrap items-center gap-3">Tempo (beats per minute)
       <input aria-label="Tempo beats per minute" type="number" min={30} max={180} step={1} value={bpm} disabled={running || pending}

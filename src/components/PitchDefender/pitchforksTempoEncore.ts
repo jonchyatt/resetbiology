@@ -53,6 +53,7 @@ export interface TempoEncoreObservation {
 export interface TempoEncoreState {
   readonly sourceKey: string
   readonly sourceSha256: string
+  readonly sourceTempoBpm?: number
   readonly normalizationVersion: string
   readonly bpm: number
   readonly startedAt: number
@@ -88,8 +89,13 @@ export function startTempoEncore(phrase: SongcraftPhrase, completed: SongcraftPr
       visualAt: null, detectorWindow: null, inputAt: null, holdAt: null, outcomeAt: null }
   })
   return freezeState({ sourceKey: phrase.sourceKey, sourceSha256: phrase.sourceSha256,
+    ...(phrase.sourceTempoBpm === undefined ? {} : { sourceTempoBpm: phrase.sourceTempoBpm }),
     normalizationVersion: phrase.provenance.normalizationVersion, bpm, startedAt: now,
     observedAt: now, status: 'running', observations })
+}
+
+export function tempoEncoreInitialBpm(phrase: SongcraftPhrase): number {
+  return phrase.sourceTempoBpm ?? 60
 }
 
 export function tempoEncoreCurrent(state: TempoEncoreState): TempoEncoreObservation | undefined {

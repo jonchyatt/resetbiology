@@ -19,7 +19,7 @@ function expectedHash(raw: string): string {
 function currentRaw(title = 'Octave and Rest', tempo = 96): string {
   return JSON.stringify({
     title,
-    tempo,
+    tempoBpm: tempo,
     measures: [
       {
         notes: [
@@ -110,6 +110,7 @@ async function main() {
 
   check(() => assert.equal(current.sourceKey, 'pd_composed_current'))
   check(() => assert.equal(current.title, 'Octave and Rest'))
+  check(() => assert.equal(current.sourceTempoBpm, 96))
   check(() => assert.equal(current.sourceSha256, expectedHash(currentSource)))
   check(() => assert.deepEqual(current.provenance, {
     source: 'composer',
@@ -182,6 +183,18 @@ async function main() {
   check(() => assert.notEqual(metadataPhrase.sourceSha256, current.sourceSha256))
   check(() => assert.equal(metadataPhrase.sourceSha256, expectedHash(metadataSource)))
   check(() => assert.deepEqual(metadataPhrase.occurrences, current.occurrences))
+  check(() => assert.equal(metadataPhrase.sourceTempoBpm, 120))
+
+  for (const tempoBpm of [undefined, 29, 181, 96.5, '96']) {
+    const source = JSON.stringify({
+      title: 'Invalid tempo',
+      ...(tempoBpm === undefined ? {} : { tempoBpm }),
+      measures: [{ notes: [{ keys: ['c/4'], duration: 'q' }] }],
+    })
+    const phrase = phraseOrThrow(await normalizeComposerPhrase(source, 'pd_composed_invalid_tempo'))
+    check(() => assert.equal(phrase.sourceTempoBpm, undefined))
+    check(() => assert.equal(phrase.sourceSha256, expectedHash(source)))
+  }
 
   const whitespaceSource = `${JSON.stringify(JSON.parse(currentSource), null, 2)}\n`
   const whitespacePhrase = phraseOrThrow(await normalizeComposerPhrase(whitespaceSource, 'pd_composed_current'))

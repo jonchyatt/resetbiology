@@ -6,12 +6,13 @@ import { projectPitchforksMastery } from '../src/components/PitchDefender/pitchf
 import { createPitchforksSongcraftPractice } from '../src/components/PitchDefender/pitchforksSongcraftPractice'
 import { type SongcraftPhrase } from '../src/components/PitchDefender/pitchforksSongcraftPhrase'
 import { advanceTempoEncore, canEnterTempoEncore, startTempoEncore, tempoEncoreCurrent,
-  tempoEncoreRawOffsets, tempoEncoreReceipt } from '../src/components/PitchDefender/pitchforksTempoEncore'
+  tempoEncoreInitialBpm, tempoEncoreRawOffsets, tempoEncoreReceipt } from '../src/components/PitchDefender/pitchforksTempoEncore'
 import { advancePitchforksSongcraftVoiceSample, observePitchforksSongcraftGeneration,
   pitchforksSongcraftTargetFrequency, resetPitchforksSongcraftVisibilityState } from '../src/components/PitchDefender/PitchforksSongcraft'
 
 const phrase: SongcraftPhrase = {
   sourceKey: 'pd_composed_tempo_test', title: 'Synthetic timing fixture', sourceSha256: 'a'.repeat(64),
+  sourceTempoBpm: 96,
   provenance: { source: 'composer', normalizationVersion: 'songcraft-phrase/1' },
   occurrences: [
     { ordinal: 0, isRest: false, pitchName: 'C4', midi: 60, semi: 0, octave: 4, beats: 1, measureIdx: 1, beatOffset: 0 },
@@ -98,6 +99,18 @@ test('authored durations and four-beat count-in follow chosen tempo without sour
   assert.equal(tempoEncoreCurrent(state), undefined)
   assert.equal(tempoEncoreCurrent(advanceTempoEncore(state, { type: 'tick', now: 5000 }))?.ordinal, 0)
   assert.equal(Object.isFrozen(state.observations[0]), true)
+})
+
+test('panel contract starts from authored tempo and receipt preserves it', () => {
+  assert.equal(complete.phrase.sourceTempoBpm, 96)
+  assert.equal(tempoEncoreInitialBpm(phrase), 96)
+  assert.equal(tempoEncoreInitialBpm({ ...phrase, sourceTempoBpm: undefined }), 60)
+  const receipt = JSON.parse(tempoEncoreReceipt(startTempoEncore(phrase, complete, mastery, 96, 1000), 'authored-tempo'))
+  assert.equal(receipt.bpm, 96)
+  assert.equal(receipt.sourceTempoBpm, 96)
+  const ui = readFileSync(new URL('../src/components/PitchDefender/PitchforksTempoEncorePanel.tsx', import.meta.url), 'utf8')
+  assert.match(ui, /useState\(\(\) => tempoEncoreInitialBpm\(phrase\)\)/)
+  assert.match(ui, /Song tempo \{phrase\.sourceTempoBpm\} BPM/)
 })
 
 test('finite monotonic time and bounded tempo/phrase length are enforced', () => {

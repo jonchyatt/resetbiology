@@ -527,7 +527,8 @@ async function main(): Promise<void> {
   check(() => assert.match(source, /createPitchforksBossRecital/))
   check(() => assert.doesNotMatch(source, /from ['"].*fsrs/))
   check(() => assert.doesNotMatch(source, /localStorage|setItem|removeItem|clear\(/))
-  check(() => assert.doesNotMatch(source, /tempo|countdown|scheduler|transpos/i))
+  const sourceWithoutAuthoredTempoMetadata = source.replaceAll('sourceTempoBpm', '')
+  check(() => assert.doesNotMatch(sourceWithoutAuthoredTempoMetadata, /tempo|countdown|scheduler|transpos/i))
 
   console.log(`pitchforks songcraft practice: ${checks}/${checks} PASS`)
 }

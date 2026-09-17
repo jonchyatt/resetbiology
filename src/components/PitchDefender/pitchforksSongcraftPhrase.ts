@@ -54,6 +54,8 @@ export interface SongcraftPhrase {
   readonly title: string
   /** SHA-256 of the exact UTF-8 source string supplied to the parser. */
   readonly sourceSha256: string
+  /** Composer-authored tempo when it is an integer Tempo Encore can play. */
+  readonly sourceTempoBpm?: number
   readonly provenance: SongcraftPhraseProvenance
   readonly occurrences: readonly SongcraftPhraseOccurrence[]
 }
@@ -331,6 +333,10 @@ export async function normalizeComposerPhrase(
   const title = isRecord(comp) && typeof comp.title === 'string' && comp.title.trim().length > 0
     ? comp.title
     : 'Untitled'
+  const sourceTempoBpm = isRecord(comp) && Number.isSafeInteger(comp.tempoBpm)
+    && (comp.tempoBpm as number) >= 30 && (comp.tempoBpm as number) <= 180
+    ? comp.tempoBpm as number
+    : undefined
   const occurrences = Object.freeze(extracted.map(occurrenceFromNote))
   const provenance = Object.freeze({
     source: 'composer' as const,
@@ -340,6 +346,7 @@ export async function normalizeComposerPhrase(
     sourceKey,
     title,
     sourceSha256,
+    ...(sourceTempoBpm === undefined ? {} : { sourceTempoBpm }),
     provenance,
     occurrences,
   })

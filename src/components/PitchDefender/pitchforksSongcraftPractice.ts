@@ -252,10 +252,15 @@ function snapshotPhrase(phrase: SongcraftPhrase): SongcraftPhrase {
       ...(value.lyric === undefined ? {} : { lyric: value.lyric }),
     })
   })
+  const sourceTempoBpm = Number.isSafeInteger(phrase.sourceTempoBpm)
+    && (phrase.sourceTempoBpm as number) >= 30 && (phrase.sourceTempoBpm as number) <= 180
+    ? phrase.sourceTempoBpm
+    : undefined
   return deepFreeze({
     sourceKey: phrase.sourceKey,
     title: phrase.title,
     sourceSha256: phrase.sourceSha256,
+    ...(sourceTempoBpm === undefined ? {} : { sourceTempoBpm }),
     provenance: { ...phrase.provenance },
     occurrences,
   })
