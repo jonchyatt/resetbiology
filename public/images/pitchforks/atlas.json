@@ -62,8 +62,7 @@
               "fork_5tine_b4_glow.png",
               "fork_5tine_b5_glow.png"
             ],
-            "meta": "forks.json",
-            "concreteMeta": "fork_5tine.json"
+            "meta": "forks.json"
           }
         }
       }
@@ -78,9 +77,9 @@
   },
   "notes_for_artist": [
     "All sprites are AI-generated placeholders. Recognizable shapes \u2014 polish the pixel art later.",
-    "Native pixel size only (no pre-scaling). Canvas scales x3 at draw time.",
+    "Villager body coordinates scale x3; fork family art draws at its native source_size.",
     "Forks are SEPARATE layer \u2014 change tine count / burn state without touching the villager.",
-    "fork_base in villager.json = where the fork handle attaches (handle_base in forks.json).",
+    "fork_base and fork_base_frames in villager JSON attach to handle_pivot in forks.json.",
     "rod_tip in frankenstein.json = the bolt routing pivot. Every lightning bolt bounces here."
   ]
 }

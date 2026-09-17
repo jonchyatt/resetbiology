@@ -8,28 +8,6 @@
     "x": 14,
     "y": 11
   },
-  "tines": [
-    {
-      "x": 10,
-      "y": -4
-    },
-    {
-      "x": 12,
-      "y": -4
-    },
-    {
-      "x": 14,
-      "y": -4
-    },
-    {
-      "x": 16,
-      "y": -4
-    },
-    {
-      "x": 18,
-      "y": -4
-    }
-  ],
   "burnFrameCount": 4,
   "ashOnStrike": 5,
   "sourceProvenance": {
@@ -37,7 +15,7 @@
     "archive": "C:/Users/jonch/Projects/rb-pitchforks-release-20260913/data/pitchforks-rework/art-tests/villager-p4-1-5/native-codex-5-final/villager_5tine.json",
     "sourceSha256": "B737C5AB1B699BA865741963A63B407621B187624A0E4DAF8D7110C5175CB500",
     "sourceStatus": "STAGING_ONLY_NOT_INTEGRATED",
-    "adaptation": "Runtime VillagerMeta shape; tines are derived from fork_base + fork.tine_tips - handle_base; the approved N-tine lifecycle uses N-1 burn frames then ash on strike N; sourceStatus is provenance only."
+    "adaptation": "Runtime VillagerMeta shape; fork geometry is owned by forks.json; the approved N-tine lifecycle uses N-1 burn frames then ash on strike N; sourceStatus is provenance only."
   },
   "source_frame_w": 48,
   "source_frame_h": 72,
@@ -81,5 +59,23 @@
     "sheet": "data/pitchforks-rework/consults/2026-09-16-handoff18-items1-4/item2-walk/gray-5tine-b.jpg",
     "poseGuide": "scripts/pitchforks-art-repair/walk-pose-guide.py",
     "builder": "scripts/pitchforks-art-repair/build-walk-strip.py (target_h 69, palette-locked)"
-  }
+  },
+  "fork_base_burned": [
+    {
+      "x": 14.0,
+      "y": 13.64
+    },
+    {
+      "x": 12.33,
+      "y": 13.97
+    },
+    {
+      "x": 13.0,
+      "y": 14.04
+    },
+    {
+      "x": 13.67,
+      "y": 12.12
+    }
+  ]
 }

@@ -65,6 +65,11 @@ import {
 } from './pitchforksBossRecital'
 import { INTRO_ORDER } from './types'
 import { selectPitchforksChargePose } from './pitchforksChargePose'
+import {
+  forkWorldGeometry,
+  type ForkFamilyMeta,
+  type ForkMetaDocument,
+} from './pitchforksForkGeometry'
 import { drawStormHeart, selectStormHeartState } from './pitchforksStormHeart'
 import { getPitchforksThunderheadPathPosition, getPitchforksThunderheadCaptionRect, PITCHFORKS_THUNDERHEAD_CLEAR_LANE_Y } from './pitchforksThunderheadPath'
 import { WORLD_REGISTRY, isWorldUnlocked, isBossAvailable, type WorldId } from './pitchforks3WorldRegistry'
@@ -768,30 +773,8 @@ function layoutModeForViewport(width: number, height: number): LayoutMode {
   return height > width && width <= 768 ? 'portrait' : 'stage'
 }
 
-// C3: fork pose lean. Villagers face/advance toward Frankenstein (FRANK_X, left side),
-// so a negative angle here tips the tine end toward him — "gripped forward," not a
-// vertical rod. Pivots around the villager's own fork_base anchor (rotation-invariant;
-// strike/tineIndex targeting never reads rendered fork pixels, only villagerMeta.tines).
-const FORK_LEAN_DEG = -18
-
-// Pixel offset from the static fork_base to this walk frame's grip. Burned and ash
-// sprites are single authored poses gripping at fork_base, so they get no offset.
-function villagerForkOffset(meta: VillagerMeta, walkFrame: number, onWalkStrip: boolean): { x: number; y: number } {
-  const frames = meta.fork_base_frames
-  if (!onWalkStrip || !frames || frames.length === 0) return { x: 0, y: 0 }
-  const grip = frames[((walkFrame % frames.length) + frames.length) % frames.length]
-  return { x: (meta.fork_base.x - grip.x) * SPRITE_SCALE, y: (grip.y - meta.fork_base.y) * SPRITE_SCALE }
-}
-
-function rotateAroundPivot(px: number, py: number, cx: number, cy: number, deg: number) {
-  const rad = (deg * Math.PI) / 180
-  const cos = Math.cos(rad)
-  const sin = Math.sin(rad)
-  const dx = px - cx
-  const dy = py - cy
-  return { x: cx + dx * cos - dy * sin, y: cy + dx * sin + dy * cos }
-}
-
+// Fork lean is baked into the native pixels. Rendering and every targeting path share
+// pitchforksForkGeometry, so the art, glow and strike point use one translated origin.
 // C4: continuous charge-arc render cache. Pre-allocated once and mutated in place
 // (CW consult-28, 0.86 conf: zero per-frame allocation is the single most important
 // mobile-Safari perf rule for a per-frame polyline). Purely a rendering jitter cache,
@@ -902,14 +885,6 @@ interface VillagerMeta {
   fork_base: { x: number; y: number }
   /** Per-walk-frame grip point (logical px). The fork and its tine targets follow the hand. */
   fork_base_frames?: readonly { x: number; y: number }[]
-  tines: Array<{ x: number; y: number }>
-}
-
-interface ForkMeta {
-  frame_w: number
-  frame_h: number
-  handle_base: { x: number; y: number }
-  tine_tips: Array<{ x: number; y: number }>
 }
 
 type PitchforksNormalWorld = WorldId
@@ -946,7 +921,7 @@ interface Assets {
   frankVictoryEyeLift?: HTMLImageElement
   frankMeta: FrankMeta
   villagerMeta: Record<TineCount, VillagerMeta>
-  forkMeta: Record<TineCount, ForkMeta>
+  forkMeta: Record<TineCount, ForkFamilyMeta>
   walkLeft: Record<TineCount, HTMLImageElement | undefined>
   burnedLeft: Record<string, HTMLImageElement | undefined>
   ashLeft: Record<TineCount, HTMLImageElement | undefined>
@@ -1479,7 +1454,6 @@ type VillagerView = Readonly<{
   ashTimer: number
   active: boolean
   answerVisible: boolean
-  displayBurn: number
   timerPct: number
   soulR: number      // 0-1, currentR() for this villager's active note (notes[burned])
   soulCalm: number   // 0-1, retrievability(1, mem.S) for the same note, fixed 1-day-out reference
@@ -1746,33 +1720,17 @@ const defaultVillagerMeta: VillagerMeta = {
   frame_h: 24,
   walk_frames: 4,
   fork_base: { x: 14, y: 11 },
-  tines: [{ x: 14, y: 4 }, { x: 14, y: 6 }, { x: 14, y: 8 }, { x: 14, y: 10 }],
-}
-
-const defaultForkMeta: ForkMeta = {
-  frame_w: 8,
-  frame_h: 16,
-  handle_base: { x: 3, y: 15 },
-  tine_tips: [{ x: 1, y: 0 }, { x: 3, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }],
 }
 
 const defaultFiveVillagerMeta: VillagerMeta = {
   ...defaultVillagerMeta,
-  tines: [{ x: 10, y: -4 }, { x: 12, y: -4 }, { x: 14, y: -4 }, { x: 16, y: -4 }, { x: 18, y: -4 }],
-}
-
-const defaultFiveForkMeta: ForkMeta = {
-  ...defaultForkMeta,
-  frame_w: 12,
-  handle_base: { x: 5, y: 15 },
-  tine_tips: [{ x: 1, y: 0 }, { x: 3, y: 0 }, { x: 5, y: 0 }, { x: 7, y: 0 }, { x: 9, y: 0 }],
 }
 
 function emptyAssets(): Assets {
   return {
     frankMeta: defaultFrankMeta,
     villagerMeta: { 1: defaultVillagerMeta, 2: defaultVillagerMeta, 3: defaultVillagerMeta, 4: defaultVillagerMeta, 5: defaultFiveVillagerMeta },
-    forkMeta: { 1: defaultForkMeta, 2: defaultForkMeta, 3: defaultForkMeta, 4: defaultForkMeta, 5: defaultFiveForkMeta },
+    forkMeta: {} as Record<TineCount, ForkFamilyMeta>,
     walkLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined, 5: undefined },
     burnedLeft: {},
     ashLeft: { 1: undefined, 2: undefined, 3: undefined, 4: undefined, 5: undefined },
@@ -2257,14 +2215,16 @@ function activeTargetForThunderheadReceipt(
 }
 
 function thunderheadTargetPoint(target: ActiveTarget, assets: Assets): ThunderheadPoint {
-  const meta = assets.villagerMeta[target.villager.totalTines]
-  const tine = meta.tines[Math.max(0, Math.min(target.tineIndex, meta.tines.length - 1))]
-  const grip = villagerForkOffset(meta, target.villager.walkFrame, target.villager.burned === 0 && target.villager.state === 'walking')
-  const forkPivotX = target.villager.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-  const forkPivotY = target.villager.y + grip.y + meta.fork_base.y * SPRITE_SCALE
-  const rawX = target.villager.x + grip.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-  const rawY = target.villager.y + grip.y + tine.y * SPRITE_SCALE
-  return rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+  const geometry = forkWorldGeometry({
+    x: target.villager.x,
+    y: target.villager.y,
+    totalTines: target.villager.totalTines,
+    burn: target.villager.burned,
+    walkFrame: target.villager.walkFrame,
+    useWalkGrip: target.villager.state === 'walking',
+    tineIndex: target.tineIndex,
+  }, assets)
+  return geometry.activeTip?.world ?? geometry.pivot
 }
 
 function activeTargetForCloseReceipt(
@@ -2467,9 +2427,6 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
       ))
       const visualBurn = awaitingImpact ? Math.max(0, v.burned - 1) : v.burned
       const visualState = awaitingImpact && v.state === 'ash' ? 'walking' : v.state
-      const displayBurn = isActive
-        ? Math.max(visualBurn, Math.min(v.totalTines, Math.round(chargeProgress * v.totalTines)))
-        : visualBurn
       const activeNote = v.notes[Math.min(v.burned, v.notes.length - 1)]
       const mem = fsrsMemory[activeNote] ?? createNote(activeNote)
       const soulR = currentR(mem)
@@ -2495,7 +2452,6 @@ function buildViewState(args: BuildViewStateArgs): ViewState {
         ashTimer: v.ashTimer,
         active: isActive,
         answerVisible: projectVillageReturnDisplay(v, targetOutcomes, hintedTargetKeys).answerVisible,
-        displayBurn,
         timerPct: clamp(v.attackTimer / Math.max(0.001, v.attackTimerMax), 0, 1),
         soulR,
         soulCalm,
@@ -2985,14 +2941,16 @@ function drawChargeArcView(ctx: CanvasRenderingContext2D, view: ViewState, asset
   if (!view.active || progress < CHARGE_DISCHARGE_START) return
   const villager = view.villagers.find(v => v.id === view.active?.villagerId)
   if (!villager) return
-  const meta = assets.villagerMeta[villager.totalTines]
-  const tine = meta.tines[Math.max(0, Math.min(view.active.tineIndex, meta.tines.length - 1))]
-  const grip = villagerForkOffset(meta, villager.walkFrame, villager.visualBurn === 0 && villager.visualState === 'walking')
-  const forkPivotX = villager.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-  const forkPivotY = villager.y + grip.y + meta.fork_base.y * SPRITE_SCALE
-  const rawX = villager.x + grip.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-  const rawY = villager.y + grip.y + tine.y * SPRITE_SCALE
-  const target = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+  const geometry = forkWorldGeometry({
+    x: villager.x,
+    y: villager.y,
+    totalTines: villager.totalTines,
+    burn: villager.visualBurn,
+    walkFrame: villager.walkFrame,
+    useWalkGrip: villager.visualState === 'walking',
+    tineIndex: view.active.tineIndex,
+  }, assets)
+  const target = geometry.activeTip?.world ?? geometry.pivot
 
   const pivotX = FRANK_X + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
   const pivotY = FRANK_Y + (assets.frankMeta.hand_tip ?? { x: 28, y: 10 }).y * FRANK_SPRITE_SCALE
@@ -3339,31 +3297,32 @@ function drawVillagerView(ctx: CanvasRenderingContext2D, v: VillagerView, view: 
 
   if (v.visualState !== 'walking') return
   const progress = v.active ? view.charge.progress : 0
-  const forkKey = `${v.totalTines}_${v.displayBurn}`
-  const baseImg = assets.fork[forkKey] ?? assets.fork[`${v.totalTines}_${v.visualBurn}`]
-  const forkMeta = assets.forkMeta[v.totalTines]
-  const forkW = forkMeta.frame_w * SPRITE_SCALE
-  const forkH = forkMeta.frame_h * SPRITE_SCALE
-  // The fork rides the hand, including the walk's arm swing and body bob.
-  const grip = villagerForkOffset(meta, v.walkFrame, strip)
-  const fx = v.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE - (forkMeta.frame_w - forkMeta.handle_base.x) * SPRITE_SCALE
-  const fy = v.y + grip.y + meta.fork_base.y * SPRITE_SCALE - forkMeta.handle_base.y * SPRITE_SCALE
-  const forkPivotX = v.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-  const forkPivotY = v.y + grip.y + meta.fork_base.y * SPRITE_SCALE
+  const geometry = forkWorldGeometry({
+    x: v.x,
+    y: v.y,
+    totalTines: v.totalTines,
+    burn: v.visualBurn,
+    walkFrame: v.walkFrame,
+    useWalkGrip: strip,
+    tineIndex: null,
+  }, assets)
+  const baseImg = assets.fork[geometry.assetKey]
+  const glowImg = assets.forkGlow[geometry.glowKey]
 
   if (baseImg) {
+    ctx.drawImage(baseImg, geometry.draw.x, geometry.draw.y, geometry.draw.width, geometry.draw.height)
+  }
+
+  if (v.active && geometry.activeTip && glowImg) {
     ctx.save()
-    ctx.translate(forkPivotX, forkPivotY)
-    ctx.rotate((FORK_LEAN_DEG * Math.PI) / 180)
-    ctx.translate(-forkPivotX, -forkPivotY)
-    ctx.translate(fx + forkW, fy)
-    ctx.scale(-1, 1)
-    ctx.drawImage(baseImg, 0, 0, forkW, forkH)
+    ctx.globalCompositeOperation = 'lighter'
+    ctx.globalAlpha = view.reducedMotion ? 0.48 : 0.42 + 0.16 * Math.sin(view.animClock * 8)
+    ctx.drawImage(glowImg, geometry.draw.x, geometry.draw.y, geometry.draw.width, geometry.draw.height)
     ctx.restore()
   }
 
-  const tineTipAnchor = rotateAroundPivot(fx + forkW / 2, fy + 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
-  const noteLabelAnchor = rotateAroundPivot(fx + forkW / 2, fy - 7, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+  const tineTipAnchor = geometry.activeTip?.world ?? geometry.pivot
+  const noteLabelAnchor = tineTipAnchor
 
   if (view.synesthesiaOn && v.answerVisible) {
     // Argus MED (C7 same-session): a flat same-alpha wash camouflages against
@@ -4268,14 +4227,16 @@ function renderView(ctx: CanvasRenderingContext2D, view: ViewState, assets: Asse
   if (view.active) {
     const villager = view.villagers.find(v => v.id === view.active?.villagerId)
     if (villager) {
-      const meta = assets.villagerMeta[villager.totalTines]
-      const tine = meta.tines[Math.max(0, Math.min(view.active.tineIndex, meta.tines.length - 1))]
-      const grip = villagerForkOffset(meta, villager.walkFrame, villager.visualBurn === 0 && villager.visualState === 'walking')
-      const forkPivotX = villager.x + grip.x + (meta.frame_w - meta.fork_base.x) * SPRITE_SCALE
-      const forkPivotY = villager.y + grip.y + meta.fork_base.y * SPRITE_SCALE
-      const rawX = villager.x + grip.x + (meta.frame_w - tine.x) * SPRITE_SCALE
-      const rawY = villager.y + grip.y + tine.y * SPRITE_SCALE
-      const { x, y } = rotateAroundPivot(rawX, rawY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+      const geometry = forkWorldGeometry({
+        x: villager.x,
+        y: villager.y,
+        totalTines: villager.totalTines,
+        burn: villager.visualBurn,
+        walkFrame: villager.walkFrame,
+        useWalkGrip: villager.visualState === 'walking',
+        tineIndex: view.active.tineIndex,
+      }, assets)
+      const { x, y } = geometry.activeTip?.world ?? geometry.pivot
       ctx.strokeStyle = view.charge.tint ?? 'rgba(160,210,255,0.62)'
       ctx.lineWidth = 1.5
       ctx.beginPath()
@@ -5484,33 +5445,26 @@ export default function PitchforksIII() {
           const frank = await fetch(`${ASSET_BASE}/frankenstein.json`)
           if (frank.ok) a.frankMeta = await frank.json()
         } catch {}
-        try {
-          const forks = await fetch(`${ASSET_BASE}/forks.json`)
-          if (forks.ok) {
-            const parsed = await forks.json()
-            a.forkMeta = {
-              1: a.forkMeta[1],
-              2: parsed['2tine'] ?? defaultForkMeta,
-              3: parsed['3tine'] ?? defaultForkMeta,
-              4: parsed['4tine'] ?? defaultForkMeta,
-              5: parsed['5tine'] ?? defaultFiveForkMeta,
-            }
-          }
-        } catch {}
+        const forksResponse = await fetch(`${ASSET_BASE}/forks.json`)
+        if (!forksResponse.ok) throw new Error('Fork family metadata failed to load')
+        const forks = await forksResponse.json() as ForkMetaDocument
+        if (forks.schemaVersion !== 2) throw new Error('Fork family metadata schema is not version 2')
+        a.forkMeta = Object.fromEntries(
+          ([1, 2, 3, 4, 5] as const).map(n => [n, forks.families[`${n}tine`]]),
+        ) as Record<TineCount, ForkFamilyMeta>
 
-        const oneTineForkMeta = await fetch(`${ASSET_BASE}/fork_1tine.json`)
-        if (!oneTineForkMeta.ok) throw new Error('Single-tine fork metadata failed to load')
-        a.forkMeta[1] = await oneTineForkMeta.json()
+        for (const family of Object.values(a.forkMeta)) {
+          for (const state of family.states) {
+            a.fork[state.image] = await loadImage(`${ASSET_BASE}/${state.image}`)
+            a.forkGlow[state.glow] = await loadImage(`${ASSET_BASE}/${state.glow}`)
+          }
+        }
 
         for (const n of [1, 2, 3, 4, 5] as const) {
           a.walkLeft[n] = await loadImage(`${ASSET_BASE}/villager_${n}tine_walk_left.png`)
           a.ashLeft[n] = await loadImage(`${ASSET_BASE}/villager_${n}tine_ash_left.png`)
           for (let k = 1; k < n; k++) {
             a.burnedLeft[`${n}_${k}`] = await loadImage(`${ASSET_BASE}/villager_${n}tine_burned_${k}_left.png`)
-          }
-          for (let b = 0; b <= n; b++) {
-            a.fork[`${n}_${b}`] = await loadImage(`${ASSET_BASE}/fork_${n}tine_b${b}.png`)
-            a.forkGlow[`${n}_${b}`] = await loadImage(`${ASSET_BASE}/fork_${n}tine_b${b}_glow.png`)
           }
           try {
             const meta = await fetch(`${ASSET_BASE}/villager_${n}tine.json`)
@@ -7578,16 +7532,18 @@ export default function PitchforksIII() {
   ) => {
     const a = assetsRef.current
     const frankMeta = a.frankMeta
-    const vMeta = a.villagerMeta[villager.totalTines]
-    const tine = vMeta.tines[Math.max(0, Math.min(tineIndex, vMeta.tines.length - 1))]
     const pivotX = FRANK_X + (frankMeta.hand_tip ?? { x: 28, y: 10 }).x * FRANK_SPRITE_SCALE
     const pivotY = FRANK_Y + (frankMeta.hand_tip ?? { x: 28, y: 10 }).y * FRANK_SPRITE_SCALE
-    const grip = villagerForkOffset(vMeta, villager.walkFrame, villager.burned === 0 && villager.state === 'walking')
-    const forkPivotX = villager.x + grip.x + (vMeta.frame_w - vMeta.fork_base.x) * SPRITE_SCALE
-    const forkPivotY = villager.y + grip.y + vMeta.fork_base.y * SPRITE_SCALE
-    const rawToX = villager.x + grip.x + (vMeta.frame_w - tine.x) * SPRITE_SCALE
-    const rawToY = villager.y + grip.y + tine.y * SPRITE_SCALE
-    const { x: toX, y: toY } = rotateAroundPivot(rawToX, rawToY, forkPivotX, forkPivotY, FORK_LEAN_DEG)
+    const geometry = forkWorldGeometry({
+      x: villager.x,
+      y: villager.y,
+      totalTines: villager.totalTines,
+      burn: villager.burned,
+      walkFrame: villager.walkFrame,
+      useWalkGrip: villager.state === 'walking',
+      tineIndex,
+    }, a)
+    const { x: toX, y: toY } = geometry.activeTip?.world ?? geometry.pivot
     runtimeRef.current.bolts.push({
       // Ordinary strikes originate at the shipped cloud relay. Smash contact
       // deliberately overrides only this presentation origin: the accepted

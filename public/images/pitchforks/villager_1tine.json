@@ -8,12 +8,6 @@
     "x": 14,
     "y": 11
   },
-  "tines": [
-    {
-      "x": 14,
-      "y": -4
-    }
-  ],
   "burnFrameCount": 0,
   "ashOnStrike": 1,
   "sourceProvenance": {
@@ -21,7 +15,7 @@
     "archive": "C:/Users/jonch/Projects/jarvis/data/codex-sidequests/worktrees/ed29b5a5-rb-vision/data/pitchforks-rework/art-tests/villager-p4-1-5/native-codex-1-final/villager_1tine.json",
     "sourceSha256": "7725FBBDE33277712145C7B9E019ADB23A31CD365ED2A1CF6173FF74B264A59F",
     "sourceStatus": "STAGING_ONLY_NOT_INTEGRATED",
-    "adaptation": "Runtime VillagerMeta shape; tines is derived from fork_base + fork.tine_tip - handle_base, and sourceStatus is provenance only."
+    "adaptation": "Runtime VillagerMeta shape; fork geometry is owned by forks.json, and sourceStatus is provenance only."
   },
   "sourceGridColumns": 5,
   "source_frame_w": 48,
@@ -70,5 +64,6 @@
     "poseGuide": "scripts/pitchforks-art-repair/walk-pose-guide.py",
     "builder": "scripts/pitchforks-art-repair/build-walk-strip.py (target_h 69, palette-locked)"
   },
-  "recoveryStatus": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC"
+  "recoveryStatus": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC",
+  "fork_base_burned": []
 }

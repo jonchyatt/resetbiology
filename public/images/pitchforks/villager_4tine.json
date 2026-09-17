@@ -7,28 +7,6 @@
     "x": 14,
     "y": 11
   },
-  "fork_tip": {
-    "x": 14,
-    "y": 2
-  },
-  "tines": [
-    {
-      "x": 14,
-      "y": 4
-    },
-    {
-      "x": 14,
-      "y": 6
-    },
-    {
-      "x": 14,
-      "y": 8
-    },
-    {
-      "x": 14,
-      "y": 10
-    }
-  ],
   "schemaVersion": "candidate-recovered-3x-1.0.0",
   "sourceGridColumns": 5,
   "source_frame_w": 48,
@@ -77,5 +55,19 @@
     "poseGuide": "scripts/pitchforks-art-repair/walk-pose-guide.py",
     "builder": "scripts/pitchforks-art-repair/build-walk-strip.py (target_h 69, palette-locked)"
   },
-  "recoveryStatus": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC"
+  "recoveryStatus": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC",
+  "fork_base_burned": [
+    {
+      "x": 16.0,
+      "y": 11.17
+    },
+    {
+      "x": 15.67,
+      "y": 14.12
+    },
+    {
+      "x": 15.0,
+      "y": 14.42
+    }
+  ]
 }

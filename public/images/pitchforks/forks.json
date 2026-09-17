@@ -1,98 +1,477 @@
 {
-  "2tine": {
-    "frame_w": 8,
-    "frame_h": 16,
-    "handle_base": {
-      "x": 3,
-      "y": 15
+  "schemaVersion": 2,
+  "units": "source-pixel-centers; drawn at native size, unrotated, unmirrored (lean baked in)",
+  "builder": "scripts/pitchforks-art-repair/build-fork-family.py",
+  "families": {
+    "1tine": {
+      "source_size": {
+        "w": 48,
+        "h": 62
+      },
+      "handle_pivot": {
+        "x": 31.39,
+        "y": 48.17
+      },
+      "lean_deg": 0,
+      "baked_lean_deg": 18.43,
+      "states": [
+        {
+          "burn": 0,
+          "image": "fork_1tine_b0.png",
+          "glow": "fork_1tine_b0_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 14.5,
+                "y": 8.5
+              }
+            }
+          ],
+          "active_tine_id": 0
+        },
+        {
+          "burn": 1,
+          "image": "fork_1tine_b1.png",
+          "glow": "fork_1tine_b1_glow.png",
+          "remaining_tines": [],
+          "active_tine_id": null
+        }
+      ]
     },
-    "tine_tips": [
-      {
-        "x": 1,
-        "y": 0
+    "2tine": {
+      "source_size": {
+        "w": 48,
+        "h": 62
       },
-      {
-        "x": 6,
-        "y": 0
-      }
-    ]
-  },
-  "3tine": {
-    "frame_w": 8,
-    "frame_h": 16,
-    "handle_base": {
-      "x": 3,
-      "y": 15
+      "handle_pivot": {
+        "x": 31.39,
+        "y": 48.17
+      },
+      "lean_deg": 0,
+      "baked_lean_deg": 18.43,
+      "states": [
+        {
+          "burn": 0,
+          "image": "fork_2tine_b0.png",
+          "glow": "fork_2tine_b0_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 14.5,
+                "y": 8.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 20.5,
+                "y": 6.5
+              }
+            }
+          ],
+          "active_tine_id": 1
+        },
+        {
+          "burn": 1,
+          "image": "fork_2tine_b1.png",
+          "glow": "fork_2tine_b1_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 14.5,
+                "y": 8.5
+              }
+            }
+          ],
+          "active_tine_id": 0
+        },
+        {
+          "burn": 2,
+          "image": "fork_2tine_b2.png",
+          "glow": "fork_2tine_b2_glow.png",
+          "remaining_tines": [],
+          "active_tine_id": null
+        }
+      ]
     },
-    "tine_tips": [
-      {
-        "x": 1,
-        "y": 0
+    "3tine": {
+      "source_size": {
+        "w": 48,
+        "h": 62
       },
-      {
-        "x": 3,
-        "y": 0
+      "handle_pivot": {
+        "x": 31.39,
+        "y": 48.17
       },
-      {
-        "x": 6,
-        "y": 0
-      }
-    ]
-  },
-  "4tine": {
-    "frame_w": 8,
-    "frame_h": 16,
-    "handle_base": {
-      "x": 3,
-      "y": 15
+      "lean_deg": 0,
+      "baked_lean_deg": 18.43,
+      "states": [
+        {
+          "burn": 0,
+          "image": "fork_3tine_b0.png",
+          "glow": "fork_3tine_b0_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 11.5,
+                "y": 9.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 17.5,
+                "y": 6.5
+              }
+            },
+            {
+              "id": 2,
+              "tip": {
+                "x": 23.5,
+                "y": 5.5
+              }
+            }
+          ],
+          "active_tine_id": 2
+        },
+        {
+          "burn": 1,
+          "image": "fork_3tine_b1.png",
+          "glow": "fork_3tine_b1_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 11.5,
+                "y": 9.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 17.5,
+                "y": 6.5
+              }
+            }
+          ],
+          "active_tine_id": 1
+        },
+        {
+          "burn": 2,
+          "image": "fork_3tine_b2.png",
+          "glow": "fork_3tine_b2_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 11.5,
+                "y": 9.5
+              }
+            }
+          ],
+          "active_tine_id": 0
+        },
+        {
+          "burn": 3,
+          "image": "fork_3tine_b3.png",
+          "glow": "fork_3tine_b3_glow.png",
+          "remaining_tines": [],
+          "active_tine_id": null
+        }
+      ]
     },
-    "tine_tips": [
-      {
-        "x": 0,
-        "y": 0
+    "4tine": {
+      "source_size": {
+        "w": 48,
+        "h": 62
       },
-      {
-        "x": 2,
-        "y": 0
+      "handle_pivot": {
+        "x": 31.39,
+        "y": 48.17
       },
-      {
-        "x": 5,
-        "y": 0
-      },
-      {
-        "x": 7,
-        "y": 0
-      }
-    ]
-  },
-  "5tine": {
-    "frame_w": 12,
-    "frame_h": 16,
-    "handle_base": {
-      "x": 5,
-      "y": 15
+      "lean_deg": 0,
+      "baked_lean_deg": 18.43,
+      "states": [
+        {
+          "burn": 0,
+          "image": "fork_4tine_b0.png",
+          "glow": "fork_4tine_b0_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 8.5,
+                "y": 10.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 14.5,
+                "y": 7.5
+              }
+            },
+            {
+              "id": 2,
+              "tip": {
+                "x": 20.5,
+                "y": 5.5
+              }
+            },
+            {
+              "id": 3,
+              "tip": {
+                "x": 26.5,
+                "y": 4.5
+              }
+            }
+          ],
+          "active_tine_id": 3
+        },
+        {
+          "burn": 1,
+          "image": "fork_4tine_b1.png",
+          "glow": "fork_4tine_b1_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 8.5,
+                "y": 10.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 14.5,
+                "y": 7.5
+              }
+            },
+            {
+              "id": 2,
+              "tip": {
+                "x": 20.5,
+                "y": 5.5
+              }
+            }
+          ],
+          "active_tine_id": 2
+        },
+        {
+          "burn": 2,
+          "image": "fork_4tine_b2.png",
+          "glow": "fork_4tine_b2_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 8.5,
+                "y": 10.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 14.5,
+                "y": 7.5
+              }
+            }
+          ],
+          "active_tine_id": 1
+        },
+        {
+          "burn": 3,
+          "image": "fork_4tine_b3.png",
+          "glow": "fork_4tine_b3_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 8.5,
+                "y": 10.5
+              }
+            }
+          ],
+          "active_tine_id": 0
+        },
+        {
+          "burn": 4,
+          "image": "fork_4tine_b4.png",
+          "glow": "fork_4tine_b4_glow.png",
+          "remaining_tines": [],
+          "active_tine_id": null
+        }
+      ]
     },
-    "tine_tips": [
-      {
-        "x": 1,
-        "y": 0
+    "5tine": {
+      "source_size": {
+        "w": 48,
+        "h": 62
       },
-      {
-        "x": 3,
-        "y": 0
+      "handle_pivot": {
+        "x": 31.39,
+        "y": 48.17
       },
-      {
-        "x": 5,
-        "y": 0
-      },
-      {
-        "x": 7,
-        "y": 0
-      },
-      {
-        "x": 9,
-        "y": 0
-      }
-    ]
+      "lean_deg": 0,
+      "baked_lean_deg": 18.43,
+      "states": [
+        {
+          "burn": 0,
+          "image": "fork_5tine_b0.png",
+          "glow": "fork_5tine_b0_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 5.5,
+                "y": 11.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 12.5,
+                "y": 8.5
+              }
+            },
+            {
+              "id": 2,
+              "tip": {
+                "x": 17.5,
+                "y": 6.5
+              }
+            },
+            {
+              "id": 3,
+              "tip": {
+                "x": 23.5,
+                "y": 5.5
+              }
+            },
+            {
+              "id": 4,
+              "tip": {
+                "x": 29.5,
+                "y": 3.5
+              }
+            }
+          ],
+          "active_tine_id": 4
+        },
+        {
+          "burn": 1,
+          "image": "fork_5tine_b1.png",
+          "glow": "fork_5tine_b1_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 5.5,
+                "y": 11.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 12.5,
+                "y": 8.5
+              }
+            },
+            {
+              "id": 2,
+              "tip": {
+                "x": 17.5,
+                "y": 6.5
+              }
+            },
+            {
+              "id": 3,
+              "tip": {
+                "x": 23.5,
+                "y": 5.5
+              }
+            }
+          ],
+          "active_tine_id": 3
+        },
+        {
+          "burn": 2,
+          "image": "fork_5tine_b2.png",
+          "glow": "fork_5tine_b2_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 5.5,
+                "y": 11.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 12.5,
+                "y": 8.5
+              }
+            },
+            {
+              "id": 2,
+              "tip": {
+                "x": 17.5,
+                "y": 6.5
+              }
+            }
+          ],
+          "active_tine_id": 2
+        },
+        {
+          "burn": 3,
+          "image": "fork_5tine_b3.png",
+          "glow": "fork_5tine_b3_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 5.5,
+                "y": 11.5
+              }
+            },
+            {
+              "id": 1,
+              "tip": {
+                "x": 12.5,
+                "y": 8.5
+              }
+            }
+          ],
+          "active_tine_id": 1
+        },
+        {
+          "burn": 4,
+          "image": "fork_5tine_b4.png",
+          "glow": "fork_5tine_b4_glow.png",
+          "remaining_tines": [
+            {
+              "id": 0,
+              "tip": {
+                "x": 5.5,
+                "y": 11.5
+              }
+            }
+          ],
+          "active_tine_id": 0
+        },
+        {
+          "burn": 5,
+          "image": "fork_5tine_b5.png",
+          "glow": "fork_5tine_b5_glow.png",
+          "remaining_tines": [],
+          "active_tine_id": null
+        }
+      ]
+    }
   }
 }
