@@ -7,7 +7,7 @@
 // V3 = V1 plus the mixing desk (built for Music Man barbershop part practice):
 //   • Per-stream L/R BALANCE sliders — pan no longer hardcoded; defaults match
 //     V1 (vocals -0.7 / music 0 / mic +1)
-//   • Volume range 0-400% per stream through a master brick-wall limiter
+//   • Volume range 0-200% per stream through a master brick-wall limiter
 //     (DynamicsCompressorNode) so "blast" gets LOUD instead of clipping harshly
 //   • Live level METERS per stream (post-gain) — visual proof the sliders work
 //   • AudioContext always latencyHint:'interactive' — V1's default 'usb' profile
@@ -282,7 +282,7 @@ const MIC_PROFILES: Record<MicProfile, { label: string; gain: number; agc: boole
 
 const IS_MOBILE = typeof navigator !== 'undefined' && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
 
-const VOL_MAX = 400; // V3: percent ceiling per stream (V1 was 200)
+const VOL_MAX = 200; // issue #22: shared 0-200% ceiling per stream
 const PLUNK_DEFAULT_VOL = 180;
 const PLUNK_GAIN_SCALE = 0.55;
 const PLUNK_LOOKAHEAD_SECONDS = 0.45;
@@ -809,10 +809,10 @@ export default function VocalTrainerIII() {
   const [micEnabled, setMicEnabled] = useState(false);
   const [plunkEnabled, setPlunkEnabled] = useState(false); // V3.7: OFF by default — plunk is opt-in (Jon 2026-06-27)
   const [plunkVol, setPlunkVol] = useState(PLUNK_DEFAULT_VOL);
-  // V3: per-stream balance (-1 hard-left … +1 hard-right). Defaults = V1's fixed pans.
+  // V3: per-stream balance (-1 left ... +1 right). Defaults avoid edge pan.
   const [vocalPan, setVocalPan] = useState(-0.7);
   const [musicPan, setMusicPan] = useState(0);
-  const [micPan, setMicPan] = useState(1);
+  const [micPan, setMicPan] = useState(0.7);
   // V3: seek bar + A/B loop state. durationSec mirrors playbackDurationRef for UI.
   const [durationSec, setDurationSec] = useState(0);
   const [loopA, setLoopA] = useState<number | null>(null);
@@ -837,7 +837,7 @@ export default function VocalTrainerIII() {
 
   const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // Vocal chain (hard-left)
+  // Vocal chain (default -0.7 left)
   const vocalGainNodeRef = useRef<GainNode | null>(null);
   const vocalPanNodeRef = useRef<StereoPannerNode | null>(null);
   const vocalSourceRef = useRef<AudioBufferSourceNode | null>(null);
@@ -907,7 +907,7 @@ export default function VocalTrainerIII() {
   // V3: pan mirrors for the same stable-callback reason.
   const vocalPanRef = useRef(-0.7);
   const musicPanRef = useRef(0);
-  const micPanRef = useRef(1);
+  const micPanRef = useRef(0.7);
   useEffect(() => { vocalPanRef.current = vocalPan; }, [vocalPan]);
   useEffect(() => { musicPanRef.current = musicPan; }, [musicPan]);
   useEffect(() => { micPanRef.current = micPan; }, [micPan]);
@@ -1932,7 +1932,7 @@ export default function VocalTrainerIII() {
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 256;
       const pan = ctx.createStereoPanner();
-      pan.pan.value = micPanRef.current; // V3: user-adjustable balance (default hard-right)
+      pan.pan.value = micPanRef.current; // V3: user-adjustable balance (default +0.7)
       src.connect(profileGain).connect(userGain).connect(analyser).connect(pan).connect(limiterRef.current!);
       // V3.2: 2048-fft leaf tap off the RAW mic source for live voice-pitch
       // detection — same stream Jon hears (so it's proven live), independent of
@@ -2609,13 +2609,13 @@ export default function VocalTrainerIII() {
               <span className="font-semibold text-gray-100">Load your song.</span> Drag your practice track (like a Music Man plunk track .m4a) into the upload box below — or pick one already saved in the Library at the top.
             </li>
             <li>
-              <span className="font-semibold text-gray-100">Click &ldquo;Start mic monitor.&rdquo;</span> Allow the microphone when the browser asks. Now sing — you should hear your own voice in your RIGHT ear instantly. If it feels delayed, refresh the page and start the mic before playing the track. On a phone, the <span className="text-cyan-300">Phone mic (auto-boost)</span> profile is selected automatically — if your voice is still soft, push the Mic volume slider up and watch its meter.
+              <span className="font-semibold text-gray-100">Click &ldquo;Start mic monitor.&rdquo;</span> Allow the microphone when the browser asks. Now sing — you should hear your own voice slightly right of center instantly. If it feels delayed, refresh the page and start the mic before playing the track. On a phone, the <span className="text-cyan-300">Phone mic (auto-boost)</span> profile is selected automatically — if your voice is still soft, push the Mic volume slider up and watch its meter.
             </li>
             <li>
-              <span className="font-semibold text-gray-100">Press Play.</span> The track plays mostly in your LEFT ear, your live voice stays in your RIGHT ear. The moving cursor follows the notes.
+              <span className="font-semibold text-gray-100">Press Play.</span> The track plays mostly in your left ear, your live voice stays slightly right. The moving cursor follows the notes.
             </li>
             <li>
-              <span className="font-semibold text-gray-100">Mix it your way.</span> Each channel has a <span className="text-amber-300">volume slider (0–400%)</span>, a <span className="text-cyan-300">balance slider (L ↔ R)</span>, and a <span className="text-green-400">green level meter</span> that dances when sound is flowing. Want to BLAST your own voice? Push Mic volume up and watch its meter respond. Want the track louder? Blast Vocals and pull Mic down. The meters are your proof — if a meter moves, that channel is live.
+              <span className="font-semibold text-gray-100">Mix it your way.</span> Each channel has a <span className="text-amber-300">volume slider (0–200%)</span>, a <span className="text-cyan-300">balance slider (L ↔ R)</span>, and a <span className="text-green-400">green level meter</span> that dances when sound is flowing. Want your voice louder? Push Mic volume up and watch its meter respond. Want the track louder? Raise Vocals and pull Mic down. The meters are your proof — if a meter moves, that channel is live.
             </li>
             <li>
               <span className="font-semibold text-gray-100">Drill the hard spots.</span> Pause, drag the playhead back, repeat the phrase until it locks in. Small loops beat full run-throughs.

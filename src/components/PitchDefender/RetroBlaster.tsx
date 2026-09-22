@@ -23,7 +23,7 @@ import {
 } from '@/lib/fsrs'
 import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { usePitchDetection } from './usePitchDetection'
-import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
+import { initAudio, loadPianoSamples, playPianoNote, setPianoVolume } from './audioEngine'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -426,6 +426,7 @@ export default function RetroBlaster() {
   const [phase, setPhase] = useState<Phase>('menu')
   const [inputMode, setInputMode] = useState<InputMode>('click')
   const [difficulty, setDifficulty] = useState<Difficulty>('easy')
+  const [cueVolume, setCueVolume] = useState(100)
   const [displayScore, setDisplayScore] = useState(0)
   const [displayWave, setDisplayWave] = useState(0)
   const [displayCombo, setDisplayCombo] = useState(0)
@@ -435,6 +436,8 @@ export default function RetroBlaster() {
 
   // Mic detection
   const { isListening, startListening, stopListening, pitchRef: livePitchRef } = usePitchDetection({ noiseGateDb: -45 })
+
+  useEffect(() => { setPianoVolume(cueVolume) }, [cueVolume])
   const hitProcessingRef = useRef(false)
   // Pitchforks v1 lock pattern: matchStartRef holds the time the current
   // in-tolerance hold began (ms timestamp from performance.now()), or 0 when
@@ -1287,6 +1290,19 @@ export default function RetroBlaster() {
             : 'Full speed — faster ramp, more aliens, harder formations. No mercy.'}
         </p>
 
+        <label className="flex items-center gap-3 mb-6">
+          <span className="text-[10px] text-gray-500 tracking-wider">CUE VOL</span>
+          <input
+            type="range"
+            min={0}
+            max={200}
+            value={cueVolume}
+            onChange={e => setCueVolume(Number(e.target.value))}
+            className="w-36 h-1 accent-cyan-400"
+          />
+          <span className="text-[10px] text-cyan-300 font-mono w-10 text-right">{cueVolume}%</span>
+        </label>
+
         <button onClick={handleInsertCoin}
           className="px-10 py-3 text-lg font-bold tracking-widest transition-all active:scale-95"
           style={{
@@ -1527,7 +1543,7 @@ export default function RetroBlaster() {
       )}
 
       {/* Replay button + quit */}
-      <div className="mt-3 flex gap-3">
+      <div className="mt-3 flex gap-3 flex-wrap justify-center items-center">
         <button onClick={replayActiveNote}
           className="px-4 py-2 text-xs font-bold tracking-widest active:scale-95 transition-all"
           style={{
@@ -1537,6 +1553,18 @@ export default function RetroBlaster() {
           }}>
           🔊 PLAY NOTE [SPACE]
         </button>
+        <label className="flex items-center gap-2 px-3 py-2 border border-cyan-900/70 text-[10px] tracking-wider text-gray-400">
+          CUE
+          <input
+            type="range"
+            min={0}
+            max={200}
+            value={cueVolume}
+            onChange={e => setCueVolume(Number(e.target.value))}
+            className="w-28 h-1 accent-cyan-400"
+          />
+          <span className="text-cyan-300 font-mono w-10 text-right">{cueVolume}%</span>
+        </label>
         <button onClick={() => {
           if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
           if (inputMode === 'mic') stopListening()

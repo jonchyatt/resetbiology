@@ -20,7 +20,7 @@ import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import NoteButtons from './NoteButtons'
 import PitchGuidance from './PitchGuidance'
 import { usePitchDetection } from './usePitchDetection'
-import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
+import { initAudio, loadPianoSamples, playPianoNote, setPianoVolume } from './audioEngine'
 import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -65,6 +65,7 @@ export default function DrillMode() {
   const [sessionTarget, setSessionTarget] = useState(20) // cards per session
   const [lockProgress, setLockProgress] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true) // auto-play note on new card
+  const [guideVolume, setGuideVolume] = useState(100)
 
   // Refs
   const fsrsRef = useRef<Record<string, NoteMemory>>({})
@@ -84,6 +85,7 @@ export default function DrillMode() {
   // Keep refs in sync with state
   useEffect(() => { sessionStatsRef.current = sessionStats }, [sessionStats])
   useEffect(() => { unlockedNotesRef.current = unlockedNotes }, [unlockedNotes])
+  useEffect(() => { setPianoVolume(guideVolume) }, [guideVolume])
 
   // Timer management — schedule + track for cleanup
   const scheduleTimer = useCallback((fn: () => void, ms: number) => {
@@ -469,6 +471,19 @@ export default function DrillMode() {
             className="w-4 h-4 rounded accent-teal-500"
           />
           <span className="text-xs text-gray-400">Auto-play note on each card</span>
+        </label>
+
+        <label className="flex items-center gap-3 mb-6">
+          <span className="text-xs text-gray-500 w-20">Guide Vol</span>
+          <input
+            type="range"
+            min={0}
+            max={200}
+            value={guideVolume}
+            onChange={e => setGuideVolume(Number(e.target.value))}
+            className="w-36 h-1 accent-teal-500"
+          />
+          <span className="text-xs text-teal-300 font-mono w-10 text-right">{guideVolume}%</span>
         </label>
 
         <button
