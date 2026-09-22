@@ -24,6 +24,7 @@ import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote, loadPianoSamples, setPianoVolume } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
 import { extractMelodyFromComposition } from './composerExtract'
+import PitchforksChargeBar from './PitchforksChargeBar'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -152,6 +153,7 @@ export default function SynthesiaRunner() {
   const [displayState, setDisplayState] = useState({ score: 0, hit: 0, total: 0 })
   const [currentTarget, setCurrentTarget] = useState<string>('')
   const [pitchHint, setPitchHint] = useState<'low' | 'on' | 'high' | null>(null)
+  const [chargeProgress, setChargeProgress] = useState(0)
 
   // Custom MusicXML songs
   const [customSongs, setCustomSongs] = useState<{ name: string; notes: SongNote[]; description: string }[]>([])
@@ -474,6 +476,7 @@ export default function SynthesiaRunner() {
           })
           setCurrentTarget('')
           setPitchHint(null)
+          setChargeProgress(0)
           setTimeout(() => { currentBlock.state = 'cleared' }, 250)
 
           // Song complete?
@@ -490,6 +493,12 @@ export default function SynthesiaRunner() {
       setPitchHint(null)
       currentBlock.matchProgress = Math.max(0, currentBlock.matchProgress - dt * 200)
     }
+
+    setChargeProgress(
+      currentBlock?.state === 'waiting'
+        ? Math.min(1, currentBlock.matchProgress / HOLD_DURATION_MS)
+        : 0
+    )
 
     // ── FLOW MODE: continuous scoring as blocks cross the hit window ──
     // The block's BOTTOM edge enters the window (HIT_LINE_Y ± FLOW_WINDOW_PX).
@@ -539,6 +548,7 @@ export default function SynthesiaRunner() {
         currentIdxRef.current++
         setCurrentTarget('')
         setPitchHint(null)
+        setChargeProgress(0)
         if (currentIdxRef.current >= blocks.length) {
           setPhase('complete')
           fusionRef.current?.stop()
@@ -588,7 +598,7 @@ export default function SynthesiaRunner() {
     }
 
     // ── Render ──
-    render(ctx, blocks, currentIdx, pitch)
+    render(ctx, blocks, currentIdx)
 
     if (phaseRef.current === 'playing') {
       rafRef.current = requestAnimationFrame(gameLoop)
@@ -608,7 +618,6 @@ export default function SynthesiaRunner() {
     ctx: CanvasRenderingContext2D,
     blocks: FallingBlock[],
     currentIdx: number,
-    pitch: FusedPitch | null,
   ) => {
     // Background
     ctx.fillStyle = '#08080f'
@@ -745,16 +754,6 @@ export default function SynthesiaRunner() {
       ctx.textBaseline = 'middle'
       ctx.fillText(b.name, blockX + w / 2, b.y + b.height / 2)
 
-      // Hold progress ring
-      if (b.state === 'waiting' && b.matchProgress > 0) {
-        const pct = Math.min(1, b.matchProgress / HOLD_DURATION_MS)
-        ctx.strokeStyle = 'rgba(100,255,160,0.95)'
-        ctx.lineWidth = 4
-        ctx.beginPath()
-        ctx.moveTo(blockX, b.y + b.height + 6)
-        ctx.lineTo(blockX + w * pct, b.y + b.height + 6)
-        ctx.stroke()
-      }
     }
 
     // Sparkle particles (drawn on top of blocks, below the UI bar)
@@ -772,105 +771,9 @@ export default function SynthesiaRunner() {
     }
     ctx.restore()
 
-    // Pitch measurement bar (horizontal, sits just above the keyboard)
-    drawPitchBar(ctx, pitch, blocks[currentIdx])
-
     // Keyboard at bottom (passes flashes so struck keys glow)
     drawKeyboard(ctx, whiteKeys, keyW, blocks[currentIdx])
   }, [])
-
-  // ─── Pitch bar (Pitchforks-style horizontal indicator) ───────────────────
-  const drawPitchBar = (
-    ctx: CanvasRenderingContext2D,
-    pitch: FusedPitch | null,
-    currentBlock?: FallingBlock,
-  ) => {
-    const barH = 22
-    const margin = 16
-    const barY = FALL_AREA_H - barH - 6
-    const barX = margin
-    const barW = CANVAS_W - margin * 2
-
-    // Background panel
-    ctx.fillStyle = 'rgba(8,8,15,0.85)'
-    ctx.fillRect(barX - 2, barY - 14, barW + 4, barH + 18)
-    ctx.strokeStyle = 'rgba(100,200,255,0.35)'
-    ctx.lineWidth = 1
-    ctx.strokeRect(barX - 2, barY - 14, barW + 4, barH + 18)
-
-    // Bar track
-    ctx.fillStyle = 'rgba(20,20,40,0.9)'
-    ctx.fillRect(barX, barY, barW, barH)
-    ctx.strokeStyle = 'rgba(80,80,120,0.6)'
-    ctx.strokeRect(barX, barY, barW, barH)
-
-    // Center "target" zone
-    const centerX = barX + barW / 2
-    ctx.fillStyle = 'rgba(74,222,128,0.20)'
-    ctx.fillRect(centerX - 28, barY, 56, barH)
-    ctx.strokeStyle = 'rgba(74,222,128,0.6)'
-    ctx.beginPath()
-    ctx.moveTo(centerX, barY)
-    ctx.lineTo(centerX, barY + barH)
-    ctx.stroke()
-
-    // Title text above bar
-    ctx.fillStyle = '#9ca3af'
-    ctx.font = '10px monospace'
-    ctx.textAlign = 'left'
-    ctx.textBaseline = 'alphabetic'
-    ctx.fillText('YOUR PITCH', barX, barY - 3)
-
-    if (currentBlock) {
-      const targetName = currentBlock.name
-      ctx.fillStyle = '#86efac'
-      ctx.textAlign = 'right'
-      ctx.fillText(`target: ${targetName}`, barX + barW, barY - 3)
-    }
-
-    // Pitch indicator dot
-    if (pitch?.isActive && currentBlock) {
-      // Octave-flexible deviation in semitones
-      const sungSemi = pitch.staffPosition
-      const targetSemi = currentBlock.semitones
-      const tMod = ((targetSemi % 12) + 12) % 12
-      const sMod = ((Math.round(sungSemi) % 12) + 12) % 12
-      const rawDiff = Math.abs(tMod - sMod)
-      const pcDiff = Math.min(rawDiff, 12 - rawDiff)
-      const rawDev = sungSemi - targetSemi
-      // Use signed direction from raw, magnitude from pcDiff for the dot position
-      const sign = rawDev === 0 ? 0 : Math.sign(rawDev)
-      const magnitude = Math.min(pcDiff, Math.abs(rawDev))
-      const clampedDev = Math.max(-6, Math.min(6, sign * magnitude))
-      const dotX = centerX + (clampedDev / 6) * (barW / 2 - 8)
-      const onTarget = magnitude <= TOLERANCE
-
-      // Glow when on target
-      if (onTarget) {
-        ctx.fillStyle = 'rgba(74,222,128,0.35)'
-        ctx.beginPath()
-        ctx.arc(dotX, barY + barH / 2, 14, 0, Math.PI * 2)
-        ctx.fill()
-      }
-
-      // Dot
-      ctx.fillStyle = onTarget ? '#4ade80' : '#f87171'
-      ctx.beginPath()
-      ctx.arc(dotX, barY + barH / 2, 7, 0, Math.PI * 2)
-      ctx.fill()
-
-      // Sung-note label below dot
-      ctx.fillStyle = onTarget ? '#86efac' : '#fca5a5'
-      ctx.font = 'bold 10px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText(pitch.note || '', dotX, barY + barH + 11)
-    } else {
-      ctx.fillStyle = '#6b7280'
-      ctx.font = '10px monospace'
-      ctx.textAlign = 'center'
-      ctx.fillText('sing...', centerX, barY + barH / 2 + 3)
-    }
-  }
 
   // ─── Helper: rounded rect ─────────────────────────────────────────────────
   const roundedRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
@@ -1318,15 +1221,13 @@ export default function SynthesiaRunner() {
           TAP A KEY TO HEAR IT
         </div>
 
-        {/* Old vertical right-side hint bar removed — replaced by canvas-drawn
-            horizontal pitch bar (Pitchforks-style). See drawPitchBar above. */}
-
         {/* Sing-this-note prompt overlay */}
         {currentTarget && (
           <div className="absolute left-2 top-2 px-3 py-2 rounded-lg"
             style={{ background: 'rgba(8,8,15,0.85)', border: '1px solid rgba(100,200,255,0.4)' }}>
             <div className="text-[10px] text-cyan-300 uppercase tracking-wider">Sing this note</div>
             <div className="text-2xl font-black text-white">{currentTarget}</div>
+            <PitchforksChargeBar progress={chargeProgress} width={128} className="mt-2" />
           </div>
         )}
       </div>

@@ -23,6 +23,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { NOTE_COLORS } from '@/lib/fsrs'
 import { PitchFusion, type FusedPitch, DEFAULT_FUSION_CONFIG } from './pitchFusion'
+import PitchforksChargeBar from './PitchforksChargeBar'
 import { initAudio, playPianoNote } from './audioEngine'
 import { extractMelodyFromComposition, compositionHasNotes } from './composerExtract'
 
@@ -1196,66 +1197,20 @@ export default function ChoirPractice() {
             )}
           </div>
 
-          {/* Match progress ring */}
-          {matchProgress > 0 && (
-            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(100,255,160,0.15)" strokeWidth="3" />
-              <circle cx="50" cy="50" r="48" fill="none"
-                stroke={isOnPitch ? '#64ffa0' : `hsl(${currentHue}, 60%, 50%)`}
-                strokeWidth="3"
-                strokeDasharray={`${matchProgress * 301.6} 301.6`}
-                strokeLinecap="round"
-                transform="rotate(-90 50 50)"
-                style={{ transition: 'stroke-dasharray 0.1s linear' }}
-              />
-            </svg>
-          )}
-
-          {/* Pitchforks v1 slider bar — canonical mic lock feedback.
-              Gated to matchProgress > 0 so it only shows while singing on-pitch. */}
-          {matchProgress > 0 && (
-            <div
-              className="absolute left-1/2 -translate-x-1/2"
-              style={{
-                bottom: -14,
-                width: 100,
-                height: 4,
-                background: 'rgba(10,10,20,0.6)',
-                border: '1px solid rgba(60,60,90,0.6)',
-                borderRadius: 2,
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  width: `${matchProgress * 100}%`,
-                  height: '100%',
-                  background: matchProgress >= 0.8 ? '#4ade80' : '#fbbf24',
-                  boxShadow: matchProgress >= 0.8
-                    ? '0 0 8px #4ade80, 0 0 16px #4ade8060'
-                    : '0 0 6px #fbbf2460',
-                  transition: 'width 0.05s linear',
-                }}
-              />
-            </div>
-          )}
+          <PitchforksChargeBar
+            progress={matchProgress}
+            width={100}
+            height={4}
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{ bottom: -14 }}
+          />
         </div>
 
         {/* Voice feedback */}
         <div className="mt-4 text-center h-8">
           {voicePitch?.isActive ? (
-            <div className="text-sm">
-              <span style={{ color: isOnPitch ? '#64ffa0' : '#f87171' }}>
-                {voicePitch.note || '...'}
-              </span>
-              <span className="text-gray-600 ml-2">
-                {voicePitch.cents > 0 ? '+' : ''}{voicePitch.cents}¢
-              </span>
-              {!isOnPitch && currentNote && (
-                <span className="text-gray-500 ml-2">
-                  {voicePitch.staffPosition < currentNote.semitones ? '↑ higher' : '↓ lower'}
-                </span>
-              )}
+            <div className="text-sm" style={{ color: isOnPitch ? '#64ffa0' : '#9ca3af' }}>
+              Voice detected
             </div>
           ) : (
             <div className="text-xs text-gray-600">Sing the note...</div>

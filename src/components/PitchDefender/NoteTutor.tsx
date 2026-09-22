@@ -32,6 +32,7 @@ import {
 } from './engine/masteryQueue'
 import { ActivePool } from './engine/types'
 import { usePitchDetection } from './usePitchDetection'
+import PitchforksChargeBar from './PitchforksChargeBar'
 import { initAudio, loadPianoSamples, playPianoNote, playSfx } from './audioEngine'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
 
@@ -1031,33 +1032,23 @@ export default function NoteTutor() {
             )}
           </div>
 
-          {/* Pitchforks v1 mic meter (sing mode only, while locking) */}
-          {mode === 'sing' && !isPairRound && isAnswering && lockProgress > 0 && (
-            <div className="absolute left-1/2 -translate-x-1/2"
-              style={{
-                bottom: -18, width: 120, height: 5,
-                background: 'rgba(10,10,20,0.65)',
-                border: '1px solid rgba(60,60,90,0.6)',
-                borderRadius: 2, overflow: 'hidden',
-              }}>
-              <div style={{
-                width: `${lockProgress * 100}%`, height: '100%',
-                background: lockProgress >= 0.8 ? '#4ade80' : '#fbbf24',
-                boxShadow: lockProgress >= 0.8
-                  ? '0 0 8px #4ade80, 0 0 16px #4ade8060'
-                  : '0 0 6px #fbbf2460',
-                transition: 'width 0.05s linear',
-              }} />
-            </div>
+          {mode === 'sing' && !isPairRound && isAnswering && (
+            <PitchforksChargeBar
+              progress={lockProgress}
+              width={120}
+              height={5}
+              className="absolute left-1/2 -translate-x-1/2"
+              style={{ bottom: -18 }}
+            />
           )}
         </div>
 
-        {/* Hearing readout in sing mode (singles only) */}
+        {/* Heard-state cue in sing mode (singles only); no pitch/cents meter. */}
         {mode === 'sing' && !isPairRound && isAnswering && (
           <div className="mb-3 text-xs h-5">
             {pitch?.isActive ? (
               <span style={{ color: `hsl(${hintHue(pitch.note)},60%,65%)` }}>
-                Hearing: <b>{pitch.note}</b> ({pitch.cents > 0 ? '+' : ''}{pitch.cents}¢)
+                Voice detected
               </span>
             ) : <span className="text-gray-600">Sing the note…</span>}
           </div>
