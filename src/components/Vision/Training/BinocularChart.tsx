@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 import { SpeechQueue } from '@/lib/vision/audioKit'
+import { screenELineSize } from '@/lib/vision/screenDirectionalE'
 
 type EDirection = 'up' | 'down' | 'left' | 'right'
 export type BinocularMode = 'off' | 'duplicate' | 'redgreen' | 'grid-square' | 'grid-slanted' | 'alternating'
@@ -52,13 +53,13 @@ function TumblingE({ direction, size, color = '#000000', visible = true }: {
   )
 }
 
-function SnellenLetter({ letter, size, color = '#000000', visible = true }: {
-  letter: string; size: number; color?: string; visible?: boolean
+function SnellenLetter({ letter, size, color = '#000000', visible = true, fontWeight = 700 }: {
+  letter: string; size: number; color?: string; visible?: boolean; fontWeight?: number
 }) {
   if (!visible) return <div style={{ width: size * 0.8, height: size, display: 'inline-block' }} />
   return (
     <div className="select-none" style={{
-      fontSize: `${size * 0.8}px`, lineHeight: 1, color, fontWeight: 700,
+      fontSize: `${size * 0.8}px`, lineHeight: 1, color, fontWeight,
       letterSpacing: '0.02em', fontFamily: 'system-ui, -apple-system, sans-serif',
       textRendering: 'geometricPrecision',
     }}>{letter}</div>
@@ -254,6 +255,8 @@ export default function BinocularChart({
     return 'ring-2 ring-primary-400'
   }
 
+  const viewportWidth = typeof window === 'undefined' ? 390 : window.innerWidth
+  const devicePixelRatio = typeof window === 'undefined' ? 1 : window.devicePixelRatio
   const baseSize = deviceMode === 'phone' ? 34 : 44
   const sizeMul = (deviceMode === 'phone' ? 0.6 : 0.7) * chartScale
 
@@ -262,19 +265,25 @@ export default function BinocularChart({
     const color = side === 'left' ? leftColor : rightColor
     const isLeft = side === 'left'
     return (
-      <div className="flex-1 flex flex-col items-center justify-evenly">
+      <div data-binocular-eye-chart={side} className={`flex-1 min-w-0 flex flex-col items-center justify-evenly ${binocularMode === 'redgreen' ? 'gap-2' : ''}`}>
         {chartData.map((line, li) => (
-          <div key={li} className={`flex items-center justify-center transition-all duration-300 ${
+          <div key={li} data-binocular-chart-row={li} className={`flex items-center justify-center ${binocularMode === 'redgreen' ? 'gap-2' : ''} transition-all duration-300 ${
             li < currentLineIndex ? 'opacity-20' : li === currentLineIndex ? 'opacity-100' : 'opacity-40'
           }`} style={{ gap: showGrid ? 0 : '3px' }}>
             {Array.from({ length: line.letterCount }).map((_, ii) => {
               const isCur = li === currentLineIndex && ii === currentLetterIndex
               const isPast = li === currentLineIndex && ii < currentLetterIndex
               const isVis = !showAlternating || (isLeft ? ii % 2 === 0 : ii % 2 === 1)
-              const sz = Math.max(14, baseSize * line.scale * sizeMul)
+              // Spread the seven shared binocular rows across the same fourteen-step
+              // Snellen size rail, keeping both eye panels fixed in place.
+              const snellenLineIndex = Math.round(li * 13 / (CHART_LINES.length - 1))
+              const sz = binocularMode === 'redgreen'
+                ? screenELineSize(viewportWidth, snellenLineIndex, devicePixelRatio) * chartScale
+                : Math.max(14, baseSize * line.scale * sizeMul)
               const item = exerciseType === 'e-directional' ? line.directions[ii] : line.letters[ii]
               return (
-                <div key={ii} className={`relative flex items-center justify-center ${isPast ? 'opacity-20' : ''} ${isCur ? getFR() + ' rounded-sm' : ''}`}
+                <div key={ii} data-binocular-optotype-size={sz} data-binocular-target-index={ii} data-binocular-current-target={isCur ? 'true' : undefined} data-binocular-target={item}
+                  className={`relative flex items-center justify-center ${isPast ? 'opacity-20' : ''} ${isCur ? getFR() + ' rounded-sm' : ''}`}
                   style={showGrid ? { border: '1px solid #888', padding: '2px', minWidth: sz + 6, minHeight: sz + 6 } : {}}>
                   {isSlantedGrid && showGrid && (
                     <svg className="absolute inset-0 pointer-events-none z-0" width="100%" height="100%" preserveAspectRatio="none">
@@ -284,9 +293,9 @@ export default function BinocularChart({
                   )}
                   {isCur && <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10"><ChevronDown className="w-4 h-4 text-primary-500 animate-bounce" strokeWidth={3} /></div>}
                   <div className="relative z-[1]">
-                    {exerciseType === 'e-directional'
+                  {exerciseType === 'e-directional'
                       ? <TumblingE direction={item as EDirection} size={sz} color={color} visible={isVis} />
-                      : <SnellenLetter letter={item as string} size={sz} color={color} visible={isVis} />}
+                      : <SnellenLetter letter={item as string} size={sz} color={color} visible={isVis} fontWeight={binocularMode === 'redgreen' ? 500 : 700} />}
                   </div>
                 </div>
               )
