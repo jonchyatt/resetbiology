@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vision voice engine trial</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #111827; color: #f9fafb; }
+    body { margin: 0 auto; padding: 20px; max-width: 560px; }
+    h1 { font-size: 1.35rem; margin: 0 0 8px; }
+    p { line-height: 1.45; color: #d1d5db; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+    button { min-height: 48px; border: 1px solid #818cf8; border-radius: 10px; padding: 10px 15px; color: white; background: #3730a3; font: inherit; }
+    button:disabled { opacity: .45; }
+    button.secondary { background: #1f2937; border-color: #6b7280; }
+    #status { min-height: 1.5em; font-weight: 650; }
+    #events { list-style: none; padding: 0; margin: 14px 0; }
+    #events li { border-bottom: 1px solid #374151; padding: 10px 0; }
+    .quiet { color: #9ca3af; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <h1>Vision voice engine trial</h1>
+  <p>Start one engine, then say <strong>up, down, left, right, one, two, three, four</strong> one at a time. Stop before switching engines. This page records timings only in this tab; Export saves them on your phone.</p>
+  <div class="buttons">
+    <button id="local">Start local commands</button>
+    <button id="browser" class="secondary">Start browser speech</button>
+    <button id="stop" class="secondary" disabled>Stop</button>
+    <button id="export" class="secondary">Export results</button>
+  </div>
+  <div id="status" role="status" aria-live="polite">Ready</div>
+  <p class="quiet">“From voice” is measured from the page's microphone energy onset. Generated Fish cues and phone speaker onset are outside this trial. The browser speech engine may process audio remotely; local commands downloads a model, then runs it on this device.</p>
+  <ol id="events" aria-label="Recognition events"></ol>
+  <script>
+    const allowed = new Set(['up','down','left','right','one','two','three','four','five','six','seven','eight']);
+    const ui = {
+      local: document.getElementById('local'), browser: document.getElementById('browser'),
+      stop: document.getElementById('stop'), export: document.getElementById('export'),
+      status: document.getElementById('status'), events: document.getElementById('events'),
+    };
+    const rows = [];
+    let engine = null, model = null, recognition = null, mic = null, audioContext = null;
+    let analyser = null, meterTimer = null, lastOnset = null, speaking = false;
+    let quietSince = 0, loudFrames = 0, baseline = 0.003, startedAt = 0, runId = 0;
+
+    function setStatus(message) { ui.status.textContent = message; }
+    function setButtons(active) {
+      ui.local.disabled = active; ui.browser.disabled = active; ui.stop.disabled = !active;
+    }
+    function record(label, score, final = true) {
+      const now = performance.now();
+      const row = {
+        engine, label, confidence: score == null ? null : Math.round(score * 1000) / 1000,
+        final, fromVoiceMs: lastOnset == null ? null : Math.round(now - lastOnset),
+        sinceStartMs: Math.round(now - startedAt), at: new Date().toISOString(),
+      };
+      rows.push(row);
+      const item = document.createElement('li');
+      item.textContent = `${row.label}${final ? '' : ' (partial)'} · ${row.fromVoiceMs == null ? 'voice onset missed' : row.fromVoiceMs + ' ms from voice'}${row.confidence == null ? '' : ' · ' + Math.round(row.confidence * 100) + '%'} · ${row.engine}`;
+      ui.events.prepend(item);
+    }
+    function script(url) {
+      return new Promise((resolve, reject) => {
+        const element = document.createElement('script');
+        element.src = url; element.onload = resolve; element.onerror = () => reject(new Error(`Could not load ${url}`));
+        document.head.append(element);
+      });
+    }
+    async function meterStart(id) {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
+      if (id !== runId) { stream.getTracks().forEach(track => track.stop()); return false; }
+      mic = stream;
+      audioContext = new AudioContext();
+      await audioContext.resume();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 1024;
+      audioContext.createMediaStreamSource(mic).connect(analyser);
+      const samples = new Float32Array(analyser.fftSize);
+      meterTimer = setInterval(() => {
+        analyser.getFloatTimeDomainData(samples);
+        let sum = 0;
+        for (const value of samples) sum += value * value;
+        const rms = Math.sqrt(sum / samples.length);
+        const threshold = Math.max(0.012, baseline * 3.5);
+        if (rms > threshold) {
+          loudFrames++;
+          quietSince = 0;
+          if (!speaking && loudFrames >= 2) { speaking = true; lastOnset = performance.now(); }
+        } else {
+          loudFrames = 0;
+          baseline = baseline * 0.98 + rms * 0.02;
+          if (speaking) {
+            if (!quietSince) quietSince = performance.now();
+            if (performance.now() - quietSince > 250) speaking = false;
+          }
+        }
+      }, 20);
+      return true;
+    }
+    async function stop() {
+      runId++;
+      const oldEngine = engine;
+      engine = null;
+      if (oldEngine === 'local' && model && model.isListening()) {
+        try { await model.stopListening(); } catch (error) { console.warn(error); }
+      }
+      if (recognition) { recognition.onend = null; try { recognition.abort(); } catch {} recognition = null; }
+      if (meterTimer) clearInterval(meterTimer);
+      meterTimer = null;
+      if (mic) mic.getTracks().forEach(track => track.stop());
+      mic = null;
+      if (audioContext) await audioContext.close();
+      audioContext = null;
+      setButtons(false);
+      setStatus('Stopped');
+    }
+    async function start(kind) {
+      const id = ++runId;
+      setButtons(true);
+      engine = kind;
+      lastOnset = null; speaking = false; baseline = 0.003; startedAt = performance.now();
+      try {
+        setStatus('Opening microphone…');
+        if (!await meterStart(id)) return;
+        if (kind === 'local') {
+          setStatus('Loading local command model…');
+          const loadStart = performance.now();
+          if (!window.tf) await script('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js');
+          if (!window.speechCommands) await script('https://cdn.jsdelivr.net/npm/@tensorflow-models/speech-commands@0.5.4/dist/speech-commands.min.js');
+          if (id !== runId) return;
+          model ||= speechCommands.create('BROWSER_FFT', '18w');
+          await model.ensureModelLoaded();
+          if (id !== runId) return;
+          const loadMs = Math.round(performance.now() - loadStart);
+          const labels = model.wordLabels();
+          await model.listen(result => {
+            const scores = Array.from(result.scores);
+            const index = scores.indexOf(Math.max(...scores));
+            const label = labels[index];
+            if (allowed.has(label)) record(label, scores[index]);
+          }, { probabilityThreshold: 0.65, overlapFactor: 0.75, suppressionTimeMillis: 400,
+            audioTrackConstraints: { echoCancellation: true, noiseSuppression: true, channelCount: 1 } });
+          if (id !== runId) { await model.stopListening(); return; }
+          setStatus(`Local commands listening · loaded in ${loadMs} ms`);
+        } else {
+          const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!Recognition) throw new Error('Browser speech recognition is unavailable here');
+          recognition = new Recognition();
+          recognition.continuous = true; recognition.interimResults = true; recognition.lang = 'en-US';
+          recognition.onresult = event => {
+            for (let i = event.resultIndex; i < event.results.length; i++)
+              record(event.results[i][0].transcript.trim(), null, event.results[i].isFinal);
+          };
+          recognition.onerror = event => setStatus(`Browser speech error: ${event.error}`);
+          recognition.onend = () => { if (engine === 'browser') setTimeout(() => { try { recognition.start(); } catch {} }, 100); };
+          recognition.start();
+          setStatus('Browser speech listening');
+        }
+      } catch (error) {
+        if (id === runId) { await stop(); setStatus(`Could not start: ${error.message}`); }
+      }
+    }
+    ui.local.onclick = () => start('local');
+    ui.browser.onclick = () => start('browser');
+    ui.stop.onclick = stop;
+    ui.export.onclick = () => {
+      const blob = new Blob([JSON.stringify({ userAgent: navigator.userAgent, exportedAt: new Date().toISOString(), rows }, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'vision-voice-engine-trial.json';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    };
+  </script>
+</body>
+</html>
