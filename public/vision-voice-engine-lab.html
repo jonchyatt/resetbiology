@@ -21,7 +21,7 @@
 </head>
 <body>
   <h1>Vision voice engine trial</h1>
-  <p>Start one engine, then say <strong>up, down, left, right, one, two, three, four</strong> one at a time. Stop before switching engines. This page records timings only in this tab; Export saves them on your phone.</p>
+  <p>Start one engine and say <strong>up, down, left, right, one, two, three, four</strong> as separate words. Try one quick run and one run with about a second between words. Stop before switching engines. Export saves the runs on your phone.</p>
   <div class="buttons">
     <button id="local">Start local commands</button>
     <button id="browser" class="secondary">Start browser speech</button>
@@ -29,7 +29,7 @@
     <button id="export" class="secondary">Export results</button>
   </div>
   <div id="status" role="status" aria-live="polite">Ready</div>
-  <p class="quiet">“From voice” is measured from the page's microphone energy onset. Generated Fish cues and phone speaker onset are outside this trial. The browser speech engine may process audio remotely; local commands downloads a model, then runs it on this device.</p>
+  <p class="quiet">These are raw model callbacks and browser transcript hypotheses, not chart answers. “From sound” starts at the most recent detected sound burst; rapid words can share one burst, so this is not a per-word latency. Fish cues and phone speaker onset are outside this trial. Browser speech may process audio remotely; the local model runs on this device after loading.</p>
   <ol id="events" aria-label="Recognition events"></ol>
   <script>
     const allowed = new Set(['up','down','left','right','one','two','three','four','five','six','seven','eight']);
@@ -41,7 +41,8 @@
     const rows = [];
     let engine = null, model = null, recognition = null, mic = null, audioContext = null;
     let analyser = null, meterTimer = null, lastOnset = null, speaking = false;
-    let quietSince = 0, loudFrames = 0, baseline = 0.003, startedAt = 0, runId = 0;
+    let quietSince = 0, loudFrames = 0, baseline = 0.003, startedAt = 0, runId = 0, runNumber = 0;
+    let browserHypothesis = null;
 
     function setStatus(message) { ui.status.textContent = message; }
     function setButtons(active) {
@@ -50,14 +51,17 @@
     function record(label, score, final = true) {
       const now = performance.now();
       const row = {
-        engine, label, confidence: score == null ? null : Math.round(score * 1000) / 1000,
+        engine, run: runNumber, label, confidence: score == null ? null : Math.round(score * 1000) / 1000,
         final, fromVoiceMs: lastOnset == null ? null : Math.round(now - lastOnset),
         sinceStartMs: Math.round(now - startedAt), at: new Date().toISOString(),
       };
       rows.push(row);
-      const item = document.createElement('li');
-      item.textContent = `${row.label}${final ? '' : ' (partial)'} · ${row.fromVoiceMs == null ? 'voice onset missed' : row.fromVoiceMs + ' ms from voice'}${row.confidence == null ? '' : ' · ' + Math.round(row.confidence * 100) + '%'} · ${row.engine}`;
-      ui.events.prepend(item);
+      const item = engine === 'browser' && !final && browserHypothesis
+        ? browserHypothesis : document.createElement('li');
+      const kind = engine === 'local' ? 'model callback' : final ? 'final transcript' : 'live hypothesis';
+      item.textContent = `Run ${runNumber} · ${kind}: ${row.label} · ${row.fromVoiceMs == null ? 'sound onset missed' : row.fromVoiceMs + ' ms from last sound'}${row.confidence == null ? '' : ' · ' + Math.round(row.confidence * 100) + '%'} · ${row.engine}`;
+      if (!item.isConnected) ui.events.prepend(item);
+      if (engine === 'browser') browserHypothesis = final ? null : item;
     }
     function script(url) {
       return new Promise((resolve, reject) => {
@@ -101,6 +105,7 @@
       runId++;
       const oldEngine = engine;
       engine = null;
+      browserHypothesis = null;
       if (oldEngine === 'local' && model && model.isListening()) {
         try { await model.stopListening(); } catch (error) { console.warn(error); }
       }
@@ -116,9 +121,11 @@
     }
     async function start(kind) {
       const id = ++runId;
+      runNumber++;
       setButtons(true);
       engine = kind;
       lastOnset = null; speaking = false; baseline = 0.003; startedAt = performance.now();
+      browserHypothesis = null;
       try {
         setStatus('Opening microphone…');
         if (!await meterStart(id)) return;

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef, type UIEvent } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
+import { FastVisionCommands } from '@/lib/speech/FastVisionCommands'
 import { SpeechQueue } from '@/lib/vision/audioKit'
 import {
   SCREEN_E_LINE_MULTIPLIERS,
@@ -211,13 +212,16 @@ export default function BinocularChart({
   useEffect(() => {
     if (!voiceEnabled) {
       WhisperService.stop()
+      FastVisionCommands.stop()
       setIsSpeaking(false)
       return
     }
 
     const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
+    const useLocal = exerciseType === 'e-directional' && !showDistancePrompt
+    let cancelled = false
 
-    WhisperService.start(mode, {
+    const listeners = {
       onResult: (answer, rawTranscript) => {
         // Distance prompt voice commands
         if (showDistancePromptRef.current) {
@@ -237,17 +241,29 @@ export default function BinocularChart({
       },
       onStatusChange: (status) => {
         setVoiceStatus(status)
-        if (status === 'error') setVoiceEnabled(false)
+        if (status === 'error' && !useLocal) setVoiceEnabled(false)
       },
       onSpeechChange: (speaking) => {
         setIsSpeaking(speaking)
       },
-    }).catch(() => {
-      setVoiceEnabled(false)
-    })
+    } satisfies Parameters<typeof WhisperService.start>[1]
 
-    return () => { WhisperService.stop() }
-  }, [voiceEnabled, exerciseType])
+    const startBrowser = async () => {
+      await FastVisionCommands.waitForStop()
+      if (cancelled) return
+      try { await WhisperService.start(mode, listeners) }
+      catch { if (!cancelled) setVoiceEnabled(false) }
+    }
+    if (useLocal) {
+      FastVisionCommands.start('directions', listeners).catch(() => {
+        if (!cancelled) void startBrowser()
+      })
+    } else {
+      void startBrowser()
+    }
+
+    return () => { cancelled = true; FastVisionCommands.stop(); WhisperService.stop() }
+  }, [voiceEnabled, exerciseType, showDistancePrompt])
 
   const handleDistanceAdjust = (dir: 'closer' | 'further') => {
     setShowDistancePrompt(false); regenerateChart()
