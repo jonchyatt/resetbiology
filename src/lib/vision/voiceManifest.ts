@@ -10,6 +10,8 @@ interface ManifestEntry {
 }
 
 let manifestPromise: Promise<Map<string, string>> | null = null
+const preloadedAudio = new Map<string, HTMLAudioElement>()
+const MAX_PRELOADED_CUES = 4
 
 async function loadManifest(): Promise<Map<string, string>> {
   if (typeof window === 'undefined') return new Map()
@@ -34,4 +36,36 @@ async function loadManifest(): Promise<Map<string, string>> {
 export async function resolveVoiceCue(text: string): Promise<string | null> {
   const map = await loadManifest()
   return map.get(text) ?? null
+}
+
+/** Start buffering a small, known cue set while the session intro is visible.
+ * This keeps the first exercise cue off the tap-critical path. */
+export async function preloadVoiceCues(texts: readonly string[] = []): Promise<void> {
+  if (typeof window === 'undefined' || typeof Audio === 'undefined') return
+  const map = await loadManifest()
+  for (const text of texts.slice(0, MAX_PRELOADED_CUES)) {
+    const url = map.get(text)
+    if (!url || preloadedAudio.has(url)) continue
+    try {
+      const audio = new Audio(url)
+      audio.preload = 'auto'
+      audio.load()
+      preloadedAudio.set(url, audio)
+    } catch {
+      /* cue playback still falls back to a fresh element / speechSynthesis */
+    }
+  }
+}
+
+/** Consume one intro-warmed element so SpeechQueue can start it immediately. */
+export function takePreloadedVoiceCue(url: string): HTMLAudioElement | null {
+  const audio = preloadedAudio.get(url)
+  if (!audio) return null
+  preloadedAudio.delete(url)
+  try {
+    audio.currentTime = 0
+  } catch {
+    /* metadata may not have arrived yet; play() will continue loading it */
+  }
+  return audio
 }

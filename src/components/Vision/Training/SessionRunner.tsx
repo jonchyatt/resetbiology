@@ -19,6 +19,7 @@ import { visionExerciseMap, type VisionExercise } from '@/data/visionExercises'
 import { resolvePrescription, findSession } from '@/lib/vision/prescription'
 import { prefersReducedMotion } from '@/lib/vision/canvasKit'
 import { SpeechQueue, unlockAudio, playArrivalMotif, playVictoryMotif, subscribeSharedMuted, getSharedMuted } from '@/lib/vision/audioKit'
+import { preloadVoiceCues } from '@/lib/vision/voiceManifest'
 import { getEngine } from '@/components/Vision/Engines'
 import type { EngineResult } from '@/components/Vision/Engines/types'
 import type { GaborThresholdPrior } from '@/lib/vision/gaborThreshold'
@@ -194,6 +195,14 @@ export default function SessionRunner({
     if (speechRef.current) speechRef.current.muted = storedMute
     return () => speechRef.current?.stop()
   }, [])
+
+  useEffect(() => {
+    const firstExercise = exercises[0]
+    if (!firstExercise) return
+    const initialCues = [firstExercise.breathingCue, firstExercise.checkpoints[0]]
+      .filter((cue): cue is string => Boolean(cue))
+    void preloadVoiceCues(initialCues)
+  }, [exercises])
 
   const toggleMute = useCallback(() => {
     const next = !getSharedMuted()

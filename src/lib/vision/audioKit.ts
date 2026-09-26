@@ -8,7 +8,7 @@
  * Plan: docs/plans/vision-training-interactive-overhaul.md §Tier 0
  */
 
-import { resolveVoiceCue } from './voiceManifest'
+import { resolveVoiceCue, takePreloadedVoiceCue } from './voiceManifest'
 
 let sharedCtx: AudioContext | null = null
 
@@ -166,11 +166,11 @@ export class SpeechQueue {
    */
   speak(text: string, opts?: { interrupt?: boolean }): void {
     const synth = this.synth
-    if (!synth || this.muted || !text) return
+    if (this.muted || !text) return
     if (opts?.interrupt) {
       this.epoch++
       this.queue = []
-      synth.cancel()
+      synth?.cancel()
       this.stopCurrentAudio()
       this.speaking = false
     }
@@ -217,7 +217,8 @@ export class SpeechQueue {
       this.finishOne()
       return
     }
-    const audio = new Audio(url)
+    const audio = takePreloadedVoiceCue(url) ?? new Audio(url)
+    audio.preload = 'auto'
     audio.volume = this.volume
     this.currentAudio = audio
     // once-guard: onerror + play().catch can both fire for one bad asset —
