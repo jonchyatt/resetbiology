@@ -227,6 +227,7 @@ export default function SnellenChart({
   const distanceChoiceActionRef = useRef<(choice: ScreenEDistanceChoice) => void>(() => {})
   const pendingVoiceDirectionsRef = useRef<EDirection[]>([])
   const drainVoiceDirectionsRef = useRef<() => void>(() => {})
+  const resumeVoiceAfterRegenerateRef = useRef(false)
   showDistancePromptRef.current = showDistancePrompt
 
   // Voice-out seam (T5b) — same SpeechQueue instance SessionRunner/engines use,
@@ -267,6 +268,13 @@ export default function SnellenChart({
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
   }, [exerciseType, activePracticeMode])
+
+  useEffect(() => {
+    if (!resumeVoiceAfterRegenerateRef.current) return
+    resumeVoiceAfterRegenerateRef.current = false
+    acceptingAnswerRef.current = true
+    drainVoiceDirectionsRef.current()
+  }, [chartData])
 
   // Generate new letter choices when current letter changes
   useEffect(() => {
@@ -388,15 +396,16 @@ export default function SnellenChart({
   }, [voiceEnabled, exerciseType])
 
   // Generate new chart
-  const regenerateChart = useCallback(() => {
+  const regenerateChart = useCallback((preserveVoiceQueue = false) => {
     // Cancel any speech to prevent audio overlap
     speechRef.current?.stop()
     setChartData(generateChartData(exerciseType))
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
     setConsecutiveFailures(0)
-    pendingVoiceDirectionsRef.current = []
-    acceptingAnswerRef.current = true
+    if (!preserveVoiceQueue) pendingVoiceDirectionsRef.current = []
+    resumeVoiceAfterRegenerateRef.current = preserveVoiceQueue
+    acceptingAnswerRef.current = !preserveVoiceQueue
   }, [exerciseType])
 
   const openDistancePrompt = useCallback(() => {
@@ -461,9 +470,8 @@ export default function SnellenChart({
         if (!shouldRegenerate) return
         acceptingAnswerRef.current = false
         motionSettleTimerRef.current = setTimeout(() => {
-          regenerateChart()
-          acceptingAnswerRef.current = true
-        }, 1100)
+          regenerateChart(true)
+        }, pendingVoiceDirectionsRef.current.length > 0 ? 200 : 1100)
         return true
       })
     }

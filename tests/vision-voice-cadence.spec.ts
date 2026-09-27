@@ -77,3 +77,15 @@ test('binocular arrows and voice continue after each other', async ({ page }) =>
   await say(page, 1, 'up')
   await expect.poll(() => attempts(page), { timeout: 2000 }).toBe(5)
 })
+
+test('one six-word utterance survives the Snellen three-miss chart reset', async ({ page }) => {
+  await installFakeRecognition(page)
+  await page.goto('/vision-training')
+  await page.getByRole('button', { name: 'Focus Training' }).click()
+  await page.getByRole('button', { name: 'E →' }).click()
+  await page.getByRole('button', { name: 'Start Training' }).click()
+  await page.getByRole('button', { name: 'Voice OFF' }).click()
+
+  await say(page, 0, 'left right left right up down')
+  await expect.poll(() => attempts(page), { timeout: 7000 }).toBe(6)
+})
