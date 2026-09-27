@@ -70,9 +70,20 @@ check(() => assert.equal(normalizeObservationGain(-1), 0))
 check(() => assert.equal(normalizeObservationGain(201), 2))
 const audioSession = { type: 'auto' }
 check(() => assert.equal(setPitchforksSpeakerPlayback(true, { audioSession }), true))
-check(() => assert.equal(audioSession.type, 'playback'))
+check(() => assert.equal(audioSession.type, 'play-and-record'))
 check(() => assert.equal(setPitchforksSpeakerPlayback(false, { audioSession }), true))
 check(() => assert.equal(audioSession.type, 'auto'))
+const micRoute = { live: true, type: 'auto' }
+const micSafeSession = {
+  get type() { return micRoute.type },
+  set type(value: string) {
+    micRoute.type = value
+    if (value === 'playback') micRoute.live = false
+  },
+}
+check(() => assert.equal(setPitchforksSpeakerPlayback(true, { audioSession: micSafeSession }), true))
+check(() => assert.equal(micRoute.live, true))
+check(() => assert.equal(micRoute.type, 'play-and-record'))
 check(() => assert.equal(setPitchforksSpeakerPlayback(true, {}), false))
 check(() => assert.deepEqual(normalizePitchforksSettings({ speakerPlayback: true }).speakerPlayback, true))
 check(() => assert.equal(normalizePitchforksSettings({ cueDurationMs: 2000 }).cueDurationMs, 2000))

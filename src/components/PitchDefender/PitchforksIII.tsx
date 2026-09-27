@@ -12862,7 +12862,7 @@ function SettingsRow(props: {
         aria-pressed={props.speakerPlaybackSupported && props.speakerPlaybackOn}
         disabled={!props.speakerPlaybackSupported}
         title={props.speakerPlaybackSupported
-          ? 'Speaker mode requests the louder playback route for note cues. Headphones mode leaves routing to your device.'
+          ? 'Speaker mode keeps the microphone active while requesting louder note playback. Your iPhone controls the physical output route.'
           : 'This browser does not offer a speaker playback route control.'}
         onClick={() => props.setSpeakerPlaybackOn(!props.speakerPlaybackOn)}
         className={`${controlSize} px-2 py-1 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${props.speakerPlaybackOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-300'} disabled:opacity-50`}
