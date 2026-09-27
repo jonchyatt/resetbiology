@@ -164,6 +164,7 @@ for (const [transcript, expected] of [
   ['keep the same distance please', 'stay'],
   ['further', 'further'],
   ['farther', 'further'],
+  ['advance', 'further'],
   ['move a little bit further', 'further'],
 ] as const) {
   assert.equal(parseScreenEDistanceChoice(transcript), expected, `distance voice accepts "${transcript}"`)
@@ -178,6 +179,7 @@ for (const transcript of [
   'left',
   'right',
   'stay then go further',
+  'stay then advance',
   'same distance but farther',
 ]) {
   assert.equal(parseScreenEDistanceChoice(transcript), null, `distance voice rejects "${transcript}"`)
@@ -404,8 +406,8 @@ const ordinaryAnswerIndex = sources.chart.indexOf('if (!answer) return', promptP
 assert.ok(promptParserIndex >= 0 && ordinaryAnswerIndex > promptParserIndex, 'prompt speech is intercepted before ordinary direction handling')
 assert.match(
   sources.chart,
-  /if \(answer\.type === 'direction' && exerciseType === 'e-directional'\) \{\s*window\.dispatchEvent\(new CustomEvent\('voiceDirection', \{ detail: answer\.value \}\)\)/,
-  'ordinary direction recognition keeps its existing event path outside the prompt',
+  /onDirectionalCommand: \(direction\) => \{[\s\S]*?if \(showDistancePromptRef\.current \|\| isGaborPractice\) return[\s\S]*?window\.dispatchEvent\(new CustomEvent\('voiceDirection', \{ detail: direction \}\)\)/,
+  'direction recognition keeps its event path and cannot score the distance prompt',
 )
 assert.match(sources.training, /data-rb-vision-training-active/)
 assert.match(sources.training, /data-rb-vision-target-distance-cm=\{targetDistanceCm\}/)

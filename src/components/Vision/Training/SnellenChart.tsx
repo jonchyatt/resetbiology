@@ -225,6 +225,8 @@ export default function SnellenChart({
   const showDistancePromptRef = useRef(false)
   const distanceChoiceClaimedRef = useRef(false)
   const distanceChoiceActionRef = useRef<(choice: ScreenEDistanceChoice) => void>(() => {})
+  const pendingVoiceDirectionsRef = useRef<EDirection[]>([])
+  const drainVoiceDirectionsRef = useRef<() => void>(() => {})
   showDistancePromptRef.current = showDistancePrompt
 
   // Voice-out seam (T5b) — same SpeechQueue instance SessionRunner/engines use,
@@ -291,6 +293,7 @@ export default function SnellenChart({
   useEffect(() => {
     if (!voiceEnabled) {
       WhisperService.stop()
+      pendingVoiceDirectionsRef.current = []
       setIsSpeaking(false)
       setLastHeard('')
       return
@@ -315,11 +318,14 @@ export default function SnellenChart({
         }
         if (!answer) return
 
-        if (answer.type === 'direction' && exerciseType === 'e-directional') {
-          window.dispatchEvent(new CustomEvent('voiceDirection', { detail: answer.value }))
-        } else if (answer.type === 'letter' && exerciseType === 'letters') {
+        if (answer.type === 'letter' && exerciseType === 'letters') {
           window.dispatchEvent(new CustomEvent('voiceLetter', { detail: answer.value }))
         }
+      },
+      onDirectionalCommand: (direction) => {
+        if (showDistancePromptRef.current || isGaborPractice) return
+        setLastHeard(direction)
+        window.dispatchEvent(new CustomEvent('voiceDirection', { detail: direction }))
       },
       onStatusChange: (status) => {
         setVoiceStatus(status)
@@ -351,7 +357,8 @@ export default function SnellenChart({
     const handler = (e: Event) => {
       const direction = (e as CustomEvent).detail as EDirection
       if (direction && exerciseType === 'e-directional' && !isGaborPractice) {
-        handleLineByLineAnswerRef.current(direction)
+        if (pendingVoiceDirectionsRef.current.length < 12) pendingVoiceDirectionsRef.current.push(direction)
+        drainVoiceDirectionsRef.current()
       }
     }
     window.addEventListener('voiceDirection', handler)
@@ -388,24 +395,28 @@ export default function SnellenChart({
     setCurrentLineIndex(0)
     setCurrentLetterIndex(0)
     setConsecutiveFailures(0)
+    pendingVoiceDirectionsRef.current = []
     acceptingAnswerRef.current = true
   }, [exerciseType])
 
   const openDistancePrompt = useCallback(() => {
+    pendingVoiceDirectionsRef.current = []
     distanceChoiceClaimedRef.current = false
     showDistancePromptRef.current = true
     setShowDistancePrompt(true)
     if (onChartComplete) onChartComplete()
   }, [onChartComplete])
 
-  const settleChartMotion = (afterFeedback: () => boolean | void) => {
+  const settleChartMotion = (afterFeedback: () => boolean | void, feedbackMs = 360) => {
     motionSettleTimerRef.current = setTimeout(() => {
+      if (feedbackMs < 360) setFeedback(null)
       const holdInputUntilReset = afterFeedback()
       if (holdInputUntilReset) return
       motionSettleTimerRef.current = setTimeout(() => {
         acceptingAnswerRef.current = true
+        drainVoiceDirectionsRef.current()
       }, 320)
-    }, 360)
+    }, feedbackMs)
   }
 
   // A single gate covers touch, keyboard, pointer, and the existing voice event
@@ -439,7 +450,7 @@ export default function SnellenChart({
             setCurrentLetterIndex(0)
           }
         }
-      })
+      }, 200)
     } else {
       // Wrong answer
       const shouldRegenerate = consecutiveFailures >= 2
@@ -551,6 +562,11 @@ export default function SnellenChart({
   handleLineByLineAnswerRef.current = handleLineByLineAnswer
   handleLetterAnswerRef.current = handleLetterAnswer
   handleGaborAnswerRef.current = handleGaborAnswer
+  drainVoiceDirectionsRef.current = () => {
+    if (!acceptingAnswerRef.current || showDistancePromptRef.current) return
+    const direction = pendingVoiceDirectionsRef.current.shift()
+    if (direction) handleLineByLineAnswerRef.current(direction)
+  }
 
   // Handle distance adjustment - TINY increments like adding 2.5lb plates
   const handleDistanceAdjust = (direction: 'closer' | 'further') => {
@@ -879,7 +895,7 @@ export default function SnellenChart({
             <GaborResponseCompass onSelect={handleGaborAnswer} />
           ) : exerciseType === 'e-directional' ? (
             <DirectionButtons
-              onSelect={handleLineByLineAnswer}
+              onSelect={direction => { pendingVoiceDirectionsRef.current = []; handleLineByLineAnswer(direction) }}
               compact={deviceMode === 'phone'}
             />
           ) : (

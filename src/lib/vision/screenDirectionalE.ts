@@ -75,7 +75,7 @@ export function parseScreenEDistanceChoice(rawTranscript: string): ScreenEDistan
 
   const words = normalized.split(' ')
   const hasStayWord = words.includes('stay')
-  const hasFurtherWord = words.includes('further') || words.includes('farther')
+  const hasFurtherWord = words.includes('further') || words.includes('farther') || words.includes('advance')
   const hasSameDistance = /(?:^|\s)same distance(?:$|\s)/.test(normalized)
 
   if ((hasStayWord || hasSameDistance) && hasFurtherWord) return null

@@ -121,6 +121,24 @@ export default function BinocularChart({
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [voiceStatus, setVoiceStatus] = useState<WhisperStatus>('idle')
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const pendingVoiceDirectionsRef = useRef<EDirection[]>([])
+  const voiceDrainTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const answerGateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const acceptingAnswerRef = useRef(true)
+  const awaitingAdvanceRef = useRef(false)
+  const drainVoiceDirectionsRef = useRef<() => void>(() => {})
+
+  useEffect(() => () => {
+    if (voiceDrainTimerRef.current) clearTimeout(voiceDrainTimerRef.current)
+    if (answerGateTimerRef.current) clearTimeout(answerGateTimerRef.current)
+  }, [])
+
+  useEffect(() => {
+    if (!awaitingAdvanceRef.current) return
+    awaitingAdvanceRef.current = false
+    acceptingAnswerRef.current = true
+    drainVoiceDirectionsRef.current()
+  }, [currentLineIndex, currentLetterIndex, showDistancePrompt])
 
   const leftColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#DD0000'
   const rightColor = binocularMode === 'duplicate' ? '#FFFFFF' : '#009500'
@@ -153,6 +171,11 @@ export default function BinocularChart({
 
   const regenerateChart = useCallback(() => {
     speechRef.current?.stop()
+    pendingVoiceDirectionsRef.current = []
+    if (answerGateTimerRef.current) clearTimeout(answerGateTimerRef.current)
+    answerGateTimerRef.current = null
+    acceptingAnswerRef.current = true
+    awaitingAdvanceRef.current = false
     setChartData(generateChartData(exerciseType, binocularMode))
     setCurrentLineIndex(0); setCurrentLetterIndex(0); setConsecutiveFailures(0)
   }, [exerciseType, binocularMode])
@@ -161,12 +184,15 @@ export default function BinocularChart({
     const cl = chartData[currentLineIndex]; if (!cl) return
     if (currentLetterIndex < cl.letterCount - 1) { setCurrentLetterIndex(p => p + 1) }
     else if (currentLineIndex >= chartData.length - 1) {
+      pendingVoiceDirectionsRef.current = []
       setShowDistancePrompt(true); if (onChartComplete) onChartComplete()
     } else { setCurrentLineIndex(p => p + 1); setCurrentLetterIndex(0) }
   }, [chartData, currentLineIndex, currentLetterIndex, onChartComplete])
 
   const handleAnswer = useCallback((answer: string) => {
+    if (!acceptingAnswerRef.current || showDistancePromptRef.current) return
     const cl = chartData[currentLineIndex]; if (!cl) return
+    acceptingAnswerRef.current = false
     let isCorrect: boolean
     if (exerciseType === 'e-directional') {
       isCorrect = answer === cl.directions[currentLetterIndex]
@@ -177,10 +203,16 @@ export default function BinocularChart({
     onAnswer(isCorrect)
     if (isCorrect) {
       setConsecutiveFailures(0)
-      if (binocularMode === 'redgreen') advanceToNext()
-      else setTimeout(() => advanceToNext(), 300)
+      answerGateTimerRef.current = setTimeout(() => {
+        awaitingAdvanceRef.current = true
+        advanceToNext()
+      }, binocularMode === 'redgreen' ? 0 : 300)
     } else {
       setConsecutiveFailures(p => { const n = p + 1; if (n >= 3) setTimeout(() => regenerateChart(), 1500); return n })
+      answerGateTimerRef.current = setTimeout(() => {
+        acceptingAnswerRef.current = true
+        drainVoiceDirectionsRef.current()
+      }, 300)
     }
   }, [chartData, currentLineIndex, currentLetterIndex, exerciseType, onAnswer, advanceToNext, regenerateChart, binocularMode])
 
@@ -195,7 +227,7 @@ export default function BinocularChart({
         ',': 'down', 'ArrowDown': 'down',
       }
       const dir = keyMap[e.key]
-      if (dir) { e.preventDefault(); handleAnswer(dir) }
+      if (dir) { e.preventDefault(); pendingVoiceDirectionsRef.current = []; handleAnswer(dir) }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
@@ -206,11 +238,24 @@ export default function BinocularChart({
   handleAnswerRef.current = handleAnswer
   const showDistancePromptRef = useRef(false)
   showDistancePromptRef.current = showDistancePrompt
+  drainVoiceDirectionsRef.current = () => {
+    if (showDistancePromptRef.current || !acceptingAnswerRef.current || voiceDrainTimerRef.current) return
+    const direction = pendingVoiceDirectionsRef.current.shift()
+    if (!direction) return
+    handleAnswerRef.current(direction)
+    voiceDrainTimerRef.current = setTimeout(() => {
+      voiceDrainTimerRef.current = null
+      drainVoiceDirectionsRef.current()
+    }, 320)
+  }
 
   // On-demand Whisper — NO preload, only loads when voiceEnabled flips to true
   useEffect(() => {
     if (!voiceEnabled) {
       WhisperService.stop()
+      pendingVoiceDirectionsRef.current = []
+      if (voiceDrainTimerRef.current) clearTimeout(voiceDrainTimerRef.current)
+      voiceDrainTimerRef.current = null
       setIsSpeaking(false)
       return
     }
@@ -231,9 +276,14 @@ export default function BinocularChart({
           return
         }
         if (!answer) return
-        if (answer.type === 'direction' || answer.type === 'letter') {
+        if (answer.type === 'letter') {
           handleAnswerRef.current(answer.value)
         }
+      },
+      onDirectionalCommand: (direction) => {
+        if (showDistancePromptRef.current || exerciseType !== 'e-directional') return
+        if (pendingVoiceDirectionsRef.current.length < 12) pendingVoiceDirectionsRef.current.push(direction)
+        drainVoiceDirectionsRef.current()
       },
       onStatusChange: (status) => {
         setVoiceStatus(status)
@@ -374,7 +424,7 @@ export default function BinocularChart({
       {dirs.map(dir => {
         const Icon = ArrowIcons[dir]
         return (
-          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => handleAnswer(dir)}
+          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => { pendingVoiceDirectionsRef.current = []; handleAnswer(dir) }}
             aria-label={`${eye === 'left' ? 'Left' : 'Right'} eye answer: ${dir}`}
             className={`flex-1 flex items-center ${iconAlign === 'right' ? 'justify-end pr-1' : 'justify-start pl-1'} active:scale-95 transition-transform cursor-pointer select-none`}>
             <Icon className={`${arrowIco} ${binocularMode === 'redgreen' ? 'shrink-0' : ''} text-gray-300`} strokeWidth={2.5} />
@@ -392,7 +442,7 @@ export default function BinocularChart({
       {dirs.map(dir => {
         const Icon = ArrowIcons[dir]
         return (
-          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => handleAnswer(dir)}
+          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => { pendingVoiceDirectionsRef.current = []; handleAnswer(dir) }}
             aria-label={`${eye === 'left' ? 'Left' : 'Right'} eye answer: ${dir}`}
             className="flex-1 flex items-center justify-center active:scale-95 transition-transform cursor-pointer select-none">
             <Icon className={`${arrowIco} ${binocularMode === 'redgreen' ? 'shrink-0' : ''} text-gray-300`} strokeWidth={2.5} />

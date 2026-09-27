@@ -3,6 +3,7 @@
 // Same interface as the old WhisperService — components need no changes.
 
 import { matchTranscript, type VoiceAnswer } from './KeywordMatcher'
+import { StableDirectionWords, type SpokenDirection } from './StableDirectionWords'
 
 export type WhisperStatus = 'idle' | 'loading' | 'ready' | 'listening' | 'error'
 export type ExerciseMode = 'e-directional' | 'letters' | 'notes'
@@ -48,6 +49,7 @@ type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance
 
 interface ServiceOptions {
   onResult?: (answer: VoiceAnswer, rawTranscript: string) => void
+  onDirectionalCommand?: (direction: SpokenDirection, rawTranscript: string) => void
   onStatusChange?: (status: WhisperStatus, message?: string) => void
   onSpeechChange?: (isSpeaking: boolean) => void
 }
@@ -58,6 +60,7 @@ class WebSpeechServiceImpl {
   private mode: ExerciseMode = 'e-directional'
   private listeners: ServiceOptions = {}
   private running = false
+  private restartTimer: ReturnType<typeof setTimeout> | null = null
 
   private setStatus(status: WhisperStatus, message?: string): void {
     this.status = status
@@ -87,9 +90,15 @@ class WebSpeechServiceImpl {
   }
 
   private startRecognition(RecognitionAPI: SpeechRecognitionConstructor): void {
+    if (this.restartTimer) {
+      clearTimeout(this.restartTimer)
+      this.restartTimer = null
+    }
     if (this.recognition) {
-      try { this.recognition.abort() } catch { /* ignore */ }
+      const previous = this.recognition
       this.recognition = null
+      previous.onend = null
+      try { previous.abort() } catch { /* ignore */ }
     }
 
     const rec = new RecognitionAPI()
@@ -97,14 +106,21 @@ class WebSpeechServiceImpl {
     rec.interimResults = true
     rec.lang = 'en-US'
     rec.maxAlternatives = 1
+    const directionWords = new StableDirectionWords()
 
-    rec.onspeechstart = () => { this.listeners.onSpeechChange?.(true) }
-    rec.onspeechend = () => { this.listeners.onSpeechChange?.(false) }
+    rec.onspeechstart = () => { if (this.recognition === rec) this.listeners.onSpeechChange?.(true) }
+    rec.onspeechend = () => { if (this.recognition === rec) this.listeners.onSpeechChange?.(false) }
 
     rec.onresult = (event: SpeechRecognitionEvent) => {
+      if (this.recognition !== rec) return
       for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript
+        if (this.mode === 'e-directional' && this.listeners.onDirectionalCommand) {
+          for (const direction of directionWords.read(i, transcript, event.results[i].isFinal)) {
+            this.listeners.onDirectionalCommand(direction, transcript)
+          }
+        }
         if (event.results[i].isFinal) {
-          const transcript = event.results[i][0].transcript
           const answer = matchTranscript(transcript, this.mode)
           this.listeners.onResult?.(answer, transcript)
           this.listeners.onSpeechChange?.(false)
@@ -113,6 +129,7 @@ class WebSpeechServiceImpl {
     }
 
     rec.onerror = (event: SpeechRecognitionErrorEvent) => {
+      if (this.recognition !== rec) return
       // 'no-speech' fires after ~8s of silence — ignore, onend will restart
       if (event.error === 'no-speech' || event.error === 'aborted') return
       console.error('Speech recognition error:', event.error)
@@ -124,15 +141,23 @@ class WebSpeechServiceImpl {
 
     rec.onend = () => {
       // Web Speech stops after each utterance/silence — restart to stay continuous
-      if (this.running) {
-        setTimeout(() => {
-          if (this.running) this.startRecognition(RecognitionAPI)
+      if (this.running && this.recognition === rec && !this.restartTimer) {
+        this.restartTimer = setTimeout(() => {
+          this.restartTimer = null
+          if (this.running && this.recognition === rec) {
+            try { this.startRecognition(RecognitionAPI) }
+            catch (error) {
+              console.error('Speech recognition restart failed:', error)
+              this.running = false
+              this.setStatus('error', 'Speech recognition stopped')
+            }
+          }
         }, 100)
       }
     }
 
-    rec.start()
     this.recognition = rec
+    rec.start()
   }
 
   /**
@@ -209,9 +234,15 @@ class WebSpeechServiceImpl {
 
   stop(): void {
     this.running = false
+    if (this.restartTimer) {
+      clearTimeout(this.restartTimer)
+      this.restartTimer = null
+    }
     if (this.recognition) {
-      try { this.recognition.abort() } catch { /* ignore */ }
+      const previous = this.recognition
       this.recognition = null
+      previous.onend = null
+      try { previous.abort() } catch { /* ignore */ }
     }
     this.listeners = {}
     this.setStatus('idle')
