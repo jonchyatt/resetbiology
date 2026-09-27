@@ -704,7 +704,7 @@ export default function PitchDefender() {
 
       {/* ─── MENU ──────────────────────────────────────────────────────── */}
       {state.phase === 'menu' && (
-        <div className="absolute inset-0 z-40 flex flex-col items-center justify-center px-4">
+        <div className="relative z-40 flex min-h-full flex-col items-center justify-start px-4 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top,0px))]">
           <h1
             className="text-5xl font-black text-white mb-2 tracking-wide"
             style={{ textShadow: '0 0 40px #3FBFB560, 0 0 80px #3FBFB530' }}

@@ -158,6 +158,8 @@ interface PlayPianoOptions {
   // timbre. Tutor/training uses exact=true; SimplySing / backing playback uses
   // the default so octave overflow degrades gracefully.
   exact?: boolean
+  /** Optional sustained reference cue length. Other piano callers keep their existing envelope. */
+  durationMs?: number
 }
 
 export function playPianoNote(note: string, options?: PlayPianoOptions): boolean {
@@ -180,13 +182,37 @@ export function playPianoNote(note: string, options?: PlayPianoOptions): boolean
     if (!buf) return false
     const src = c.createBufferSource()
     const gain = c.createGain()
+    const durationSec = options?.durationMs === undefined
+      ? 1.5
+      : Math.max(0.6, Math.min(2, options.durationMs / 1000))
     src.buffer = buf
     src.playbackRate.value = playbackRate
     src.connect(gain)
     gain.connect(_pianoBus)
     gain.gain.setValueAtTime(0.3, c.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 1.5)
+    gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + durationSec)
     src.start()
+    if (options?.durationMs !== undefined) {
+      src.stop(c.currentTime + durationSec)
+      // Most A4/C4 samples end after 0.6 s. Carry their exact fundamental
+      // after the piano attack so a two-second practice cue actually lasts.
+      const midi = noteToMidi(note)
+      if (midi !== null && durationSec > buf.duration / playbackRate) {
+        const sustain = c.createOscillator()
+        const sustainGain = c.createGain()
+        const start = c.currentTime
+        sustain.type = 'sine'
+        sustain.frequency.value = 440 * Math.pow(2, (midi - 69) / 12)
+        sustainGain.gain.setValueAtTime(0.0001, start)
+        sustainGain.gain.linearRampToValueAtTime(0.12, start + Math.min(0.25, durationSec / 3))
+        sustainGain.gain.setValueAtTime(0.12, start + Math.max(0.3, durationSec - 0.15))
+        sustainGain.gain.linearRampToValueAtTime(0, start + durationSec)
+        sustain.connect(sustainGain)
+        sustainGain.connect(_pianoBus)
+        sustain.start(start)
+        sustain.stop(start + durationSec)
+      }
+    }
     duckMusic(800)
     // Echo-suppression hint for pitch detectors:
     // Mark the global "tone is currently sounding" window so that microphone-fed
@@ -194,7 +220,9 @@ export function playPianoNote(note: string, options?: PlayPianoOptions): boolean
     // it, but cheap laptop speakers + no headphones still cause false positives.
     if (typeof window !== 'undefined') {
       ;(window as any).__pdLastToneAt = performance.now()
-      ;(window as any).__pdToneSuppressMs = 350 // duration to suppress mic input
+      ;(window as any).__pdToneSuppressMs = options?.durationMs === undefined
+        ? 350
+        : Math.round(durationSec * 1000) + 350
     }
     // Playback was scheduled; this does not claim that a person heard it.
     return c.state === 'running' && _pianoBus.gain.value > 0

@@ -154,6 +154,7 @@ import {
   savePitchforksSettings,
   type PitchforksSettingsSnapshot,
 } from './pitchforksSettings'
+import { setPitchforksSpeakerPlayback } from './pitchforksSpeakerPlayback'
 import {
   PITCHFORKS_LEVEL_ACCURACY_GOAL_PERCENT,
   createPitchforksLevelProgress,
@@ -496,7 +497,6 @@ const STARTING_HEALTH = 5
 const TONE_MS = 1000
 const TONE_SPACING_MS = 1200
 const ECHO_TAIL_MS = 350
-const TONE_SUPPRESS_MS = TONE_MS + ECHO_TAIL_MS
 const NEW_NOTE_CEREMONY_MS = 2400
 const NOTE_MASTERED_CEREMONY_MS = 2400
 const WAVE_RECEIPT_MS = 1900
@@ -4655,6 +4655,9 @@ export default function PitchforksIII() {
   const [levelProgress, setLevelProgress] = useState<PitchforksLevelProgress>(() => createPitchforksLevelProgress(1))
   const [noteNamesOn, setNoteNamesOnState] = useState(true)
   const [audioCueOn, setAudioCueOnState] = useState(true)
+  const [speakerPlaybackOn, setSpeakerPlaybackOn] = useState(false)
+  const [speakerPlaybackSupported, setSpeakerPlaybackSupported] = useState(false)
+  const [cueDurationMs, setCueDurationMs] = useState(600)
   const [staffNotationOn, setStaffNotationOn] = useState(false)
   const [synesthesiaOn, setSynesthesiaOn] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
@@ -4770,6 +4773,8 @@ export default function PitchforksIII() {
 
   const microphoneOwnerRef = useRef<PitchforksMicrophoneOwner | null>(null)
   const microphoneStartPromiseRef = useRef<Promise<void> | null>(null)
+  const speakerPlaybackRef = useRef(false)
+  const cueDurationMsRef = useRef(600)
   if (!microphoneOwnerRef.current) {
     microphoneOwnerRef.current = createPitchforksMicrophoneOwner({
       start: startMicrophoneRaw,
@@ -4787,6 +4792,9 @@ export default function PitchforksIII() {
     }
     microphoneStartPromiseRef.current = startPromise
     setMicStartPending(true)
+    void startPromise.then(() => {
+      if (speakerPlaybackRef.current) setPitchforksSpeakerPlayback(true, navigator)
+    }, () => {})
     const clearPending = () => {
       if (microphoneStartPromiseRef.current !== startPromise) return
       microphoneStartPromiseRef.current = null
@@ -4798,6 +4806,7 @@ export default function PitchforksIII() {
   const stopListening = useCallback(() => {
     microphoneStartPromiseRef.current = null
     microphoneOwnerRef.current!.stop()
+    if (speakerPlaybackRef.current) setPitchforksSpeakerPlayback(true, navigator)
     setMicStartPending(false)
   }, [])
 
@@ -4809,20 +4818,31 @@ export default function PitchforksIII() {
     audioCueRef.current = audioCueOn
   }, [audioCueOn])
 
+  useEffect(() => {
+    setSpeakerPlaybackSupported('audioSession' in navigator)
+    if (speakerPlaybackOn) setPitchforksSpeakerPlayback(true, navigator)
+  }, [speakerPlaybackOn])
+
   const updatePitchforksSettings = useCallback((patch: Partial<PitchforksSettingsSnapshot>) => {
     const settings = normalizePitchforksSettings({
       noteNames: noteNamesRef.current,
       referenceAudio: audioCueRef.current,
+      speakerPlayback: speakerPlaybackRef.current,
+      cueDurationMs: cueDurationMsRef.current,
       referenceGainPct: cueVolumeRef.current,
       microphoneGainPct: microphoneGainRef.current,
       ...patch,
     })
     noteNamesRef.current = settings.noteNames
     audioCueRef.current = settings.referenceAudio
+    speakerPlaybackRef.current = settings.speakerPlayback
+    cueDurationMsRef.current = settings.cueDurationMs
     cueVolumeRef.current = settings.referenceGainPct
     microphoneGainRef.current = settings.microphoneGainPct
     setNoteNamesOnState(settings.noteNames)
     setAudioCueOnState(settings.referenceAudio)
+    setSpeakerPlaybackOn(settings.speakerPlayback)
+    setCueDurationMs(settings.cueDurationMs)
     setCueVolume(settings.referenceGainPct)
     setMicrophoneGain(settings.microphoneGainPct)
     try { savePitchforksSettings(localStorage, settings) } catch {}
@@ -4834,6 +4854,16 @@ export default function PitchforksIII() {
 
   const setReferenceAudioPreference = useCallback((value: boolean) => {
     updatePitchforksSettings({ referenceAudio: value })
+  }, [updatePitchforksSettings])
+
+  const setSpeakerPlaybackPreference = useCallback((value: boolean) => {
+    if (setPitchforksSpeakerPlayback(value, navigator)) {
+      updatePitchforksSettings({ speakerPlayback: value })
+    }
+  }, [updatePitchforksSettings])
+
+  const setCueDurationPreference = useCallback((value: number) => {
+    updatePitchforksSettings({ cueDurationMs: value })
   }, [updatePitchforksSettings])
 
   const setReferenceGainPreference = useCallback((value: number) => {
@@ -5263,6 +5293,8 @@ export default function PitchforksIII() {
     inputModeRef.current = restoredInput
     noteNamesRef.current = storedSettings.noteNames
     audioCueRef.current = storedSettings.referenceAudio
+    speakerPlaybackRef.current = storedSettings.speakerPlayback
+    cueDurationMsRef.current = storedSettings.cueDurationMs
     cueVolumeRef.current = storedSettings.referenceGainPct
     microphoneGainRef.current = storedSettings.microphoneGainPct
     setDemoMode(isDemo)
@@ -5270,6 +5302,8 @@ export default function PitchforksIII() {
     setInputMode(restoredInput)
     setNoteNamesOnState(storedSettings.noteNames)
     setAudioCueOnState(storedSettings.referenceAudio)
+    setSpeakerPlaybackOn(storedSettings.speakerPlayback)
+    setCueDurationMs(storedSettings.cueDurationMs)
     setCueVolume(storedSettings.referenceGainPct)
     setMicrophoneGain(storedSettings.microphoneGainPct)
     setGeometryDebug(params.get('geom') === '1')
@@ -6053,7 +6087,7 @@ export default function PitchforksIII() {
       targetNote: target.note,
       eligible,
       sample,
-      pulseWindowMs: TONE_SUPPRESS_MS,
+      pulseWindowMs: Math.max(TONE_MS, cueDurationMsRef.current) + ECHO_TAIL_MS,
     })
 
     if (!decision.fire) {
@@ -6103,11 +6137,13 @@ export default function PitchforksIII() {
     sparkGuideRef.current = decision.state
     syncSparkGuideStatus(decision.state.status)
     const suppressionStartMs = performance.now()
-    const suppressionEndMs = suppressionStartMs + TONE_SUPPRESS_MS
+    const cueToneMs = Math.max(TONE_MS, cueDurationMsRef.current)
+    const cueSuppressMs = cueToneMs + ECHO_TAIL_MS
+    const suppressionEndMs = suppressionStartMs + cueSuppressMs
     waveNotesHeardRef.current.add(liveTarget.note)
     setPianoVolume(cueVolumeRef.current)
-    playPianoNote(liveTarget.note, { exact: true })
-    cuePlayingUntilRef.current = suppressionStartMs + TONE_MS
+    playPianoNote(liveTarget.note, { exact: true, durationMs: cueDurationMsRef.current })
+    cuePlayingUntilRef.current = suppressionStartMs + cueToneMs
     matchingSuppressedUntilRef.current = suppressionEndMs
     timersPausedRef.current = true
     activePromptKeyRef.current = liveTarget.key
@@ -6119,7 +6155,7 @@ export default function PitchforksIII() {
     ) {
       setFirstMinuteCoachSnapshot('listen', liveTarget.note)
     }
-    markToneEmitted(TONE_SUPPRESS_MS)
+    markToneEmitted(cueSuppressMs)
     recordSparkGuideEvent('fired', decision.fire.reason, suppressionStartMs, suppressionEndMs)
     if (decision.state.autoPulseCount >= PITCHFORKS_SPARK_MAX_AUTO_PULSES) {
       recordSparkGuideEvent('capped', 'automatic-limit-after-pulse')
@@ -6380,8 +6416,8 @@ export default function PitchforksIII() {
     try {
       initAudio()
       setPianoVolume(cueVolumeRef.current)
-      playPianoNote(note, { exact: true })
-      markToneEmitted(TONE_SUPPRESS_MS)
+      playPianoNote(note, { exact: true, durationMs: cueDurationMsRef.current })
+      markToneEmitted(Math.max(TONE_MS, cueDurationMsRef.current) + ECHO_TAIL_MS)
       return 'played'
     } catch {
       return 'disabled'
@@ -6413,7 +6449,7 @@ export default function PitchforksIII() {
     const localSuppressionRemaining = Math.max(0, matchingSuppressedUntilRef.current - performance.now())
     const waitMs = attempt === 'pending'
       ? 250
-      : Math.max(180, localSuppressionRemaining + 80, TONE_SUPPRESS_MS + 80)
+      : Math.max(180, localSuppressionRemaining + 80, Math.max(TONE_MS, cueDurationMsRef.current) + ECHO_TAIL_MS + 80)
 
     const callbackGeneration = runGenerationRef.current
     const callbackFence = pauseGateRef.current.fence
@@ -6860,7 +6896,10 @@ export default function PitchforksIII() {
     }
 
     const now = performance.now()
-    const toneWindowMs = (playbackNotes.length - 1) * TONE_SPACING_MS + TONE_MS
+    const selectedDurationMs = cueDurationMsRef.current
+    const cueToneMs = Math.max(TONE_MS, selectedDurationMs)
+    const cueSpacingMs = Math.max(TONE_SPACING_MS, selectedDurationMs + 200)
+    const toneWindowMs = (playbackNotes.length - 1) * cueSpacingMs + cueToneMs
     const suppressMs = toneWindowMs + ECHO_TAIL_MS
     cuePlayingUntilRef.current = now + toneWindowMs
     matchingSuppressedUntilRef.current = now + suppressMs
@@ -6904,17 +6943,18 @@ export default function PitchforksIII() {
         }
         setPianoVolume(cueVolumeRef.current)
         try {
-          const emitted = playPianoNote(note, { exact: true })
+          const emitted = playPianoNote(note, { exact: true, durationMs: selectedDurationMs })
           if (emitted && unhintedUnaidedReturnCue && toneIndex === 0 &&
             pianoSamplesReadyRef.current && audioCueRef.current && cueVolumeRef.current > 0 &&
             villageReturnOffersRef.current.get(promptOwnerKey)?.runId === `village-return:${cueRunGeneration}`) {
             villageReturnContextPlayedRef.current.add(promptOwnerKey)
           }
         } finally {
-          matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
-          markToneEmitted(TONE_SUPPRESS_MS)
+          const cueSuppressMs = cueToneMs + ECHO_TAIL_MS
+          matchingSuppressedUntilRef.current = performance.now() + cueSuppressMs
+          markToneEmitted(cueSuppressMs)
         }
-      }, toneIndex * TONE_SPACING_MS)
+      }, toneIndex * cueSpacingMs)
       cueTimeoutsRef.current.push(id)
     })
 
@@ -7031,6 +7071,8 @@ export default function PitchforksIII() {
         settings: normalizePitchforksSettings({
           noteNames: noteNamesRef.current,
           referenceAudio: audioCueRef.current,
+          speakerPlayback: speakerPlaybackRef.current,
+          cueDurationMs: cueDurationMsRef.current,
           referenceGainPct: cueVolumeRef.current,
           microphoneGainPct: microphoneGainRef.current,
         }),
@@ -10252,8 +10294,8 @@ export default function PitchforksIII() {
     setBossSimulating(false)
     bossHoldRef.current = { heldMs: 0, matched: false }
     resumeCueAudioFromGesture()
-    playPianoNote(state.currentNote, { exact: true })
-    const until = performance.now() + 1800
+    playPianoNote(state.currentNote, { exact: true, durationMs: cueDurationMsRef.current })
+    const until = performance.now() + Math.max(1800, cueDurationMsRef.current + ECHO_TAIL_MS)
     cuePlayingUntilRef.current = until
     matchingSuppressedUntilRef.current = until
     setBossAudioBusy(true)
@@ -10392,10 +10434,11 @@ export default function PitchforksIII() {
     try {
       initAudio()
       setPianoVolume(cueVolumeRef.current)
-      playPianoNote(candidate, { exact: true })
+      playPianoNote(candidate, { exact: true, durationMs: cueDurationMsRef.current })
     } finally {
-      matchingSuppressedUntilRef.current = performance.now() + TONE_SUPPRESS_MS
-      markToneEmitted(TONE_SUPPRESS_MS)
+      const cueSuppressMs = Math.max(TONE_MS, cueDurationMsRef.current) + ECHO_TAIL_MS
+      matchingSuppressedUntilRef.current = performance.now() + cueSuppressMs
+      markToneEmitted(cueSuppressMs)
     }
   }, [matchingSuppressedNow, rangeCandidate, resetRangeMatch])
 
@@ -10551,8 +10594,8 @@ export default function PitchforksIII() {
     if (phaseRef.current !== 'songcraft' || !pianoSamplesReadyRef.current) return
     if (!unlockedNotesRef.current.includes(note) || !PITCHFORKS_RANGE_NOTES.includes(note)) return
     resumeCueAudioFromGesture()
-    playPianoNote(note, { exact: true })
-    const until = performance.now() + 1800
+    playPianoNote(note, { exact: true, durationMs: cueDurationMsRef.current })
+    const until = performance.now() + Math.max(1800, cueDurationMsRef.current + ECHO_TAIL_MS)
     cuePlayingUntilRef.current = until
     matchingSuppressedUntilRef.current = until
   }, [resumeCueAudioFromGesture])
@@ -11539,6 +11582,11 @@ export default function PitchforksIII() {
             setNoteNamesOn={setNoteNamesPreference}
             audioCueOn={audioCueOn}
             setAudioCueOn={setReferenceAudioPreference}
+            speakerPlaybackOn={speakerPlaybackOn}
+            speakerPlaybackSupported={speakerPlaybackSupported}
+            setSpeakerPlaybackOn={setSpeakerPlaybackPreference}
+            cueDurationMs={cueDurationMs}
+            setCueDurationMs={setCueDurationPreference}
             staffNotationOn={staffNotationOn}
             setStaffNotationOn={setStaffNotationOn}
             synesthesiaOn={synesthesiaOn}
@@ -12710,6 +12758,11 @@ export default function PitchforksIII() {
               setNoteNamesOn={setNoteNamesPreference}
               audioCueOn={audioCueOn}
               setAudioCueOn={setReferenceAudioPreference}
+              speakerPlaybackOn={speakerPlaybackOn}
+              speakerPlaybackSupported={speakerPlaybackSupported}
+              setSpeakerPlaybackOn={setSpeakerPlaybackPreference}
+              cueDurationMs={cueDurationMs}
+              setCueDurationMs={setCueDurationPreference}
               staffNotationOn={staffNotationOn}
               setStaffNotationOn={(value) => {
                 setStaffNotationOn(value)
@@ -12762,6 +12815,11 @@ function SettingsRow(props: {
   setNoteNamesOn: (value: boolean) => void
   audioCueOn: boolean
   setAudioCueOn: (value: boolean) => void
+  speakerPlaybackOn: boolean
+  speakerPlaybackSupported: boolean
+  setSpeakerPlaybackOn: (value: boolean) => void
+  cueDurationMs: number
+  setCueDurationMs: (value: number) => void
   staffNotationOn: boolean
   setStaffNotationOn: (value: boolean) => void
   synesthesiaOn: boolean
@@ -12798,6 +12856,36 @@ function SettingsRow(props: {
       >
         Audio cue {props.audioCueOn ? 'ON' : 'OFF'}
       </button>
+      <button
+        type="button"
+        data-testid="pf3-speaker-playback-toggle"
+        aria-pressed={props.speakerPlaybackSupported && props.speakerPlaybackOn}
+        disabled={!props.speakerPlaybackSupported}
+        title={props.speakerPlaybackSupported
+          ? 'Speaker mode requests the louder playback route for note cues. Headphones mode leaves routing to your device.'
+          : 'This browser does not offer a speaker playback route control.'}
+        onClick={() => props.setSpeakerPlaybackOn(!props.speakerPlaybackOn)}
+        className={`${controlSize} px-2 py-1 border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${props.speakerPlaybackOn ? 'border-orange-400 text-orange-100 bg-orange-950/40' : 'border-gray-700 text-gray-300'} disabled:opacity-50`}
+      >
+        {props.speakerPlaybackSupported
+          ? `Note output: ${props.speakerPlaybackOn ? 'Speaker' : 'Headphones / device'}`
+          : 'Speaker mode unavailable'}
+      </button>
+      <label className={`${controlSize} flex items-center gap-2 text-gray-200`}>
+        Hint note {props.cueDurationMs === 600 ? 'short' : `${(props.cueDurationMs / 1000).toFixed(1)} s`}
+        <input
+          data-testid="pf3-cue-duration"
+          aria-label="Hint note length"
+          aria-valuetext={`${(props.cueDurationMs / 1000).toFixed(1)} seconds`}
+          type="range"
+          min={600}
+          max={2000}
+          step={100}
+          value={props.cueDurationMs}
+          onChange={e => props.setCueDurationMs(Number(e.target.value))}
+          className="w-28 accent-orange-300"
+        />
+      </label>
       <button
         onClick={() => props.setStaffNotationOn(!props.staffNotationOn)}
         aria-pressed={props.staffNotationOn}

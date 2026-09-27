@@ -8,6 +8,7 @@ import {
   savePitchforksSettings,
 } from '../src/components/PitchDefender/pitchforksSettings'
 import { normalizeObservationGain } from '../src/components/PitchDefender/usePitchDetection'
+import { setPitchforksSpeakerPlayback } from '../src/components/PitchDefender/pitchforksSpeakerPlayback'
 
 let checks = 0
 const check = (run: () => void) => { run(); checks += 1 }
@@ -17,6 +18,8 @@ check(() => assert.deepEqual(DEFAULT_PITCHFORKS_SETTINGS, {
   version: 1,
   noteNames: true,
   referenceAudio: true,
+  speakerPlayback: false,
+  cueDurationMs: 600,
   referenceGainPct: 100,
   microphoneGainPct: 100,
 }))
@@ -25,6 +28,8 @@ check(() => assert.deepEqual(normalizePitchforksSettings({ noteNames: false }), 
   version: 1,
   noteNames: false,
   referenceAudio: true,
+  speakerPlayback: false,
+  cueDurationMs: 600,
   referenceGainPct: 100,
   microphoneGainPct: 100,
 }))
@@ -36,6 +41,8 @@ check(() => assert.deepEqual(normalizePitchforksSettings({
   version: 1,
   noteNames: true,
   referenceAudio: false,
+  speakerPlayback: false,
+  cueDurationMs: 600,
   referenceGainPct: 100,
   microphoneGainPct: 100,
 }))
@@ -46,6 +53,8 @@ check(() => assert.deepEqual(normalizePitchforksSettings({
   version: 1,
   noteNames: true,
   referenceAudio: true,
+  speakerPlayback: false,
+  cueDurationMs: 600,
   referenceGainPct: 200,
   microphoneGainPct: 0,
 }))
@@ -59,6 +68,15 @@ check(() => assert.equal(normalizeObservationGain(100), 1))
 check(() => assert.equal(normalizeObservationGain(200), 2))
 check(() => assert.equal(normalizeObservationGain(-1), 0))
 check(() => assert.equal(normalizeObservationGain(201), 2))
+const audioSession = { type: 'auto' }
+check(() => assert.equal(setPitchforksSpeakerPlayback(true, { audioSession }), true))
+check(() => assert.equal(audioSession.type, 'playback'))
+check(() => assert.equal(setPitchforksSpeakerPlayback(false, { audioSession }), true))
+check(() => assert.equal(audioSession.type, 'auto'))
+check(() => assert.equal(setPitchforksSpeakerPlayback(true, {}), false))
+check(() => assert.deepEqual(normalizePitchforksSettings({ speakerPlayback: true }).speakerPlayback, true))
+check(() => assert.equal(normalizePitchforksSettings({ cueDurationMs: 2000 }).cueDurationMs, 2000))
+check(() => assert.equal(normalizePitchforksSettings({ cueDurationMs: -10 }).cueDurationMs, 600))
 
 const values = new Map<string, string>()
 const writes: Array<{ key: string; value: string }> = []
@@ -118,6 +136,7 @@ check(() => assert.match(componentSource, /savePitchforksSettings\(localStorage,
 check(() => assert.match(componentSource, /settings: normalizePitchforksSettings\(/))
 check(() => assert.match(componentSource, /data-testid="pf3-note-names-toggle"[\s\S]*?aria-pressed=\{props\.noteNamesOn\}/))
 check(() => assert.match(componentSource, /data-testid="pf3-reference-audio-toggle"[\s\S]*?aria-pressed=\{props\.audioCueOn\}/))
+check(() => assert.match(componentSource, /data-testid="pf3-speaker-playback-toggle"[\s\S]*?aria-pressed=\{props\.speakerPlaybackSupported && props\.speakerPlaybackOn\}/))
 check(() => assert.match(componentSource, /\(!userRequested && !audioCueRef\.current\)/))
 check(() => assert.match(componentSource, /inputMode === 'buttons' \? false : noteNamesRef\.current/))
 check(() => assert.match(componentSource, /\(cueContext\.support === 'guided' \|\| target\.villager\.supportedLesson\) && audioCueRef\.current/))

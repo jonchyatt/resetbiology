@@ -4,6 +4,8 @@ export interface PitchforksSettingsSnapshot {
   readonly version: 1
   readonly noteNames: boolean
   readonly referenceAudio: boolean
+  readonly speakerPlayback: boolean
+  readonly cueDurationMs: number
   readonly referenceGainPct: number
   readonly microphoneGainPct: number
 }
@@ -17,6 +19,8 @@ export const DEFAULT_PITCHFORKS_SETTINGS: PitchforksSettingsSnapshot = Object.fr
   version: 1,
   noteNames: true,
   referenceAudio: true,
+  speakerPlayback: false,
+  cueDurationMs: 600,
   referenceGainPct: 100,
   microphoneGainPct: 100,
 })
@@ -40,6 +44,12 @@ export function normalizePitchforksSettings(value: unknown): PitchforksSettingsS
     referenceAudio: typeof candidate.referenceAudio === 'boolean'
       ? candidate.referenceAudio
       : DEFAULT_PITCHFORKS_SETTINGS.referenceAudio,
+    speakerPlayback: typeof candidate.speakerPlayback === 'boolean'
+      ? candidate.speakerPlayback
+      : DEFAULT_PITCHFORKS_SETTINGS.speakerPlayback,
+    cueDurationMs: typeof candidate.cueDurationMs === 'number' && Number.isFinite(candidate.cueDurationMs)
+      ? Math.max(600, Math.min(2000, Math.round(candidate.cueDurationMs / 100) * 100))
+      : DEFAULT_PITCHFORKS_SETTINGS.cueDurationMs,
     referenceGainPct: normalizeGainPercent(candidate.referenceGainPct),
     microphoneGainPct: normalizeGainPercent(candidate.microphoneGainPct),
   })
