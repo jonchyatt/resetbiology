@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef, type UIEvent } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, type UIEvent } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
 import { SpeechQueue } from '@/lib/vision/audioKit'
@@ -114,6 +114,29 @@ export default function BinocularChart({
       peer.scrollTop = event.currentTarget.scrollTop
     }
   }
+  useLayoutEffect(() => {
+    leftChartViewportRef.current?.scrollTo(0, 0)
+    rightChartViewportRef.current?.scrollTo(0, 0)
+  }, [chartData])
+
+  useLayoutEffect(() => {
+    if (binocularMode !== 'redgreen') return
+    const leftViewport = leftChartViewportRef.current
+    const rightViewport = rightChartViewportRef.current
+    const activeRow = leftViewport?.querySelector<HTMLElement>(`[data-binocular-chart-row="${currentLineIndex}"]`)
+    if (!leftViewport || !rightViewport || !activeRow) return
+
+    const viewportBox = leftViewport.getBoundingClientRect()
+    const rowBox = activeRow.getBoundingClientRect()
+    const rowCenterFromTop = rowBox.top + rowBox.height / 2 - viewportBox.top
+    const viewportMidpoint = leftViewport.clientHeight / 2
+    const nextScrollTop = Math.min(
+      leftViewport.scrollHeight - leftViewport.clientHeight,
+      Math.max(0, leftViewport.scrollTop + rowCenterFromTop - viewportMidpoint),
+    )
+    leftViewport.scrollTop = nextScrollTop
+    rightViewport.scrollTop = nextScrollTop
+  }, [binocularMode, exerciseType, chartData, currentLineIndex, currentLetterIndex])
   // Simulated distance — shrink chart instead of moving screen (for headset use)
   const [chartScale, setChartScale] = useState(1.0)
 

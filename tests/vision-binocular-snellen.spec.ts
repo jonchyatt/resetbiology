@@ -143,7 +143,8 @@ async function expectNoHorizontalEyeOverflow(page: Page) {
   expect(widths.every(({ client, content }) => content <= client)).toBe(true)
 }
 
-test('Red/Green directional-E keeps 14 static paired levels, fused side arrows, and user-controlled scroll on phone landscape', async ({ page }) => {
+test('Red/Green directional-E follows the active row after midpoint and keeps manual paired scroll on phone landscape', async ({ page }) => {
+  test.setTimeout(90000)
   await startRedGreen(page, { width: 844, height: 390 }, 'E →', 'Phone')
   const left = page.locator('[data-binocular-eye-chart="left"]')
   const right = page.locator('[data-binocular-eye-chart="right"]')
@@ -216,24 +217,8 @@ test('Red/Green directional-E keeps 14 static paired levels, fused side arrows, 
   const initialRightScroll = await rightViewport.evaluate(element => element.scrollTop)
   const shellScroll = await page.locator('[data-binocular-scroll-shell="redgreen"]').evaluate(element => element.scrollTop)
   const pageScroll = await page.evaluate(() => window.scrollY)
-  for (let targetIndex = 0; targetIndex < 3; targetIndex += 1) {
-    const target = await leftTarget.getAttribute('data-binocular-target')
-    const currentIndex = await leftTarget.getAttribute('data-binocular-target-index')
-    const currentRow = await leftTarget.evaluate(element => element.parentElement?.getAttribute('data-binocular-chart-row'))
-    expect(target).toBe(await rightTarget.getAttribute('data-binocular-target'))
-    await page.locator(`[data-binocular-answer-arrow="${target}"]`).first().click()
-    await expect.poll(() => left.locator('[data-binocular-current-target="true"]').getAttribute('data-binocular-target-index')).not.toBe(currentIndex)
-    await expect(leftTarget).toHaveAttribute('data-binocular-target', await rightTarget.getAttribute('data-binocular-target') || '')
-    expect(await leftTarget.evaluate(element => element.parentElement?.getAttribute('data-binocular-chart-row'))).toBe(await rightTarget.evaluate(element => element.parentElement?.getAttribute('data-binocular-chart-row')))
-    await expect.poll(() => leftViewport.evaluate(element => element.scrollTop)).toBe(initialLeftScroll)
-    await expect.poll(() => rightViewport.evaluate(element => element.scrollTop)).toBe(initialRightScroll)
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(pageScroll)
-    expect(await page.locator('[data-binocular-next]').count()).toBe(0)
-    if (targetIndex < 2) expect(await leftTarget.evaluate(element => element.parentElement?.getAttribute('data-binocular-chart-row'))).toBe(currentRow)
-  }
-  await expect(leftTarget).toHaveAttribute('data-binocular-target-index', '0')
-  await expect(leftTarget.evaluate(element => element.parentElement?.getAttribute('data-binocular-chart-row'))).resolves.toBe('1')
-  expect(await page.locator('[data-binocular-scroll-shell="redgreen"]').evaluate(element => element.scrollTop)).toBe(shellScroll)
+  expect(initialLeftScroll).toBe(0)
+  expect(initialRightScroll).toBe(0)
 
   const leftViewportBox = await leftViewport.boundingBox()
   expect(leftViewportBox).not.toBeNull()
@@ -241,15 +226,74 @@ test('Red/Green directional-E keeps 14 static paired levels, fused side arrows, 
   await page.mouse.wheel(0, 2000)
   await expect.poll(() => leftViewport.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
   await expect.poll(() => rightViewport.evaluate(element => element.scrollTop)).toBe(await leftViewport.evaluate(element => element.scrollTop))
-  await page.mouse.wheel(0, 2000)
-  await expect.poll(() => leftViewport.evaluate(element => Math.ceil(element.scrollTop + element.clientHeight))).toBeGreaterThanOrEqual(await leftViewport.evaluate(element => element.scrollHeight))
-  await expect.poll(() => rightViewport.evaluate(element => element.scrollTop)).toBe(await leftViewport.evaluate(element => element.scrollTop))
-  const lastRowInViewport = await leftViewport.evaluate(viewport => {
+  await page.mouse.wheel(0, -2000)
+  await expect.poll(() => leftViewport.evaluate(element => element.scrollTop)).toBe(0)
+  await expect.poll(() => rightViewport.evaluate(element => element.scrollTop)).toBe(0)
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(pageScroll)
+
+  const answerCount = SCREEN_E_LINE_LETTER_COUNTS.reduce((sum, count) => sum + count, 0)
+  let hasFollowedMidpoint = false
+  for (let step = 0; step < answerCount - 1; step += 1) {
+    const target = await leftTarget.getAttribute('data-binocular-target')
+    const before = await leftViewport.evaluate(viewport => {
+      const active = viewport.querySelector<HTMLElement>('[data-binocular-current-target="true"]')!
+      const activeRow = active.parentElement as HTMLElement
+      const rowIndex = Number(activeRow.getAttribute('data-binocular-chart-row'))
+      const nextRow = viewport.querySelector<HTMLElement>(`[data-binocular-chart-row="${rowIndex + 1}"]`)
+      const viewportBox = viewport.getBoundingClientRect()
+      const nextRowBox = nextRow?.getBoundingClientRect()
+      return {
+        key: `${rowIndex}:${active.getAttribute('data-binocular-target-index')}`,
+        rowIndex,
+        scrollTop: viewport.scrollTop,
+        maxScroll: viewport.scrollHeight - viewport.clientHeight,
+        shouldFollowNextRow: Boolean(nextRowBox && nextRowBox.top + nextRowBox.height / 2 - viewportBox.top >= viewport.clientHeight / 2),
+      }
+    })
+    expect(target).toBe(await rightTarget.getAttribute('data-binocular-target'))
+    await page.locator(`[data-binocular-answer-arrow="${target}"]`).first().evaluate(button => (button as HTMLButtonElement).click())
+    await expect.poll(() => leftViewport.evaluate(viewport => {
+      const active = viewport.querySelector<HTMLElement>('[data-binocular-current-target="true"]')!
+      return `${active.parentElement?.getAttribute('data-binocular-chart-row')}:${active.getAttribute('data-binocular-target-index')}`
+    })).not.toBe(before.key)
+    const after = await leftViewport.evaluate(viewport => {
+      const active = viewport.querySelector<HTMLElement>('[data-binocular-current-target="true"]')!
+      const row = active.parentElement as HTMLElement
+      const viewportBox = viewport.getBoundingClientRect()
+      const rowBox = row.getBoundingClientRect()
+      const maxScroll = viewport.scrollHeight - viewport.clientHeight
+      return {
+        rowIndex: Number(row.getAttribute('data-binocular-chart-row')),
+        scrollTop: viewport.scrollTop,
+        maxScroll,
+        rowTop: rowBox.top - viewportBox.top,
+        rowBottom: rowBox.bottom - viewportBox.top,
+        rowCenter: rowBox.top + rowBox.height / 2 - viewportBox.top,
+        midpoint: viewport.clientHeight / 2,
+      }
+    })
+    if (after.rowIndex > before.rowIndex && before.shouldFollowNextRow && before.scrollTop < before.maxScroll - 1) {
+      expect(after.scrollTop).toBeGreaterThan(before.scrollTop)
+      hasFollowedMidpoint = true
+    }
+    expect(await rightViewport.evaluate(element => element.scrollTop)).toBe(after.scrollTop)
+    expect(after.rowTop).toBeGreaterThanOrEqual(0)
+    expect(after.rowBottom).toBeLessThanOrEqual((await leftViewport.boundingBox())!.height + 1)
+    if (hasFollowedMidpoint && after.scrollTop < after.maxScroll - 1) expect(Math.abs(after.rowCenter - after.midpoint)).toBeLessThanOrEqual(2)
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(pageScroll)
+    expect(await page.locator('[data-binocular-next]').count()).toBe(0)
+  }
+  expect(hasFollowedMidpoint).toBe(true)
+  await expect(leftTarget.evaluate(element => element.parentElement?.getAttribute('data-binocular-chart-row'))).resolves.toBe('13')
+  const finalRowInViewport = await leftViewport.evaluate(viewport => {
     const viewportBox = viewport.getBoundingClientRect()
     const rowBox = viewport.querySelector('[data-binocular-chart-row="13"]')!.getBoundingClientRect()
     return rowBox.top >= viewportBox.top && rowBox.bottom <= viewportBox.bottom
   })
-  expect(lastRowInViewport).toBe(true)
+  expect(finalRowInViewport).toBe(true)
+  await expect.poll(() => leftViewport.evaluate(element => element.scrollTop)).toBe(await leftViewport.evaluate(element => element.scrollHeight - element.clientHeight))
+  await page.screenshot({ path: 'test-results/vision-binocular-phone-landscape-late-row.png' })
+  expect(await page.locator('[data-binocular-scroll-shell="redgreen"]').evaluate(element => element.scrollTop)).toBe(shellScroll)
   await expect(leftTarget).toHaveAttribute('data-binocular-target', await rightTarget.getAttribute('data-binocular-target') || '')
 })
 
@@ -267,7 +311,8 @@ test('Red/Green directional-E preserves 14 paired levels and arrow geometry on d
   await page.screenshot({ path: 'test-results/vision-binocular-desktop.png' })
 })
 
-test('Red/Green ABC keeps all 14 Snellen steps and advances after one shared answer', async ({ page }) => {
+test('Red/Green ABC follows paired scroll through its late rows', async ({ page }) => {
+  test.setTimeout(90000)
   await startRedGreen(page, { width: 844, height: 390 }, 'ABC', 'Phone')
   const left = page.locator('[data-binocular-eye-chart="left"]')
   const right = page.locator('[data-binocular-eye-chart="right"]')
@@ -329,10 +374,28 @@ test('Red/Green ABC keeps all 14 Snellen steps and advances after one shared ans
   await answers.getByRole('button', { name: wrong!, exact: true }).click()
   await expect(left.locator('[data-binocular-current-target="true"]')).toHaveAttribute('data-binocular-target-index', '0')
   const target = await leftTarget.getAttribute('data-binocular-target')
-  await answers.getByRole('button', { name: target!, exact: true }).click()
+  await answers.getByRole('button', { name: target!, exact: true }).evaluate(button => (button as HTMLButtonElement).click())
   await expect(left.locator('[data-binocular-current-target="true"]')).toHaveAttribute('data-binocular-target-index', '1')
-  await expect(leftViewport).toHaveJSProperty('scrollTop', initialLeftScroll)
-  await expect(rightViewport).toHaveJSProperty('scrollTop', initialRightScroll)
+  expect(await leftViewport.evaluate(element => element.scrollTop)).toBe(initialLeftScroll)
+  expect(await rightViewport.evaluate(element => element.scrollTop)).toBe(initialRightScroll)
+
+  const answerCount = SCREEN_E_LINE_LETTER_COUNTS.reduce((sum, count) => sum + count, 0)
+  for (let step = 0; step < answerCount - 2; step += 1) {
+    const current = await leftTarget.getAttribute('data-binocular-target')
+    const beforeKey = await leftTarget.evaluate(element => `${element.parentElement?.getAttribute('data-binocular-chart-row')}:${element.getAttribute('data-binocular-target-index')}`)
+    await answers.getByRole('button', { name: current!, exact: true }).evaluate(button => (button as HTMLButtonElement).click())
+    await expect.poll(() => leftTarget.evaluate(element => `${element.parentElement?.getAttribute('data-binocular-chart-row')}:${element.getAttribute('data-binocular-target-index')}`)).not.toBe(beforeKey)
+  }
+  await expect(leftTarget.evaluate(element => element.parentElement?.getAttribute('data-binocular-chart-row'))).resolves.toBe('13')
+  await expect.poll(() => leftViewport.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
+  await expect.poll(() => rightViewport.evaluate(element => element.scrollTop)).toBe(await leftViewport.evaluate(element => element.scrollTop))
+  const finalRowInViewport = await leftViewport.evaluate(viewport => {
+    const viewportBox = viewport.getBoundingClientRect()
+    const rowBox = viewport.querySelector('[data-binocular-chart-row="13"]')!.getBoundingClientRect()
+    return rowBox.top >= viewportBox.top && rowBox.bottom <= viewportBox.bottom
+  })
+  expect(finalRowInViewport).toBe(true)
+  await expect.poll(() => leftViewport.evaluate(element => element.scrollTop)).toBe(await leftViewport.evaluate(element => element.scrollHeight - element.clientHeight))
   await expect(leftTarget).toHaveAttribute('data-binocular-target', await rightTarget.getAttribute('data-binocular-target') || '')
   await expect(page.locator('[data-binocular-next]')).toHaveCount(0)
 })
