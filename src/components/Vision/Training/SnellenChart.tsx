@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
-import { FastVisionCommands } from '@/lib/speech/FastVisionCommands'
 import { SpeechQueue } from '@/lib/vision/audioKit'
 import GaborPatch from './GaborPatch'
 import GaborResponseCompass from './GaborResponseCompass'
@@ -292,17 +291,14 @@ export default function SnellenChart({
   useEffect(() => {
     if (!voiceEnabled) {
       WhisperService.stop()
-      FastVisionCommands.stop()
       setIsSpeaking(false)
       setLastHeard('')
       return
     }
 
     const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
-    const useLocal = !showDistancePrompt && exerciseType === 'e-directional'
-    let cancelled = false
 
-    const listeners = {
+    WhisperService.start(mode, {
       onResult: (answer, rawTranscript) => {
         setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
         if (showDistancePromptRef.current) {
@@ -327,35 +323,21 @@ export default function SnellenChart({
       },
       onStatusChange: (status) => {
         setVoiceStatus(status)
-        if (status === 'error' && !useLocal) {
+        if (status === 'error') {
           setVoiceEnabled(false)
         }
       },
       onSpeechChange: (speaking) => {
         setIsSpeaking(speaking)
       },
-    } satisfies Parameters<typeof WhisperService.start>[1]
-
-    const startBrowser = async () => {
-      await FastVisionCommands.waitForStop()
-      if (cancelled) return
-      try { await WhisperService.start(mode, listeners) }
-      catch { if (!cancelled) setVoiceEnabled(false) }
-    }
-    if (useLocal) {
-      FastVisionCommands.start(isGaborPractice ? 'numbers' : 'directions', listeners).catch(() => {
-        if (!cancelled) void startBrowser()
-      })
-    } else {
-      void startBrowser()
-    }
+    }).catch(() => {
+      setVoiceEnabled(false)
+    })
 
     return () => {
-      cancelled = true
-      FastVisionCommands.stop()
       WhisperService.stop()
     }
-  }, [voiceEnabled, exerciseType, isGaborPractice, showDistancePrompt])
+  }, [voiceEnabled, exerciseType, isGaborPractice])
 
   // Listen for voice direction events
   const handleLineByLineAnswerRef = useRef((..._args: Parameters<typeof handleLineByLineAnswer>) => {})
