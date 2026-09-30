@@ -46,6 +46,7 @@ const {
   StaveConnector, Curve, StaveHairpin,
 } = VF
 import { initAudio, playPianoNote, loadPianoSamples } from './audioEngine'
+import { removePitchScore, savePitchScore, usePitchScoreSync } from './scoreSync'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -386,6 +387,11 @@ export default function Composer() {
     list.sort((a, b) => (b.comp.savedAt || '').localeCompare(a.comp.savedAt || ''))
     setSavedList(list)
   }, [])
+  usePitchScoreSync({
+    keys: [],
+    includeCompositions: true,
+    onHydrate: () => refreshSavedList(),
+  })
   useEffect(() => { refreshSavedList() }, [refreshSavedList])
 
   // ─── Begin composing (transition from setup → editing) ────────────────────
@@ -469,7 +475,7 @@ export default function Composer() {
 
   const deleteSavedComposition = useCallback((key: string, title: string) => {
     if (!confirm(`Delete "${title}"?`)) return
-    localStorage.removeItem(key)
+    removePitchScore(key)
     refreshSavedList()
   }, [refreshSavedList])
 
@@ -479,7 +485,7 @@ export default function Composer() {
     const c = { ...comp, savedAt: new Date().toISOString() }
     const key = STORAGE_PREFIX + slugify(c.title)
     try {
-      localStorage.setItem(key, JSON.stringify(c))
+      savePitchScore(key, c, { updatedAt: c.savedAt })
       setStatusMsg(`Saved "${c.title}" — available in all Pitch Defender games`)
       setComp(c)
       refreshSavedList()

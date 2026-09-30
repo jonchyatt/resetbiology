@@ -25,6 +25,7 @@ import { INTRO_ORDER, UNLOCK_THRESHOLDS } from './types'
 import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
+import { savePitchScore, usePitchScoreSync } from './scoreSync'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -436,6 +437,17 @@ export default function RetroBlaster() {
   // Mic detection
   const { isListening, startListening, stopListening, pitchRef: livePitchRef } = usePitchDetection({ noiseGateDb: -45 })
   const hitProcessingRef = useRef(false)
+
+  usePitchScoreSync({
+    keys: [FSRS_KEY],
+    onHydrate: (scores) => {
+      const fsrs = scores[FSRS_KEY]?.payload
+      if (fsrs && typeof fsrs === 'object' && !Array.isArray(fsrs)) {
+        fsrsRef.current = fsrs as Record<string, NoteMemory>
+      }
+    },
+  })
+
   // Pitchforks v1 lock pattern: matchStartRef holds the time the current
   // in-tolerance hold began (ms timestamp from performance.now()), or 0 when
   // not locking, or -1 during the post-fire cooldown. matchTargetIdxRef tracks
@@ -599,7 +611,7 @@ export default function RetroBlaster() {
       // FSRS update against the alien actually shot
       if (!fsrsRef.current[target.note]) fsrsRef.current[target.note] = createNote(target.note)
       fsrsRef.current[target.note] = reviewNote(fsrsRef.current[target.note], grade)
-      try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
+      savePitchScore(FSRS_KEY, fsrsRef.current)
 
       sfxShoot()
       // Auto-aim: slide ship under the chosen alien, fire from there

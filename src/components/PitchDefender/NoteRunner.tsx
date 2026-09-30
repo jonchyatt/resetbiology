@@ -19,6 +19,7 @@ import { NOTE_COLORS } from '@/lib/fsrs'
 import { initAudio, playPianoNote, setPianoVolume } from './audioEngine'
 import { extractNotesFromXML, notesToSemitoneArray, type ExtractionResult } from './extractNotes'
 import { extractMelodyFromComposition } from './composerExtract'
+import { usePitchScoreSync } from './scoreSync'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -165,7 +166,7 @@ export default function NoteRunner() {
   // format AND the legacy flat-notes fallback. Previous reader only worked
   // with legacy format and silently dropped every modern Composer save.
   const [composedSongs, setComposedSongs] = useState<{ name: string; notes: number[]; description: string }[]>([])
-  useEffect(() => {
+  const refreshComposedSongs = useCallback(() => {
     try {
       const out: { name: string; notes: number[]; description: string }[] = []
       for (let i = 0; i < localStorage.length; i++) {
@@ -185,6 +186,12 @@ export default function NoteRunner() {
       setComposedSongs(out)
     } catch {}
   }, [])
+  usePitchScoreSync({
+    keys: [],
+    includeCompositions: true,
+    onHydrate: refreshComposedSongs,
+  })
+  useEffect(() => { refreshComposedSongs() }, [refreshComposedSongs])
 
   // Merge built-in + composed + custom songs
   const allSongs = [...SONGS, ...composedSongs, ...customSongs]

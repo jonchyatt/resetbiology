@@ -41,6 +41,7 @@ import ScoreViewer from './ScoreViewer';
 import ScoreEngraving from './ScoreEngraving';
 import { getOmrTarget } from './omrTargets';
 import { SoundTouch, SimpleFilter, WebAudioBufferSource } from 'soundtouchjs';
+import { removePitchScore, savePitchScore, usePitchScoreSync } from './scoreSync';
 
 // V3.7 — Pitch-preserving time-stretch (the Tempo Trainer).
 // Render `buffer` to a NEW AudioBuffer whose duration is scaled by 1/speed
@@ -940,6 +941,16 @@ export default function VocalTrainerIII() {
   useEffect(() => { currentTemplateRef.current = currentTemplate; }, [currentTemplate]);
   useEffect(() => { playbackLabelRef.current = playbackLabel; }, [playbackLabel]);
   useEffect(() => { practiceTimeRef.current = practiceTime; }, [practiceTime]);
+  usePitchScoreSync({
+    keys: [TAKE_HISTORY_KEY, ENGRAVING_REPORTS_KEY],
+    onHydrate: (scores) => {
+      const takes = scores[TAKE_HISTORY_KEY]?.payload;
+      if (Array.isArray(takes)) setTakeHistory(takes as TakeSummary[]);
+
+      const reports = scores[ENGRAVING_REPORTS_KEY]?.payload;
+      if (Array.isArray(reports)) setEngravingReports(reports as EngravingReport[]);
+    },
+  });
   useEffect(() => {
     if (typeof window === 'undefined') return;
     try {
@@ -972,13 +983,13 @@ export default function VocalTrainerIII() {
     };
     setTakeHistory((prev) => {
       const next = [summary, ...prev].slice(0, 10);
-      try { localStorage.setItem(TAKE_HISTORY_KEY, JSON.stringify(next)); } catch {}
+      savePitchScore(TAKE_HISTORY_KEY, next);
       return next;
     });
   }, []);
   const clearTakeHistory = useCallback(() => {
     setTakeHistory([]);
-    try { localStorage.removeItem(TAKE_HISTORY_KEY); } catch {}
+    removePitchScore(TAKE_HISTORY_KEY);
   }, []);
 
   // Editor scroll container for auto-scrolling the piano-roll with the playhead.
@@ -2530,7 +2541,7 @@ export default function VocalTrainerIII() {
     };
     setEngravingReports((prev) => {
       const next = [report, ...prev].slice(0, 12);
-      try { localStorage.setItem(ENGRAVING_REPORTS_KEY, JSON.stringify(next)); } catch {}
+      savePitchScore(ENGRAVING_REPORTS_KEY, next);
       return next;
     });
     try {

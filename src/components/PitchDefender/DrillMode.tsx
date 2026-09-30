@@ -22,6 +22,7 @@ import PitchGuidance from './PitchGuidance'
 import { usePitchDetection } from './usePitchDetection'
 import { initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import { noteToFreq, octaveFoldedCents, PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
+import { savePitchScore, usePitchScoreSync } from './scoreSync'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -80,6 +81,21 @@ export default function DrillMode() {
 
   // Pitch detection for mic mode
   const { isListening, pitch, startListening, stopListening, pitchRef: livePitchRef } = usePitchDetection({ noiseGateDb: -45 })
+
+  usePitchScoreSync({
+    keys: [FSRS_KEY, DRILL_PROGRESS_KEY],
+    onHydrate: (scores) => {
+      const fsrs = scores[FSRS_KEY]?.payload
+      if (fsrs && typeof fsrs === 'object' && !Array.isArray(fsrs)) {
+        fsrsRef.current = fsrs as Record<string, NoteMemory>
+      }
+
+      const progress = scores[DRILL_PROGRESS_KEY]?.payload
+      if (progress && typeof progress === 'object' && !Array.isArray(progress)) {
+        progressRef.current = progress as DrillProgress
+      }
+    },
+  })
 
   // Keep refs in sync with state
   useEffect(() => { sessionStatsRef.current = sessionStats }, [sessionStats])
@@ -142,11 +158,11 @@ export default function DrillMode() {
 
   // ─── Persist ──────────────────────────────────────────────────────────
   const saveFsrs = useCallback(() => {
-    try { localStorage.setItem(FSRS_KEY, JSON.stringify(fsrsRef.current)) } catch {}
+    savePitchScore(FSRS_KEY, fsrsRef.current)
   }, [])
 
   const saveProgress = useCallback(() => {
-    try { localStorage.setItem(DRILL_PROGRESS_KEY, JSON.stringify(progressRef.current)) } catch {}
+    savePitchScore(DRILL_PROGRESS_KEY, progressRef.current)
   }, [])
 
   // ─── Mic tick — Pitchforks v1 pattern (THE canonical reference) ──
