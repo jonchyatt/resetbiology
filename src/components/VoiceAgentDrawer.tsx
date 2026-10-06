@@ -8,10 +8,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface VoiceAgentDrawerProps {
     isOpen: boolean;
     onClose: () => void;
+    onMinutesRemaining: (minutes: number) => void;
     minutesRemaining: number;
 }
 
-export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAgentDrawerProps) {
+export function VoiceAgentDrawer({ isOpen, onClose, onMinutesRemaining, minutesRemaining }: VoiceAgentDrawerProps) {
     const pathname = usePathname();
     const [mode, setMode] = useState<'voice' | 'text'>('voice');
     const [isListening, setIsListening] = useState(false);
@@ -127,6 +128,11 @@ export function VoiceAgentDrawer({ isOpen, onClose, minutesRemaining }: VoiceAge
             const textResponse = decodeURIComponent(response.headers.get('X-Agent-Response-Text') || '');
             console.log('[VoiceDrawer] Agent response text:', textResponse);
             setAgentMessage(textResponse || "I processed your request but have no response.");
+
+            const remaining = Number(response.headers.get('X-Voice-Minutes-Remaining'));
+            if (Number.isInteger(remaining) && remaining >= 0) {
+                onMinutesRemaining(remaining);
+            }
 
             // 2. Play Audio Response
             const audioBlobResponse = await response.blob();
