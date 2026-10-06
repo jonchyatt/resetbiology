@@ -270,7 +270,6 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
     }
   };
 
-
   return (
     <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
       <div className="mb-4 flex items-center justify-between gap-4">
@@ -537,7 +536,6 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
           ))}
         </div>
       )}
-
 
     </section>
   );
