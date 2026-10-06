@@ -1,25 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { OpenAI } from 'openai';
 import { AgentOrchestrator } from '@/lib/agents/AgentOrchestrator';
 import { auth0 } from '@/lib/auth0';
+import { workersAiKeyOwner, workersAiModel } from '@/lib/workersAi';
 
-// Force dynamic rendering — skip build-time page data collection
-// (OpenAI SDK throws when OPENAI_API_KEY env var is missing at build time)
+// Force dynamic rendering because the free Workers AI and Fish lane are runtime configured.
 export const dynamic = 'force-dynamic';
 
-// Lazy initialization to prevent build-time errors when env vars are missing
-let openai: OpenAI | null = null;
-function getOpenAI(): OpenAI {
-    if (!openai) {
-        if (!process.env.OPENAI_API_KEY) {
-            throw new Error('OPENAI_API_KEY is not configured');
-        }
-        openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    }
-    return openai;
-}
-
-// Lazy initialization for orchestrator (it also uses OpenAI internally)
+// Lazy initialization for the Workers AI-backed expert orchestrator.
 let orchestrator: AgentOrchestrator | null = null;
 function getOrchestrator(): AgentOrchestrator {
     if (!orchestrator) {
@@ -50,42 +37,15 @@ export async function POST(req: NextRequest) {
 
         console.log(`[VoiceAPI] User authenticated: ${userId}`);
 
-        // 2. Parse Audio File
+        // 2. Use client-side transcription. This route intentionally does not send member
+        // audio to OpenAI Whisper: free traffic must not fall through to Jon's paid key.
         const formData = await req.formData();
-        const audioFile = formData.get('audio') as File;
-
-        if (!audioFile) {
-            console.error('[VoiceAPI] No audio file in request');
-            return NextResponse.json({ error: 'No audio provided' }, { status: 400 });
-        }
-
-        console.log(`[VoiceAPI] Received audio file: ${audioFile.size} bytes, type: ${audioFile.type}`);
-
-        // 3. Transcribe Audio (Speech-to-Text)
-        let userText: string;
-        try {
-            // Ensure the file has a proper name for OpenAI
-            const fileName = audioFile.name || 'recording.webm';
-            console.log(`[VoiceAPI] Transcribing file: ${fileName}, size: ${audioFile.size}, type: ${audioFile.type}`);
-
-            // Create a new File with proper name if needed
-            const fileForWhisper = new File([audioFile], fileName, { type: audioFile.type || 'audio/webm' });
-
-            const transcription = await getOpenAI().audio.transcriptions.create({
-                file: fileForWhisper,
-                model: 'whisper-1',
-            });
-            userText = transcription.text;
-            console.log(`[VoiceAPI] User said: "${userText}"`);
-        } catch (transcribeError) {
-            console.error('[VoiceAPI] Transcription error:', transcribeError);
-            const errorDetails = transcribeError instanceof Error ? transcribeError.message : String(transcribeError);
-            return NextResponse.json({ error: 'Transcription failed', details: errorDetails }, { status: 500 });
-        }
-
+        const userText = (formData.get('transcript') || '').toString().trim();
         if (!userText || userText.trim().length === 0) {
-            console.warn('[VoiceAPI] Empty transcription');
-            return NextResponse.json({ error: 'Could not understand audio' }, { status: 400 });
+            return NextResponse.json(
+                { error: 'transcript-required', message: 'Use browser speech recognition or typed input; paid server transcription is disabled.' },
+                { status: 422 },
+            );
         }
 
         // 4. Get Agent Response (The "Brain")
@@ -105,27 +65,41 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Agent processing failed', details: String(agentError) }, { status: 500 });
         }
 
-        // 5. Generate Speech (Text-to-Speech)
-        let audioArrayBuffer: ArrayBuffer;
-        try {
-            const mp3 = await getOpenAI().audio.speech.create({
-                model: 'tts-1',
-                voice: 'alloy',
-                input: agentText,
-            });
-            audioArrayBuffer = await mp3.arrayBuffer();
-            console.log(`[VoiceAPI] Generated audio response: ${audioArrayBuffer.byteLength} bytes`);
-        } catch (ttsError) {
-            console.error('[VoiceAPI] TTS error:', ttsError);
-            return NextResponse.json({ error: 'TTS failed', details: String(ttsError) }, { status: 500 });
+        // 5. Render via the owned Fish free lane. The deployed site must be configured with
+        // a reachable Quicksilver URL; localhost is valid only for local development.
+        const fishMouthUrl = process.env.RB_FREE_VOICE_URL;
+        if (!fishMouthUrl) {
+            return NextResponse.json(
+                { error: 'free-voice-not-configured', message: 'RB_FREE_VOICE_URL is required; paid TTS is disabled.' },
+                { status: 503 },
+            );
         }
+
+        let audioResponse: Response;
+        try {
+            audioResponse = await fetch(new URL('/tts', fishMouthUrl), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: agentText, voice: 'cedar' }),
+            });
+        } catch (ttsError) {
+            return NextResponse.json({ error: 'free-voice-failed', details: String(ttsError) }, { status: 502 });
+        }
+        if (!audioResponse.ok) {
+            return NextResponse.json({ error: 'free-voice-failed', status: audioResponse.status }, { status: 502 });
+        }
+        const audioArrayBuffer = await audioResponse.arrayBuffer();
 
         // 6. Return Audio and Metadata
         return new NextResponse(audioArrayBuffer, {
             headers: {
-                'Content-Type': 'audio/mpeg',
+                'Content-Type': audioResponse.headers.get('content-type') || 'audio/wav',
                 'X-Agent-Response-Text': encodeURIComponent(agentText),
                 'X-Agent-Type': agent,
+                'X-RB-Brain-Model': workersAiModel,
+                'X-RB-Brain-Key-Owner': workersAiKeyOwner,
+                'X-RB-Voice-Model': 'Fish s2.1-pro-free',
+                'X-RB-Voice-Key-Owner': 'Jon-owned Fish free lane',
             },
         });
 

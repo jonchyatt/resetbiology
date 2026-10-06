@@ -1,5 +1,5 @@
-import { OpenAI } from 'openai';
 import { BaseAgent } from './BaseAgent';
+import { runWorkersAi } from '@/lib/workersAi';
 
 // Import all specialized agents
 import { BioCoachAgent } from './BioCoach';
@@ -49,16 +49,6 @@ const PAGE_TO_AGENT: Record<string, AgentType> = {
 };
 
 export class AgentOrchestrator {
-    private _openai: OpenAI | null = null;
-
-    // Lazy initialization to prevent build-time errors when env vars missing
-    private get openai(): OpenAI {
-        if (!this._openai) {
-            this._openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-        }
-        return this._openai;
-    }
-
     /**
      * Main entry point. Can accept an optional pageContext for direct routing.
      */
@@ -116,17 +106,10 @@ Agents:
 
 Output the agent name only (e.g., "PEPTIDE").`;
 
-        const completion = await this.openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: message },
-            ],
-            temperature: 0,
-            max_tokens: 20,
-        });
-
-        const intent = completion.choices[0].message?.content?.trim().toUpperCase() as AgentType;
+        const intent = (await runWorkersAi([
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: message },
+        ], 20)).trim().toUpperCase() as AgentType;
 
         // Handle legacy agent names
         if (intent === 'BIO_COACH') return 'NUTRITION';

@@ -18,6 +18,7 @@
     "check:auth-links": "scripts/check-auth-links.sh",
     "deploy": "wrangler deploy",
     "lint": "eslint",
+    "check:experts": "node scripts/check-expert-routes.mjs",
     "stripe:doctor": "tsx --env-file=.env.local src/scripts/stripe-doctor.ts",
     "test:persistent": "playwright test tests/persistent-timing-test.spec.ts --headed",
     "browser:peptides": "ts-node tests/run-in-browser.ts goto-peptides",
