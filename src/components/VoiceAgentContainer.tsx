@@ -40,6 +40,7 @@ export function VoiceAgentContainer() {
             <VoiceAgentDrawer
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
+                onMinutesRemaining={setMinutesRemaining}
                 minutesRemaining={minutesRemaining}
             />
         </>
