@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
 import { AgentOrchestrator } from '@/lib/agents/AgentOrchestrator';
 import { auth0 } from '@/lib/auth0';
+import { prisma } from '@/lib/prisma';
+import { reserveVoiceMinute } from '@/lib/voiceMetering';
 
 // Force dynamic rendering — skip build-time page data collection
 // (OpenAI SDK throws when OPENAI_API_KEY env var is missing at build time)
@@ -57,6 +59,27 @@ export async function POST(req: NextRequest) {
         if (!audioFile) {
             console.error('[VoiceAPI] No audio file in request');
             return NextResponse.json({ error: 'No audio provided' }, { status: 400 });
+        }
+
+        // Reserve before any paid OpenAI call. updateMany's condition makes the
+        // decrement atomic and prevents the balance from going negative.
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { auth0Sub: userId },
+                    ...(session?.user?.email ? [{ email: session.user.email }] : []),
+                ],
+            },
+            select: { id: true },
+        });
+
+        if (!user) {
+            return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+        }
+
+        const minutesRemaining = await reserveVoiceMinute(prisma, user.id);
+        if (minutesRemaining === null) {
+            return NextResponse.json({ error: 'Voice minutes exhausted' }, { status: 429 });
         }
 
         console.log(`[VoiceAPI] Received audio file: ${audioFile.size} bytes, type: ${audioFile.type}`);
@@ -126,6 +149,7 @@ export async function POST(req: NextRequest) {
                 'Content-Type': 'audio/mpeg',
                 'X-Agent-Response-Text': encodeURIComponent(agentText),
                 'X-Agent-Type': agent,
+                'X-Voice-Minutes-Remaining': String(minutesRemaining),
             },
         });
 
