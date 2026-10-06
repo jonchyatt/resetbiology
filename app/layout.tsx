@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Script from 'next/script';
+import { Analytics } from '@vercel/analytics/react';
 import { Header } from '@/components/Navigation/Header';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
 import './globals.css';
@@ -29,6 +30,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Header />
           {children}
         </ClientAuth0Provider>
+
+        <Analytics />
 
         <Script id="register-sw" strategy="afterInteractive">
           {`
