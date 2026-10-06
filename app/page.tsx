@@ -8,9 +8,6 @@ const launchFeatures = [
   { href: "/nutrition", title: "Track meals", description: "Record meals and follow your nutrition patterns." },
   { href: "/journal", title: "Daily journal", description: "Review one timeline for meals, peptides, modules, and reflections." },
   { href: "/audio", title: "Hypnosis modules", description: "Listen to 29 Mental Mastery sessions in Jon's cloned voice." },
-  { href: "/education/peptides", title: "Ask the Librarian", description: "Search the free peptide library and ask cited questions." },
-  { href: "/breath", title: "Breath practice", description: "Use the working breath tools as part of your daily reset." },
-  { href: "/education", title: "Education library", description: "Explore the free research and learning collection." },
 ]
 
 export default async function Home() {
@@ -42,8 +39,8 @@ export default async function Home() {
           Track what you do. Learn what helps. Build your reset.
         </h1>
         <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-slate-300 md:text-xl">
-          Reset Biology begins with a small set of practical tools: your peptides, meals, journal, hypnosis modules,
-          breath practice, and a cited peptide Librarian. Upgrades can come later if you choose them.
+          Reset Biology begins with a small set of practical tools: your peptides, meals, daily journal, and hypnosis modules.
+          Upgrades can come later if you choose them.
         </p>
         <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
           <Link

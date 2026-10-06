@@ -1,6 +1,6 @@
 # Hidden surfaces
 
-Reset Biology launches **free first**. Jon's 2026-10-06 ruling limits the visible product to signup, peptide tracking, meal tracking, the daily journal, hypnosis/audio modules, their tracking, and the peptide Librarian. The routes below remain built in the repository as the backup we can grow toward, but middleware redirects them to `/get-started` and navigation must not link to them.
+Reset Biology launches **free first**. Jon's 2026-10-06 ruling limits the visible product to signup, peptide tracking, meal tracking, the daily journal, hypnosis/audio modules, and their tracking. The routes below remain built in the repository as the backup we can grow toward, but middleware redirects them to `/get-started` and navigation must not link to them.
 
 ## Hidden route families
 
@@ -13,6 +13,8 @@ Reset Biology launches **free first**. Jon's 2026-10-06 ruling limits the visibl
 | `/pricing` | Compatibility route for old pricing links | Pricing is not public during the free-first launch. |
 | `/affiliates` and `/affiliates/*` | Future Reset Biology merchant-affiliate program | Terms and paying entity are not approved. |
 | `/cellular-peptide` and `/cellular-peptide/*` | IRB protocol catalog and BioLongevity source links | The catalog is preserved but not part of the launch surface. |
+| `/education` and `/education/*` | Education library and peptide Librarian | Code and analytics remain available, but the ruling does not include them in the launch surface. |
+| `/breath` and `/breath/*` | Guided breathing tool | Retained until Jon explicitly adds it to the launch scope. |
 | `/modules` and `/modules/*` | Old hardcoded 90-slot Mental Mastery pages using `/1mmm1.mp3` as a placeholder | Redirected to `/audio`, which serves the real 29-module cloned-voice library. |
 
 The gate lives in the root `middleware.ts` `HIDDEN_SURFACE_PREFIXES` list. To reactivate a surface, Jon must first approve the offer/entity where needed; then remove only that route prefix, restore a matching navigation link, and run the public-readiness checks.
@@ -27,6 +29,6 @@ The gate lives in the root `middleware.ts` `HIDDEN_SURFACE_PREFIXES` list. To re
 
 ## Visible launch routes
 
-The header exposes only the free-first surfaces plus the conductor-approved free tools: `/education/peptides` (Librarian), `/peptides`, `/nutrition`, `/journal`, `/audio`, `/breath`, `/education`, and Auth0 login/signup. The Inverse Yale protocol stays out of the launch until a later standardized release.
+The header exposes only `/peptides`, `/nutrition`, `/journal`, `/audio`, and Auth0 login/signup. The Librarian remains built and analytics-wired, but all public links to it are removed. The Inverse Yale protocol stays out of the launch until a later standardized release.
 
 New users use the existing `subscriber` database value as the compatibility access level, but the launch behavior is free and non-expiring: `subscriptionStatus = active`, `subscriptionExpiry = null`. This is not a paid subscription and does not expose the hidden `/subscription` route.

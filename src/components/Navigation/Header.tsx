@@ -62,9 +62,7 @@ export function Header() {
                 appear to "get erased by another tab" on first paint. */}
             {!isLoading && !user && (
               <>
-                <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  Ask Librarian
-                </Link>
+
                 <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
                   Peptides
                 </Link>
@@ -77,12 +75,7 @@ export function Header() {
                 <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
                   Hypnosis
                 </Link>
-                <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-                  Breath
-                </Link>
-                <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  Education
-                </Link>
+
                 <a
                   href="/auth/login?returnTo=/portal"
                   className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
@@ -95,9 +88,7 @@ export function Header() {
             {/* Logged In Navigation */}
             {!isLoading && user && (
               <>
-                <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  Ask Librarian
-                </Link>
+
                 <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
                   Peptides
                 </Link>
@@ -110,12 +101,7 @@ export function Header() {
                 <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
                   Hypnosis
                 </Link>
-                <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-                  Breath
-                </Link>
-                <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  Education
-                </Link>
+
                 <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors flex items-center">
                   <Settings className="w-4 h-4 mr-1" />
                   Profile
@@ -188,9 +174,7 @@ export function Header() {
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>
-                  <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Ask Librarian
-                  </Link>
+
                   <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Peptides
                   </Link>
@@ -203,12 +187,7 @@ export function Header() {
                   <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Hypnosis
                   </Link>
-                  <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Breath
-                  </Link>
-                  <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Education
-                  </Link>
+
                   <a
                     href="/auth/login?returnTo=/portal"
                     className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
@@ -219,9 +198,7 @@ export function Header() {
                 </>
               ) : (
                 <>
-                  <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Ask Librarian
-                  </Link>
+
                   <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Peptides
                   </Link>
@@ -234,12 +211,7 @@ export function Header() {
                   <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Hypnosis
                   </Link>
-                  <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Breath
-                  </Link>
-                  <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Education
-                  </Link>
+
                   <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Profile
                   </Link>

@@ -6,7 +6,9 @@ import { auth0Edge } from '@/lib/auth0-edge';
 // codebase as the future build-out, but removes them from the public launch.
 const HIDDEN_SURFACE_PREFIXES = [
   '/affiliates',
+  '/breath',
   '/cellular-peptide',
+  '/education',
   '/order',
   '/pricing',
   '/product',
@@ -14,9 +16,24 @@ const HIDDEN_SURFACE_PREFIXES = [
   '/subscription',
 ];
 
+// These are the only application routes that reference OPENAI_API_KEY. The
+// free launch must never spend Jon's paid key, even when a user calls an old
+// endpoint directly or a stale client retries it.
+const BLOCKED_PAID_AI_API_PATHS = new Set([
+  '/api/foods/analyze-image',
+  '/api/voice/chat',
+]);
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   console.log('Middleware running for:', pathname);
+
+  if (BLOCKED_PAID_AI_API_PATHS.has(pathname)) {
+    return NextResponse.json(
+      { error: 'Paid AI is unavailable during the free-first launch.' },
+      { status: 404 },
+    );
+  }
 
   if (pathname === '/modules' || pathname.startsWith('/modules/')) {
     return NextResponse.redirect(new URL('/audio', request.url));
