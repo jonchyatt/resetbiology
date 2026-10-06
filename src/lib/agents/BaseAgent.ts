@@ -1,4 +1,3 @@
-import { OpenAI } from 'openai';
 import {
     buildAgentContext,
     writeToVault,
@@ -6,6 +5,7 @@ import {
     VaultPartition,
     VaultWriteOptions
 } from '@/lib/vaultService';
+import { runWorkersAi } from '@/lib/workersAi';
 
 export interface AgentContext {
     userId: string;
@@ -19,17 +19,8 @@ export interface LoggingIntent {
 }
 
 export abstract class BaseAgent {
-    private _openai: OpenAI | null = null;
-    protected model: string = 'gpt-4o-mini'; // Fast model for voice
+    protected model: string = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
     protected maxTokens: number = 150; // Keep responses concise for voice
-
-    // Lazy initialization to prevent build-time errors when env vars missing
-    protected get openai(): OpenAI {
-        if (!this._openai) {
-            this._openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-        }
-        return this._openai;
-    }
 
     /**
      * Generates a response based on the user message and context.
@@ -135,14 +126,7 @@ export abstract class BaseAgent {
             { role: 'user', content: userMessage }
         ];
 
-        const completion = await this.openai.chat.completions.create({
-            model: this.model,
-            messages: messages,
-            max_tokens: this.maxTokens,
-            temperature: 0.7,
-        });
-
-        return completion.choices[0].message?.content || "I'm having trouble thinking right now.";
+        return runWorkersAi(messages, this.maxTokens);
     }
 
     /**
