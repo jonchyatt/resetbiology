@@ -23,10 +23,6 @@ export function Header() {
   const { user, isLoading } = useUser()
   const isAdmin = user?.role === 'admin'
 
-  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
-  // the content. Each such route owns its own navigation (← Back links).
-  if (shouldHideHeader(pathname)) return null
-
   // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -37,6 +33,10 @@ export function Header() {
     document.addEventListener('click', handleClickOutside)
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isUserMenuOpen])
+
+  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
+  // the content. Each such route owns its own navigation (← Back links).
+  if (shouldHideHeader(pathname)) return null
 
   return (
     <header
@@ -55,15 +55,33 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-3 text-sm">
             {/* Public/Logged Out Navigation — only renders once auth has resolved
                 (isLoading=false), otherwise the logged-out nav flashes before
                 Auth0 confirms the user is signed in, which makes Education
                 appear to "get erased by another tab" on first paint. */}
             {!isLoading && !user && (
               <>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
+                <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                  Ask Librarian
+                </Link>
+                <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Peptides
+                </Link>
+                <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Meals
+                </Link>
+                <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Journal
+                </Link>
+                <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Hypnosis
+                </Link>
+                <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Breath
+                </Link>
+                <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                  Education
                 </Link>
                 <a
                   href="/auth/login?returnTo=/portal"
@@ -77,11 +95,23 @@ export function Header() {
             {/* Logged In Navigation */}
             {!isLoading && user && (
               <>
-                <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-                  Portal
+                <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
+                  Ask Librarian
                 </Link>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
+                <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Peptides
+                </Link>
+                <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Meals
+                </Link>
+                <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Journal
+                </Link>
+                <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Hypnosis
+                </Link>
+                <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Breath
                 </Link>
                 <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
                   Education
@@ -158,8 +188,26 @@ export function Header() {
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
+                  <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Ask Librarian
+                  </Link>
+                  <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Peptides
+                  </Link>
+                  <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Meals
+                  </Link>
+                  <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Journal
+                  </Link>
+                  <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Hypnosis
+                  </Link>
+                  <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Breath
+                  </Link>
+                  <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Education
                   </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
@@ -171,11 +219,23 @@ export function Header() {
                 </>
               ) : (
                 <>
-                  <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Portal
+                  <Link href="/education/peptides" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Ask Librarian
                   </Link>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
+                  <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Peptides
+                  </Link>
+                  <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Meals
+                  </Link>
+                  <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Journal
+                  </Link>
+                  <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Hypnosis
+                  </Link>
+                  <Link href="/breath" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Breath
                   </Link>
                   <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Education

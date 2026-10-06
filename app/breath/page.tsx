@@ -1,14 +1,14 @@
 "use client"
 
 import { BreathPage } from "@/components/Breath/BreathPage"
-import SubscriptionGate from "@/components/Subscriptions/SubscriptionGate"
+import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
 import { VaultPromptModal } from "@/components/Vault/VaultPromptModal"
 
 export default function BreathPageRoute() {
   return (
-    <SubscriptionGate featureName="Breathing App">
+    <ProtectedRoute>
       <VaultPromptModal trackerName="Breath Sessions" trackerVerb="save your breath session history" />
       <BreathPage />
-    </SubscriptionGate>
+    </ProtectedRoute>
   )
 }

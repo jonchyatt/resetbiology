@@ -1,10 +1,30 @@
 // middleware.ts
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { auth0Edge } from '@/lib/auth0-edge';
+
+// Jon's 2026-10-06 free-first ruling keeps these built surfaces in the
+// codebase as the future build-out, but removes them from the public launch.
+const HIDDEN_SURFACE_PREFIXES = [
+  '/affiliates',
+  '/cellular-peptide',
+  '/order',
+  '/pricing',
+  '/product',
+  '/store',
+  '/subscription',
+];
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   console.log('Middleware running for:', pathname);
+
+  if (pathname === '/modules' || pathname.startsWith('/modules/')) {
+    return NextResponse.redirect(new URL('/audio', request.url));
+  }
+
+  if (HIDDEN_SURFACE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))) {
+    return NextResponse.redirect(new URL('/get-started', request.url));
+  }
   
   // Log domain check for auth routes (helps debug "state parameter invalid" errors)
   if (pathname.startsWith('/auth/') || pathname.startsWith('/admin/')) {
