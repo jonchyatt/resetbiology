@@ -96,7 +96,9 @@ export default function CrepeBenchmark() {
       const ctx = new AudioContext()
       const src = ctx.createMediaStreamSource(stream)
       const analyser = ctx.createAnalyser()
-      analyser.fftSize = 2048
+      // Keep every detector above PESTO's 1024-sample 16 kHz minimum at 48 kHz.
+      // 4096 is the smallest supported power-of-two analyser size above 3072.
+      analyser.fftSize = 4096
       src.connect(analyser)
 
       audioCtxRef.current = ctx
