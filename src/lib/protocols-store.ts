@@ -222,7 +222,7 @@ async function findOrCreatePeptide(input: ProtocolInput) {
         name: input.peptideName,
         slug,
         category: 'Custom',
-        dosage: input.dosage || '250mcg',
+        dosage: input.dosage,
         price: 0,
         updatedAt: new Date(),
       },
