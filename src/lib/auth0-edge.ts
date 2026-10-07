@@ -1,6 +1,11 @@
 // src/lib/auth0-edge.ts
 // Edge-compatible Auth0 client for middleware (no Prisma)
 import { Auth0Client } from '@auth0/nextjs-auth0/server';
+import { getAuth0TransactionCookieDomain } from './auth0-transaction-cookie';
 
 // Simple Auth0 client without database hooks - safe for Edge runtime
-export const auth0Edge = new Auth0Client();
+export const auth0Edge = new Auth0Client({
+  transactionCookie: {
+    domain: getAuth0TransactionCookieDomain(),
+  },
+});
