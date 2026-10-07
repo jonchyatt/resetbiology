@@ -11181,6 +11181,7 @@ export default function PitchforksIII() {
   if (phase === 'songcraft') {
     return (
       <PitchforksSongcraft
+        initialLane={inputMode === 'buttons' ? 'ear' : 'voice'}
         admittedNotes={unlockedNotes}
         masteryProjection={projectPitchforksMastery({ admittedNotes: unlockedNotes, voiceMemory: fsrsRef.current,
           masteryRecords: masteryProgressRef.current, nowMs: Date.now() })}
@@ -11223,6 +11224,35 @@ export default function PitchforksIII() {
           </div>
           <h1 className="text-3xl font-black tracking-widest text-orange-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
+          <section data-testid="pf3-adventure-first" className="mb-5 border-2 border-orange-300/70 bg-orange-950/25 p-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-200">Your adventure</p>
+            <h2 className="mt-2 text-xl font-black text-white">
+              {presentationJourney ? 'Continue Adventure' : 'Start Adventure'}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-gray-200">
+              {inputMode === 'buttons' ? 'Listen & Tap · recognition practice' : 'Voice Lightning · singing practice'}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-orange-100">
+              {presentationJourney?.cathedralClear
+                ? 'Next goal: revisit a world or make a song in Songcraft.'
+                : selectedWorld === 'dungeon'
+                  ? 'Next goal: enter the Dungeon and charge your first fork.'
+                  : `Next goal: continue through ${WORLD_REGISTRY.find(world => world.id === selectedWorld)?.name ?? 'the next chapter'}.`}
+            </p>
+            <button
+              type="button"
+              data-testid="pf3-continue-adventure"
+              disabled={!assetsReady}
+              onClick={() => {
+                if (!rangeProfile) { phaseRef.current = 'tutorial'; setPhase('tutorial') }
+                else if (inputMode === 'buttons') beginPlaying()
+                else startSavedRangeSetup()
+              }}
+              className="mt-4 min-h-14 w-full border-2 border-orange-100 bg-orange-200 px-4 py-3 text-base font-black text-[#071018] disabled:opacity-50"
+            >
+              {presentationJourney ? 'CONTINUE ADVENTURE' : 'START ADVENTURE'} · {WORLD_REGISTRY.find(world => world.id === selectedWorld)?.name.toUpperCase()}
+            </button>
+          </section>
           {process.env.NODE_ENV === 'development' && (
             <a href="/pitch-defender/pitchforks-3/gradesheet" target="_blank" rel="noopener noreferrer"
               className="mb-4 flex min-h-12 items-center justify-center rounded border border-cyan-700 px-3 py-2 text-sm text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-200">
@@ -11263,7 +11293,7 @@ export default function PitchforksIII() {
           </section>}
           {!demoMode && !fsrsDebugMode && <>
             {!rangeProfile && <p className="mb-2 border border-amber-700/70 bg-amber-950/20 px-3 py-2 text-xs leading-relaxed text-amber-100">All four practice chambers are available below. Listen &amp; Tap can enter immediately with deliberate answer buttons; Voice Lightning begins the required comfortable-range check. No notes are granted by practice.</p>}
-            <p className="mb-2 text-xs leading-relaxed text-cyan-100">Practice lane: <strong>{inputMode === 'buttons' ? 'LISTEN &amp; TAP · deliberate answer buttons · no microphone required' : 'VOICE LIGHTNING · real microphone · comfortable range required'}</strong>. Choose the lane above before entering a chamber.</p>
+            <p className="mb-2 text-xs leading-relaxed text-cyan-100">Practice lane: <strong>{inputMode === 'buttons' ? 'LISTEN & TAP · deliberate answer buttons · no microphone required' : 'VOICE LIGHTNING · real microphone · comfortable range required'}</strong>. Choose the lane above before entering a chamber.</p>
             <PitchforksPracticeArcade onEnterPractice={enterPracticeArcade} />
           </>}
           {!demoMode && !fsrsDebugMode && presentationJourney && (selectedWorld === 'village-gate' || selectedWorld === 'bell-tower') && <section className="mb-5 border border-amber-800 bg-amber-950/15 p-4 text-amber-100">
@@ -11315,7 +11345,7 @@ export default function PitchforksIII() {
 
                 return (
                   <div key={world.id} className="min-h-28 flex flex-col">
-                    {normalWorld ? (
+                    {normalWorld && unlocked ? (
                       <button
                         type="button"
                         data-testid={`pf3-world-${world.id}`}
@@ -11364,6 +11394,15 @@ export default function PitchforksIII() {
                         <div className="mt-2 text-sm leading-snug text-gray-500">
                           {stateCopy}
                         </div>
+                        <p className="mt-2 text-xs leading-relaxed text-amber-100">Next requirement: {stateCopy}</p>
+                        <button
+                          type="button"
+                          data-testid={`pf3-world-${world.id}-exercise`}
+                          className="mt-2 min-h-11 w-full border border-amber-300/70 px-2 py-2 text-xs font-black uppercase tracking-wide text-amber-100"
+                          onClick={() => enterPracticeArcade(world.id)}
+                        >
+                          START MATCHING EXERCISE
+                        </button>
                       </div>
                     )}
                     {isVillageGate && hasDungeonClear && villageGateAssetStatus === 'missing' && (
@@ -11469,7 +11508,9 @@ export default function PitchforksIII() {
             <section className="mb-4 border border-cyan-900/70 bg-cyan-950/15 p-3" aria-labelledby="pf3-input-mode-heading">
               <h2 id="pf3-input-mode-heading" className="text-xs font-black tracking-widest text-cyan-100">HOW YOU DEFEND</h2>
               <p className="mt-1 text-xs leading-relaxed text-gray-300">
-                Start by recognizing the note, then move into singing. Both lanes use this same storm and keep recognition separate from voice practice.
+                {inputMode === 'buttons'
+                  ? 'Hear each note, then choose it. This recognition lane keeps its progress separate from voice practice.'
+                  : 'Start by hearing the note, then sing it gently. Voice practice keeps its progress separate from recognition.'}
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
