@@ -20,7 +20,7 @@ async function inspect(viewport) {
     await page.getByTestId('pf3-input-buttons').click()
     await page.getByTestId('pf3-adventure-first').waitFor()
     await page.waitForFunction(() => Boolean(window.__pitchforksAudioDebug))
-    await page.evaluate(() => window.scrollTo(0, 0))
+    await page.getByTestId('pf3-menu').evaluate((menu) => menu.scrollTo(0, 0))
 
     const pageState = await page.evaluate(() => {
       const button = document.querySelector('[data-testid="pf3-continue-adventure"]')
