@@ -138,7 +138,7 @@ export default function PeptideDetailPage() {
                     onClick={() => setShowCalculator(true)}
                     className="w-full border border-primary-400/30 text-primary-200 py-3 px-6 rounded-lg hover:bg-primary-600/20 hover:border-primary-400/30 transition-all backdrop-blur-sm"
                   >
-                    Calculate Dosage
+                    Open Personal Calculator
                   </button>
                 </div>
               </div>
@@ -246,8 +246,7 @@ export default function PeptideDetailPage() {
               importedPeptide={{
                 id: peptide.id,
                 name: peptide.name,
-                vialSize: 5,
-                recommendedDose: 250
+                vialSize: 0,
               }}
             />
           </div>
