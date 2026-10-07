@@ -583,13 +583,7 @@ export function NutritionTracker() {
     return latest
   }, [todaysFoods])
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-16"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
+    <div className="rb-surface relative pt-16">
       {logSuccess && (
         <div className="fixed right-6 top-24 z-40 max-w-sm rounded-xl border border-emerald-400/40 bg-emerald-500/20 px-4 py-3 text-sm text-emerald-100 shadow-2xl backdrop-blur">
           <p className="font-semibold">Nutrition log saved!</p>

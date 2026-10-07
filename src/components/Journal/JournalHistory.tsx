@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
-import { PortalHeader } from "@/components/Navigation/PortalHeader"
+
 import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell, X, Edit2, Eye } from "lucide-react"
 
 interface JournalHistoryDay {
@@ -138,20 +138,9 @@ export function JournalHistory() {
 
   return (
 
-    <div className="relative min-h-screen overflow-hidden pt-28" style={{
-      backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundAttachment: 'fixed'
-    }}>
+    <div className="rb-surface relative overflow-hidden pt-8 sm:pt-12">
 
       <div className="relative z-10 min-h-screen flex flex-col text-slate-100">
-
-        <PortalHeader
-          section="Daily History"
-          subtitle="Review your peptides, nutrition, workouts, breath, mindset, and notes in one place"
-          showPeptideInfo={false}
-        />
 
         {/* Title Section - Matching Tracker Pages */}
         <div className="text-center py-8">

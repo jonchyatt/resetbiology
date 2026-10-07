@@ -26,7 +26,7 @@
   
   --color-background: #ffffff;
   --color-foreground: #171717;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, 'Menlo', 'Monaco', monospace;
   
   /* Animations */
@@ -65,11 +65,92 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
   font-feature-settings: 'cv11', 'ss01';
   font-variation-settings: 'opsz' 32;
   /* Reserve space for the fixed header + safe area so page content never hides under the nav on mobile */
   padding-top: calc(64px + env(safe-area-inset-top, 0px));
+}
+
+/* Calm, legible primitives for the free launch surfaces. */
+.rb-page {
+  @apply min-h-screen bg-slate-950 text-slate-100;
+}
+
+.rb-card {
+  @apply rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:p-6;
+}
+
+.rb-button-primary {
+  @apply inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary-400 px-6 py-3 font-semibold text-slate-950 transition-colors hover:bg-primary-300 sm:w-auto;
+}
+
+.rb-input {
+  @apply w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-400;
+}
+
+/* Keep this visual system contained to public and free-launch surfaces.
+   Pitch Defender and the legacy tools retain their own visual language. */
+.rb-surface {
+  @apply min-h-screen bg-slate-950 text-slate-100;
+}
+
+.rb-surface .card-hover-primary,
+.rb-surface .card-hover-secondary,
+.rb-surface .stat-card-hover {
+  @apply rounded-2xl border border-slate-800 bg-slate-900 shadow-none;
+}
+
+.rb-surface .card-hover-primary:hover,
+.rb-surface .card-hover-secondary:hover,
+.rb-surface .stat-card-hover:hover {
+  @apply scale-100 shadow-none;
+}
+
+.rb-surface .bg-gradient-to-br,
+.rb-surface .bg-gradient-to-r {
+  background-image: none;
+}
+
+.rb-surface .backdrop-blur-sm,
+.rb-surface .backdrop-blur-md,
+.rb-surface .backdrop-blur {
+  backdrop-filter: none;
+}
+
+.rb-surface .shadow-2xl,
+.rb-surface .shadow-xl,
+.rb-surface .shadow-lg {
+  box-shadow: none;
+}
+
+.rb-surface .text-gray-400,
+.rb-surface .text-gray-300,
+.rb-surface .text-gray-200 {
+  @apply text-slate-300;
+}
+
+.rb-surface .bg-gray-900,
+.rb-surface .bg-gray-900\/50,
+.rb-surface .bg-gray-900\/40,
+.rb-surface .bg-gray-800,
+.rb-surface .bg-gray-800\/90,
+.rb-surface .bg-gray-800\/80,
+.rb-surface .bg-gray-800\/50,
+.rb-surface .bg-gray-800\/40,
+.rb-surface .bg-gray-800\/30,
+.rb-surface .bg-gray-700\/50,
+.rb-surface .bg-gray-700\/30 {
+  @apply bg-slate-800;
+}
+
+.rb-surface .border-gray-700,
+.rb-surface .border-gray-600,
+.rb-surface .border-gray-600\/30,
+.rb-surface .border-gray-700\/40 {
+  @apply border-slate-700;
 }
 
 /* Reset Biology Utility Classes */

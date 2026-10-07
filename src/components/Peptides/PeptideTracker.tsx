@@ -1717,16 +1717,7 @@ export function PeptideTracker() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-      style={{
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <div className="rb-surface relative">
       <div className="relative z-10 pt-16">
         <PushUnavailableWarning />
         {/* Portal Subnav Header */}

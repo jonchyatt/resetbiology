@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, type LucideIcon } from "lucide-react"
-import { PortalHeader } from "@/components/Navigation/PortalHeader"
+
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
@@ -474,20 +474,8 @@ export function EnhancedDashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-32"
-      style={{
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}>
+    <div className="rb-surface relative pt-8 sm:pt-12">
       <div className="relative z-10">
-        <PortalHeader
-          section="Daily Check-in"
-          subtitle="Track your wellness journey"
-          showPeptideInfo={false}
-        />
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Header */}
           <div className="text-center mb-8">

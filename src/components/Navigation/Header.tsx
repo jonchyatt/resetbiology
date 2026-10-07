@@ -40,100 +40,81 @@ export function Header() {
 
   return (
     <header
-      className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200"
+      className="fixed top-0 z-50 w-full border-b border-slate-800 bg-slate-950/95 backdrop-blur"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-            <img 
-              src="/reset-logo-pro.png" 
-              alt="Reset Biology" 
-              className="h-14 w-auto rounded-xl drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-sm p-2 border border-white/20"
+        <div className="flex h-16 items-center justify-between">
+          <Link href="/" className="flex transition-opacity hover:opacity-80">
+            <img
+              src="/reset-logo-pro.png"
+              alt="Reset Biology"
+              className="h-8 w-auto"
             />
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {/* Public/Logged Out Navigation — only renders once auth has resolved
-                (isLoading=false), otherwise the logged-out nav flashes before
-                Auth0 confirms the user is signed in, which makes Education
-                appear to "get erased by another tab" on first paint. */}
+          <nav className="hidden items-center gap-6 md:flex">
             {!isLoading && !user && (
               <>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
+                <Link href="/get-started" className="font-medium text-slate-200 transition-colors hover:text-primary-300">
+                  Get started
                 </Link>
                 <a
                   href="/auth/login?returnTo=/portal"
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                  className="inline-flex min-h-11 items-center rounded-lg bg-primary-400 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-primary-300"
                 >
-                  Login / Sign Up
+                  Log in
                 </a>
               </>
             )}
-            
-            {/* Logged In Navigation */}
+
             {!isLoading && user && (
               <>
-                <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-                  Portal
-                </Link>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
-                </Link>
-                <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  Education
-                </Link>
-                <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors flex items-center">
-                  <Settings className="w-4 h-4 mr-1" />
+                <Link href="/peptides" className="font-medium text-slate-200 transition-colors hover:text-primary-300">Peptides</Link>
+                <Link href="/nutrition" className="font-medium text-slate-200 transition-colors hover:text-primary-300">Meals</Link>
+                <Link href="/journal" className="font-medium text-slate-200 transition-colors hover:text-primary-300">Journal</Link>
+                <Link href="/audio" className="font-medium text-slate-200 transition-colors hover:text-primary-300">Hypnosis</Link>
+                <Link href="/profile" className="flex items-center font-medium text-slate-200 transition-colors hover:text-primary-300">
+                  <Settings className="mr-1 h-4 w-4" />
                   Profile
                 </Link>
 
-                {/* User Menu Dropdown */}
                 <div className="relative user-menu-container">
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
                       setIsUserMenuOpen(!isUserMenuOpen)
                     }}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-teal-600 font-medium transition-colors"
+                    className="flex min-h-11 items-center gap-2 rounded-lg px-2 font-medium text-slate-200 transition-colors hover:bg-slate-800 hover:text-primary-300"
                   >
-                    <User className="w-4 h-4" />
+                    <User className="h-4 w-4" />
                     <span>Account</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
-                      {/* Show which account is signed in (the email used to be in
-                          the trigger button itself, but it widened the nav bar
-                          enough to cause a visible layout shift on auth resolve). */}
-                      <div className="px-4 py-2 text-xs text-gray-500 truncate" title={user.email || ''}>
+                    <div className="absolute right-0 mt-2 w-56 rounded-lg border border-slate-800 bg-slate-900 py-2 shadow-lg">
+                      <div className="truncate px-4 py-2 text-xs text-slate-400" title={user.email || ''}>
                         Signed in as<br />
-                        <span className="text-gray-800 font-medium">{user.name || user.email}</span>
+                        <span className="font-medium text-slate-100">{user.name || user.email}</span>
                       </div>
 
-                      <hr className="my-2 border-gray-200" />
+                      <hr className="my-2 border-slate-800" />
 
                       {isAdmin && (
                         <Link
                           href="/admin"
-                          className="flex items-center px-4 py-2 text-orange-600 hover:bg-orange-50 transition-colors"
+                          className="flex items-center px-4 py-2 text-amber-300 transition-colors hover:bg-slate-800"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
-                          <Shield className="w-4 h-4 mr-2" />
+                          <Shield className="mr-2 h-4 w-4" />
                           Admin Dashboard
                         </Link>
                       )}
 
-                      {isAdmin && <hr className="my-2 border-gray-200" />}
+                      {isAdmin && <hr className="my-2 border-slate-800" />}
 
-                      <a
-                        href="/auth/logout"
-                        className="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
-                      >
+                      <a href="/auth/logout" className="flex min-h-11 items-center px-4 py-2 text-slate-200 transition-colors hover:bg-slate-800">
                         Logout
                       </a>
                     </div>
@@ -143,62 +124,51 @@ export function Header() {
             )}
           </nav>
 
-          {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="min-h-11 min-w-11 rounded-lg p-2 text-slate-100 transition-colors hover:bg-slate-800 md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
-            <nav className="flex flex-col space-y-4">
-              {!user ? (
+          <div className="border-t border-slate-800 py-4 md:hidden">
+            <nav className="flex flex-col gap-2">
+              {!isLoading && !user ? (
                 <>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
+                  <Link href="/get-started" className="min-h-11 px-2 py-2 font-medium text-slate-200 hover:text-primary-300" onClick={() => setIsMenuOpen(false)}>
+                    Get started
                   </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
-                    className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
+                    className="block min-h-11 rounded-lg bg-primary-400 px-4 py-3 text-center font-semibold text-slate-950 transition-colors hover:bg-primary-300"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login / Sign Up
+                    Log in
                   </a>
                 </>
-              ) : (
+              ) : !isLoading && user ? (
                 <>
-                  <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Portal
-                  </Link>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
-                  </Link>
-                  <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Education
-                  </Link>
-                  <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Profile
-                  </Link>
+                  <Link href="/peptides" className="min-h-11 px-2 py-2 font-medium text-slate-200 hover:text-primary-300" onClick={() => setIsMenuOpen(false)}>Peptides</Link>
+                  <Link href="/nutrition" className="min-h-11 px-2 py-2 font-medium text-slate-200 hover:text-primary-300" onClick={() => setIsMenuOpen(false)}>Meals</Link>
+                  <Link href="/journal" className="min-h-11 px-2 py-2 font-medium text-slate-200 hover:text-primary-300" onClick={() => setIsMenuOpen(false)}>Journal</Link>
+                  <Link href="/audio" className="min-h-11 px-2 py-2 font-medium text-slate-200 hover:text-primary-300" onClick={() => setIsMenuOpen(false)}>Hypnosis</Link>
+                  <Link href="/profile" className="min-h-11 px-2 py-2 font-medium text-slate-200 hover:text-primary-300" onClick={() => setIsMenuOpen(false)}>Profile</Link>
                   {isAdmin && (
-                    <Link href="/admin" className="text-orange-600 hover:text-orange-700 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/admin" className="min-h-11 px-2 py-2 font-medium text-amber-300 hover:text-amber-200" onClick={() => setIsMenuOpen(false)}>
                       Admin Dashboard
                     </Link>
                   )}
-                  <div className="pt-2 space-y-2">
-                    <div className="text-gray-700">Hello, {user.name || user.email}</div>
-                    <a
-                      href="/auth/logout"
-                      className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
-                    >
+                  <div className="space-y-2 border-t border-slate-800 pt-3">
+                    <div className="px-2 text-slate-300">Hello, {user.name || user.email}</div>
+                    <a href="/auth/logout" className="block min-h-11 rounded-lg bg-slate-800 px-4 py-3 text-center font-semibold text-slate-100 transition-colors hover:bg-slate-700">
                       Logout
                     </a>
                   </div>
                 </>
-              )}
+              ) : null}
             </nav>
           </div>
         )}
