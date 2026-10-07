@@ -427,6 +427,7 @@ model JournalEntry {
   mood      String?
   weight    Float?
   date      DateTime
+  localDate String?  // User's local YYYY-MM-DD; avoids UTC-midnight mis-bucketing
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 

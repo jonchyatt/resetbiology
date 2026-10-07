@@ -3,6 +3,8 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { journalEntryIdForDay } from '@/lib/journal/dayEntry'
+import { getLocalDateTime, isLocalDate, localDateToUtcStart } from '@/lib/nutrition/localEntry'
 
 type TasksPayload = Record<string, boolean>
 
@@ -19,11 +21,6 @@ type EntryPayload = {
   tasksCompleted: TasksPayload
 }
 
-function startOfDay(date: Date) {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
 
 function normalizeString(value: unknown): string {
   if (typeof value === 'string') return value
@@ -53,7 +50,13 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const entryDate = body?.date ? new Date(body.date) : new Date()
-    const dayStart = startOfDay(entryDate)
+    if (Number.isNaN(entryDate.getTime())) {
+      return NextResponse.json({ error: 'Invalid journal date' }, { status: 400 })
+    }
+    const localDate = isLocalDate(body?.localDate)
+      ? body.localDate
+      : getLocalDateTime(entryDate).localDate
+    const dayStart = localDateToUtcStart(localDate)
     const nextDay = new Date(dayStart)
     nextDay.setDate(nextDay.getDate() + 1)
 
@@ -73,10 +76,10 @@ export async function POST(request: NextRequest) {
     const existingEntry = await prisma.journalEntry.findFirst({
       where: {
         userId: user.id,
-        date: {
-          gte: dayStart,
-          lt: nextDay
-        }
+        OR: [
+          { localDate },
+          { localDate: null, date: { gte: dayStart, lt: nextDay } },
+        ]
       }
     })
 
@@ -108,17 +111,27 @@ export async function POST(request: NextRequest) {
           entry: JSON.stringify(mergedEntry),
           mood: normalizeString(body?.mood) || null,
           weight: typeof body?.weight === 'number' ? body.weight : body?.weight ? Number(body.weight) : null,
+          localDate,
         }
       })
     } else {
-      journalEntry = await prisma.journalEntry.create({
-        data: {
+      journalEntry = await prisma.journalEntry.upsert({
+        where: { id: journalEntryIdForDay(user.id, localDate) },
+        update: {
+          entry: JSON.stringify(entryPayload),
+          mood: normalizeString(body?.mood) || null,
+          weight: typeof body?.weight === 'number' ? body.weight : body?.weight ? Number(body.weight) : null,
+          localDate,
+        },
+        create: {
+          id: journalEntryIdForDay(user.id, localDate),
           userId: user.id,
           entry: JSON.stringify(entryPayload),
           mood: normalizeString(body?.mood) || null,
           weight: typeof body?.weight === 'number' ? body.weight : body?.weight ? Number(body.weight) : null,
           date: entryDate,
-        }
+          localDate,
+        },
       })
       tasksMerged = entryPayload.tasksCompleted
     }
@@ -204,18 +217,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const today = startOfDay(new Date())
+    const { searchParams } = new URL(request.url)
+    const requestedLocalDate = searchParams.get('localDate')
+    const localDate = isLocalDate(requestedLocalDate)
+      ? requestedLocalDate
+      : getLocalDateTime().localDate
+    const today = localDateToUtcStart(localDate)
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
     const journalEntry = await prisma.journalEntry.findFirst({
       where: {
         userId: user.id,
-        date: {
-          gte: today,
-          lt: tomorrow
-        }
-      }
+        OR: [
+          { localDate },
+          { localDate: null, date: { gte: today, lt: tomorrow } },
+        ],
+      },
     })
 
     if (journalEntry) {

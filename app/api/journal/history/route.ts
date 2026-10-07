@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
-import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
-
-function startOfDay(date: Date) {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
 
 async function resolveUser(sessionUser: any) {
   if (!sessionUser?.sub) return null
@@ -40,11 +33,11 @@ function getMonthRange(param?: string | null) {
     }
   }
 
-  const start = new Date(year, month, 1)
-  start.setHours(0, 0, 0, 0)
-  const end = new Date(start)
-  end.setMonth(end.getMonth() + 1)
-  return { start, end }
+  const start = new Date(Date.UTC(year, month, 1))
+  const end = new Date(Date.UTC(year, month + 1, 1))
+  const startKey = `${year}-${String(month + 1).padStart(2, '0')}-01`
+  const endKey = `${end.getUTCFullYear()}-${String(end.getUTCMonth() + 1).padStart(2, '0')}-01`
+  return { start, end, startKey, endKey }
 }
 
 export async function GET(request: NextRequest) {
@@ -62,25 +55,25 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const { start, end } = getMonthRange(searchParams.get('month'))
+    const { start, end, startKey, endKey } = getMonthRange(searchParams.get('month'))
 
     const [journalEntries, foodLogs, workouts, breathSessions, peptideDoses, moduleCompletions] = await Promise.all([
       prisma.journalEntry.findMany({
         where: {
           userId: user.id,
-          date: {
-            gte: start,
-            lt: end,
-          },
+          OR: [
+            { localDate: { gte: startKey, lt: endKey } },
+            { localDate: null, date: { gte: start, lt: end } },
+          ],
         },
       }),
       prisma.foodLog.findMany({
         where: {
           userId: user.id,
-          loggedAt: {
-            gte: start,
-            lt: end,
-          },
+          OR: [
+            { localDate: { gte: startKey, lt: endKey } },
+            { localDate: null, loggedAt: { gte: start, lt: end } },
+          ],
         },
         orderBy: { loggedAt: 'asc' },
       }),
@@ -153,20 +146,16 @@ export async function GET(request: NextRequest) {
     const days = new Map<string, DaySummary>()
 
     const ensureDay = (date: Date, localDate?: string) => {
-      // Prefer localDate string if available (timezone-safe)
-      // For old entries without localDate, convert UTC to EDT (UTC-4)
+      // New writes carry the user's local date. Legacy writes fall back to UTC.
       const key = localDate || (() => {
-        // Subtract 4 hours to convert from UTC to EDT
-        const edtTime = new Date(date.getTime() - (4 * 60 * 60 * 1000))
-        const year = edtTime.getUTCFullYear()
-        const month = String(edtTime.getUTCMonth() + 1).padStart(2, '0')
-        const day = String(edtTime.getUTCDate()).padStart(2, '0')
+        const year = date.getUTCFullYear()
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+        const day = String(date.getUTCDate()).padStart(2, '0')
         return `${year}-${month}-${day}`
       })()
 
       if (!days.has(key)) {
-        const entryDate = new Date(date)
-        entryDate.setHours(0, 0, 0, 0)
+        const entryDate = new Date(`${key}T00:00:00.000Z`)
         days.set(key, {
           date: key,
           iso: entryDate.toISOString(),
@@ -187,7 +176,7 @@ export async function GET(request: NextRequest) {
 
     journalEntries.forEach((entry) => {
       const date = entry.date instanceof Date ? entry.date : new Date(entry.date)
-      const bucket = ensureDay(date)
+      const bucket = ensureDay(date, entry.localDate ?? undefined)
       let parsed: any = {}
       try {
         parsed = entry.entry ? JSON.parse(entry.entry as string) : {}
@@ -248,11 +237,9 @@ export async function GET(request: NextRequest) {
     const calendar: Array<{ date: string; iso: string; count: number }> = []
     const cursor = new Date(start)
     while (cursor < end) {
-      // Convert to EDT (UTC-4) to match entry bucketing
-      const edtTime = new Date(cursor.getTime() - (4 * 60 * 60 * 1000))
-      const year = edtTime.getUTCFullYear()
-      const month = String(edtTime.getUTCMonth() + 1).padStart(2, '0')
-      const day = String(edtTime.getUTCDate()).padStart(2, '0')
+      const year = cursor.getUTCFullYear()
+      const month = String(cursor.getUTCMonth() + 1).padStart(2, '0')
+      const day = String(cursor.getUTCDate()).padStart(2, '0')
       const key = `${year}-${month}-${day}`
 
       calendar.push({
@@ -260,7 +247,7 @@ export async function GET(request: NextRequest) {
         iso: cursor.toISOString(),
         count: days.get(key)?.eventCount ?? 0,
       })
-      cursor.setDate(cursor.getDate() + 1)
+      cursor.setUTCDate(cursor.getUTCDate() + 1)
     }
 
     const dayList = Array.from(days.values()).sort((a, b) => (a.iso < b.iso ? -1 : 1))

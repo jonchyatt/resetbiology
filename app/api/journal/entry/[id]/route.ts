@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
-import { getUserFromSession } from '@/lib/getUserFromSession'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -87,9 +86,14 @@ export async function PATCH(
         data.breathNotes !== undefined ||
         data.moduleNotes !== undefined) {
 
-      const currentEntry = existingEntry.entry as any || {}
+      let currentEntry: Record<string, unknown> = {}
+      try {
+        currentEntry = existingEntry.entry ? JSON.parse(existingEntry.entry) : {}
+      } catch {
+        currentEntry = {}
+      }
 
-      updateData.entry = {
+      updateData.entry = JSON.stringify({
         ...currentEntry,
         ...(data.reasonsValidation !== undefined && { reasonsValidation: data.reasonsValidation }),
         ...(data.affirmationGoal !== undefined && { affirmationGoal: data.affirmationGoal }),
@@ -100,7 +104,7 @@ export async function PATCH(
         ...(data.nutritionNotes !== undefined && { nutritionNotes: data.nutritionNotes }),
         ...(data.breathNotes !== undefined && { breathNotes: data.breathNotes }),
         ...(data.moduleNotes !== undefined && { moduleNotes: data.moduleNotes })
-      }
+      })
     }
 
     // Update the journal entry
