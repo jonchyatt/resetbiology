@@ -77,7 +77,7 @@ function GetStartedContent() {
   // Show loading state while submitting
   if (isSubmitting && !submitResult) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center px-4">
+      <div className="rb-launch min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-primary-400 animate-spin mx-auto mb-4" />
           <p className="text-white text-xl font-medium">Saving your responses...</p>
@@ -90,7 +90,7 @@ function GetStartedContent() {
   // Show success/redirect state
   if (submitResult) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-primary-900/20 to-gray-900 flex items-center justify-center px-4">
+      <div className="rb-launch min-h-screen flex items-center justify-center px-4">
         <div className="max-w-xl mx-auto text-center">
           <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
             <CheckCircle className="w-10 h-10 text-white" />
@@ -137,7 +137,7 @@ function GetStartedContent() {
   // Show error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center px-4">
+      <div className="rb-launch min-h-screen flex items-center justify-center px-4">
         <div className="text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-red-500/20 rounded-full flex items-center justify-center">
             <span className="text-red-400 text-3xl">!</span>
@@ -159,13 +159,13 @@ function GetStartedContent() {
   }
 
   // Show quiz
-  return <NEPQQuiz onComplete={handleQuizComplete} onClose={handleClose} />
+  return <div className="rb-launch"><NEPQQuiz onComplete={handleQuizComplete} onClose={handleClose} /></div>
 }
 
 // Loading fallback for Suspense
 function LoadingFallback() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center px-4">
+    <div className="rb-launch min-h-screen flex items-center justify-center px-4">
       <div className="text-center">
         <Loader2 className="w-12 h-12 text-primary-400 animate-spin mx-auto mb-4" />
         <p className="text-white text-xl font-medium">Loading...</p>

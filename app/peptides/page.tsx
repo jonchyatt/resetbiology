@@ -5,8 +5,10 @@ import { VaultPromptModal } from "@/components/Vault/VaultPromptModal"
 export default function PeptidesPage() {
   return (
     <ProtectedRoute>
-      <VaultPromptModal trackerName="Peptide Tracker" trackerVerb="track your protocols and doses" />
-      <PeptideTracker />
+      <div className="rb-launch">
+        <VaultPromptModal trackerName="Peptide Tracker" trackerVerb="track your protocols and doses" />
+        <PeptideTracker />
+      </div>
     </ProtectedRoute>
   )
 }

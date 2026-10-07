@@ -9,7 +9,9 @@ export const metadata = {
 export default function DailyHistoryPage() {
   return (
     <ProtectedRoute>
-      <JournalHistory />
+      <div className="rb-launch">
+        <JournalHistory />
+      </div>
     </ProtectedRoute>
   )
 }

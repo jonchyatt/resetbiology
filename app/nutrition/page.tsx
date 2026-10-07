@@ -5,8 +5,10 @@ import { VaultPromptModal } from "@/components/Vault/VaultPromptModal"
 export default function NutritionPage() {
   return (
     <ProtectedRoute>
-      <VaultPromptModal trackerName="Nutrition Tracker" trackerVerb="log meals and track macros" />
-      <NutritionTracker />
+      <div className="rb-launch">
+        <VaultPromptModal trackerName="Nutrition Tracker" trackerVerb="log meals and track macros" />
+        <NutritionTracker />
+      </div>
     </ProtectedRoute>
   )
 }

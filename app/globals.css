@@ -65,7 +65,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'cv11', 'ss01';
   font-variation-settings: 'opsz' 32;
   /* Reserve space for the fixed header + safe area so page content never hides under the nav on mobile */
@@ -156,6 +156,56 @@ body {
 .input-primary {
   @apply w-full px-4 py-3 border border-primary-300/50 rounded-lg focus:ring-2 focus:ring-primary-400 focus:border-transparent bg-white/90 backdrop-blur-sm;
 }
+
+/* Launch-only design system. Keep the shared Pitch Defender surfaces unchanged. */
+.rb-launch {
+  min-height: 100%;
+  background: #020617;
+  color: #f1f5f9;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.rb-card {
+  @apply rounded-2xl border border-slate-800 bg-slate-900 p-4 sm:p-6;
+}
+
+.rb-card-secondary {
+  @apply rounded-2xl border border-slate-700 bg-slate-800 p-4 sm:p-6;
+}
+
+.rb-button-primary {
+  @apply min-h-11 w-full sm:w-auto rounded-lg bg-primary-400 px-6 py-3 font-semibold text-slate-950 transition-colors hover:bg-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 focus:ring-offset-slate-950;
+}
+
+.rb-launch [class*="backdrop-blur"] { backdrop-filter: none; }
+.rb-launch div[class*="bg-gradient"] { background-image: none; background-color: #0f172a; }
+.rb-launch button[class*="bg-gradient"],
+.rb-launch a[class*="bg-gradient"] { background-image: none; background-color: #3fbfb5; color: #020617; }
+.rb-launch [class*="shadow-2xl"],
+.rb-launch [class*="shadow-xl"] { box-shadow: none; }
+.rb-launch [class*="border-primary"],
+.rb-launch [class*="border-gray"],
+.rb-launch [class*="border-white"] { border-color: #1e293b; }
+.rb-launch [class*="bg-gray-"],
+.rb-launch [class*="bg-slate-"] { background-color: #0f172a; }
+.rb-launch [class*="text-gray-"],
+.rb-launch [class*="text-slate-"] { color: #cbd5e1; }
+.rb-launch .text-white { color: #f8fafc; }
+.rb-launch .text-sm { font-size: 1rem; line-height: 1.6; }
+.rb-launch .text-xs { font-size: .875rem; line-height: 1.5; }
+.rb-launch input,
+.rb-launch select,
+.rb-launch textarea { min-height: 44px; background-color: #1e293b; border-color: #334155; color: #f8fafc; }
+.rb-launch button { min-height: 44px; }
+.rb-responsive-column { min-width: 0; }
+.rb-launch table { font-variant-numeric: tabular-nums; }
+.rb-launch a:focus-visible,
+.rb-launch button:focus-visible,
+.rb-launch input:focus-visible,
+.rb-launch select:focus-visible,
+.rb-launch textarea:focus-visible { outline: 2px solid #3fbfb5; outline-offset: 3px; }
+.rb-subnav { display: none; }
 
 /* Navigation */
 .nav-link {

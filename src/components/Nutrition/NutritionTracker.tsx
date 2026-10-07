@@ -625,7 +625,7 @@ export function NutritionTracker() {
       )}
 
       {/* Portal Subnav Header */}
-      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+      <div className="rb-subnav bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -778,7 +778,7 @@ export function NutritionTracker() {
 
             <div className="grid gap-6 lg:grid-cols-3">
               {/* Column 1 - Add Nutrition */}
-              <div className="space-y-6">
+              <div className="rb-responsive-column space-y-6">
                 <FoodQuickAdd
                   onLogged={(result) => {
                     fetchTodaysFoods()
@@ -814,7 +814,7 @@ export function NutritionTracker() {
               </div>
 
               {/* Column 2 - Today's Meals */}
-              <div className="space-y-6">
+              <div className="rb-responsive-column space-y-6">
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold text-white flex items-center">
@@ -867,7 +867,7 @@ export function NutritionTracker() {
               </div>
 
               {/* Column 3 - Macro Goals & Daily Snapshot */}
-              <div className="space-y-6">
+              <div className="rb-responsive-column space-y-6">
                 <MacroGoals todaysTotals={todaysTotals} />
 
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
