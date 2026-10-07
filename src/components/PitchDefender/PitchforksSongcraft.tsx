@@ -68,6 +68,8 @@ export interface PitchforksSongcraftMicrophone {
 }
 
 export interface PitchforksSongcraftConnectorProps {
+  /** Parent menu lane; Songcraft starts in the same recognition or voice mode. */
+  readonly initialLane?: PitchforksSongcraftLane
   /** Read-only existing mastery snapshot; omission keeps Tempo Encore unavailable. */
   readonly masteryProjection?: PitchforksMasteryProjection
   /** The parent's already-admitted comfortable-range notes, snapshotted at Begin. */
@@ -544,7 +546,7 @@ function clampProgress(value: number): number {
 export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): ReactElement {
   const [songs, setSongs] = useState<readonly SongcraftPhrase[]>([])
   const [selectedKey, setSelectedKey] = useState('')
-  const [lane, setLane] = useState<PitchforksSongcraftLane>('voice')
+  const [lane, setLane] = useState<PitchforksSongcraftLane>(props.initialLane ?? 'voice')
   const [practiceState, setPracticeState] = useState<SongcraftPracticeState | null>(null)
   const [tempoEncore, setTempoEncore] = useState(false)
   const [paused, setPaused] = useState(false)
@@ -561,7 +563,7 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   songsRef.current = songs
   const selectedKeyRef = useRef('')
   selectedKeyRef.current = selectedKey
-  const laneRef = useRef<PitchforksSongcraftLane>('voice')
+  const laneRef = useRef<PitchforksSongcraftLane>(props.initialLane ?? 'voice')
   laneRef.current = lane
   const practiceStateRef = useRef<SongcraftPracticeState | null>(null)
   practiceStateRef.current = practiceState
