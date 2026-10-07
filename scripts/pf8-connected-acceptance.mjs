@@ -20,6 +20,7 @@ async function inspect(viewport) {
     await page.getByTestId('pf3-input-buttons').click()
     await page.getByTestId('pf3-adventure-first').waitFor()
     await page.waitForFunction(() => Boolean(window.__pitchforksAudioDebug))
+    await page.evaluate(() => window.scrollTo(0, 0))
 
     const pageState = await page.evaluate(() => {
       const button = document.querySelector('[data-testid="pf3-continue-adventure"]')
@@ -27,7 +28,7 @@ async function inspect(viewport) {
       const adventure = document.querySelector('[data-testid="pf3-adventure-first"]')
       const debug = window.__pitchforksAudioDebug
       return {
-        buttonDocumentY: button ? button.getBoundingClientRect().top + window.scrollY : null,
+        buttonViewportY: button?.getBoundingClientRect().top ?? null,
         buttonText: button?.textContent?.trim() ?? null,
         adventureText: adventure?.textContent?.replace(/\s+/g, ' ').trim() ?? null,
         pageBuildMarker: marker?.textContent?.trim() ?? null,
@@ -36,8 +37,8 @@ async function inspect(viewport) {
       }
     })
 
-    assert.notEqual(pageState.buttonDocumentY, null, 'Continue/Start Adventure button must render')
-    assert.ok(pageState.buttonDocumentY < 700, 'Continue/Start Adventure must be in the first 700 document pixels')
+    assert.notEqual(pageState.buttonViewportY, null, 'Continue/Start Adventure button must render')
+    assert.ok(pageState.buttonViewportY >= 0 && pageState.buttonViewportY < viewport.height, 'Continue/Start Adventure must be in the first viewport')
     assert.match(pageState.buttonText ?? '', /START ADVENTURE|CONTINUE ADVENTURE/)
     assert.match(pageState.adventureText ?? '', /Listen & Tap · recognition practice/)
     assert.equal(pageState.pageBuildMarker, `build ${version.buildSha}`, 'page build marker must equal /version SHA')
@@ -59,7 +60,7 @@ const receipt = {
   baseUrl,
   pageSha: phone.versionSha,
   versionSha: phone.versionSha,
-  firstScreenButtonY: phone.buttonDocumentY,
+  firstScreenButtonY: phone.buttonViewportY,
   selectedLane: 'Listen & Tap',
   diagnosticBufferBound: phone.diagnosticCapacity,
   phone,
