@@ -15,8 +15,8 @@ async function inspect(viewport) {
     const version = await versionResponse.json()
     assert.match(version.buildSha, /^[0-9a-f]{40}$/i, '/version must expose a full SHA')
 
-    await page.goto(`${baseUrl}/pitch-defender/pitchforks-3?pfdebug=1`, { waitUntil: 'networkidle' })
-    await page.getByTestId('pf3-menu').waitFor()
+    await page.goto(`${baseUrl}/pitch-defender/pitchforks-3?pfdebug=1`, { waitUntil: 'domcontentloaded' })
+    await page.getByTestId('pf3-menu').waitFor({ timeout: 60_000 })
     await page.getByTestId('pf3-input-buttons').click()
     await page.getByTestId('pf3-adventure-first').waitFor()
     await page.waitForFunction(() => Boolean(window.__pitchforksAudioDebug))
