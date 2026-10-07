@@ -16,6 +16,13 @@ import PitchforksSongcraft, { observePitchforksSongcraftGeneration, type Pitchfo
 import { advancePitchforksCampaignProgress, bindPitchforksVillageCurriculum, advancePitchforksVillageProgress, advancePitchforksExaminationProgress, projectPitchforksWorldGates } from './pitchforksCampaignProgress'
 import { projectPitchforksMastery } from './pitchforksMasteryProjection'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
+import {
+  createPitchforksAudioDebugBuffer,
+  interpolatePitchforksMarker,
+  pitchforksMarkerOpacity,
+  type PitchforksAudioDebugBuffer,
+  type PitchforksEstimateMeasurement,
+} from './pitchforksAudioDiagnostics'
 import { createPitchforksMicrophoneOwner, type PitchforksMicrophoneOwner } from './pitchforksMicrophoneOwner'
 import { PITCHFORKS_AUDIO_CONSTRAINTS, PITCHFORKS_PITCH_PROFILE } from './pitchDetectionSmoothing'
 import {
@@ -1488,6 +1495,7 @@ type TunerView = Readonly<{
   canUseSource: boolean
   dotDeviation: number | null
   renderDeviation: number | null
+  markerOpacity: number
   onTarget: boolean
   trail: ReadonlyArray<TrailPointView>
   feedback: PitchforksTunerFeedback
@@ -1501,6 +1509,7 @@ const EMPTY_TUNER_VIEW: TunerView = {
   canUseSource: false,
   dotDeviation: null,
   renderDeviation: null,
+  markerOpacity: 0,
   onTarget: false,
   trail: [],
   feedback: pitchforksTunerFeedback({
@@ -1700,6 +1709,7 @@ interface Pf3DebugState {
 
 declare global {
   interface Window {
+    __pitchforksAudioDebug?: PitchforksAudioDebugBuffer
     __pf3?: {
       getState: () => Readonly<Pf3DebugState>
       readonly viewState: Readonly<ViewState> | null
@@ -3488,7 +3498,9 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
     ctx.restore()
   }
 
-  if (tuner.canUseSource && tuner.renderDeviation !== null) {
+  if (tuner.markerOpacity > 0 && tuner.renderDeviation !== null) {
+    ctx.save()
+    ctx.globalAlpha = tuner.markerOpacity
     const dotX = xForDeviation(tuner.renderDeviation)
     const dotColor = colorForCents(semisToCents(tuner.renderDeviation)) ?? '#f87171'
     if (tuner.onTarget) {
@@ -3507,6 +3519,7 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
     ctx.font = 'bold 9px monospace'
     ctx.textAlign = 'center'
     ctx.fillText(tuner.sourceNote || '', dotX, PITCH_BAR_Y - 4)
+    ctx.restore()
   } else {
     ctx.fillStyle = '#555'
     ctx.font = '8px monospace'
@@ -3730,7 +3743,7 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
   if (
     source &&
     activeVillager &&
-    view.tuner.canUseSource &&
+    view.tuner.markerOpacity > 0 &&
     view.tuner.renderDeviation !== null &&
     activeVillager.burned < queue.length
   ) {
@@ -3748,6 +3761,7 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
     const color = colorForCents(cents) ?? '#f87171'
     if (sourceY === rawSourceY) drawLedgerLines(ctx, targetX, source)
     ctx.save()
+    ctx.globalAlpha = view.tuner.markerOpacity
     ctx.fillStyle = color
     ctx.strokeStyle = '#071018'
     ctx.lineWidth = 1.5
@@ -4610,6 +4624,7 @@ export default function PitchforksIII() {
   const pitchTrailRef = useRef<TrailPoint[]>([])
   const barDotDeviationRef = useRef<number | null>(null)
   const smoothDevRef = useRef(0)
+  const tunerLastInterpolationAtRef = useRef(0)
   const tunerTargetKeyRef = useRef('')
   const tunerNeedsRebaseRef = useRef(false)
   const tunerFeedbackKeyRef = useRef('')
@@ -4666,6 +4681,8 @@ export default function PitchforksIII() {
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
+  const [pfDebugEnabled, setPfDebugEnabled] = useState(false)
+  const audioDebugRef = useRef<PitchforksAudioDebugBuffer | null>(null)
   const [artReviewMode, setArtReviewMode] = useState(false)
   const [artReviewBody, setArtReviewBody] = useState<ArtReviewBodyState>('walk')
   const [artReviewStorm, setArtReviewStorm] = useState<ArtReviewStormState>('dormant')
@@ -4748,6 +4765,10 @@ export default function PitchforksIII() {
     containerHeight: 0,
   }))
 
+  const recordPitchforksEstimate = useCallback((measurement: PitchforksEstimateMeasurement) => {
+    audioDebugRef.current?.recordEstimate(measurement)
+  }, [])
+
   const {
     isListening,
     pitch,
@@ -4762,7 +4783,26 @@ export default function PitchforksIII() {
     profile: PITCHFORKS_PITCH_PROFILE,
     audioConstraints: PITCHFORKS_AUDIO_CONSTRAINTS,
     observationGainPct: microphoneGain,
+    onEstimate: pfDebugEnabled ? recordPitchforksEstimate : undefined,
   })
+
+  useEffect(() => {
+    const enabled = new URLSearchParams(window.location.search).get('pfdebug') === '1'
+    setPfDebugEnabled(enabled)
+    if (!enabled) {
+      audioDebugRef.current = null
+      delete window.__pitchforksAudioDebug
+      return
+    }
+
+    const debugBuffer = createPitchforksAudioDebugBuffer()
+    audioDebugRef.current = debugBuffer
+    window.__pitchforksAudioDebug = debugBuffer
+    return () => {
+      if (window.__pitchforksAudioDebug === debugBuffer) delete window.__pitchforksAudioDebug
+      if (audioDebugRef.current === debugBuffer) audioDebugRef.current = null
+    }
+  }, [])
 
   // The detector publishes a new PitchInfo object for every analyser frame.
   // These effects only need scalar observations; depending on the object
@@ -9512,11 +9552,16 @@ export default function PitchforksIII() {
     const visible = phaseRef.current === 'playing' && inputModeRef.current === 'voice'
     barVisibleRef.current = visible
     const now = performance.now()
+    const interpolationElapsedMs = tunerLastInterpolationAtRef.current > 0
+      ? Math.max(0, now - tunerLastInterpolationAtRef.current)
+      : 0
+    tunerLastInterpolationAtRef.current = now
     const nextTargetKey = active?.key ?? ''
     const targetChanged = tunerTargetKeyRef.current !== nextTargetKey
     if (targetChanged) {
       tunerTargetKeyRef.current = nextTargetKey
       tunerNeedsRebaseRef.current = !!nextTargetKey
+      tunerLastInterpolationAtRef.current = now
       tunerDropoutFramesRef.current = 0
       pitchTrailRef.current = []
       barDotDeviationRef.current = null
@@ -9563,6 +9608,7 @@ export default function PitchforksIII() {
     let sourceNote: string | null = null
     let renderDeviation: number | null = null
     let deviationSemis: number | null = null
+    let markerOpacity = 0
 
     if (canUseSource && active && source) {
       const deviation = pitchDeviationSemis(source, active.note)
@@ -9571,10 +9617,10 @@ export default function PitchforksIII() {
       const onTarget = Math.abs(deviation) <= MATCH_TOLERANCE_CENTS / 100
       barDotDeviationRef.current = clampedDeviation
       barOnTargetRef.current = onTarget
-      // Ease the readout toward the detected pitch so it glides instead of jittering frame-to-frame.
+      // Equivalent elapsed time now produces equivalent response at every frame rate.
       smoothDevRef.current = tunerNeedsRebaseRef.current
         ? clampedDeviation
-        : smoothDevRef.current + (clampedDeviation - smoothDevRef.current) * 0.28
+        : interpolatePitchforksMarker(smoothDevRef.current, clampedDeviation, interpolationElapsedMs)
       tunerNeedsRebaseRef.current = false
       pitchTrailRef.current.push({
         at: now,
@@ -9585,9 +9631,19 @@ export default function PitchforksIII() {
       })
       sourceNote = source.note || ''
       renderDeviation = smoothDevRef.current
+      markerOpacity = 1
     } else {
       barDotDeviationRef.current = null
       barOnTargetRef.current = false
+      const lastUsablePoint = pitchTrailRef.current[pitchTrailRef.current.length - 1]
+      if (active && !matchingSuppressed && lastUsablePoint) {
+        const ageMs = now - lastUsablePoint.at
+        markerOpacity = pitchforksMarkerOpacity(ageMs, TRAIL_MS)
+        if (markerOpacity > 0) {
+          sourceNote = lastUsablePoint.note
+          renderDeviation = smoothDevRef.current
+        }
+      }
     }
 
     const lastUsablePoint = pitchTrailRef.current[pitchTrailRef.current.length - 1]
@@ -9659,6 +9715,7 @@ export default function PitchforksIII() {
       canUseSource,
       dotDeviation: barDotDeviationRef.current,
       renderDeviation,
+      markerOpacity,
       onTarget: barOnTargetRef.current,
       trail: pitchTrailRef.current,
       feedback: thunderheadReadyFeedback ?? presentationFeedback,
@@ -9828,7 +9885,9 @@ export default function PitchforksIII() {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    const dt = lastTimeRef.current ? Math.min(0.05, (ts - lastTimeRef.current) / 1000) : 0
+    const frameIntervalMs = lastTimeRef.current ? ts - lastTimeRef.current : 0
+    if (frameIntervalMs > 32) audioDebugRef.current?.recordFrameStall(ts, frameIntervalMs)
+    const dt = Math.min(0.05, frameIntervalMs / 1000)
     lastTimeRef.current = ts
     if (pausedRef.current) {
       rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, fence))
@@ -10108,6 +10167,7 @@ export default function PitchforksIII() {
     firstLockGraceRef.current = true
     pitchTrailRef.current = []
     barDotDeviationRef.current = null
+    tunerLastInterpolationAtRef.current = 0
     barOnTargetRef.current = false
     barVisibleRef.current = false
     lockWhileSuppressedRef.current = false
@@ -11181,6 +11241,7 @@ export default function PitchforksIII() {
   if (phase === 'songcraft') {
     return (
       <PitchforksSongcraft
+        initialLane={inputMode === 'buttons' ? 'ear' : 'voice'}
         admittedNotes={unlockedNotes}
         masteryProjection={projectPitchforksMastery({ admittedNotes: unlockedNotes, voiceMemory: fsrsRef.current,
           masteryRecords: masteryProgressRef.current, nowMs: Date.now() })}
@@ -11223,6 +11284,35 @@ export default function PitchforksIII() {
           </div>
           <h1 className="text-3xl font-black tracking-widest text-orange-200 mb-1">PITCHFORKS III</h1>
           <div className="text-sm text-gray-400 mb-2">Frankenstein lightning ear trainer</div>
+          <section data-testid="pf3-adventure-first" className="mb-5 border-2 border-orange-300/70 bg-orange-950/25 p-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-orange-200">Your adventure</p>
+            <h2 className="mt-2 text-xl font-black text-white">
+              {presentationJourney ? 'Continue Adventure' : 'Start Adventure'}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-gray-200">
+              {inputMode === 'buttons' ? 'Listen & Tap · recognition practice' : 'Voice Lightning · singing practice'}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-orange-100">
+              {presentationJourney?.cathedralClear
+                ? 'Next goal: revisit a world or make a song in Songcraft.'
+                : selectedWorld === 'dungeon'
+                  ? 'Next goal: enter the Dungeon and charge your first fork.'
+                  : `Next goal: continue through ${WORLD_REGISTRY.find(world => world.id === selectedWorld)?.name ?? 'the next chapter'}.`}
+            </p>
+            <button
+              type="button"
+              data-testid="pf3-continue-adventure"
+              disabled={!assetsReady}
+              onClick={() => {
+                if (!rangeProfile) { phaseRef.current = 'tutorial'; setPhase('tutorial') }
+                else if (inputMode === 'buttons') beginPlaying()
+                else startSavedRangeSetup()
+              }}
+              className="mt-4 min-h-14 w-full border-2 border-orange-100 bg-orange-200 px-4 py-3 text-base font-black text-[#071018] disabled:opacity-50"
+            >
+              {presentationJourney ? 'CONTINUE ADVENTURE' : 'START ADVENTURE'} · {WORLD_REGISTRY.find(world => world.id === selectedWorld)?.name.toUpperCase()}
+            </button>
+          </section>
           {process.env.NODE_ENV === 'development' && (
             <a href="/pitch-defender/pitchforks-3/gradesheet" target="_blank" rel="noopener noreferrer"
               className="mb-4 flex min-h-12 items-center justify-center rounded border border-cyan-700 px-3 py-2 text-sm text-cyan-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-200">
@@ -11263,7 +11353,7 @@ export default function PitchforksIII() {
           </section>}
           {!demoMode && !fsrsDebugMode && <>
             {!rangeProfile && <p className="mb-2 border border-amber-700/70 bg-amber-950/20 px-3 py-2 text-xs leading-relaxed text-amber-100">All four practice chambers are available below. Listen &amp; Tap can enter immediately with deliberate answer buttons; Voice Lightning begins the required comfortable-range check. No notes are granted by practice.</p>}
-            <p className="mb-2 text-xs leading-relaxed text-cyan-100">Practice lane: <strong>{inputMode === 'buttons' ? 'LISTEN &amp; TAP · deliberate answer buttons · no microphone required' : 'VOICE LIGHTNING · real microphone · comfortable range required'}</strong>. Choose the lane above before entering a chamber.</p>
+            <p className="mb-2 text-xs leading-relaxed text-cyan-100">Practice lane: <strong>{inputMode === 'buttons' ? 'LISTEN & TAP · deliberate answer buttons · no microphone required' : 'VOICE LIGHTNING · real microphone · comfortable range required'}</strong>. Choose the lane above before entering a chamber.</p>
             <PitchforksPracticeArcade onEnterPractice={enterPracticeArcade} />
           </>}
           {!demoMode && !fsrsDebugMode && presentationJourney && (selectedWorld === 'village-gate' || selectedWorld === 'bell-tower') && <section className="mb-5 border border-amber-800 bg-amber-950/15 p-4 text-amber-100">
@@ -11315,7 +11405,7 @@ export default function PitchforksIII() {
 
                 return (
                   <div key={world.id} className="min-h-28 flex flex-col">
-                    {normalWorld ? (
+                    {normalWorld && unlocked ? (
                       <button
                         type="button"
                         data-testid={`pf3-world-${world.id}`}
@@ -11364,6 +11454,15 @@ export default function PitchforksIII() {
                         <div className="mt-2 text-sm leading-snug text-gray-500">
                           {stateCopy}
                         </div>
+                        <p className="mt-2 text-xs leading-relaxed text-amber-100">Next requirement: {stateCopy}</p>
+                        <button
+                          type="button"
+                          data-testid={`pf3-world-${world.id}-exercise`}
+                          className="mt-2 min-h-11 w-full border border-amber-300/70 px-2 py-2 text-xs font-black uppercase tracking-wide text-amber-100"
+                          onClick={() => enterPracticeArcade(world.id)}
+                        >
+                          START MATCHING EXERCISE
+                        </button>
                       </div>
                     )}
                     {isVillageGate && hasDungeonClear && villageGateAssetStatus === 'missing' && (
@@ -11469,7 +11568,9 @@ export default function PitchforksIII() {
             <section className="mb-4 border border-cyan-900/70 bg-cyan-950/15 p-3" aria-labelledby="pf3-input-mode-heading">
               <h2 id="pf3-input-mode-heading" className="text-xs font-black tracking-widest text-cyan-100">HOW YOU DEFEND</h2>
               <p className="mt-1 text-xs leading-relaxed text-gray-300">
-                Start by recognizing the note, then move into singing. Both lanes use this same storm and keep recognition separate from voice practice.
+                {inputMode === 'buttons'
+                  ? 'Hear each note, then choose it. This recognition lane keeps its progress separate from voice practice.'
+                  : 'Start by hearing the note, then sing it gently. Voice practice keeps its progress separate from recognition.'}
               </p>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
