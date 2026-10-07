@@ -16,6 +16,7 @@
     "start": "next start",
     "preview": "wrangler pages dev .worker-next --compatibility-flags=nodejs_compat",
     "check:auth-links": "scripts/check-auth-links.sh",
+    "test:auth0-transaction-state": "tsx tests/auth0-transaction-state-regression.ts",
     "deploy": "wrangler deploy",
     "lint": "eslint",
     "check:experts": "node scripts/check-expert-routes.mjs",

@@ -1,6 +1,7 @@
 // src/lib/auth0.ts
 import { Auth0Client } from '@auth0/nextjs-auth0/server';
 import { prisma } from './prisma';
+import { getAuth0TransactionCookieDomain } from './auth0-transaction-cookie';
 
 // Session type for Auth0 v4
 interface Session {
@@ -143,6 +144,9 @@ async function syncUserToDatabase(session: Session): Promise<void> {
 
 // Auth0 v4 SDK with beforeSessionSaved hook for user sync
 export const auth0 = new Auth0Client({
+  transactionCookie: {
+    domain: getAuth0TransactionCookieDomain(),
+  },
   beforeSessionSaved: async (session) => {
     // Sync user to database when session is saved
     await syncUserToDatabase(session as Session);
