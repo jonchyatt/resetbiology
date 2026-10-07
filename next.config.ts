@@ -1,7 +1,20 @@
 import type { NextConfig } from "next";
+import { execFileSync } from "node:child_process";
+
+const buildSha = (
+  process.env.VERCEL_GIT_COMMIT_SHA ??
+  process.env.BUILD_SHA ??
+  execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
+).trim();
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Freeze the immutable source commit into both server and client bundles.
+  // Vercel's commit SHA wins; local production builds use the checked-out HEAD.
+  env: {
+    BUILD_SHA: buildSha,
+    NEXT_PUBLIC_BUILD_SHA: buildSha,
+  },
   // Canonicalize www -> apex BEFORE any request reaches middleware/auth.
   // Auth0's /auth/login sets its state cookie on whatever host served the
   // request; if that's www.resetbiology.com but the configured redirect_uri
