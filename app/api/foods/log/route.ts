@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
-import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
+import { isLocalDate, localDateToUtcStart } from '@/lib/nutrition/localEntry';
+import { journalEntryIdForDay } from '@/lib/journal/dayEntry';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -40,6 +41,7 @@ export async function POST(req: Request) {
       loggedAt = null,
       localDate = null,
       localTime = null,
+      requestId = null,
     } = body ?? {};
 
     if (!itemName || typeof nutrients !== 'object' || nutrients === null) {
@@ -47,72 +49,29 @@ export async function POST(req: Request) {
     }
 
     const logTimestamp = loggedAt ? new Date(loggedAt) : new Date();
-    const startOfDay = new Date(logTimestamp);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(startOfDay);
-    endOfDay.setDate(endOfDay.getDate() + 1);
+    if (Number.isNaN(logTimestamp.getTime())) {
+      return NextResponse.json({ ok: false, error: 'Invalid loggedAt timestamp' }, { status: 400 });
+    }
+    const fallbackLocalDate = `${logTimestamp.getFullYear()}-${String(logTimestamp.getMonth() + 1).padStart(2, '0')}-${String(logTimestamp.getDate()).padStart(2, '0')}`;
+    const fallbackLocalTime = `${String(logTimestamp.getHours()).padStart(2, '0')}:${String(logTimestamp.getMinutes()).padStart(2, '0')}:${String(logTimestamp.getSeconds()).padStart(2, '0')}`;
+    const resolvedLocalDate = isLocalDate(localDate) ? localDate : fallbackLocalDate;
+    const resolvedLocalTime = typeof localTime === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(localTime) ? localTime : fallbackLocalTime;
+    const taskDate = localDateToUtcStart(resolvedLocalDate);
+    const nextTaskDate = new Date(taskDate);
+    nextTaskDate.setUTCDate(nextTaskDate.getUTCDate() + 1);
 
-    const existingCountToday = await prisma.foodLog.count({
-      where: {
-        userId: user.id,
-        loggedAt: {
-          gte: startOfDay,
-          lt: endOfDay,
-        },
-      },
-    });
+    const stableLogId = typeof requestId === 'string' && /^[a-f0-9]{24}$/.test(requestId.trim())
+      ? requestId.trim()
+      : null;
 
-    const log = await prisma.foodLog.create({
-      data: {
-        userId: user.id,
-        source,
-        sourceId,
-        itemName,
-        brand,
-        quantity: typeof quantity === 'number' ? quantity : Number(quantity) || 1,
-        unit,
-        gramWeight: typeof gramWeight === 'number' ? gramWeight : gramWeight ? Number(gramWeight) : null,
-        nutrients,
-        photoUrl,
-        notes,
-        localDate, // User's local date YYYY-MM-DD
-        localTime, // User's local time HH:MM:SS
-        loggedAt: logTimestamp,
-        mealType,
-      },
-      select: { id: true },
-    });
-
-    // Mark daily task as complete
-    await prisma.dailyTask.upsert({
-      where: {
-        userId_date_taskName: {
-          userId: user.id,
-          date: startOfDay,
-          taskName: 'meals',
-        },
-      },
-      update: { completed: true },
-      create: {
-        userId: user.id,
-        date: startOfDay,
-        taskName: 'meals',
-        completed: true,
-      },
-    });
-
-    let pointsAwarded = 0;
-    if (existingCountToday === 0) {
-      await prisma.gamificationPoint.create({
-        data: {
-          userId: user.id,
-          amount: 10,
-          pointType: 'nutrition',
-          activitySource: 'Logged nutrition for today',
-          earnedAt: logTimestamp,
-        },
+    if (stableLogId) {
+      const existingLog = await prisma.foodLog.findFirst({
+        where: { id: stableLogId, userId: user.id },
+        select: { id: true },
       });
-      pointsAwarded = 10;
+      if (existingLog) {
+        return NextResponse.json({ ok: true, logId: existingLog.id, pointsAwarded: 0, journalNote: null, dailyTaskCompleted: true, duplicate: true });
+      }
     }
 
     const timestamp = logTimestamp.toLocaleTimeString('en-US', {
@@ -121,65 +80,130 @@ export async function POST(req: Request) {
     });
     const nutritionNote = `Nutrition tracked at ${timestamp}`;
 
-    const existingJournal = await prisma.journalEntry.findFirst({
-      where: {
-        userId: user.id,
-        date: {
-          gte: startOfDay,
-          lt: endOfDay,
+    const result = await prisma.$transaction(async (tx) => {
+      const existingCountToday = await tx.foodLog.count({
+        where: {
+          userId: user.id,
+          OR: [
+            { localDate: resolvedLocalDate },
+            { localDate: null, loggedAt: { gte: taskDate, lt: nextTaskDate } },
+          ],
         },
-      },
-    });
+      });
 
-    if (existingJournal) {
-      let entryData: any = {};
-      try {
-        entryData = existingJournal.entry ? JSON.parse(existingJournal.entry as string) : {};
-      } catch (err) {
-        entryData = {};
+      const log = await tx.foodLog.create({
+        data: {
+          ...(stableLogId ? { id: stableLogId } : {}),
+          userId: user.id,
+          source,
+          sourceId,
+          itemName,
+          brand,
+          quantity: typeof quantity === 'number' ? quantity : Number(quantity) || 1,
+          unit,
+          gramWeight: typeof gramWeight === 'number' ? gramWeight : gramWeight ? Number(gramWeight) : null,
+          nutrients,
+          photoUrl,
+          notes,
+          localDate: resolvedLocalDate,
+          localTime: resolvedLocalTime,
+          loggedAt: logTimestamp,
+          mealType,
+        },
+        select: { id: true },
+      });
+
+      await tx.dailyTask.upsert({
+        where: {
+          userId_date_taskName: {
+            userId: user.id,
+            date: taskDate,
+            taskName: 'meals',
+          },
+        },
+        update: { completed: true },
+        create: {
+          userId: user.id,
+          date: taskDate,
+          taskName: 'meals',
+          completed: true,
+        },
+      });
+
+      let pointsAwarded = 0;
+      if (existingCountToday === 0) {
+        await tx.gamificationPoint.create({
+          data: {
+            userId: user.id,
+            amount: 10,
+            pointType: 'nutrition',
+            activitySource: 'Logged nutrition for today',
+            earnedAt: logTimestamp,
+          },
+        });
+        pointsAwarded = 10;
       }
 
-      const previous = entryData.nutritionNotes ? `${entryData.nutritionNotes}\n` : '';
-      entryData.nutritionNotes = `${previous}${nutritionNote}`;
-      const tasksCompleted = entryData.tasksCompleted || {};
-      tasksCompleted.meals = true;
-      entryData.tasksCompleted = tasksCompleted;
-
-      await prisma.journalEntry.update({
-        where: { id: existingJournal.id },
-        data: {
-          entry: JSON.stringify(entryData),
-        },
-      });
-    } else {
-      const entryData = {
-        reasonsValidation: '',
-        affirmationGoal: '',
-        affirmationBecause: '',
-        affirmationMeans: '',
-        peptideNotes: '',
-        workoutNotes: '',
-        nutritionNotes: nutritionNote,
-        breathNotes: '',
-        moduleNotes: '',
-        tasksCompleted: { meals: true },
-      };
-
-      await prisma.journalEntry.create({
-        data: {
+      const existingJournal = await tx.journalEntry.findFirst({
+        where: {
           userId: user.id,
-          entry: JSON.stringify(entryData),
-          mood: null,
-          weight: null,
-          date: logTimestamp,
+          OR: [
+            { localDate: resolvedLocalDate },
+            { localDate: null, date: { gte: taskDate, lt: nextTaskDate } },
+          ],
         },
       });
-    }
+
+      if (existingJournal) {
+        let entryData: any = {};
+        try {
+          entryData = existingJournal.entry ? JSON.parse(existingJournal.entry as string) : {};
+        } catch {
+          entryData = {};
+        }
+
+        const previous = entryData.nutritionNotes ? `${entryData.nutritionNotes}\n` : '';
+        entryData.nutritionNotes = `${previous}${nutritionNote}`;
+        entryData.tasksCompleted = { ...(entryData.tasksCompleted || {}), meals: true };
+
+        await tx.journalEntry.update({
+          where: { id: existingJournal.id },
+          data: { entry: JSON.stringify(entryData), localDate: resolvedLocalDate },
+        });
+      } else {
+        const entryData = {
+          reasonsValidation: '',
+          affirmationGoal: '',
+          affirmationBecause: '',
+          affirmationMeans: '',
+          peptideNotes: '',
+          workoutNotes: '',
+          nutritionNotes: nutritionNote,
+          breathNotes: '',
+          moduleNotes: '',
+          tasksCompleted: { meals: true },
+        };
+
+        await tx.journalEntry.create({
+          data: {
+            id: journalEntryIdForDay(user.id, resolvedLocalDate),
+            userId: user.id,
+            entry: JSON.stringify(entryData),
+            mood: null,
+            weight: null,
+            date: logTimestamp,
+            localDate: resolvedLocalDate,
+          },
+        });
+      }
+
+      return { log, pointsAwarded };
+    });
 
     return NextResponse.json({
       ok: true,
-      logId: log.id,
-      pointsAwarded,
+      logId: result.log.id,
+      pointsAwarded: result.pointsAwarded,
       journalNote: nutritionNote,
       dailyTaskCompleted: true,
     });

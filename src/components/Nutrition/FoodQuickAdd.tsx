@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Loader2, CheckCircle2, PlusCircle, Star } from "lucide-react";
 import type { CachedFoodResult, Nutrients } from "@/lib/nutrition/types";
+import { createFoodLogRequestId, getLocalDateTime } from "@/lib/nutrition/localEntry";
 
 type Result = CachedFoodResult & { nutrients: Nutrients | null };
 type Status = "idle" | "logging" | "success" | "error";
@@ -64,6 +65,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
   const [grams, setGrams] = useState<number>(100);
   const [servings, setServings] = useState<number>(1);
   const [mealType, setMealType] = useState<MealOption>("snack");
+  const requestIdRef = useRef<string | null>(null);
 
   // Favorites state
   const [activeTab, setActiveTab] = useState<'search' | 'favorites'>('search');
@@ -175,7 +177,12 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
     }
     setStatus("idle");
     setError(null);
+    requestIdRef.current = null;
   }, [selected?.sourceId]);
+
+  useEffect(() => {
+    requestIdRef.current = null;
+  }, [grams, servings, mealType]);
 
   const factor = useMemo(() => {
     if (!selected || !selected.nutrients) return 0;
@@ -200,14 +207,10 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
     try {
       setStatus("logging");
       setError(null);
-      // Get user's local date components
-      const now = new Date()
-      const year = now.getFullYear()
-      const month = String(now.getMonth() + 1).padStart(2, '0')
-      const day = String(now.getDate()).padStart(2, '0')
-      const hours = String(now.getHours()).padStart(2, '0')
-      const minutes = String(now.getMinutes()).padStart(2, '0')
-      const seconds = String(now.getSeconds()).padStart(2, '0')
+      const requestId = requestIdRef.current ?? createFoodLogRequestId();
+      requestIdRef.current = requestId;
+      const now = new Date();
+      const { localDate, localTime } = getLocalDateTime(now);
 
       const payload = {
         source: selected.source,
@@ -221,8 +224,9 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
         mealType,
         // Send both ISO timestamp and local date string for bucketing
         loggedAt: now.toISOString(),
-        localDate: `${year}-${month}-${day}`,
-        localTime: `${hours}:${minutes}:${seconds}`,
+        localDate,
+        localTime,
+        requestId,
       };
 
       const res = await fetch("/api/foods/log", {
@@ -238,6 +242,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
       }
 
       setStatus("success");
+      requestIdRef.current = null;
       setSelected(null);
       setResults([]);
       setTerm("");

@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
+import { getLocalDateTime } from '@/lib/nutrition/localEntry'
 import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, type LucideIcon } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useUser } from "@auth0/nextjs-auth0"
@@ -179,6 +180,7 @@ export function EnhancedDashboard() {
       const payload = {
         ...journalData,
         date: new Date().toISOString(),
+        localDate: getLocalDateTime().localDate,
         tasksCompleted: dailyTasks
       }
       console.log('Saving journal entry:', payload)
@@ -275,7 +277,8 @@ export function EnhancedDashboard() {
   useEffect(() => {
     const loadJournalPrefill = async () => {
       try {
-        const response = await fetch('/api/journal/entry', { cache: 'no-store' })
+        const localDate = getLocalDateTime().localDate
+        const response = await fetch(`/api/journal/entry?localDate=${localDate}`, { cache: 'no-store' })
         if (!response.ok) return
         const data = await response.json()
         if (!data) return
