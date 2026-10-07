@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Trophy, Calendar, ChevronRight, Target, Dumbbell, Apple, Brain, Wind, BookOpen, ShoppingBag, Check, Flame, Sparkles, X, Eye, Zap, Music, type LucideIcon } from "lucide-react"
-import { PortalHeader } from "@/components/Navigation/PortalHeader"
+
 import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter } from "next/navigation"
 import TrialSubscription from "@/components/Subscriptions/TrialSubscription"
@@ -474,19 +474,8 @@ export function EnhancedDashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-32"
-      style={{
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}>
+    <div className="rb-launch min-h-screen relative pt-20">
       <div className="relative z-10">
-        <PortalHeader
-          section="Daily Check-in"
-          subtitle="Track your wellness journey"
-          showPeptideInfo={false}
-        />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Header */}
@@ -606,7 +595,7 @@ export function EnhancedDashboard() {
           )}
 
           {/* Main Portal Section - Matching Portalview.png */}
-          <div className="card-hover-primary mb-8">
+          <div className="rb-card mb-8">
             <div className="text-center mb-6">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">📋 Daily Check-in</h2>
             </div>
@@ -619,7 +608,7 @@ export function EnhancedDashboard() {
                 ? Array.from({ length: 8 }).map((_, i) => (
                     <div
                       key={`skeleton-${i}`}
-                      className="w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] p-6 bg-gray-700/20 border border-gray-600/20 rounded-lg animate-pulse"
+                      className="rb-card w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)] animate-pulse"
                     >
                       <div className="w-8 h-8 bg-gray-600/30 rounded mx-auto mb-2" />
                       <div className="h-4 bg-gray-600/30 rounded w-2/3 mx-auto" />
@@ -629,7 +618,7 @@ export function EnhancedDashboard() {
                     const IconComponent = iconMap[mod.icon]
                     return (
                       <Link key={mod.slug} href={mod.href} className="group w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]">
-                        <div className={`p-6 bg-gradient-to-br ${mod.colorFrom} ${mod.colorTo} border ${mod.borderColor} rounded-lg hover:scale-[1.02] hover:shadow-lg transition-all text-center`}>
+                        <div className="rb-card h-full text-center transition-colors hover:border-primary-400">
                           {IconComponent && <IconComponent className={`w-8 h-8 ${mod.iconColor} mx-auto mb-2`} />}
                           <span className="text-white font-medium">{mod.label}</span>
                         </div>

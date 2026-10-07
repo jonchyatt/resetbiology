@@ -351,7 +351,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
 
   return (
     <section className="rounded-2xl bg-gradient-to-br from-emerald-500/10 via-slate-900/40 to-slate-900/60 border border-emerald-400/30 shadow-lg p-6">
-      <div className="mb-4 flex items-center justify-between gap-4">
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-bold text-white">Log Nutrition</h2>
           {/* Camera Button */}
@@ -365,7 +365,7 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveTab('search')}
             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${

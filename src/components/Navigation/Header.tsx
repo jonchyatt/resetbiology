@@ -23,10 +23,6 @@ export function Header() {
   const { user, isLoading } = useUser()
   const isAdmin = user?.role === 'admin'
 
-  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
-  // the content. Each such route owns its own navigation (← Back links).
-  if (shouldHideHeader(pathname)) return null
-
   // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -38,9 +34,13 @@ export function Header() {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isUserMenuOpen])
 
+  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
+  // the content. Each such route owns its own navigation (← Back links).
+  if (shouldHideHeader(pathname)) return null
+
   return (
     <header
-      className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200"
+      className="fixed top-0 w-full z-50 bg-slate-950/95 backdrop-blur-sm border-b border-slate-800 text-slate-100"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       <div className="container mx-auto px-4">
@@ -50,26 +50,29 @@ export function Header() {
             <img 
               src="/reset-logo-pro.png" 
               alt="Reset Biology" 
-              className="h-14 w-auto rounded-xl drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-sm p-2 border border-white/20"
+              className="h-12 w-auto rounded-lg border border-slate-800 bg-slate-900 p-1 transition-opacity duration-200"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center gap-5">
             {/* Public/Logged Out Navigation — only renders once auth has resolved
                 (isLoading=false), otherwise the logged-out nav flashes before
                 Auth0 confirms the user is signed in, which makes Education
                 appear to "get erased by another tab" on first paint. */}
             {!isLoading && !user && (
               <>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
+                <Link href="/order" className="min-h-11 inline-flex items-center text-slate-300 hover:text-primary-300 font-medium transition-colors">
                   Peptide Co-op
+                </Link>
+                <Link href="/get-started" className="min-h-11 inline-flex items-center text-slate-100 hover:text-primary-300 font-medium transition-colors">
+                  Get started
                 </Link>
                 <a
                   href="/auth/login?returnTo=/portal"
-                  className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+                  className="min-h-11 inline-flex items-center rounded-lg bg-primary-400 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-primary-300"
                 >
-                  Login / Sign Up
+                  Log in
                 </a>
               </>
             )}
@@ -77,16 +80,22 @@ export function Header() {
             {/* Logged In Navigation */}
             {!isLoading && user && (
               <>
-                <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                <Link href="/portal" className="text-slate-300 hover:text-primary-300 font-medium transition-colors">
                   Portal
                 </Link>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
+                <Link href="/peptides" className="text-slate-300 hover:text-primary-300 font-medium transition-colors">
+                  Peptides
                 </Link>
-                <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  Education
+                <Link href="/nutrition" className="text-slate-300 hover:text-primary-300 font-medium transition-colors">
+                  Meals
                 </Link>
-                <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors flex items-center">
+                <Link href="/journal" className="text-slate-300 hover:text-primary-300 font-medium transition-colors">
+                  Journal
+                </Link>
+                <Link href="/modules" className="text-slate-300 hover:text-primary-300 font-medium transition-colors">
+                  Hypnosis
+                </Link>
+                <Link href="/profile" className="text-slate-300 hover:text-primary-300 font-medium transition-colors flex items-center">
                   <Settings className="w-4 h-4 mr-1" />
                   Profile
                 </Link>
@@ -98,7 +107,9 @@ export function Header() {
                       e.stopPropagation()
                       setIsUserMenuOpen(!isUserMenuOpen)
                     }}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-teal-600 font-medium transition-colors"
+                    className="min-h-11 flex items-center space-x-2 text-slate-300 hover:text-primary-300 font-medium transition-colors"
+                    aria-expanded={isUserMenuOpen}
+                    aria-label="Open account menu"
                   >
                     <User className="w-4 h-4" />
                     <span>Account</span>
@@ -106,21 +117,28 @@ export function Header() {
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                    <div className="absolute right-0 mt-2 w-64 rounded-lg border border-slate-700 bg-slate-900 py-2 shadow-lg">
                       {/* Show which account is signed in (the email used to be in
                           the trigger button itself, but it widened the nav bar
                           enough to cause a visible layout shift on auth resolve). */}
-                      <div className="px-4 py-2 text-xs text-gray-500 truncate" title={user.email || ''}>
+                      <div className="px-4 py-2 text-sm text-slate-400 truncate" title={user.email || ''}>
                         Signed in as<br />
-                        <span className="text-gray-800 font-medium">{user.name || user.email}</span>
+                        <span className="text-slate-100 font-medium">{user.name || user.email}</span>
                       </div>
 
-                      <hr className="my-2 border-gray-200" />
+                      <hr className="my-2 border-slate-700" />
+
+                      <Link href="/education" className="flex min-h-11 items-center px-4 py-2 text-slate-200 hover:bg-slate-800" onClick={() => setIsUserMenuOpen(false)}>
+                        Education
+                      </Link>
+                      <Link href="/order" className="flex min-h-11 items-center px-4 py-2 text-slate-200 hover:bg-slate-800" onClick={() => setIsUserMenuOpen(false)}>
+                        Peptide Co-op
+                      </Link>
 
                       {isAdmin && (
                         <Link
                           href="/admin"
-                          className="flex items-center px-4 py-2 text-orange-600 hover:bg-orange-50 transition-colors"
+                          className="flex min-h-11 items-center px-4 py-2 text-amber-300 hover:bg-slate-800 transition-colors"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <Shield className="w-4 h-4 mr-2" />
@@ -128,11 +146,11 @@ export function Header() {
                         </Link>
                       )}
 
-                      {isAdmin && <hr className="my-2 border-gray-200" />}
+                      {isAdmin && <hr className="my-2 border-slate-700" />}
 
                       <a
                         href="/auth/logout"
-                        className="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+                        className="flex min-h-11 items-center px-4 py-2 text-red-300 hover:bg-slate-800 transition-colors"
                       >
                         Logout
                       </a>
@@ -145,8 +163,10 @@ export function Header() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden min-h-11 min-w-11 p-2 text-slate-100"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
+            aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -154,51 +174,66 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div className="md:hidden py-4 border-t border-slate-800">
             <nav className="flex flex-col space-y-4">
-              {!user ? (
+              {!isLoading && !user ? (
                 <>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/order" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Peptide Co-op
+                  </Link>
+                  <Link href="/get-started" className="min-h-11 flex items-center text-slate-100 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Get started
                   </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
-                    className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
+                    className="min-h-11 flex items-center justify-center rounded-lg bg-primary-400 px-4 py-2 font-semibold text-slate-950 transition-colors hover:bg-primary-300"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login / Sign Up
+                    Log in
                   </a>
                 </>
-              ) : (
+              ) : !isLoading && user ? (
                 <>
-                  <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/portal" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Portal
                   </Link>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
+                  <Link href="/peptides" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Peptides
                   </Link>
-                  <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/nutrition" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Meals
+                  </Link>
+                  <Link href="/journal" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Journal
+                  </Link>
+                  <Link href="/modules" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Hypnosis
+                  </Link>
+                  <Link href="/education" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Education
                   </Link>
-                  <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/order" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Peptide Co-op
+                  </Link>
+                  <Link href="/profile" className="min-h-11 flex items-center text-slate-300 hover:text-primary-300 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Profile
                   </Link>
                   {isAdmin && (
-                    <Link href="/admin" className="text-orange-600 hover:text-orange-700 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/admin" className="min-h-11 flex items-center text-amber-300 hover:text-amber-200 font-medium" onClick={() => setIsMenuOpen(false)}>
                       Admin Dashboard
                     </Link>
                   )}
                   <div className="pt-2 space-y-2">
-                    <div className="text-gray-700">Hello, {user.name || user.email}</div>
+                    <div className="text-slate-400">Hello, {user.name || user.email}</div>
                     <a
                       href="/auth/logout"
-                      className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
+                      className="min-h-11 flex items-center justify-center rounded-lg border border-red-400/40 px-4 py-2 text-red-200 transition-colors hover:bg-red-950"
                     >
                       Logout
                     </a>
                   </div>
                 </>
-              )}
+              ) : null}
             </nav>
           </div>
         )}

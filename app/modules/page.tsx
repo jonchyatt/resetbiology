@@ -1,19 +1,7 @@
-import { PortalHeader } from '@/components/Navigation/PortalHeader'
-
 export default function ModulesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-         style={{
-           backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-           backgroundSize: 'cover',
-           backgroundPosition: 'center',
-           backgroundAttachment: 'fixed'
-         }}>
-      <div className="relative z-10 pt-32">
-        <PortalHeader
-          section="Mental Mastery Modules"
-          subtitle="Transform your mindset and metabolic health"
-        />
+    <div className="rb-launch min-h-screen relative">
+      <div className="relative z-10 pt-20">
 
         {/* Title Section - Matching Tracker Pages */}
         <div className="text-center py-8">
@@ -30,7 +18,7 @@ export default function ModulesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Foundation Series */}
-            <div className="card-hover-primary">
+            <div className="rb-card">
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🧠</div>
                 <h2 className="text-2xl font-bold text-white mb-2">Foundation Series</h2>
@@ -62,7 +50,7 @@ export default function ModulesPage() {
             </div>
 
             {/* Integration Series */}
-            <div className="card-hover-primary">
+            <div className="rb-card">
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">⚡</div>
                 <h2 className="text-2xl font-bold text-white mb-2">Integration Series</h2>
@@ -94,7 +82,7 @@ export default function ModulesPage() {
             </div>
 
             {/* Mastery Series */}
-            <div className="card-hover-primary">
+            <div className="rb-card">
               <div className="text-center mb-6">
                 <div className="text-4xl mb-3">🎯</div>
                 <h2 className="text-2xl font-bold text-white mb-2">Mastery Series</h2>
@@ -128,15 +116,15 @@ export default function ModulesPage() {
 
           {/* Progress Stats */}
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="stat-card-hover p-6 text-center">
+            <div className="rb-card text-center">
               <div className="text-3xl font-bold text-primary-300 mb-2">12/30</div>
               <div className="text-gray-300">Foundation Modules</div>
             </div>
-            <div className="stat-card-hover p-6 text-center">
+            <div className="rb-card text-center">
               <div className="text-3xl font-bold text-blue-300 mb-2">0/30</div>
               <div className="text-gray-300">Integration Modules</div>
             </div>
-            <div className="stat-card-hover p-6 text-center">
+            <div className="rb-card text-center">
               <div className="text-3xl font-bold text-purple-300 mb-2">0/30</div>
               <div className="text-gray-300">Mastery Modules</div>
             </div>
