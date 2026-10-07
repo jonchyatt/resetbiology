@@ -1,0 +1,254 @@
+{
+  "url": "https://resetbiology.com/pitch-defender/pitchforks-3",
+  "viewport": "390x844",
+  "capturedAt": "2026-10-07T03:10:03.338Z",
+  "title": "ResetBiology",
+  "finalUrl": "https://resetbiology.com/pitch-defender/pitchforks-3",
+  "bodyText": "Back\nV1\nPITCHFORKS III\nFrankenstein lightning ear trainer\n\nAll four practice chambers are available below. Listen & Tap can enter immediately with deliberate answer buttons; Voice Lightning begins the required comfortable-range check. No notes are granted by practice.\n\nPractice lane: VOICE LIGHTNING · real microphone · comfortable range required. Choose the lane above before entering a chamber.\n\nPITCHFORKS PRACTICE ARCADE\n\nEnter any existing chamber\n\nFour untimed music challenges. Choose one and sing through the encounter.\n\nPRACTICE CHAMBER\n\nDungeon · Torchmaster\n\nOne-note flame lock\n\nListen, sing the exact note, and hold until the torch answers.\n\nHEAR → SING → CHARGE → STRIKE\n\nPLAY THIS ENCOUNTER\n\nPRACTICE CHAMBER\n\nVillage Gate · Choirmaster\n\nShort chorus phrase\n\nSing the existing admitted-note phrase at your own pace.\n\nHEAR THE CHORUS → SING EACH ANSWER\n\nPLAY THIS ENCOUNTER\n\nPRACTICE CHAMBER\n\nBell Tower · Bellringer\n\nTwo-note bell interval\n\nListen to each bell and sing back the exact note.\n\nBELL CUE → VOICE LOCK → BELL RELEASE\n\nPLAY THIS ENCOUNTER\n\nPRACTICE CHAMBER\n\nCathedral · Final Storm\n\nOut-and-back recital\n\nSing the existing cathedral sequence out, then back.\n\nSTORM PHRASE → VOICE LOCK → RETURN PHRASE\n\nPLAY THIS ENCOUNTER\nSELECTED WORLD · THE DUNGEON\nAVAILABLE NOW.\nSELECTED\nTHE DUNGEON\nReady to play.\nLOCKED\nTHE VILLAGE GATE\nMaster your current notes to unlock.\nLOCKED\nTHE BELL TOWER\nComplete your Village interval journey.\nLOCKED\nTHE CATHEDRAL\nPass the Bellringer recital.\nPLAY THE DUNGEON\nRange setup comes first. No note enters your arsenal until it fits your comfortable range.\nHOW YOU DEFEND\n\nStart by recognizing the note, then move into singing. Both lanes use this same storm and keep recognition separate from voice practice.\n\nLISTEN & TAP\nHear the fork, choose its note. No mic.\nVOICE LIGHTNING\nHear, sing, then recall the exact octave.\nLEARNING PATH · LISTEN & TAP → HEAR THEN SING → SING FROM NAME → BLIND\nNote names ON\nAudio cue ON\nSpeaker mode unavailable\nHint note short\nStaff notation OFF\nNote colors OFF\nReduced motion OFF\nReference audio 100%\nMic sensitivity 100%\nSFX\nHOW TO PLAY\nYOUR NOTES · Singing & listening progress",
+  "buttons": [
+    {
+      "text": "PLAY THIS ENCOUNTER",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 71,
+        "y": 749,
+        "w": 248,
+        "h": 48
+      }
+    },
+    {
+      "text": "PLAY THIS ENCOUNTER",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 71,
+        "y": 1034,
+        "w": 248,
+        "h": 48
+      }
+    },
+    {
+      "text": "PLAY THIS ENCOUNTER",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 71,
+        "y": 1307,
+        "w": 248,
+        "h": 48
+      }
+    },
+    {
+      "text": "PLAY THIS ENCOUNTER",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 71,
+        "y": 1580,
+        "w": 248,
+        "h": 48
+      }
+    },
+    {
+      "text": "SELECTED\nTHE DUNGEON\nReady to play.",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 37,
+        "y": 1718,
+        "w": 155,
+        "h": 133.25
+      }
+    },
+    {
+      "text": "LOCKED\nTHE VILLAGE GATE\nMaster your current notes to unlock.",
+      "aria": null,
+      "disabled": true,
+      "rect": {
+        "x": 198,
+        "y": 1718,
+        "w": 155,
+        "h": 133.25
+      }
+    },
+    {
+      "text": "LOCKED\nTHE BELL TOWER\nComplete your Village interval journey.",
+      "aria": null,
+      "disabled": true,
+      "rect": {
+        "x": 37,
+        "y": 1857.25,
+        "w": 155,
+        "h": 133.25
+      }
+    },
+    {
+      "text": "LOCKED\nTHE CATHEDRAL\nPass the Bellringer recital.",
+      "aria": null,
+      "disabled": true,
+      "rect": {
+        "x": 198,
+        "y": 1857.25,
+        "w": 155,
+        "h": 133.25
+      }
+    },
+    {
+      "text": "PLAY THE DUNGEON",
+      "aria": null,
+      "disabled": true,
+      "rect": {
+        "x": 37,
+        "y": 2010.5,
+        "w": 316,
+        "h": 56
+      }
+    },
+    {
+      "text": "LISTEN & TAP\nHear the fork, choose its note. No mic.",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 50,
+        "y": 2268.5,
+        "w": 141,
+        "h": 95.25
+      }
+    },
+    {
+      "text": "VOICE LIGHTNING\nHear, sing, then recall the exact octave.",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 199,
+        "y": 2268.5,
+        "w": 141,
+        "h": 95.25
+      }
+    },
+    {
+      "text": "KEEP MY PLACE",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "text": "RESTART JOURNEY",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      }
+    },
+    {
+      "text": "Note names ON",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 88.515625,
+        "y": 2437.25,
+        "w": 103.78125,
+        "h": 48
+      }
+    },
+    {
+      "text": "Audio cue ON",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 204.296875,
+        "y": 2437.25,
+        "w": 97.1875,
+        "h": 48
+      }
+    },
+    {
+      "text": "Speaker mode unavailable",
+      "aria": null,
+      "disabled": true,
+      "rect": {
+        "x": 106.828125,
+        "y": 2497.25,
+        "w": 176.34375,
+        "h": 48
+      }
+    },
+    {
+      "text": "Staff notation OFF",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 62.125,
+        "y": 2617.25,
+        "w": 136.765625,
+        "h": 48
+      }
+    },
+    {
+      "text": "Note colors OFF",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 210.890625,
+        "y": 2617.25,
+        "w": 116.96875,
+        "h": 48
+      }
+    },
+    {
+      "text": "Reduced motion OFF",
+      "aria": null,
+      "disabled": false,
+      "rect": {
+        "x": 126.609375,
+        "y": 2677.25,
+        "w": 136.765625,
+        "h": 48
+      }
+    },
+    {
+      "text": "HOW TO PLAY",
+      "aria": null,
+      "disabled": true,
+      "rect": {
+        "x": 37,
+        "y": 2925.25,
+        "w": 316,
+        "h": 54
+      }
+    }
+  ],
+  "links": [
+    {
+      "text": "Back",
+      "href": "https://resetbiology.com/pitch-defender",
+      "rect": {
+        "x": 37,
+        "y": 37,
+        "w": 26.390625,
+        "h": 16
+      }
+    },
+    {
+      "text": "V1",
+      "href": "https://resetbiology.com/pitch-defender/pitchforks",
+      "rect": {
+        "x": 339.796875,
+        "y": 37,
+        "w": 13.203125,
+        "h": 16
+      }
+    }
+  ],
+  "scrollHeight": 908,
+  "dungeonY": 609
+}
