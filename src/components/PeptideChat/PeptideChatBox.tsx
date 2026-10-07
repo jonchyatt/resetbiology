@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, type ReactNode } from 'react';
+import { track } from '@vercel/analytics';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -53,6 +54,7 @@ export default function PeptideChatBox({ slug, peptide }: Props) {
       }
 
       const answer = (data.answer || '').toString();
+      track('Librarian Question Asked', { peptide: slug });
       setMessages([...next, { role: 'assistant', content: answer }]);
     } catch (e: any) {
       setError(e?.message || 'Network error');

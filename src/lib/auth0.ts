@@ -1,6 +1,7 @@
 // src/lib/auth0.ts
 import { Auth0Client } from '@auth0/nextjs-auth0/server';
 import { prisma } from './prisma';
+import { getAuth0TransactionCookieDomain } from './auth0-transaction-cookie';
 
 // Session type for Auth0 v4
 interface Session {
@@ -70,12 +71,6 @@ async function syncUserToDatabase(session: Session): Promise<void> {
     if (!user) {
       // Create new user
       const memberID = await generateMemberID();
-      const now = new Date();
-
-      // Satori Living Foundation Grant: all new users get 6 months subscriber access
-      const grantExpiry = new Date(now);
-      grantExpiry.setMonth(grantExpiry.getMonth() + 6);
-
       user = await prisma.user.create({
         data: {
           email,
@@ -83,9 +78,11 @@ async function syncUserToDatabase(session: Session): Promise<void> {
           auth0Sub,
           memberID,
           image: picture || null,
+          // The existing subscriber level unlocks the launch tools. During the
+          // free-first launch it is indefinite and never represents a paid plan.
           accessLevel: 'subscriber',
           subscriptionStatus: 'active',
-          subscriptionExpiry: grantExpiry,
+          subscriptionExpiry: null,
           role: 'basic',
           // Introduction tier fields not used for grant
           introductionStartDate: null,
@@ -102,7 +99,7 @@ async function syncUserToDatabase(session: Session): Promise<void> {
         }
       });
 
-      console.log(`Created new user: ${email} (${memberID}) - Grant: 6-month subscriber until ${grantExpiry.toISOString().split('T')[0]}`);
+      console.log(`Created new free-launch user: ${email} (${memberID}) - no expiry`);
     } else {
       // Update existing user
       const updateData: Record<string, unknown> = {
@@ -111,15 +108,14 @@ async function syncUserToDatabase(session: Session): Promise<void> {
         image: picture || user.image,
       };
 
-      // Satori Living Foundation Grant: upgrade any guest/introduction user to 6-month subscriber
+      // Free-first launch: move legacy guest/introduction users onto the same
+      // non-expiring access as new signups.
       if (user.accessLevel === 'guest' || user.accessLevel === 'introduction') {
-        const now = new Date();
-        const grantExpiry = new Date(now);
-        grantExpiry.setMonth(grantExpiry.getMonth() + 6);
-
         updateData.accessLevel = 'subscriber';
         updateData.subscriptionStatus = 'active';
-        updateData.subscriptionExpiry = grantExpiry;
+        updateData.subscriptionExpiry = null;
+        updateData.introductionStartDate = null;
+        updateData.introductionExpiresAt = null;
 
         if (quizSubmission && !user.quizSubmissionId) {
           updateData.quizSubmissionId = quizSubmission.id;
@@ -132,7 +128,7 @@ async function syncUserToDatabase(session: Session): Promise<void> {
           };
         }
 
-        console.log(`Grant: Upgraded user to 6-month subscriber: ${email} until ${grantExpiry.toISOString().split('T')[0]}`);
+        console.log(`Free launch: upgraded user to non-expiring access: ${email}`);
       }
 
       await prisma.user.update({
@@ -148,6 +144,9 @@ async function syncUserToDatabase(session: Session): Promise<void> {
 
 // Auth0 v4 SDK with beforeSessionSaved hook for user sync
 export const auth0 = new Auth0Client({
+  transactionCookie: {
+    domain: getAuth0TransactionCookieDomain(),
+  },
   beforeSessionSaved: async (session) => {
     // Sync user to database when session is saved
     await syncUserToDatabase(session as Session);

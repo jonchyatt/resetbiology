@@ -62,6 +62,7 @@ function GetStartedContent() {
 
       const result = await response.json()
       setSubmitResult(result)
+      router.push(`/auth/login?screen_hint=signup&login_hint=${encodeURIComponent(data.email)}&returnTo=/portal`)
     } catch (err) {
       console.error("Quiz submission error:", err)
       setError("Something went wrong. Please try again.")

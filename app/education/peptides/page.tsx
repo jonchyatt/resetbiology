@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { peptideIndex } from '@/data/peptide-education/generated';
+import PeptideChatBox from '@/components/PeptideChat/PeptideChatBox';
+import { LibrarianLeadCapture } from '@/components/PeptideChat/LibrarianLeadCapture';
 
 export const metadata = {
   title: 'Peptide Library — Hunter, Taylor, Bachmeyer | Reset Biology',
@@ -63,6 +65,12 @@ export default function PeptideLibraryHub() {
             <p className="text-xl text-white/95 max-w-3xl">
               Cross-expert reference indexing what Hunter Williams, Taylor Williams, and Dr Trevor Bachmeyer teach about each peptide — including dosing where given, acute vs chronic context, and female-specific guidance.
             </p>
+            <div className="mt-8 max-w-3xl">
+              <PeptideChatBox slug="bpc-157" peptide="BPC-157" />
+              <div className="mt-3 rounded-xl border border-white/15 bg-black/20 p-3">
+                <LibrarianLeadCapture />
+              </div>
+            </div>
           </div>
         </div>
 

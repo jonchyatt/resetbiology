@@ -56,7 +56,7 @@ export interface DosageCalculatorProps {
     id: string;
     name: string;
     vialSize: number;
-    recommendedDose?: number;
+    existingDose?: number;
   };
   onSaveToLog?: (data: {
     peptideName: string;
@@ -76,36 +76,9 @@ export interface DosageCalculatorProps {
 }
 
 /*********************************
- * Presets
- *********************************/
-const PEPTIDE_PRESETS = [
-  {
-    name: "BPC-157",
-    commonDoses: [250, 500, 750], // mcg
-    typicalVialSize: 5, // mg
-    recommendedVolume: 2, // ml
-    instructions: "Subcutaneous injection, can be site-specific",
-  },
-  {
-    name: "Ipamorelin",
-    commonDoses: [200, 300, 400], // mcg
-    typicalVialSize: 10, // mg
-    recommendedVolume: 2, // ml
-    instructions: "Best taken before bed or post-workout",
-  },
-  {
-    name: "Semaglutide",
-    commonDoses: [0.25, 0.5, 1.0, 2.0], // mg
-    typicalVialSize: 10, // mg
-    recommendedVolume: 2, // ml
-    instructions: "Weekly injection, gradually increase dose",
-  },
-] as const;
-
-/*********************************
  * Core calculation engine
  *********************************/
-const calculateDosage = (inputs: CalculatorInputs): CalculatorOutputs => {
+export const calculateDosage = (inputs: CalculatorInputs): CalculatorOutputs => {
   const safeTotalVolume = Number(inputs.totalVolume) || 0;
   const safePeptideAmount = Number(inputs.peptideAmount) || 0;
   const safeDesired = Number(inputs.desiredDose) || 0;
@@ -281,34 +254,6 @@ const SyringeVisual: React.FC<{
 };
 
 /*********************************
- * Reconstitution Guide Component
- *********************************/
-const ReconstitutionGuide: React.FC<{ peptideAmount: number; volume: number; instructions?: string }>
-  = ({ peptideAmount, volume, instructions }) => {
-    return (
-      <div className="space-y-3 bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
-        <h3 className="text-lg font-bold text-white mb-1">Mixing Instructions</h3>
-        <ol className="space-y-1.5 text-gray-300 list-decimal list-inside text-sm leading-snug">
-          <li>Add {formatNumber(volume, 2)} ml of bacteriostatic water to {formatNumber(peptideAmount, 2)} mg vial</li>
-          <li>Inject water slowly down the side of vial</li>
-          <li>Gently swirl (do not shake) until dissolved</li>
-          <li>Store in refrigerator after reconstitution</li>
-        </ol>
-        {instructions && (
-          <div className="text-sm text-gray-300 leading-snug">
-            <span className="font-semibold text-primary-400">Note: </span>{instructions}
-          </div>
-        )}
-        <div className="bg-amber-600/20 border border-amber-400/30 rounded-lg p-2.5">
-          <p className="text-sm text-amber-300 leading-snug">⚠️ Use within 30 days after reconstitution</p>
-        </div>
-      </div>
-    );
-  };
-
-
-
-
 /*********************************
  * Main Dosage Calculator Component
  *********************************/
@@ -323,16 +268,16 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   onSavePreset,
 }) => {
   const defaultInputs: CalculatorInputs = {
-    desiredDose: 250, // default in mcg for peptides like BPC-157
+    desiredDose: 0,
     doseUnit: "mcg",
-    peptideConcentration: 0, // will be derived and displayed
-    totalVolume: 1,
-    peptideAmount: 10,
+    peptideConcentration: 0,
+    totalVolume: 0,
+    peptideAmount: 0,
     insulinSyringeUnits: true,
   };
 
   const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
-  const [peptideName, setPeptideName] = useState<string>("BPC-157");
+  const [peptideName, setPeptideName] = useState<string>("");
   const [selectedPeptideId, setSelectedPeptideId] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -341,11 +286,11 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const [customPeptideName, setCustomPeptideName] = useState<string>("");
 
   // New state for scheduling (addProtocol mode)
-  const [scheduleType, setScheduleType] = useState<string>('daily');
-  const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
-  const [selectedTimes, setSelectedTimes] = useState<string[]>(['08:00']);
-  const [duration, setDuration] = useState<string>('8 weeks');
-  const [newTimeInput, setNewTimeInput] = useState<string>('08:00');
+  const [scheduleType, setScheduleType] = useState<string>('custom');
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+  const [duration, setDuration] = useState<string>('');
+  const [newTimeInput, setNewTimeInput] = useState<string>('');
 
   // Notification preferences
   const [pushEnabled, setPushEnabled] = useState<boolean>(true);
@@ -359,7 +304,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     setInputs((prev) => ({
       ...prev,
       peptideAmount: importedPeptide.vialSize || prev.peptideAmount,
-      desiredDose: importedPeptide.recommendedDose ?? prev.desiredDose,
+      desiredDose: importedPeptide.existingDose ?? prev.desiredDose,
     }));
   }, [importedPeptide]);
 
@@ -376,10 +321,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   }, [inputs]);
 
   // Derived values for visuals
-
-  const unitMinMax = inputs.doseUnit === "mg"
-    ? { min: 0.1, max: 15, step: 0.05 }
-    : { min: 50, max: 5000, step: 10 };
 
   const handleSave = async () => {
     if (!onSaveToLog) return;
@@ -538,8 +479,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     }
 
     setInputs((prev) => {
-      let totalVolume = 1;
-
+      let totalVolume = prev.totalVolume;
       let peptideAmount = prev.peptideAmount;
       if (peptide.vialAmount) {
         const amountMatch = peptide.vialAmount.match(/(\d+\.?\d*)/);
@@ -568,11 +508,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     const conc = inputs.totalVolume > 0 ? (inputs.peptideAmount * 1000) / inputs.totalVolume : 0;
     return formatNumber(conc, 2);
   }, [inputs.peptideAmount, inputs.totalVolume]);
-
-  const presetInstructions = useMemo(() => {
-    const match = PEPTIDE_PRESETS.find((preset) => preset.name.toLowerCase() === peptideName.toLowerCase());
-    return match?.instructions ?? null;
-  }, [peptideName]);
 
   return (
     <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-3xl p-6 pt-6 border border-primary-400/30 shadow-2xl">
@@ -619,25 +554,25 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   })}
                 </select>
 
-                {/* Custom Peptide Name Input */}
+                {/* Personal record name input */}
                 {isCustomPeptide && (
                   <div className="space-y-2 animate-fade-in">
-                    <label className="block text-sm text-amber-300 font-medium">Custom Peptide/Supplement Name</label>
+                    <label className="block text-sm text-amber-300 font-medium">Personal record name</label>
                     <input
                       type="text"
                       value={customPeptideName}
                       onChange={(e) => setCustomPeptideName(e.target.value)}
-                      placeholder="e.g., Vitamin D3, Magnesium, NAD+, Custom Blend"
+                      placeholder="Enter a name"
                       className="w-full bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                     />
                     <p className="text-xs text-amber-200/70">
-                      Enter any vitamin, mineral, or custom compound you want to track
+                      Enter the name you want to use in your own records.
                     </p>
                   </div>
                 )}
 
                 <p className="text-xs text-amber-300/70">
-                  {(peptideLibrary?.length ?? 0) - 1} products from store + Custom option available
+                  Enter the name and details you want to record. Reset Biology does not suggest a product, dose, or schedule.
                 </p>
               </div>
             ) : (
@@ -652,16 +587,16 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-amber-300 font-medium">Total volume (ml)</span>
-                <select
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
                   aria-label="Total volume"
-                  onChange={(e) => setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) }))}
                   value={inputs.totalVolume}
+                  onChange={(e) => setInputs((s) => ({ ...s, totalVolume: parseFloat(e.target.value) || 0 }))}
+                  placeholder="Enter volume"
                   className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all w-full"
-                >
-                  {[1, 0.5, 1.5, 2, 2.5, 3].map((v) => (
-                    <option key={v} value={v} className="bg-gray-800 text-amber-100">{v} ml</option>
-                  ))}
-                </select>
+                />
               </label>
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-amber-300 font-medium">Peptide in vial (mg)</span>
@@ -670,7 +605,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   aria-label="Peptide amount in vial"
                   value={inputs.peptideAmount}
                   onChange={(e) => setInputs((s) => ({ ...s, peptideAmount: parseFloat(e.target.value) || 0 }))}
-                  placeholder="e.g., 10, 50, 100"
+                  placeholder="Enter amount"
                   min="0"
                   step="any"
                   className="bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2.5 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
@@ -693,7 +628,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           {/* Dose + Unit */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 space-y-3">
             <label>
-              <span className="block mb-1 text-sm text-amber-300 font-medium">Desired dose</span>
+              <span className="block mb-1 text-sm text-amber-300 font-medium">Amount to calculate</span>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -702,7 +637,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   inputMode="decimal"
                   value={inputs.desiredDose}
                   onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }))}
-                  onBlur={(e) => setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }))}
+                  min="0"
                   className="w-20 sm:w-24 bg-primary-600/25 border border-amber-400/40 rounded-lg px-3 py-2 text-amber-100 placeholder-amber-300/50 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/30 transition-all"
                 />
                 <select
@@ -716,20 +651,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 </select>
               </div>
             </label>
-            <input
-              aria-label="Dose range"
-              type="range"
-              min={unitMinMax.min}
-              max={unitMinMax.max}
-              step={unitMinMax.step}
-              value={inputs.desiredDose}
-              onChange={(e) => setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) }))}
-              className="w-full accent-amber-400"
-            />
-            <div className="flex justify-between text-xs text-amber-300/70">
-              <span>{unitMinMax.min} {inputs.doseUnit}</span>
-              <span>{unitMinMax.max} {inputs.doseUnit}</span>
-            </div>
+            <p className="text-xs text-amber-300/70">Enter your own amount. Reset Biology does not provide a suggested range.</p>
           </div>
 
           {/* Scheduling Section - Only in addProtocol mode */}
@@ -738,7 +660,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               <div className="bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40 space-y-4">
                 {/* Frequency Selector */}
                 <div>
-                  <label className="block text-sm text-amber-300 font-medium mb-2">Dosing Frequency</label>
+                  <label className="block text-sm text-amber-300 font-medium mb-2">Record frequency</label>
                   <select
                     value={scheduleType}
                     onChange={(e) => setScheduleType(e.target.value)}
@@ -824,9 +746,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     </button>
                   </div>
 
-                  <p className="text-xs text-gray-400 mt-2">
-                    Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
-                  </p>
+                  <p className="text-xs text-gray-400 mt-2">Add the times you want to record.</p>
                 </div>
 
                 {/* Schedule Summary */}
@@ -857,19 +777,17 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             <div className="w-full bg-gradient-to-br from-primary-900/20 to-secondary-900/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/40">
               <div className="flex flex-col gap-3">
                 <label className="text-sm text-gray-300 font-medium" htmlFor="protocol-duration">
-                  Protocol Duration
+                  Record duration
                 </label>
                 <input
                   id="protocol-duration"
                   type="text"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
-                  placeholder="e.g., 8 weeks, 12 weeks, 6 months"
+                  placeholder="Optional"
                   className="bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none text-sm"
                 />
-                <p className="text-xs text-gray-400 leading-snug">
-                  Example: "8 weeks on, 8 weeks off" or "12 weeks continuous"
-                </p>
+                <p className="text-xs text-gray-400 leading-snug">Optional personal record field.</p>
               </div>
             </div>
           )}
@@ -878,7 +796,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
         {/* Results & Instructions */}
         <div className="space-y-4">
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30" role="status" aria-live="polite">
-            <h3 className="text-lg font-semibold text-white mb-1">Results</h3>
+            <h3 className="text-lg font-semibold text-white mb-1">Calculation from your entries</h3>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm leading-snug">
               <div className="text-gray-400">Peptide</div>
               <div className="text-white font-medium">
@@ -897,11 +815,6 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
             </div>
           </div>
 
-          <ReconstitutionGuide
-            peptideAmount={inputs.peptideAmount}
-            volume={inputs.totalVolume}
-            instructions={presetInstructions ?? undefined}
-          />
 
           {/* Notes */}
           <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30">
@@ -1034,7 +947,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
 
       {/* Footer disclaimer */}
       <div className="mt-6 text-xs text-gray-500">
-        This calculator is provided for informational purposes and should be used under clinician guidance. Always verify calculations.
+        This tool records values you enter and performs unit arithmetic. It does not suggest a product, dose, schedule, preparation, or treatment decision. Confirm health decisions and calculations with a licensed clinician.
       </div>
     </div>
   );
