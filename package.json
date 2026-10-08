@@ -25,7 +25,9 @@
     "browser:peptides": "ts-node tests/run-in-browser.ts goto-peptides",
     "browser:edit": "ts-node tests/run-in-browser.ts click-edit",
     "browser:reload": "ts-node tests/run-in-browser.ts reload",
-    "test:timezone": "tsx tests/timezone-notification-check.ts"
+    "test:timezone": "tsx tests/timezone-notification-check.ts",
+    "test:rb16": "node C:/Users/jonch/reset-biology-website/node_modules/tsx/dist/cli.mjs tests/rb16-local-free-journey.ts",
+    "verify:rb16": "npm run test:rb16 && npm run build && node C:/Users/jonch/reset-biology-website/node_modules/tsx/dist/cli.mjs tests/rb16-production-scan.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
