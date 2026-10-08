@@ -40,7 +40,7 @@ export function Header() {
 
   return (
     <header
-      className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200"
+      className="fixed top-0 z-50 w-full border-b border-slate-800 bg-slate-950/95 text-slate-100 backdrop-blur-sm"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       <div className="container mx-auto px-4">
@@ -50,12 +50,12 @@ export function Header() {
             <img 
               src="/reset-logo-pro.png" 
               alt="Reset Biology" 
-              className="h-14 w-auto rounded-xl drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-sm p-2 border border-white/20"
+              className="h-12 w-auto rounded-lg border border-slate-800 bg-slate-900 p-1 transition-opacity duration-200"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-3 text-sm">
+          <nav className="hidden items-center space-x-3 text-sm md:flex">
             {/* Public/Logged Out Navigation — only renders once auth has resolved
                 (isLoading=false), otherwise the logged-out nav flashes before
                 Auth0 confirms the user is signed in, which makes Education
@@ -170,7 +170,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div className="border-t border-slate-800 py-4 md:hidden">
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>

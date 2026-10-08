@@ -32,7 +32,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-teal-950 px-4 pb-20 pt-28 text-white">
+    <main className="rb-launch min-h-screen bg-slate-950 px-4 pb-20 pt-28 text-white">
       <section className="mx-auto max-w-6xl text-center">
         <p className="mb-4 text-sm font-bold uppercase tracking-[0.24em] text-teal-300">Free to start · no trial clock</p>
         <h1 className="mx-auto max-w-4xl text-5xl font-black leading-tight md:text-7xl">
