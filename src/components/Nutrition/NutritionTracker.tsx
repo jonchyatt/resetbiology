@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import Link from "next/link"
 import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Trash2, Star, Check, Flame } from "lucide-react"
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
+import { createFoodLogRequestId, getLocalDateTime } from "@/lib/nutrition/localEntry"
 
 interface FoodEntry {
   id: string
@@ -16,6 +17,7 @@ interface FoodEntry {
   fats: number
   mealType: string
   loggedAt: string
+  localDate?: string | null
   quantity?: number
   unit?: string
   gramWeight?: number | null
@@ -36,6 +38,7 @@ interface FoodHistoryEntry {
   } | null
   mealType?: string | null
   loggedAt: string
+  localDate?: string | null
 }
 
 export function NutritionTracker() {
@@ -55,6 +58,8 @@ export function NutritionTracker() {
   const [copyingDay, setCopyingDay] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingEntry, setEditingEntry] = useState<FoodHistoryEntry | null>(null)
+  const [mealSaveError, setMealSaveError] = useState<string | null>(null)
+  const manualRequestIdRef = useRef<string | null>(null)
 
   // Favorites state
   const [favorites, setFavorites] = useState<any[]>([])
@@ -80,6 +85,11 @@ export function NutritionTracker() {
   const [protein, setProtein] = useState('')
   const [carbs, setCarbs] = useState('')
   const [fats, setFats] = useState('')
+
+  useEffect(() => {
+    manualRequestIdRef.current = null
+    setMealSaveError(null)
+  }, [foodName, calories, protein, carbs, fats, selectedMealType])
 
   // Load meal plans
   const loadMealPlans = async () => {
@@ -264,11 +274,11 @@ export function NutritionTracker() {
 
     historyItems.forEach((entry) => {
       const date = new Date(entry.loggedAt)
-      const key = date.toISOString().split('T')[0]
+      const key = entry.localDate || getLocalDateTime(date).localDate
       if (!groups.has(key)) {
         groups.set(key, {
-          date,
-          label: date.toLocaleDateString(undefined, {
+          date: new Date(`${key}T12:00:00`),
+          label: new Date(`${key}T12:00:00`).toLocaleDateString(undefined, {
             weekday: 'short',
             month: 'short',
             day: 'numeric',
@@ -340,9 +350,9 @@ export function NutritionTracker() {
       const data = await response.json()
 
       if (data.ok && Array.isArray(data.items)) {
-        const today = new Date().toDateString()
+        const today = getLocalDateTime().localDate
         const filtered = data.items
-          .filter((entry: any) => new Date(entry.loggedAt).toDateString() === today)
+          .filter((entry: any) => (entry.localDate || getLocalDateTime(new Date(entry.loggedAt)).localDate) === today)
 
         const mapped: FoodEntry[] = filtered
           .map((entry: any) => ({
@@ -354,6 +364,7 @@ export function NutritionTracker() {
             fats: Math.round(((entry.nutrients?.fat_g ?? 0) + Number.EPSILON) * 10) / 10,
             mealType: (entry.mealType ?? 'snack').toLowerCase(),
             loggedAt: entry.loggedAt,
+            localDate: entry.localDate,
             quantity: entry.quantity,
             unit: entry.unit,
             gramWeight: entry.gramWeight,
@@ -377,6 +388,11 @@ export function NutritionTracker() {
     }
 
     try {
+      const now = new Date()
+      const { localDate, localTime } = getLocalDateTime(now)
+      const requestId = manualRequestIdRef.current ?? createFoodLogRequestId()
+      manualRequestIdRef.current = requestId
+      setMealSaveError(null)
       const response = await fetch('/api/foods/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -393,14 +409,19 @@ export function NutritionTracker() {
             protein_g: protein ? parseFloat(protein) : 0,
             carb_g: carbs ? parseFloat(carbs) : 0,
             fat_g: fats ? parseFloat(fats) : 0,
-          }
+          },
+          loggedAt: now.toISOString(),
+          localDate,
+          localTime,
+          requestId,
         })
       })
 
       const data = await response.json()
 
-      if (data.ok) {
+      if (response.ok && data.ok) {
         console.log('✅ Food logged!')
+        manualRequestIdRef.current = null
         fetchTodaysFoods()
         // Reset form
         setFoodName('')
@@ -410,11 +431,11 @@ export function NutritionTracker() {
         setFats('')
         setShowAddFoodModal(false)
       } else {
-        alert(`Failed to log food: ${data.error}`)
+        setMealSaveError(data.error || 'Failed to log food. Retry to safely check the same save.')
       }
     } catch (error) {
       console.error('Error logging food:', error)
-      alert('Failed to log food. Please try again.')
+      setMealSaveError('The meal may not have reached the server. Retry to safely check the same save without duplicating it.')
     }
   }
 
@@ -515,17 +536,18 @@ export function NutritionTracker() {
     }
 
     try {
-      const response = await fetch('/api/nutrition/entries', {
+      const response = await fetch(`/api/nutrition/entries/${editingEntry.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          entryId: editingEntry.id,
-          name: foodName,
-          calories: parseFloat(calories),
-          protein: protein ? parseFloat(protein) : 0,
-          carbs: carbs ? parseFloat(carbs) : 0,
-          fats: fats ? parseFloat(fats) : 0,
-          mealType: selectedMealType
+          itemName: foodName,
+          mealType: selectedMealType,
+          nutrients: {
+            kcal: parseFloat(calories),
+            protein_g: protein ? parseFloat(protein) : 0,
+            carb_g: carbs ? parseFloat(carbs) : 0,
+            fat_g: fats ? parseFloat(fats) : 0,
+          },
         })
       })
 
@@ -603,7 +625,7 @@ export function NutritionTracker() {
       )}
 
       {/* Portal Subnav Header */}
-      <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+      <div className="rb-subnav bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -756,7 +778,7 @@ export function NutritionTracker() {
 
             <div className="grid gap-6 lg:grid-cols-3">
               {/* Column 1 - Add Nutrition */}
-              <div className="space-y-6">
+              <div className="rb-responsive-column space-y-6">
                 <FoodQuickAdd
                   onLogged={(result) => {
                     fetchTodaysFoods()
@@ -792,7 +814,7 @@ export function NutritionTracker() {
               </div>
 
               {/* Column 2 - Today's Meals */}
-              <div className="space-y-6">
+              <div className="rb-responsive-column space-y-6">
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-primary-400/20 transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold text-white flex items-center">
@@ -845,7 +867,7 @@ export function NutritionTracker() {
               </div>
 
               {/* Column 3 - Macro Goals & Daily Snapshot */}
-              <div className="space-y-6">
+              <div className="rb-responsive-column space-y-6">
                 <MacroGoals todaysTotals={todaysTotals} />
 
                 <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl hover:shadow-secondary-400/20 transition-all duration-300">
@@ -1012,6 +1034,12 @@ export function NutritionTracker() {
                   <option value="snack">Snack</option>
                 </select>
               </div>
+
+              {mealSaveError && (
+                <div role="alert" className="rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                  {mealSaveError}
+                </div>
+              )}
 
               {/* Search Database Button */}
               <div className="text-center">

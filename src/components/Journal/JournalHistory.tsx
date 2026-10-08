@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell, X, Edit2, Eye } from "lucide-react"
+import { getLocalDateTime } from '@/lib/nutrition/localEntry'
 
 interface JournalHistoryDay {
   date: string
@@ -44,7 +45,7 @@ export function JournalHistory() {
   const [history, setHistory] = useState<JournalHistoryResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [selectedDayKey, setSelectedDayKey] = useState<string>(() => new Date().toISOString().split('T')[0])
+  const [selectedDayKey, setSelectedDayKey] = useState<string>(() => getLocalDateTime().localDate)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -107,11 +108,11 @@ export function JournalHistory() {
 
   const calendarCells = useMemo(() => {
     if (!history) return []
-    const start = new Date(history.range.start)
-    const end = new Date(history.range.end)
     const daysInMonth = history.calendar
     const cells: Array<{ date?: string; iso?: string; count?: number; inMonth: boolean }> = []
-    const leadingBlanks = start.getDay()
+    const leadingBlanks = daysInMonth.length > 0
+      ? new Date(`${daysInMonth[0].date}T12:00:00`).getDay()
+      : 0
     for (let i = 0; i < leadingBlanks; i++) {
       cells.push({ inMonth: false })
     }
@@ -301,7 +302,7 @@ export function JournalHistory() {
 
                           >
 
-                            <span className="text-sm font-semibold">{new Date(cell.iso ?? '').getDate()}</span>
+                            <span className="text-sm font-semibold">{cell.date?.slice(-2).replace(/^0/, '')}</span>
 
                             <span className="text-[11px] opacity-80">{density} entries</span>
 
@@ -371,7 +372,7 @@ function startOfMonth(date: Date) {
 }
 
 function DayDetail({ day }: { day: JournalHistoryDay }) {
-  const displayDate = useMemo(() => new Date(day.iso), [day.iso])
+  const displayDate = useMemo(() => new Date(`${day.date}T12:00:00`), [day.date])
   const entry = day.journalEntry?.entry ?? {}
   const [detailsModal, setDetailsModal] = useState<{ type: string; data: any } | null>(null)
   const [editModal, setEditModal] = useState<{ type: string; data: any } | null>(null)

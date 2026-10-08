@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
   Syringe,
   Calendar,
-  AlertCircle,
   TrendingUp,
   Plus,
   Clock,
@@ -12,10 +11,9 @@ import {
   Edit,
   ChevronDown,
   Bell,
-  Pill,
 } from "lucide-react";
 import { DosageCalculator } from "./DosageCalculator";
-import { QuickAddOralMed } from "./QuickAddOralMed";
+
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
 
@@ -100,7 +98,7 @@ export function PeptideTracker() {
   const [showDoseModal, setShowDoseModal] = useState(false);
   const [showCalculatorModal, setShowCalculatorModal] = useState(false);
   const [showAddProtocolModal, setShowAddProtocolModal] = useState(false);
-  const [showQuickAddOral, setShowQuickAddOral] = useState(false);
+
   const [showEditProtocolModal, setShowEditProtocolModal] = useState(false);
   const [editingProtocol, setEditingProtocol] =
     useState<PeptideProtocol | null>(null);
@@ -112,12 +110,24 @@ export function PeptideTracker() {
   const [customTiming, setCustomTiming] = useState("");
   const [customDuration, setCustomDuration] = useState("");
   const [customTimesArray, setCustomTimesArray] = useState<string[]>([]);
-  const [newCustomTimeInput, setNewCustomTimeInput] = useState<string>("08:00");
-  const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
-  const [peptideLibrary, setPeptideLibrary] = useState<
-    Omit<PeptideProtocol, "startDate" | "currentCycle" | "isActive">[]
-  >([]);
-  const [loadingLibrary, setLoadingLibrary] = useState(true);
+  const [newCustomTimeInput, setNewCustomTimeInput] = useState<string>("");
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const peptideLibrary: Omit<
+    PeptideProtocol,
+    "startDate" | "currentCycle" | "isActive"
+  >[] = [{
+    id: "custom",
+    name: "Your entry",
+    purpose: "Personal record",
+    dosage: "",
+    timing: "",
+    frequency: "",
+    duration: "",
+    vialAmount: "",
+    reconstitution: "",
+    syringeUnits: 0,
+  }];
+
   const [doseHistory, setDoseHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyMonth, setHistoryMonth] = useState<Date>(() => new Date());
@@ -638,7 +648,6 @@ export function PeptideTracker() {
     bootstrapped.current = true;
 
     const loadData = async () => {
-      fetchPeptideLibrary();
       // Load doses first, then protocols (so doses are in state when protocols generate pending)
       await fetchTodaysDoses();
       await fetchUserProtocols();
@@ -699,10 +708,10 @@ export function PeptideTracker() {
           dosage: protocol.dosage,
           timing: protocol.timing ?? "AM",
           frequency: protocol.frequency,
-          duration: "8 weeks",
-          vialAmount: "10mg",
-          reconstitution: protocol.peptides?.reconstitution || "2ml",
-          syringeUnits: 10,
+          duration: "",
+          vialAmount: "",
+          reconstitution: "",
+          syringeUnits: 0,
           startDate: protocol.startDate
             ? dateToLocalKey(new Date(protocol.startDate))
             : dateToLocalKey(new Date()),
@@ -746,60 +755,6 @@ export function PeptideTracker() {
     }
   };
 
-  const fetchPeptideLibrary = async () => {
-    try {
-      setLoadingLibrary(true);
-      const response = await fetch("/api/products/storefront", {
-        credentials: "include",
-      });
-      const products = await response.json();
-
-      if (products && Array.isArray(products)) {
-        // Transform storefront products to match our interface
-        const formattedLibrary = products.map((product: any) => ({
-          id: product.id,
-          name: product.name,
-          purpose: product.description?.substring(0, 50) || "General",
-          dosage: "250mcg", // Default dosage
-          timing: "AM",
-          frequency: "Daily",
-          duration: "8 weeks",
-          vialAmount: "10mg",
-          reconstitution: "2ml",
-          syringeUnits: 10,
-        }));
-
-        // Add "Other (Custom)" option at the end
-        formattedLibrary.push({
-          id: "custom",
-          name: "Other (Custom)",
-          purpose: "Custom",
-          dosage: "100mcg",
-          timing: "AM",
-          frequency: "Daily",
-          duration: "4 weeks",
-          vialAmount: "5mg",
-          reconstitution: "1ml",
-          syringeUnits: 10,
-        });
-
-        setPeptideLibrary(formattedLibrary);
-        console.log(
-          `✅ Loaded ${formattedLibrary.length} products from storefront (${products.length} products + 1 custom option)`,
-        );
-      } else {
-        console.error("Failed to fetch storefront products");
-        // Fallback to hardcoded library if API fails
-        setPeptideLibrary(fallbackLibrary);
-      }
-    } catch (error) {
-      console.error("Error fetching peptide library:", error);
-      // Fallback to hardcoded library if API fails
-      setPeptideLibrary(fallbackLibrary);
-    } finally {
-      setLoadingLibrary(false);
-    }
-  };
 
   const fetchDoseHistory = async () => {
     try {
@@ -820,36 +775,6 @@ export function PeptideTracker() {
     }
   };
 
-  // Fallback library in case API fails
-  const fallbackLibrary: Omit<
-    PeptideProtocol,
-    "startDate" | "currentCycle" | "isActive"
-  >[] = [
-    {
-      id: "fallback-1",
-      name: "Semaglutide",
-      purpose: "Fat Loss",
-      dosage: "250mcg",
-      timing: "AM",
-      frequency: "Once per week",
-      duration: "8 weeks on, 8 weeks off",
-      vialAmount: "3mg",
-      reconstitution: "2ml",
-      syringeUnits: 17,
-    },
-    {
-      id: "fallback-2",
-      name: "BPC-157",
-      purpose: "Healing",
-      dosage: "500mcg",
-      timing: "AM & PM (twice daily)",
-      frequency: "Daily",
-      duration: "4-6 weeks",
-      vialAmount: "10mg",
-      reconstitution: "3ml",
-      syringeUnits: 10,
-    },
-  ];
 
   const handleSaveProtocol = async (protocolData: {
     peptideId?: string;
@@ -1202,33 +1127,20 @@ export function PeptideTracker() {
     if (frequencyDays.length > 0) {
       setSelectedDays(frequencyDays);
     } else {
-      // Default to all days if no specific days are set
-      setSelectedDays(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+      setSelectedDays([]);
     }
 
     // Parse existing timing into times array
     // protocol.timing might be like "08:00/20:00" or "AM" or "PM" or "15:50" or "AM & PM (twice daily)"
     const timesArray: string[] = [];
-    const lowerTiming = protocol.timing.toLowerCase();
-
     if (protocol.timing.includes("/")) {
       // Already has specific times like "08:00/20:00"
       timesArray.push(...protocol.timing.split("/").map((t) => t.trim()));
-    } else if (
-      lowerTiming.includes("twice") ||
-      (lowerTiming.includes("am") && lowerTiming.includes("pm"))
-    ) {
-      // Check for "twice daily" or both AM & PM FIRST (before individual checks)
-      timesArray.push("08:00", "20:00");
-    } else if (lowerTiming.includes("am")) {
-      timesArray.push("08:00");
-    } else if (lowerTiming.includes("pm")) {
-      timesArray.push("20:00");
     } else if (protocol.timing.match(/^\d{2}:\d{2}$/)) {
       // Single time like "15:50"
       timesArray.push(protocol.timing);
     }
-    setCustomTimesArray(timesArray.length > 0 ? timesArray : ["08:00"]);
+    setCustomTimesArray(timesArray);
 
     setShowEditProtocolModal(true);
   };
@@ -1608,11 +1520,7 @@ export function PeptideTracker() {
               className="text-secondary-400 hover:text-secondary-300 transition-colors"
               title="Log Dose"
             >
-              {protocol.administrationType === "oral" ? (
-                <Pill className="w-5 h-5" />
-              ) : (
                 <Syringe className="w-5 h-5" />
-              )}
             </button>
             <button
               onClick={() => {
@@ -1669,14 +1577,15 @@ export function PeptideTracker() {
                 </div>
               </div>
 
-              <div className="border-t border-gray-600 pt-3">
-                <span className="text-gray-400">Preparation:</span>
-                <p className="text-gray-300 text-xs mt-1">
-                  {protocol.vialAmount} vial + {protocol.reconstitution} BAC
-                  water = {protocol.syringeUnits} units per dose
-                </p>
-                <SyringeScale units={protocol.syringeUnits} />
-              </div>
+              {protocol.vialAmount || protocol.reconstitution ? (
+                <div className="border-t border-gray-600 pt-3">
+                  <span className="text-gray-400">Your recorded preparation:</span>
+                  <p className="text-gray-300 text-xs mt-1">
+                    {protocol.vialAmount} {protocol.reconstitution}
+                  </p>
+                  <SyringeScale units={protocol.syringeUnits} />
+                </div>
+              ) : null}
             </div>
 
             {/* Right side - Action buttons */}
@@ -1730,7 +1639,7 @@ export function PeptideTracker() {
       <div className="relative z-10 pt-16">
         <PushUnavailableWarning />
         {/* Portal Subnav Header */}
-        <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
+        <div className="rb-subnav bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm shadow-2xl border-b border-primary-400/30">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -1772,8 +1681,7 @@ export function PeptideTracker() {
             <span className="text-primary-400">Peptide</span> Tracker
           </h2>
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Comprehensive peptide management system. Schedule doses, track
-            progress, monitor side effects with IRB-compliant data sharing.
+            Keep your own personal treatment records and dose history in one place.
           </p>
         </div>
 
@@ -1813,14 +1721,7 @@ export function PeptideTracker() {
                         className="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
                       >
                         <Plus className="w-4 h-4 mr-2" />
-                        Add Research Protocol
-                      </button>
-                      <button
-                        onClick={() => setShowQuickAddOral(true)}
-                        className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center"
-                      >
-                        <Pill className="w-4 h-4 mr-2" />
-                        Add Oral Med
+                        Add Personal Record
                       </button>
                     </div>
                   </div>
@@ -1829,17 +1730,16 @@ export function PeptideTracker() {
                     <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
                       <Syringe className="w-16 h-16 text-primary-400 mx-auto mb-6" />
                       <h3 className="text-2xl font-bold text-white mb-4">
-                        Start Your First Protocol
+                        Add Your First Record
                       </h3>
                       <p className="text-gray-200 mb-8">
-                        Choose from our curated peptide library to begin
-                        tracking your peptide therapy journey.
+                        Enter the treatment details you want to track. Reset Biology does not suggest products, doses, or schedules.
                       </p>
                       <button
                         onClick={() => setShowAddProtocolModal(true)}
                         className="bg-primary-500 hover:bg-primary-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 hover:scale-105 shadow-2xl"
                       >
-                        Browse Peptide Library
+                        Add Personal Record
                       </button>
                     </div>
                   ) : (
@@ -2135,23 +2035,7 @@ export function PeptideTracker() {
                 </div>
               )}
 
-              {/* IRB Compliance Notice */}
-              <div className="mt-8">
-                <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
-                  <AlertCircle className="w-5 h-5 text-primary-300 mr-3 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-primary-200 mb-1">
-                      IRB-Approved Research Protocol
-                    </h4>
-                    <p className="text-gray-300 text-sm">
-                      Your peptide data is securely tracked and can be shared
-                      with healthcare providers for research purposes. All data
-                      handling follows IRB compliance standards for participant
-                      safety.
-                    </p>
-                  </div>
-                </div>
-              </div>
+
             </div>
           )}
         </div>
@@ -2198,99 +2082,9 @@ export function PeptideTracker() {
                 </div>
 
                 <div className="bg-secondary-600/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-secondary-300 mb-3">
-                    Weekly Schedule
-                  </h4>
-                  <div className="grid grid-cols-7 gap-2">
-                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-                      (day, index) => {
-                        // Determine if this day is active based on frequency
-                        const isActiveDay =
-                          selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("daily") ||
-                          selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("every day") ||
-                          (selectedProtocol.frequency.includes("5 days") &&
-                            index >= 1 &&
-                            index <= 5) ||
-                          (selectedProtocol.frequency.includes("3x per week") &&
-                            [1, 3, 5].includes(index)) ||
-                          (selectedProtocol.frequency.includes("2x per week") &&
-                            [1, 4].includes(index)) ||
-                          (selectedProtocol.frequency
-                            .toLowerCase()
-                            .includes("every other day") &&
-                            index % 2 === 1);
-
-                        // Determine dose times based on timing
-                        const doseTimes: string[] = [];
-                        if (isActiveDay) {
-                          const timing = selectedProtocol.timing.toLowerCase();
-                          if (
-                            timing.includes("am/pm") ||
-                            timing.includes("twice")
-                          ) {
-                            doseTimes.push("8:00 AM", "8:00 PM");
-                          } else if (timing.includes("am")) {
-                            doseTimes.push("8:00 AM");
-                          } else if (timing.includes("pm")) {
-                            doseTimes.push("8:00 PM");
-                          } else if (timing.includes("before meals")) {
-                            doseTimes.push("7:00 AM", "12:00 PM", "6:00 PM");
-                          } else if (timing.includes("after meals")) {
-                            doseTimes.push("9:00 AM", "2:00 PM", "8:00 PM");
-                          } else {
-                            doseTimes.push("Scheduled");
-                          }
-                        }
-
-                        return (
-                          <div key={day} className="text-center">
-                            <div className="text-xs font-semibold text-gray-300 mb-2">
-                              {day}
-                            </div>
-                            <div
-                              className={`min-h-[60px] rounded-lg p-2 flex flex-col items-center justify-center text-[10px] leading-tight ${
-                                isActiveDay
-                                  ? "bg-gradient-to-br from-primary-500/20 to-secondary-500/20 border border-primary-400/30 text-primary-200"
-                                  : "bg-gray-700/20 border border-gray-600/20 text-gray-500"
-                              }`}
-                            >
-                              {doseTimes.length > 0 ? (
-                                doseTimes.map((time, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="font-medium whitespace-nowrap"
-                                  >
-                                    {time}
-                                  </div>
-                                ))
-                              ) : (
-                                <div className="text-gray-500">—</div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      },
-                    )}
-                  </div>
-                  <div className="mt-3 text-xs text-gray-400 text-center">
-                    Times shown are suggested based on your protocol timing (
-                    {selectedProtocol.timing})
-                  </div>
-                </div>
-
-                <div className="bg-amber-600/20 rounded-lg p-4">
-                  <h4 className="font-semibold text-amber-300 mb-2">
-                    Preparation Instructions
-                  </h4>
-                  <p className="text-amber-100 text-sm">
-                    Reconstitute {selectedProtocol.vialAmount} vial with{" "}
-                    {selectedProtocol.reconstitution} of bacteriostatic water.
-                    Each dose requires {selectedProtocol.syringeUnits} units on
-                    an insulin syringe.
+                  <h4 className="font-semibold text-secondary-300 mb-2">Your recorded schedule</h4>
+                  <p className="text-sm text-gray-300">
+                    {selectedProtocol.frequency || "No frequency recorded"} • {selectedProtocol.timing || "No time recorded"}
                   </p>
                 </div>
               </div>
@@ -2315,10 +2109,10 @@ export function PeptideTracker() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-300 to-secondary-300 bg-clip-text text-transparent">
-                      Add Research Protocol
+                      Add Personal Record
                     </h2>
                     <p className="text-primary-200 mt-1">
-                      Select a peptide and scheduling details for tracking
+                      Enter details you already use for your own records. Reset Biology does not recommend a product, dose, or schedule.
                     </p>
                   </div>
                   <button
@@ -2382,7 +2176,7 @@ export function PeptideTracker() {
                     vialSize: parseFloat(
                       selectedProtocol.vialAmount.replace(/[^0-9.]/g, ""),
                     ),
-                    recommendedDose: parseFloat(
+                    existingDose: parseFloat(
                       selectedProtocol.dosage.replace(/[^0-9.]/g, ""),
                     ),
                   }}
@@ -2482,7 +2276,7 @@ export function PeptideTracker() {
                     value={customDosage}
                     onChange={(e) => setCustomDosage(e.target.value)}
                     className="w-full bg-primary-600/20 border border-primary-400/40 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:border-primary-400 focus:outline-none"
-                    placeholder="e.g., 250mcg, 0.5mg"
+                    placeholder="Enter the amount you want to record"
                   />
                 </div>
 
@@ -2623,9 +2417,7 @@ export function PeptideTracker() {
                     </button>
                   </div>
 
-                  <p className="text-xs text-gray-400 mt-2">
-                    Add specific times for your doses (e.g., 8:00 AM, 8:00 PM)
-                  </p>
+                  <p className="text-xs text-gray-400 mt-2">Add the times you want to record.</p>
                 </div>
 
                 <div>
@@ -2685,29 +2477,7 @@ export function PeptideTracker() {
           />
         )}
 
-        {/* Oral Medication Quick Add Modal */}
-        {showQuickAddOral && (
-          <QuickAddOralMed
-            onClose={() => setShowQuickAddOral(false)}
-            onAdd={async (medData) => {
-              // Convert oral med data to protocol format
-              await handleSaveProtocol({
-                peptideName: medData.peptideName,
-                dosage: medData.dosage,
-                schedule: {
-                  days: [], // Not used for oral meds
-                  times: medData.timing.split("/"),
-                  frequency: medData.frequency,
-                },
-                duration: "Ongoing",
-                vialAmount: "N/A",
-                reconstitution: "N/A",
-                notes: `Oral medication: ${medData.administrationType}`,
-              });
-              setShowQuickAddOral(false);
-            }}
-          />
-        )}
+
       </div>
     </div>
   );

@@ -23,10 +23,6 @@ export function Header() {
   const { user, isLoading } = useUser()
   const isAdmin = user?.role === 'admin'
 
-  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
-  // the content. Each such route owns its own navigation (← Back links).
-  if (shouldHideHeader(pathname)) return null
-
   // Close menus when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -38,9 +34,13 @@ export function Header() {
     return () => document.removeEventListener('click', handleClickOutside)
   }, [isUserMenuOpen])
 
+  // Hide on full-screen immersive routes so the fixed nav bar doesn't cover
+  // the content. Each such route owns its own navigation (← Back links).
+  if (shouldHideHeader(pathname)) return null
+
   return (
     <header
-      className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200"
+      className="fixed top-0 z-50 w-full border-b border-slate-800 bg-slate-950/95 text-slate-100 backdrop-blur-sm"
       style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
       <div className="container mx-auto px-4">
@@ -50,21 +50,32 @@ export function Header() {
             <img 
               src="/reset-logo-pro.png" 
               alt="Reset Biology" 
-              className="h-14 w-auto rounded-xl drop-shadow-lg hover:drop-shadow-xl transition-all duration-300 bg-white/10 backdrop-blur-sm p-2 border border-white/20"
+              className="h-12 w-auto rounded-lg border border-slate-800 bg-slate-900 p-1 transition-opacity duration-200"
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden items-center space-x-3 text-sm md:flex">
             {/* Public/Logged Out Navigation — only renders once auth has resolved
                 (isLoading=false), otherwise the logged-out nav flashes before
                 Auth0 confirms the user is signed in, which makes Education
                 appear to "get erased by another tab" on first paint. */}
             {!isLoading && !user && (
               <>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
+
+                <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Peptides
                 </Link>
+                <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Meals
+                </Link>
+                <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Journal
+                </Link>
+                <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Hypnosis
+                </Link>
+
                 <a
                   href="/auth/login?returnTo=/portal"
                   className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
@@ -77,15 +88,20 @@ export function Header() {
             {/* Logged In Navigation */}
             {!isLoading && user && (
               <>
-                <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
-                  Portal
+
+                <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Peptides
                 </Link>
-                <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium transition-colors">
-                  Peptide Co-op
+                <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Meals
                 </Link>
-                <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium transition-colors">
-                  Education
+                <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Journal
                 </Link>
+                <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium transition-colors">
+                  Hypnosis
+                </Link>
+
                 <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium transition-colors flex items-center">
                   <Settings className="w-4 h-4 mr-1" />
                   Profile
@@ -154,13 +170,24 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div className="border-t border-slate-800 py-4 md:hidden">
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
+
+                  <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Peptides
                   </Link>
+                  <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Meals
+                  </Link>
+                  <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Journal
+                  </Link>
+                  <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Hypnosis
+                  </Link>
+
                   <a
                     href="/auth/login?returnTo=/portal"
                     className="block px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors text-center"
@@ -171,15 +198,20 @@ export function Header() {
                 </>
               ) : (
                 <>
-                  <Link href="/portal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Portal
+
+                  <Link href="/peptides" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Peptides
                   </Link>
-                  <Link href="/order" className="text-gray-700 hover:text-green-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Peptide Co-op
+                  <Link href="/nutrition" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Meals
                   </Link>
-                  <Link href="/education" className="text-gray-700 hover:text-primary-600 font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Education
+                  <Link href="/journal" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Journal
                   </Link>
+                  <Link href="/audio" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    Hypnosis
+                  </Link>
+
                   <Link href="/profile" className="text-gray-700 hover:text-teal-600 font-medium" onClick={() => setIsMenuOpen(false)}>
                     Profile
                   </Link>

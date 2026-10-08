@@ -9,13 +9,7 @@ import { ValuePropSection } from "./ValuePropSection"
 
 export function HeroSection() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative"
-      style={{
-        backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}>
+    <div className="rb-launch min-h-screen relative">
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-4 pt-32 pb-16">
