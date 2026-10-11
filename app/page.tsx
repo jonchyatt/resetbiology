@@ -43,10 +43,10 @@ export default async function Home() {
                 href="/get-started"
                 className="inline-flex items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 transition-colors hover:bg-primary-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
               >
-                Start Free
+                Start free
               </Link>
               <p className="max-w-xl text-pretty text-base leading-7 text-slate-300">
-                Free. Funded by the Satori Living Foundation. We sell nothing. {/* src: LMP §00 */}
+                We sell nothing. {/* src: LMP §00 */}
               </p>
             </div>
           </div>

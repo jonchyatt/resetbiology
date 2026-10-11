@@ -46,12 +46,14 @@ export function FAQSection() {
                   type="button"
                   onClick={() => setOpenItem(isOpen ? null : index)}
                   aria-expanded={isOpen}
+                  id={`faq-btn-${index}`}
+                  aria-controls={`faq-panel-${index}`}
                   className="flex w-full items-center justify-between gap-6 px-2 py-6 text-left text-lg font-medium text-white transition-colors hover:text-primary-200 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-300"
                 >
                   {faq.question}
                   <ChevronDown className={`h-5 w-5 shrink-0 text-primary-300 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
                 </button>
-                {isOpen && <div className="px-2 pb-6 text-pretty leading-7 text-slate-300">{faq.answer}</div>}
+                {isOpen && <div id={`faq-panel-${index}`} role="region" aria-labelledby={`faq-btn-${index}`} className="px-2 pb-6 text-pretty leading-7 text-slate-300">{faq.answer}</div>}
               </div>
             )
           })}

@@ -25,6 +25,7 @@ export function Header() {
 }
 
 function HeaderContent() {
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const { user, isLoading } = useUser()
@@ -71,28 +72,32 @@ function HeaderContent() {
                 appear to "get erased by another tab" on first paint. */}
             {!isLoading && !user && (
               <>
-                <Link href="/get-started" className="text-slate-300 hover:text-white font-medium transition-colors">
-                  Get started
-                </Link>
                 <a
                   href="/auth/login?returnTo=/portal"
-                  className="rounded-lg border border-primary-400/50 px-4 py-2 text-primary-200 transition-colors hover:bg-primary-400/10 hover:text-white"
+                  className="rounded-lg border border-primary-400/50 px-4 py-2 text-primary-200 transition-colors hover:bg-primary-400/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300"
                 >
-                  Login / Sign Up
+                  Log in
                 </a>
+                <Link
+                  href="/get-started"
+                  aria-current={pathname === '/get-started' ? 'page' : undefined}
+                  className="rounded-lg bg-primary-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-primary-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
+                >
+                  Start free
+                </Link>
               </>
             )}
             
             {/* Logged In Navigation */}
             {!isLoading && user && (
               <>
-                <Link href="/portal" className="text-slate-300 hover:text-white font-medium transition-colors">
+                <Link href="/portal" aria-current={pathname === '/portal' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm">
                   Portal
                 </Link>
-                <Link href="/education" className="text-slate-300 hover:text-white font-medium transition-colors">
+                <Link href="/education" aria-current={pathname === '/education' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm">
                   Education
                 </Link>
-                <Link href="/profile" className="text-slate-300 hover:text-white font-medium transition-colors flex items-center">
+                <Link href="/profile" aria-current={pathname === '/profile' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm flex items-center">
                   <Settings className="w-4 h-4 mr-1" />
                   Profile
                 </Link>
@@ -152,6 +157,9 @@ function HeaderContent() {
           {/* Mobile Menu Button */}
           <button
             className="md:hidden p-2 text-slate-200"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
+            aria-controls="rb-mobile-nav"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -160,34 +168,39 @@ function HeaderContent() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-white/10">
+          <div id="rb-mobile-nav" className="md:hidden py-4 border-t border-white/10">
             <nav className="flex flex-col space-y-4">
               {!user ? (
                 <>
-                  <Link href="/get-started" className="text-slate-300 hover:text-white font-medium" onClick={() => setIsMenuOpen(false)}>
-                    Get started
-                  </Link>
                   <a
                     href="/auth/login?returnTo=/portal"
-                    className="block rounded-lg border border-primary-400/50 px-4 py-2 text-center text-primary-200 transition-colors hover:bg-primary-400/10 hover:text-white"
+                    className="block rounded-lg border border-primary-400/50 px-4 py-2 text-center text-primary-200 transition-colors hover:bg-primary-400/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Login / Sign Up
+                    Log in
                   </a>
+                  <Link
+                    href="/get-started"
+                    aria-current={pathname === '/get-started' ? 'page' : undefined}
+                    className="block rounded-lg bg-primary-400 px-4 py-3 text-center font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Start free
+                  </Link>
                 </>
               ) : (
                 <>
-                  <Link href="/portal" className="text-slate-300 hover:text-white font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/portal" aria-current={pathname === '/portal' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                     Portal
                   </Link>
-                  <Link href="/education" className="text-slate-300 hover:text-white font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/education" aria-current={pathname === '/education' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                     Education
                   </Link>
-                  <Link href="/profile" className="text-slate-300 hover:text-white font-medium" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/profile" aria-current={pathname === '/profile' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                     Profile
                   </Link>
                   {isAdmin && (
-                    <Link href="/admin" className="text-orange-300 hover:text-orange-200 font-medium" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/admin" className="text-orange-300 hover:text-orange-200 font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                       Admin Dashboard
                     </Link>
                   )}
