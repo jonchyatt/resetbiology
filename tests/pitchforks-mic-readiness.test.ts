@@ -6,6 +6,8 @@ import {
   PITCHFORKS_VOICE_COACH_MS,
   assessPitchforksRoom,
   coachPitchforksVoice,
+  pitchforksMicPermissionLabel,
+  pitchforksMicRecoveryCopy,
   pitchforksMicReadinessCopy,
 } from '../src/components/PitchDefender/pitchforksMicReadiness'
 
@@ -28,11 +30,22 @@ check(() => assert.equal(coachPitchforksVoice({ room: 'quieter-room', voiceHeard
 check(() => assert.equal(pitchforksMicReadinessCopy('ready').label, 'READY'))
 check(() => assert.equal(pitchforksMicReadinessCopy('ready-for-voice').label, 'HUM ONE EASY NOTE'))
 check(() => assert.match(pitchforksMicReadinessCopy('quieter-room').guidance, /try headphones/i))
+check(() => assert.equal(pitchforksMicPermissionLabel('granted'), 'ALLOWED'))
+check(() => assert.equal(pitchforksMicPermissionLabel('denied'), 'BLOCKED'))
+for (const state of ['permission-denied', 'permission-dismissed', 'silent-source', 'interrupted', 'background-return'] as const) {
+  check(() => {
+    const copy = pitchforksMicRecoveryCopy(state)
+    assert.ok(copy.label && copy.guidance && copy.action)
+  })
+}
 
 const component = readFileSync(new URL('../src/components/PitchDefender/PitchforksIII.tsx', import.meta.url), 'utf8')
 check(() => assert.match(component, /data-testid="pf3-mic-readiness"/))
 check(() => assert.match(component, /PITCHFORKS_PITCH_PROFILE\.noiseGateDb/))
 check(() => assert.match(component, /signalDbRef/))
 check(() => assert.doesNotMatch(component, /baselineDb\.toFixed/))
+check(() => assert.match(component, /data-testid="pf3-mic-recovery-action"/))
+check(() => assert.match(component, /data-testid="pf3-mic-listen-tap-fallback"/))
+check(() => assert.match(component, /PERMISSION \{micPermissionView\}/))
 
 console.log(`pitchforks mic readiness: ${checks}/${checks} PASS`)

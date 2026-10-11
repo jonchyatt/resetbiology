@@ -22,8 +22,12 @@ import {
   PITCHFORKS_ROOM_CHECK_MS,
   assessPitchforksRoom,
   coachPitchforksVoice,
+  pitchforksMicPermissionLabel,
+  pitchforksMicRecoveryCopy,
   pitchforksMicReadinessCopy,
   type PitchforksMicReadiness,
+  type PitchforksMicPermission,
+  type PitchforksMicRecovery,
   type PitchforksRoomReadiness,
 } from './pitchforksMicReadiness'
 import { advanceExactPitchHold, exactCents, exactPitchSampleState, noteToFreq } from './pitchMath'
@@ -4735,6 +4739,8 @@ export default function PitchforksIII() {
   const [micCheckStep, setMicCheckStep] = useState<MicCheckStep>('room')
   const [roomReadiness, setRoomReadiness] = useState<PitchforksRoomReadiness>('checking-room')
   const [micReadiness, setMicReadiness] = useState<PitchforksMicReadiness>('checking-room')
+  const [micPermission, setMicPermission] = useState<PitchforksMicPermission>('unknown')
+  const [micRecovery, setMicRecovery] = useState<PitchforksMicRecovery>('none')
   const [canvasDisplaySize, setCanvasDisplaySize] = useState(() => ({ width: W, height: H }))
   const [portraitStaffDisplaySize, setPortraitStaffDisplaySize] = useState(() => ({ width: STAFF_PANEL_W, height: STAFF_PANEL_H }))
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('stage')
@@ -4905,7 +4911,50 @@ export default function PitchforksIII() {
 
   useEffect(() => {
     micErrorRef.current = micError
+    if (!micError) return
+    const denied = /NotAllowed|denied|permission|blocked/i.test(micError)
+    setMicRecovery(denied ? 'permission-denied' : 'permission-dismissed')
   }, [micError])
+
+  useEffect(() => {
+    let cancelled = false
+    const readPermission = async () => {
+      try {
+        if (!navigator.permissions?.query) return
+        const result = await navigator.permissions.query({ name: 'microphone' as PermissionName })
+        if (cancelled) return
+        setMicPermission(result.state === 'granted' ? 'granted' : result.state === 'denied' ? 'denied' : 'prompt')
+        result.onchange = () => setMicPermission(result.state === 'granted' ? 'granted' : result.state === 'denied' ? 'denied' : 'prompt')
+      } catch {
+        if (!cancelled) setMicPermission('unknown')
+      }
+    }
+    void readPermission()
+    return () => { cancelled = true }
+  }, [])
+
+  useEffect(() => {
+    if (!isListening || phase === 'menu' || phase === 'tutorial') return
+    const refresh = () => {
+      if (document.visibilityState === 'hidden') return
+      const health = micSourceHealthRef.current
+      if (health.trackReadyState !== 'live') setMicRecovery('interrupted')
+      else if (micRecovery === 'background-return') setMicRecovery('none')
+      else if (phase === 'calibrating' && micCheckStep === 'voice' && !pitchIsActive) setMicRecovery('silent-source')
+    }
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        if (micSourceHealthRef.current.trackReadyState !== 'live') setMicRecovery('background-return')
+        else setMicRecovery('none')
+      }
+    }
+    const timer = window.setInterval(refresh, 500)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [isListening, micCheckStep, micRecovery, phase, pitchIsActive, micSourceHealthRef])
 
   useEffect(() => {
     if (phase !== 'calibrating' || !isListening) return
@@ -10352,7 +10401,16 @@ export default function PitchforksIII() {
     setMicReadiness('checking-room')
     phaseRef.current = 'calibrating'
     setPhase('calibrating')
-    await startListening()
+    try {
+      await startListening()
+      setMicPermission('granted')
+      setMicRecovery('none')
+    } catch (error) {
+      const name = error instanceof DOMException ? error.name : ''
+      setMicPermission(name === 'NotAllowedError' ? 'denied' : 'dismissed')
+      setMicRecovery(name === 'NotAllowedError' ? 'permission-denied' : 'permission-dismissed')
+      return
+    }
     if (phaseRef.current !== 'calibrating') return
     roomCheckStartedAtRef.current = performance.now()
   }, [beginPlaying, startListening])
@@ -10580,6 +10638,7 @@ export default function PitchforksIII() {
     stopListening()
     micHudStateRef.current = 'waiting'
     setMicHudState('waiting')
+    setMicRecovery('none')
     setPhase('menu')
   }, [clearCueTimers, clearFirstMinuteTimer, clearNewNoteCeremony, clearNextWaveTimer, clearNoteMasteredCeremony, clearWaveReceipt, resetBellWave, resetCloseSmash, resetGalvanic, resetLevelProgress, resetNormalBellPowerForRun, resetRangeMatch, resetSparkGuide, resetThunderhead, stopListening])
 
@@ -10997,6 +11056,8 @@ export default function PitchforksIII() {
   const waveReceiptMemory = inputMode === 'buttons' ? earFsrsRef.current : fsrsRef.current
   const calibrationReady = heardYou && !micError
   const micReadinessView = pitchforksMicReadinessCopy(micReadiness)
+  const micRecoveryView = pitchforksMicRecoveryCopy(micRecovery)
+  const micPermissionView = pitchforksMicPermissionLabel(micPermission)
   const levelAccuracyPercent = pitchforksLevelAccuracyPercent(levelProgress, inputMode)
   const levelProgressMode = inputMode === 'buttons'
     ? 'EAR'
@@ -11867,9 +11928,31 @@ export default function PitchforksIII() {
           >
             <div className="mb-2 text-xs font-black tracking-widest text-cyan-100">{micReadinessView.label}</div>
             <p className="text-sm leading-relaxed text-gray-300">{micReadinessView.guidance}</p>
+            <div className="mt-4 grid grid-cols-2 gap-2 text-[11px] font-bold tracking-wide" aria-label="Microphone readiness facts">
+              <div className="border border-gray-700 bg-black/20 px-3 py-2">PERMISSION <span className="text-white">{micPermissionView}</span></div>
+              <div className="border border-gray-700 bg-black/20 px-3 py-2">INPUT <span className={heardYou ? 'text-green-200' : 'text-amber-200'}>{heardYou ? 'HEARD' : 'WAITING'}</span></div>
+            </div>
+            <div className="mt-3 border border-gray-700 bg-black/20 p-3 text-[11px] font-bold tracking-wide" aria-label="Speaker or headphone route">
+              <div className="mb-2">CUE ROUTE · <span className="text-white">{speakerPlaybackOn ? 'SPEAKER' : 'HEADPHONES / DEFAULT'}</span></div>
+              <div className="grid grid-cols-2 gap-2">
+                <button type="button" aria-pressed={!speakerPlaybackOn} onClick={() => setSpeakerPlaybackPreference(false)} className={`min-h-10 border px-2 ${!speakerPlaybackOn ? 'border-cyan-200 text-cyan-100' : 'border-gray-700 text-gray-400'}`}>HEADPHONES</button>
+                <button type="button" aria-pressed={speakerPlaybackOn} onClick={() => setSpeakerPlaybackPreference(true)} disabled={!speakerPlaybackSupported} className={`min-h-10 border px-2 disabled:opacity-40 ${speakerPlaybackOn ? 'border-cyan-200 text-cyan-100' : 'border-gray-700 text-gray-400'}`}>SPEAKER</button>
+              </div>
+            </div>
           </div>
 
           {micError && <div role="alert" className="mb-5 text-xs text-red-300">{micError}</div>}
+
+          {micRecovery !== 'none' && (
+            <div data-testid={`pf3-mic-recovery-${micRecovery}`} role="alert" className="mb-5 border border-amber-500/70 bg-amber-950/25 p-4 text-left">
+              <div className="text-xs font-black tracking-widest text-amber-100">{micRecoveryView.label}</div>
+              <p className="mt-2 text-xs leading-relaxed text-amber-50/90">{micRecoveryView.guidance}</p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                <button type="button" data-testid="pf3-mic-recovery-action" onClick={() => void beginCalibration()} className="min-h-11 border border-amber-200 px-3 py-2 text-xs font-black tracking-widest text-amber-100">{micRecoveryView.action}</button>
+                <button type="button" data-testid="pf3-mic-listen-tap-fallback" onClick={() => { chooseInputMode('buttons'); quitToMenu() }} className="min-h-11 border border-cyan-300 px-3 py-2 text-xs font-black tracking-widest text-cyan-100">USE LISTEN &amp; TAP</button>
+              </div>
+            </div>
+          )}
 
           <button
             type="button"

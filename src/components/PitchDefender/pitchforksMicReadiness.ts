@@ -3,6 +3,8 @@ export const PITCHFORKS_VOICE_COACH_MS = 3500
 
 export type PitchforksRoomReadiness = 'checking-room' | 'ready-for-voice' | 'quieter-room'
 export type PitchforksMicReadiness = PitchforksRoomReadiness | 'listening-for-voice' | 'move-closer' | 'ready'
+export type PitchforksMicPermission = 'unknown' | 'prompt' | 'granted' | 'denied' | 'dismissed'
+export type PitchforksMicRecovery = 'none' | 'permission-denied' | 'permission-dismissed' | 'silent-source' | 'interrupted' | 'background-return'
 
 export type PitchforksRoomResult = Readonly<{
   status: PitchforksRoomReadiness
@@ -54,5 +56,36 @@ export function pitchforksMicReadinessCopy(status: PitchforksMicReadiness): Read
       return { label: 'QUIETER ROOM', guidance: 'Move away from fans or voices, or try headphones before cue notes.' }
     case 'ready':
       return { label: 'READY', guidance: 'We hear a steady note. Next we will find what feels comfortable today.' }
+  }
+}
+
+export function pitchforksMicPermissionLabel(status: PitchforksMicPermission): string {
+  switch (status) {
+    case 'granted': return 'ALLOWED'
+    case 'denied': return 'BLOCKED'
+    case 'dismissed': return 'NOT DECIDED'
+    case 'prompt': return 'READY TO ASK'
+    default: return 'CHECKING'
+  }
+}
+
+export function pitchforksMicRecoveryCopy(status: PitchforksMicRecovery): Readonly<{
+  label: string
+  guidance: string
+  action: string
+}> {
+  switch (status) {
+    case 'permission-denied':
+      return { label: 'MICROPHONE BLOCKED', guidance: 'Allow microphone access in this site’s browser settings, then try again.', action: 'TRY MICROPHONE AGAIN' }
+    case 'permission-dismissed':
+      return { label: 'MICROPHONE NOT STARTED', guidance: 'Choose Allow when the browser asks, or use Listen & Tap without a microphone.', action: 'TRY MICROPHONE AGAIN' }
+    case 'silent-source':
+      return { label: 'NO SOUND YET', guidance: 'Move closer, speak or hum gently, and check that the correct input is selected.', action: 'CHECK MICROPHONE AGAIN' }
+    case 'interrupted':
+      return { label: 'MICROPHONE INTERRUPTED', guidance: 'The input stopped. Reconnect it or try the microphone again before singing.', action: 'RECONNECT MICROPHONE' }
+    case 'background-return':
+      return { label: 'WELCOME BACK', guidance: 'The browser paused audio while you were away. Reconnect the microphone before continuing.', action: 'RECONNECT MICROPHONE' }
+    default:
+      return { label: '', guidance: '', action: '' }
   }
 }
