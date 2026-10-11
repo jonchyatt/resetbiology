@@ -1,0 +1,357 @@
+{
+  "schema": "retro-blaster-t_73382fea-playthrough/v1",
+  "status": "PASS",
+  "url": "https://resetbiology.com/pitch-defender/retro-2",
+  "capturedAt": "2026-10-11T17:47:49.747Z",
+  "initial": {
+    "formation": {
+      "phase": "playing",
+      "wave": 1,
+      "directorClockMs": 4147.965999999255,
+      "gameId": "e1607f8c-9024-4ed5-9403-92acce2163a8",
+      "introductionCeremony": null,
+      "pendingIntroductions": [],
+      "activeAttack": null,
+      "requiredAnswerEventsMs": [],
+      "lastCompletedWavePacing": null,
+      "ships": []
+    },
+    "logical": [
+      640,
+      360
+    ],
+    "css": [
+      930,
+      523
+    ],
+    "overflow": 0
+  },
+  "first": {
+    "attackId": "e1607f8c-9024-4ed5-9403-92acce2163a8:attack:1",
+    "samples": [
+      {
+        "phase": "outbound",
+        "outboundT": 0,
+        "x": 306.5,
+        "y": 76.5,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.05328000000000029,
+        "x": 309.9144552930146,
+        "y": 77.99382419069389,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.1067199999999997,
+        "x": 318.20260929007577,
+        "y": 81.61989156440814,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.1466399999999994,
+        "x": 325.7796112264955,
+        "y": 84.93482991159179,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.2,
+        "x": 335.36297376093296,
+        "y": 89.12755102040816,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.2400800000000003,
+        "x": 340.51338145604666,
+        "y": 91.38085438702042,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.2800800000000003,
+        "x": 342.5000119946667,
+        "y": 92.25002099066667,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.3334399999999994,
+        "x": 346.26494062933324,
+        "y": 98.83864610133321,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.38671999999999973,
+        "x": 351.1937242453333,
+        "y": 107.46401742933331,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.4400800000000003,
+        "x": 351.5,
+        "y": 109.58283238608001,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.48,
+        "x": 351.5,
+        "y": 114.01333333333332,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.5333599999999992,
+        "x": 351.5,
+        "y": 123.62298806170648,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.5733599999999991,
+        "x": 351.5,
+        "y": 133.0229524083731,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.6133599999999991,
+        "x": 351.5,
+        "y": 143.81595675503974,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.6533599999999992,
+        "x": 351.5,
+        "y": 155.56200110170641,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.7066399999999994,
+        "x": 351.5,
+        "y": 171.92891455162646,
+        "formationX": 306.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.76,
+        "x": 351.5,
+        "y": 188.19,
+        "formationX": 306.5,
+        "formationY": 76.5
+      }
+    ]
+  },
+  "second": {
+    "attackId": "e1607f8c-9024-4ed5-9403-92acce2163a8:attack:2",
+    "samples": [
+      {
+        "phase": "outbound",
+        "outboundT": 0,
+        "x": 216.5,
+        "y": 76.5,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.053440000000002326,
+        "x": 213.06650536452452,
+        "y": 78.00215390302053,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.09336000000000058,
+        "x": 207.16209491162672,
+        "y": 80.58533347616331,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.14672000000000116,
+        "x": 197.20499532799977,
+        "y": 84.9415645440001,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.2,
+        "x": 187.63702623906704,
+        "y": 89.12755102040816,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.24008000000000174,
+        "x": 182.4866185439532,
+        "y": 91.38085438702048,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.2934400000000023,
+        "x": 180.1866007039999,
+        "y": 92.79844876800018,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.34672000000000114,
+        "x": 175.24716108799987,
+        "y": 101.44246809600023,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.40008000000000177,
+        "x": 171.5,
+        "y": 108.00000659941333,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.4533600000000006,
+        "x": 171.5,
+        "y": 110.76217936837338,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.4934400000000023,
+        "x": 171.5,
+        "y": 116.0690757358937,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.5334400000000024,
+        "x": 171.5,
+        "y": 123.6401052825605,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.5867200000000011,
+        "x": 171.5,
+        "y": 136.4946401203203,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.64,
+        "x": 171.5,
+        "y": 151.56,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.6800800000000018,
+        "x": 171.5,
+        "y": 163.72130710608056,
+        "formationX": 216.5,
+        "formationY": 76.5
+      },
+      {
+        "phase": "outbound",
+        "outboundT": 0.7200800000000017,
+        "x": 171.5,
+        "y": 176.0779728927472,
+        "formationX": 216.5,
+        "formationY": 76.5
+      }
+    ]
+  },
+  "final": {
+    "formation": {
+      "phase": "playing",
+      "wave": 1,
+      "directorClockMs": 20081.199999999255,
+      "gameId": "e1607f8c-9024-4ed5-9403-92acce2163a8",
+      "introductionCeremony": null,
+      "pendingIntroductions": [],
+      "activeAttack": null,
+      "requiredAnswerEventsMs": [
+        11147.799999999255,
+        18164.299999999253
+      ],
+      "lastCompletedWavePacing": null,
+      "ships": [
+        {
+          "alienId": "e1607f8c-9024-4ed5-9403-92acce2163a8:alien:1:0",
+          "visualId": "1:0",
+          "slot": 0,
+          "x": 351.5,
+          "y": 216.16122438000002,
+          "formationX": 306.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": false,
+          "flightState": "formation"
+        },
+        {
+          "alienId": "e1607f8c-9024-4ed5-9403-92acce2163a8:alien:1:1",
+          "visualId": "1:1",
+          "slot": 1,
+          "x": 216.5,
+          "y": 76.5,
+          "formationX": 216.5,
+          "formationY": 76.5,
+          "entering": false,
+          "alive": true,
+          "flightState": "formation"
+        }
+      ]
+    },
+    "logical": [
+      640,
+      360
+    ],
+    "css": [
+      930,
+      523
+    ],
+    "overflow": 0
+  },
+  "pageErrors": [],
+  "videoPath": "D:\\jarvis-data\\jarvis-worktrees\\t_73382fea\\data\\retro-blaster-rework\\runtime-logs\\t_73382fea-prod-playthrough\\video\\ebad5a86594a59f39376288a531c5ed8.webm",
+  "videoSha256": "3AAD9E368E1A7D4D8D264DBA30F717995D30E7F0EFFB0245F5FF665E70E87A59"
+}
