@@ -331,38 +331,33 @@ def draw_villager_side(walk_phase=0, burned=0, total_tines=2):
     # belt
     c.hline(4, body_y+5, 9, HT)
 
-    # ── Arms (one back, one forward — holding a fork) ──
-    # back arm
-    c.rect(3, body_y+1, 1, 4, PB)
-    # forward arm — extended toward fork (right side)
+    # ── Arms — counter-swing against the legs while the fork hand stays planted ──
+    # The old strip held both arms rigid while changing only the feet, which made
+    # the silhouette read as a one-legged hop. Keep the fork hand on its anchor,
+    # but give the free arm a real contact/pass/contact/pass cycle.
+    arm_swing = (-1, 0, 1, 0)[walk_phase]
+    c.vline(3 + arm_swing, body_y+1, 4, PB)
+    c.set(3 + arm_swing, body_y+5, PS)
     c.rect(13, body_y+1, 1, 5, PB)
-    c.set(14, body_y+5, PS)   # hand
+    c.set(14, body_y+5, PS)   # fork hand
 
     # ── Legs (walk cycle) ──
     leg_y = body_y+6
-    # 4-frame cycle: phase 0/2 = neutral, 1 = R fwd, 3 = L fwd
-    if walk_phase == 1:
-        # right leg forward, left back
-        c.rect(7, leg_y, 2, 4, PP)
-        c.rect(10, leg_y, 2, 4, PP)
-        c.set(9, leg_y+3, PP); c.set(12, leg_y+3, PP)
-        # boots
-        c.hline(7, leg_y+4, 3, BK)
-        c.hline(10, leg_y+4, 3, BK)
-    elif walk_phase == 3:
-        c.rect(6, leg_y, 2, 4, PP)
-        c.rect(9, leg_y, 2, 4, PP)
-        c.set(5, leg_y+3, PP); c.set(8, leg_y+3, PP)
-        c.hline(5, leg_y+4, 3, BK)
-        c.hline(8, leg_y+4, 3, BK)
-    else:
-        c.rect(7, leg_y, 2, 4, PP)
-        c.rect(10, leg_y, 2, 4, PP)
-        c.hline(7, leg_y+4, 2, BK)
-        c.hline(10, leg_y+4, 2, BK)
-    # leg outlines
-    c.vline(6, leg_y, 4, BK)
-    c.vline(12, leg_y, 4, BK)
+    # Four distinct ground-planted poses: left contact, left pass, right
+    # contact, right pass. Both contact frames keep a boot on the same baseline;
+    # no whole-body bob, so distance-driven playback reads as a walk, not a hop.
+    poses = (
+        ((6, 3), (10, -1)),
+        ((7, 1), (10, 0)),
+        ((7, -1), (11, 3)),
+        ((7, 0), (10, 1)),
+    )
+    for hip_x, foot_dx in poses[walk_phase]:
+        knee_x = hip_x + (1 if foot_dx > 0 else -1 if foot_dx < 0 else 0)
+        foot_x = hip_x + foot_dx
+        c.rect(hip_x, leg_y, 2, 2, PP)
+        c.rect(knee_x, leg_y+2, 2, 2, PP)
+        c.hline(foot_x, leg_y+4, 3, BK)
 
     # ── Burned overlay ──
     if burned >= 1:
@@ -407,7 +402,9 @@ def gen_villagers_side(direction="r"):
     """
     suffix = "" if direction == "r" else "_left"
 
-    for tines in [2, 3, 4]:
+    # One shared body rig drives every fork tier. Tine count belongs to the
+    # separate fork layer and must never create a new villager art style.
+    for tines in [1, 2, 3, 4, 5]:
         # walk strip (4 frames)
         frames = [draw_villager_side(p, 0, tines) for p in range(4)]
         if direction == "l":

@@ -1,65 +1,24 @@
 {
   "frame_w": 16,
   "frame_h": 24,
-  "walk_frames": 8,
+  "walk_frames": 4,
   "facing": "right",
   "fork_base": {
     "x": 14,
     "y": 11
   },
-  "schemaVersion": "candidate-recovered-3x-1.0.0",
-  "sourceGridColumns": 5,
-  "source_frame_w": 48,
-  "source_frame_h": 72,
-  "logical_frame_w": 16,
-  "logical_frame_h": 24,
-  "sourceScale": 3,
-  "sourceArtifact": "data/pitchforks-rework/art-tests/villager-c11c/villager-2tine-coordinated-lifecycle-source.png",
-  "assembly": "existing generate-pitchforks-sprites.py 5x2 cell coordinates and chroma-key/fit helpers",
-  "fork_base_frames": [
-    {
-      "x": 11.33,
-      "y": 10.5
-    },
-    {
-      "x": 11.33,
-      "y": 12.57
-    },
-    {
-      "x": 12.0,
-      "y": 10.28
-    },
-    {
-      "x": 11.67,
-      "y": 13.47
-    },
-    {
-      "x": 11.67,
-      "y": 11.41
-    },
-    {
-      "x": 11.67,
-      "y": 12.33
-    },
-    {
-      "x": 11.67,
-      "y": 10.03
-    },
-    {
-      "x": 11.67,
-      "y": 12.83
-    }
-  ],
-  "walkSource": {
-    "sheet": "data/pitchforks-rework/consults/2026-09-16-handoff18-items1-4/item2-walk/gray-2tine-b.jpg",
-    "poseGuide": "scripts/pitchforks-art-repair/walk-pose-guide.py",
-    "builder": "scripts/pitchforks-art-repair/build-walk-strip.py (target_h 69, palette-locked)"
+  "fork_tip": {
+    "x": 14,
+    "y": 2
   },
-  "recoveryStatus": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC",
-  "fork_base_burned": [
+  "tines": [
     {
-      "x": 13.0,
-      "y": 13.66
+      "x": 14,
+      "y": 4
+    },
+    {
+      "x": 14,
+      "y": 6
     }
   ]
 }

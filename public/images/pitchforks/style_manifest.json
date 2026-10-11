@@ -1,0 +1,29 @@
+{
+  "styleReference": "style_reference.png",
+  "generator": "scripts/generate-pitchforks-unified-art.py",
+  "palette": [
+    "#07080d",
+    "#12131b",
+    "#232530",
+    "#3b3d46",
+    "#5c5b58",
+    "#968f7d",
+    "#32271f",
+    "#694225",
+    "#a26534",
+    "#dda642",
+    "#f5da74",
+    "#2b4530",
+    "#4b7743",
+    "#769f58",
+    "#4a7089",
+    "#a9dee0"
+  ],
+  "rules": [
+    "nearest-neighbour only",
+    "hard alpha",
+    "shared 16-colour NES-horror ramp",
+    "forks remain separate runtime layers"
+  ],
+  "pngCount": 108
+}

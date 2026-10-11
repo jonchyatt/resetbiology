@@ -6,16 +6,16 @@
   "width": 398,
   "height": 66,
   "channel": {
-    "x0": 15,
-    "x1": 381,
-    "y0": 10,
-    "y1": 17
+    "x0": 20,
+    "x1": 378,
+    "y0": 21,
+    "y1": 34
   },
   "corbelCentersX": [
-    11,
+    18,
     199,
-    387
+    380
   ],
-  "source": "data/pitchforks-rework/consults/2026-09-16-handoff18-items1-4/gutter-concepts/trough-v1.jpg",
-  "builder": "scripts/pitchforks-art-repair/build-rain-gutter.py"
+  "source": "public/images/pitchforks/style_reference.png",
+  "builder": "scripts/generate-pitchforks-unified-art.py"
 }

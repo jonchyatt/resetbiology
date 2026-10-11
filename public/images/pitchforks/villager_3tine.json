@@ -1,69 +1,28 @@
 {
   "frame_w": 16,
   "frame_h": 24,
-  "walk_frames": 8,
+  "walk_frames": 4,
   "facing": "right",
   "fork_base": {
     "x": 14,
     "y": 11
   },
-  "schemaVersion": "candidate-recovered-3x-1.0.0",
-  "sourceGridColumns": 5,
-  "source_frame_w": 48,
-  "source_frame_h": 72,
-  "logical_frame_w": 16,
-  "logical_frame_h": 24,
-  "sourceScale": 3,
-  "sourceArtifact": "data/pitchforks-rework/art-tests/villager-c11c/villager-3tine-lifecycle-source.png",
-  "assembly": "existing generate-pitchforks-sprites.py 5x2 cell coordinates and chroma-key/fit helpers",
-  "fork_base_frames": [
-    {
-      "x": 12.33,
-      "y": 15.45
-    },
-    {
-      "x": 13.0,
-      "y": 13.79
-    },
-    {
-      "x": 12.67,
-      "y": 14.21
-    },
-    {
-      "x": 12.67,
-      "y": 15.37
-    },
-    {
-      "x": 12.67,
-      "y": 15.08
-    },
-    {
-      "x": 13.0,
-      "y": 13.24
-    },
-    {
-      "x": 13.33,
-      "y": 14.59
-    },
-    {
-      "x": 11.33,
-      "y": 15.63
-    }
-  ],
-  "walkSource": {
-    "sheet": "data/pitchforks-rework/consults/2026-09-16-handoff18-items1-4/item2-walk/gray-3tine-a.jpg",
-    "poseGuide": "scripts/pitchforks-art-repair/walk-pose-guide.py",
-    "builder": "scripts/pitchforks-art-repair/build-walk-strip.py (target_h 69, palette-locked)"
+  "fork_tip": {
+    "x": 14,
+    "y": 2
   },
-  "recoveryStatus": "CANDIDATE_RECOVERED_APPROVED_SOURCE_NOT_PUBLIC",
-  "fork_base_burned": [
+  "tines": [
     {
-      "x": 13.67,
-      "y": 14.55
+      "x": 14,
+      "y": 4
     },
     {
-      "x": 15.0,
-      "y": 13.74
+      "x": 14,
+      "y": 6
+    },
+    {
+      "x": 14,
+      "y": 8
     }
   ]
 }

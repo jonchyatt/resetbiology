@@ -80,6 +80,7 @@ import {
 import { drawStormHeart, selectStormHeartState } from './pitchforksStormHeart'
 import { getPitchforksThunderheadPathPosition, getPitchforksThunderheadCaptionRect, PITCHFORKS_THUNDERHEAD_CLEAR_LANE_Y } from './pitchforksThunderheadPath'
 import { WORLD_REGISTRY, isWorldUnlocked, isBossAvailable, type WorldId } from './pitchforks3WorldRegistry'
+import { playPitchforksSfx, stopPitchforksMusic, syncPitchforksMusic } from './pitchforksSoundtrack'
 import {
   PITCHFORKS_RANGE_NOTES,
   PITCHFORKS_RANGE_PROFILE_KEY,
@@ -4283,6 +4284,21 @@ function drawArtReviewOverlay(
 
 function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | 'recoil' | 'bell', volumePct: number, note?: string) {
   if (typeof window === 'undefined') return
+  if (kind === 'strike') {
+    playPitchforksSfx('lightning', volumePct)
+    return
+  }
+  if (kind === 'ash') {
+    playPitchforksSfx('villager-death', volumePct)
+    return
+  }
+  if (kind === 'hurt' || kind === 'smash-contact' || kind === 'recoil') {
+    playPitchforksSfx('hit', volumePct)
+    return
+  }
+  // File-backed cases returned above. Keep a string discriminator for the two
+  // intentionally synthesized pitch-aware sounds (bell and roar) below.
+  const synthKind = kind as string
   const AudioCtor = window.AudioContext || (window as any).webkitAudioContext
   if (!AudioCtor) return
   const ctx = new AudioCtor() as AudioContext
@@ -4292,10 +4308,10 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | '
   const now = ctx.currentTime
   let closeAfterMs = 450
 
-  if (kind === 'bell') {
+  if (synthKind === 'bell') {
     schedulePitchforksBellRing(ctx, master, note ? noteToFreq(note) : NaN)
     closeAfterMs = PITCHFORKS_BELL_RING_MS + 100
-  } else if (kind === 'strike') {
+  } else if (synthKind === 'strike') {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.type = 'sawtooth'
@@ -4307,7 +4323,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | '
     gain.connect(master)
     osc.start(now)
     osc.stop(now + 0.19)
-  } else if (kind === 'smash-contact') {
+  } else if (synthKind === 'smash-contact') {
     // The contact sting is the earned pitch one octave down. The existing
     // strike call still supplies the normal tine snap through its authority.
     const contactFrequency = note ? noteToFreq(note) / 2 : 220
@@ -4323,7 +4339,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | '
     osc.start(now)
     osc.stop(now + 0.29)
     closeAfterMs = 520
-  } else if (kind === 'recoil') {
+  } else if (synthKind === 'recoil') {
     // A bystander gets one dull, unpitched thud; this branch owns no musical
     // state and intentionally has no note/frequency derived from the target.
     const osc = ctx.createOscillator()
@@ -4337,7 +4353,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | '
     gain.connect(master)
     osc.start(now)
     osc.stop(now + 0.18)
-  } else if (kind === 'ash') {
+  } else if (synthKind === 'ash') {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.type = 'triangle'
@@ -4349,7 +4365,7 @@ function localSfx(kind: 'strike' | 'ash' | 'hurt' | 'roar' | 'smash-contact' | '
     gain.connect(master)
     osc.start(now)
     osc.stop(now + 0.31)
-  } else if (kind === 'roar') {
+  } else if (synthKind === 'roar') {
     closeAfterMs = 780
     const low = ctx.createOscillator()
     const detuned = ctx.createOscillator()
@@ -4595,6 +4611,7 @@ export default function PitchforksIII() {
   const roarFiredCountRef = useRef(0)
   const fullSequenceCompleteRef = useRef(false)
   const phaseRef = useRef<Phase>('menu')
+  const soundtrackPhaseRef = useRef<Phase>('menu')
   const cueVolumeRef = useRef(100)
   const microphoneGainRef = useRef(100)
   const sfxVolumeRef = useRef(100)
@@ -4679,6 +4696,7 @@ export default function PitchforksIII() {
   const [cueVolume, setCueVolume] = useState(100)
   const [microphoneGain, setMicrophoneGain] = useState(100)
   const [sfxVolume, setSfxVolume] = useState(100)
+  const [musicVolume, setMusicVolume] = useState(72)
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
   const [pfDebugEnabled, setPfDebugEnabled] = useState(false)
@@ -4938,6 +4956,16 @@ export default function PitchforksIII() {
   useEffect(() => {
     sfxVolumeRef.current = sfxVolume
   }, [sfxVolume])
+
+  useEffect(() => {
+    const enteringPhase = soundtrackPhaseRef.current !== phase
+    soundtrackPhaseRef.current = phase
+    syncPitchforksMusic(selectedWorld, phase === 'playing' && !paused, musicVolume)
+    if (enteringPhase && phase === 'tutorial') playPitchforksSfx('ui', sfxVolumeRef.current)
+    if (enteringPhase && phase === 'playing') playPitchforksSfx('fire', sfxVolumeRef.current)
+  }, [musicVolume, paused, phase, selectedWorld])
+
+  useEffect(() => () => stopPitchforksMusic(), [])
 
   useEffect(() => {
     isListeningRef.current = isListening
@@ -11700,6 +11728,8 @@ export default function PitchforksIII() {
             setMicrophoneGain={setMicrophoneGainPreference}
             sfxVolume={sfxVolume}
             setSfxVolume={setSfxVolume}
+            musicVolume={musicVolume}
+            setMusicVolume={setMusicVolume}
             touchSized={layoutMode === 'portrait'}
           />
           <button
@@ -12879,6 +12909,8 @@ export default function PitchforksIII() {
               setMicrophoneGain={setMicrophoneGainPreference}
               sfxVolume={sfxVolume}
               setSfxVolume={setSfxVolume}
+              musicVolume={musicVolume}
+              setMusicVolume={setMusicVolume}
               compact
               touchSized={layoutMode === 'portrait'}
             />
@@ -12933,6 +12965,8 @@ function SettingsRow(props: {
   setMicrophoneGain: (value: number) => void
   sfxVolume: number
   setSfxVolume: (value: number) => void
+  musicVolume: number
+  setMusicVolume: (value: number) => void
   compact?: boolean
   touchSized?: boolean
 }) {
@@ -13036,8 +13070,25 @@ function SettingsRow(props: {
         />
       </label>
       <label className={`${controlSize} flex items-center gap-2 text-gray-300`}>
-        SFX
+        Music {props.musicVolume}%
         <input
+          data-testid="pf3-music-volume"
+          aria-label="Music volume"
+          aria-valuetext={`${props.musicVolume}%`}
+          type="range"
+          min={0}
+          max={200}
+          value={props.musicVolume}
+          onChange={e => props.setMusicVolume(Number(e.target.value))}
+          className="w-24 accent-cyan-300"
+        />
+      </label>
+      <label className={`${controlSize} flex items-center gap-2 text-gray-300`}>
+        SFX {props.sfxVolume}%
+        <input
+          data-testid="pf3-sfx-volume"
+          aria-label="Sound effects volume"
+          aria-valuetext={`${props.sfxVolume}%`}
           type="range"
           min={0}
           max={200}
