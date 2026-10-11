@@ -1798,6 +1798,12 @@ export function PeptideTracker() {
               </div>
               <div className="flex items-center gap-4">
                 <a
+                  href="/peptides/history"
+                  className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                >
+                  Personal Report
+                </a>
+                <a
                   href="/daily-history"
                   className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
                 >
