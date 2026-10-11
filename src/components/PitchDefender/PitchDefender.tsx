@@ -938,34 +938,7 @@ export default function PitchDefender() {
                 Sight Reading
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Cold-read a new piece every round. Audition prep.</div>
               </a>
-              <a
-                href="/pitch-defender/pitchforks"
-                title="Sing the matching note to fire lightning bolts at angry villagers carrying labeled pitchforks. The original interval-training arcade game."
-                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{
-                  background: 'rgba(74, 222, 128, 0.1)',
-                  color: '#4ade80',
-                  border: '2px solid rgba(74, 222, 128, 0.3)',
-                  fontFamily: 'monospace',
-                }}
-              >
-                Pitchforks
-                <div className="text-[11px] font-normal mt-0.5 opacity-70">Sing notes → zap labeled pitchforks. Interval arcade.</div>
-              </a>
-              <a
-                href="/pitch-defender/pitchforks-2"
-                title="Sprite-based v2 of Pitchforks. Frankenstein is the lightning rod, villagers approach from both sides. Side-view + first-person camera modes."
-                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{
-                  background: 'rgba(74, 222, 128, 0.18)',
-                  color: '#86efac',
-                  border: '2px solid rgba(74, 222, 128, 0.5)',
-                  fontFamily: 'monospace',
-                }}
-              >
-                Pitchforks II
-                <div className="text-[11px] font-normal mt-0.5 opacity-70">Sprite remake — Frankenstein storm rod. Side + FPS view.</div>
-              </a>
+              {/* Earlier versions (Pitchforks I/II, Retro I) are unlisted, not deleted: see /admin Archive (Wave J2.1). Vocal Trainer I and II stay: different tools. */}
               <a
                 href="/pitch-defender/pitchforks-3"
                 title="Frankenstein-lightning ear trainer. Villagers carry 2/3/4-tine pitchforks; hold the active note to burn each tine in sequence."
@@ -979,20 +952,6 @@ export default function PitchDefender() {
               >
                 Pitchforks III
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Tine-sequence lightning loop. Hold each note to burn the fork.</div>
-              </a>
-              <a
-                href="/pitch-defender/retro"
-                title="Pixel-art Space Invaders for pitch identification. Sing OR click any alien's note — cannon auto-aims to the most-urgent matching alien. EASY mode caps difficulty for training; TRUE PLAY ramps faster."
-                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{
-                  background: 'rgba(40, 40, 40, 0.8)',
-                  color: '#e0e0e0',
-                  border: '2px solid rgba(100, 100, 100, 0.4)',
-                  fontFamily: 'monospace',
-                }}
-              >
-                Retro Blaster
-                <div className="text-[11px] font-normal mt-0.5 opacity-70">Pixel Space Invaders. Sing any alien&apos;s note. EASY + TRUE.</div>
               </a>
               <a
                 href="/pitch-defender/retro-2"
@@ -1071,7 +1030,7 @@ export default function PitchDefender() {
                   border: '2px solid rgba(34, 211, 238, 0.45)',
                 }}
               >
-                Vocal Trainer
+                Vocal Trainer: Sing-Along
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Diction practice. Upload audio → dichotic L/R sing-along.</div>
               </a>
               <a
@@ -1084,7 +1043,7 @@ export default function PitchDefender() {
                   border: '2px solid rgba(34, 211, 238, 0.45)',
                 }}
               >
-                Vocal Trainer II
+                Vocal Trainer: Phrase by Phrase
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Backward-chain pitch mastery. Pick a V1 template → learn it phrase-by-phrase.</div>
               </a>
               <a

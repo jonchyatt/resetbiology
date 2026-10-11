@@ -33,7 +33,7 @@ const primaryTools: ToolCard[] = [
     panel: "from-amber-600/20 to-cyan-700/20 border-amber-300/30",
   },
   {
-    title: "Vocal Trainer II",
+    title: "Vocal Trainer: Phrase by Phrase",
     href: "/pitch-defender/vocal-trainer-2",
     description: "Backward-chain phrase mastery from the end of a song back toward the beginning.",
     icon: AudioLines,
@@ -41,7 +41,7 @@ const primaryTools: ToolCard[] = [
     panel: "from-cyan-600/20 to-teal-700/20 border-cyan-300/30",
   },
   {
-    title: "Vocal Trainer",
+    title: "Vocal Trainer: Sing-Along",
     href: "/pitch-defender/vocal-trainer",
     description: "Upload a recording, extract the vocal line, and practice with dichotic left-right audio.",
     icon: Headphones,
