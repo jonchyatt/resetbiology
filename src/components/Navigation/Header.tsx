@@ -82,7 +82,7 @@ function HeaderContent() {
                 <Link
                   href="/get-started"
                   aria-current={pathname === '/get-started' ? 'page' : undefined}
-                  className="rounded-lg bg-primary-400 px-4 py-2 text-sm font-semibold text-slate-950 transition-colors hover:bg-primary-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
+                  className="rounded-lg bg-primary-400 px-4 py-2 text-sm font-semibold text-slate-950 rb-press hover:bg-primary-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
                 >
                   Start free
                 </Link>
@@ -118,7 +118,7 @@ function HeaderContent() {
                   </button>
 
                   {isUserMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 rounded-lg border border-white/10 bg-slate-900 py-2 shadow-2xl">
+                    <div className="rb-enter-pop absolute right-0 mt-2 w-56 rounded-lg border border-white/10 bg-slate-900 py-2 shadow-2xl">
                       {/* Show which account is signed in (the email used to be in
                           the trigger button itself, but it widened the nav bar
                           enough to cause a visible layout shift on auth resolve). */}
@@ -169,7 +169,7 @@ function HeaderContent() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div id="rb-mobile-nav" className="md:hidden py-4 border-t border-white/10">
+          <div id="rb-mobile-nav" className="rb-enter md:hidden py-4 border-t border-white/10">
             <nav className="flex flex-col space-y-1">
               {!user ? (
                 <>
@@ -183,7 +183,7 @@ function HeaderContent() {
                   <Link
                     href="/get-started"
                     aria-current={pathname === '/get-started' ? 'page' : undefined}
-                    className="block rounded-lg bg-primary-400 px-4 py-3 text-center font-semibold text-slate-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
+                    className="block rounded-lg bg-primary-400 px-4 py-3 text-center font-semibold text-slate-950 rb-press focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Start free

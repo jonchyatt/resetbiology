@@ -119,7 +119,7 @@ export function GetStartedForm() {
                     type="button"
                     onClick={() => toggleFocus(opt.id)}
                     aria-pressed={selected}
-                    className={`inline-flex min-h-11 items-center rounded-full border px-4 text-sm transition-colors ${
+                    className={`inline-flex min-h-11 items-center rounded-full border px-4 text-sm rb-press ${
                       selected
                         ? "border-primary-400 bg-primary-400/15 text-primary-200"
                         : "border-white/15 bg-slate-900 text-slate-300 hover:border-primary-400/50"
@@ -138,7 +138,7 @@ export function GetStartedForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex w-full items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 transition-colors hover:bg-primary-300 disabled:opacity-60 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 rb-press hover:bg-primary-300 disabled:opacity-60 sm:w-auto"
             >
               {submitting ? "One moment…" : "Create my free account"}
             </button>

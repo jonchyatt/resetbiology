@@ -92,7 +92,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={t.id}
             role="status"
-            className={`flex items-start gap-2 rounded-xl border px-4 py-3 text-sm shadow-2xl backdrop-blur ${KIND_STYLE[t.kind]}`}
+            className={`rb-enter-toast flex items-start gap-2 rounded-xl border px-4 py-3 text-sm shadow-2xl backdrop-blur ${KIND_STYLE[t.kind]}`}
           >
             <KindIcon kind={t.kind} />
             <p className="flex-1 leading-snug">{t.message}</p>
