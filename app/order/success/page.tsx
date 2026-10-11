@@ -5,12 +5,16 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
   const params = await searchParams;
   const sessionId = params['session_id'];
 
+  let paid = false
+
   // Process inventory reduction for successful checkout
   if (sessionId) {
     try {
       const stripe = getStripe();
       if (stripe) {
         const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        if (session.payment_status === 'paid') paid = true;
 
         if (session.payment_status === 'paid' && session.metadata?.productId) {
           const productId = session.metadata.productId;
@@ -28,6 +32,29 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
     } catch (error) {
       console.error('[order/success] Error processing order:', error);
     }
+  }
+
+  if (!paid) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative">
+        <div className="relative z-10">
+          <div className="flex items-center justify-center min-h-screen px-4">
+            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-12 shadow-2xl border border-primary-400/30 max-w-2xl mx-auto text-center">
+              <h1 className="text-3xl font-bold text-white mb-4">No order to show</h1>
+              <p className="text-gray-300 mb-8">
+                This page confirms orders placed through checkout. We couldn&apos;t find one here.
+              </p>
+              <div className="space-y-4">
+                <a href="/portal" className="inline-block bg-primary-400 text-slate-950 font-bold py-3 px-8 rounded-lg">Go to portal</a>
+                <div>
+                  <a href="/" className="inline-block text-primary-400 hover:text-primary-300 font-medium transition-colors">Back to home</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
