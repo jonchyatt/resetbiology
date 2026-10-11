@@ -26,7 +26,7 @@ const PitchRecognition = dynamic(
 export default function EarTrainingPage() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <PitchRecognition />
+      <PitchRecognition section="Ear Training" />
     </Suspense>
   )
 }

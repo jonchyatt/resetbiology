@@ -93,7 +93,7 @@ function randomFrom(pool: string[], exclude: string | null): string {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export default function PitchRecognition() {
+export default function PitchRecognition({ section = 'Mental Training' }: { section?: string } = {}) {
 
   // ── Shared ────────────────────────────────────────────────────────────────
   const [screen, setScreen]         = useState<Screen>('menu')
@@ -548,8 +548,8 @@ export default function PitchRecognition() {
       backgroundImage: 'linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(/hero-background.jpg)',
       backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed',
     }}>
-      <PortalHeader section="Mental Training" />
-      <div className="max-w-2xl mx-auto px-4 py-8">
+      <PortalHeader section={section} />
+      <div className="max-w-2xl mx-auto px-4 pt-28 pb-8">
 
         {/* Header */}
         <div className="text-center mb-6">
