@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, ClipboardList, Compass, Users, Waypoints } from 'lucide-react';
 
 const steps = [
-  { icon: ClipboardList, title: 'Start with the intake', copy: 'Begin at /get-started to share where you are and choose your next step.' },
+  { icon: ClipboardList, title: 'Start with the intake', copy: 'Begin with the free intake: share where you are and choose your next step.' },
   { icon: Compass, title: 'Use your daily toolset', copy: 'Use the daily toolset in the portal to support your own work.' },
   { icon: Users, title: 'Connect to the co-op when it fits', copy: 'If your path includes peptides, Reset Biology can connect you to the provider-independent member-owned co-op.' },
   { icon: Waypoints, title: 'Graduate into independence', copy: 'The aim is practical independence with your own tools and decisions.' },

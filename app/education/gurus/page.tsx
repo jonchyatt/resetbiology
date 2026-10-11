@@ -65,7 +65,7 @@ export default function GuruLibraryHub() {
         <div className="bg-blue-500/20 backdrop-blur-sm border-b border-blue-400/30">
           <div className="container mx-auto px-4 py-4">
             <p className="text-blue-100 text-center">
-              <strong>Note:</strong> This library is generic — Phase 1 ships {gurus.length} peptide-focused practitioners. Future gurus across hormones, sleep, fasting, mitochondrial health, and longevity will live here under the same structure.
+              <strong>Note:</strong> This library starts with {gurus.length} peptide-focused practitioners. Experts in hormones, sleep, fasting, mitochondrial health and longevity will be added over time.
             </p>
           </div>
         </div>

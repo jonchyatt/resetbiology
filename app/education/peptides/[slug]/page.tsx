@@ -147,7 +147,7 @@ export default async function PeptidePage({ params }: Props) {
               <p className="text-white/90">{card.reset_biology_synthesis.recommendation}</p>
             ) : (
               <p className="text-white/60 italic">
-                Cross-expert synthesis pending Codex distillation pass. Below are the raw findings from each practitioner.
+                A combined summary is being prepared. Below are each practitioner's findings.
               </p>
             )}
             {card.reset_biology_synthesis.cross_expert_consensus && (
