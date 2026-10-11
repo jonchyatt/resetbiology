@@ -33,20 +33,23 @@ export default async function Home() {
         />
         <div className="mx-auto max-w-5xl">
           <div className="max-w-4xl">
-            <p className="mb-6 text-sm font-semibold tracking-[0.12em] text-primary-300">RESET BIOLOGY</p>
-            <h1 className="text-balance text-4xl font-semibold leading-tight tracking-[-0.03em] text-white sm:text-5xl lg:text-6xl">
-              Reset Biology gives people the tools, the education, and an honest map to run their own biology — free, private, and with nobody standing between them and a fair price.
+            <p className="rb-hero-rise mb-6 text-sm font-semibold tracking-[0.12em] text-primary-300">RESET BIOLOGY</p>
+            <h1 className="rb-hero-rise text-balance text-4xl font-semibold leading-[1.12] tracking-[-0.022em] text-white sm:text-5xl sm:leading-[1.08] sm:tracking-[-0.026em] lg:text-6xl lg:leading-[1.05] lg:tracking-[-0.03em]">
+              Reset Biology gives people the tools, the education, and an honest map to run their own biology
+              <span className="block font-normal text-slate-300">
+                — free, private, and with nobody standing between them and a fair price.
+              </span>
               {/* src: LMP §00 */}
             </h1>
-            <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+            <div className="rb-hero-rise mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
               <Link
                 href="/get-started"
-                className="inline-flex items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 transition-colors hover:bg-primary-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
+                className="inline-flex items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 rb-press hover:bg-primary-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-200"
               >
-                Start Free
+                Start free
               </Link>
               <p className="max-w-xl text-pretty text-base leading-7 text-slate-300">
-                Free. Funded by the Satori Living Foundation. We sell nothing. {/* src: LMP §00 */}
+                We sell nothing. {/* src: LMP §00 */}
               </p>
             </div>
           </div>

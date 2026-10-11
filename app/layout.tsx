@@ -1,11 +1,23 @@
 import type { ReactNode } from 'react';
+import type { Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
 import { Footer } from '@/components/Navigation/Footer';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
+import { MotionProvider } from '@/components/MotionProvider';
 import { ToastProvider } from '@/components/ui/Toast';
 import { auth0 } from '@/lib/auth0';
 import './globals.css';
+
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
+
+export const viewport: Viewport = {
+  themeColor: '#020617',
+  colorScheme: 'dark',
+  viewportFit: 'cover',
+  interactiveWidget: 'resizes-content',
+};
 
 export const metadata = { title: 'ResetBiology' };
 
@@ -16,28 +28,29 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const session = await auth0.getSession();
 
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#3FBFB5" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body>
         {/* iOS Safe Area Status Bar Cover - prevents page content from showing behind status bar */}
         <div
-          className="fixed top-0 left-0 right-0 z-[9999] bg-slate-900 pointer-events-none"
+          className="fixed top-0 left-0 right-0 z-[9999] bg-slate-950 pointer-events-none"
           style={{ height: 'env(safe-area-inset-top, 0px)' }}
           aria-hidden="true"
         />
         <ClientAuth0Provider user={session?.user}>
 <ToastProvider>
-            <Header />
-            {children}
-            <Footer />
+            <MotionProvider>
+              <Header />
+              {children}
+              <Footer />
+            </MotionProvider>
           </ToastProvider>
         </ClientAuth0Provider>
 

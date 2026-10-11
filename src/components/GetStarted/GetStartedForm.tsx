@@ -60,7 +60,7 @@ export function GetStartedForm() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100 sm:py-24">
+    <main className="min-h-svh bg-slate-950 px-4 py-16 text-slate-100 sm:py-24">
       <div className="mx-auto max-w-xl">
         <p className="mb-6 text-sm font-semibold tracking-[0.12em] text-primary-300">RESET BIOLOGY</p>
         <h1 className="text-balance text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
@@ -82,6 +82,8 @@ export function GetStartedForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="given-name"
+              autoCapitalize="words"
+              enterKeyHint="next"
               placeholder="Your preferred name"
               className="mt-2 w-full rounded-lg border border-white/15 bg-slate-900 px-4 py-3 text-white placeholder-slate-500 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
             />
@@ -97,6 +99,8 @@ export function GetStartedForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              inputMode="email"
+              enterKeyHint="go"
               placeholder="you@example.com"
               className="mt-2 w-full rounded-lg border border-white/15 bg-slate-900 px-4 py-3 text-white placeholder-slate-500 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/20"
             />
@@ -115,7 +119,7 @@ export function GetStartedForm() {
                     type="button"
                     onClick={() => toggleFocus(opt.id)}
                     aria-pressed={selected}
-                    className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                    className={`inline-flex min-h-11 items-center rounded-full border px-4 text-sm rb-press ${
                       selected
                         ? "border-primary-400 bg-primary-400/15 text-primary-200"
                         : "border-white/15 bg-slate-900 text-slate-300 hover:border-primary-400/50"
@@ -134,7 +138,7 @@ export function GetStartedForm() {
             <button
               type="submit"
               disabled={submitting}
-              className="inline-flex w-full items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 transition-colors hover:bg-primary-300 disabled:opacity-60 sm:w-auto"
+              className="inline-flex w-full items-center justify-center rounded-lg bg-primary-400 px-6 py-3 text-base font-semibold text-slate-950 rb-press hover:bg-primary-300 disabled:opacity-60 sm:w-auto"
             >
               {submitting ? "One moment…" : "Create my free account"}
             </button>
