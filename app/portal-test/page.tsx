@@ -8,6 +8,7 @@ export default function PortalTestPage() {
            backgroundPosition: 'center',
            backgroundAttachment: 'fixed'
          }}>
+      <div className="relative z-20 bg-amber-500 text-slate-950 text-center text-sm font-semibold py-2">Design preview with sample numbers. Not real member data.</div>
       <div className="relative z-10 p-8">
         <div className="max-w-7xl mx-auto">
           
