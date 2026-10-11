@@ -13,5 +13,5 @@ export default function PeptidesPage() {
 
 export const metadata = {
   title: "Peptide Tracker - Reset Biology",
-  description: "Comprehensive peptide management system. Schedule doses, track progress, monitor side effects with IRB-compliant data sharing.",
+  description: "Comprehensive peptide management system. Track peptide protocols and doses, set reminders, and note how you feel.",
 }

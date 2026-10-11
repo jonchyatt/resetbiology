@@ -249,8 +249,7 @@ export default async function PeptidePage({ params }: Props) {
             <p className="text-white/80 text-sm leading-relaxed">
               All content on this page is for research and educational purposes only and is not intended as medical advice.
               Always consult a qualified healthcare provider before starting any peptide or hormone protocol.
-              Reset Biology does not sell peptides directly. Members access protocols through IRB enrollment with Cellular Peptide
-              and may explore the buyer&apos;s union co-op via Zion Direct Care.
+              Reset Biology sells nothing. Members who want access can read about the member-owned co-op on our <Link href="/order">co-op page</Link>.
             </p>
           </section>
         </main>

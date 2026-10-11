@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const recommendations = []
     
     if (normalizedScore > 70) {
-      recommendations.push("You're an excellent candidate for our IRB-approved Retatrutide protocol")
+      recommendations.push("Your answers suggest a structured plan could help. Talk to your own healthcare provider about your options.")
       recommendations.push("Consider our comprehensive Mental Mastery program for lasting results")
     }
     

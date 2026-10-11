@@ -216,8 +216,7 @@ export default async function GuruPage({ params }: Props) {
                 Reset Biology cites and indexes this practitioner&apos;s public content for educational and research purposes.
                 Profiles are summaries with verbatim citations, not endorsements. {guru.name} is not affiliated with Reset Biology
                 unless explicitly stated. Always consult a qualified healthcare provider before starting any peptide or hormone
-                protocol. Reset Biology does not sell peptides directly. Members access protocols through IRB enrollment with
-                Cellular Peptide and may explore the buyer&apos;s union co-op via Zion Direct Care.
+                protocol. Reset Biology sells nothing. Members who want access can read about the member-owned co-op on our <Link href="/order">co-op page</Link>.
               </p>
             </section>
           </div>

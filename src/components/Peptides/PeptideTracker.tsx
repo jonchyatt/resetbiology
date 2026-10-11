@@ -2781,19 +2781,16 @@ export function PeptideTracker() {
                 </div>
               )}
 
-              {/* IRB Compliance Notice */}
+              {/* Records notice */}
               <div className="mt-8">
                 <div className="bg-gray-900/95 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
                   <AlertCircle className="w-5 h-5 text-primary-300 mr-3 mt-0.5 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold text-white mb-1">
-                      IRB-Approved Research Protocol
+                      Your records, your decisions
                     </h4>
                     <p className="text-white/70 text-sm">
-                      Your peptide data is securely tracked and can be shared
-                      with healthcare providers for research purposes. All data
-                      handling follows IRB compliance standards for participant
-                      safety.
+                      Your protocols and doses are saved in your Reset Biology account, so reminders work on every device. Connect Google Drive any time to keep your own copy. Reset Biology does not provide medical care. Talk to your own healthcare provider before starting or changing any protocol.
                     </p>
                   </div>
                 </div>
