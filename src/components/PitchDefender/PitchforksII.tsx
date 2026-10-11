@@ -714,8 +714,16 @@ export default function PitchforksII() {
 
   // ─── UI ───────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#08080f] text-gray-100 p-4 flex flex-col items-center">
-      <div className="w-full max-w-3xl flex items-center justify-between mb-3">
+    <div
+      className="min-h-screen bg-[#08080f] text-gray-100 p-4 flex flex-col items-center"
+      style={{
+        // Pitch Defender hides the global nav, so reclaim the body reserve that
+        // is otherwise a conspicuous white strip above the game frame.
+        marginTop: 'calc(-64px - env(safe-area-inset-top, 0px))',
+        minHeight: 'calc(100vh + 64px + env(safe-area-inset-top, 0px))',
+      }}
+    >
+      <div className="w-full max-w-6xl flex items-center justify-between mb-3">
         <Link href="/pitch-defender" className="text-xs text-indigo-400 hover:text-indigo-200">
           ← Back to Pitch Defender
         </Link>
@@ -745,7 +753,7 @@ export default function PitchforksII() {
         <div className="text-xs text-gray-500 mb-2">Loading sprite atlas…</div>
       )}
 
-      <div className="relative" style={{ width: W, maxWidth: '100%' }}>
+      <div className="relative w-full max-w-6xl">
         <canvas
           ref={canvasRef}
           width={W}
@@ -753,6 +761,7 @@ export default function PitchforksII() {
           style={{
             display: 'block',
             width: '100%',
+            height: 'auto',
             border: '1px solid rgba(80,80,120,0.4)',
             borderRadius: 12,
             boxShadow: '0 0 40px rgba(120,180,255,0.15)',
