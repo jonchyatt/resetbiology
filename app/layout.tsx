@@ -12,6 +12,8 @@ import './globals.css';
 export const viewport: Viewport = {
   themeColor: '#020617',
   colorScheme: 'dark',
+  viewportFit: 'cover',
+  interactiveWidget: 'resizes-content',
 };
 
 export const metadata = { title: 'ResetBiology' };

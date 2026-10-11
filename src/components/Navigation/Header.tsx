@@ -56,6 +56,7 @@ function HeaderContent() {
               <img
                 src="/reset-logo-pro.png"
                 alt=""
+                decoding="async"
                 width={96}
                 height={96}
                 className="absolute -left-5 -top-3.5 h-24 w-24 max-w-none mix-blend-lighten"
@@ -156,7 +157,7 @@ function HeaderContent() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-slate-200"
+            className="md:hidden p-3 -mr-3 text-slate-200"
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             aria-expanded={isMenuOpen}
             aria-controls="rb-mobile-nav"
@@ -169,7 +170,7 @@ function HeaderContent() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div id="rb-mobile-nav" className="md:hidden py-4 border-t border-white/10">
-            <nav className="flex flex-col space-y-4">
+            <nav className="flex flex-col space-y-1">
               {!user ? (
                 <>
                   <a
@@ -190,17 +191,17 @@ function HeaderContent() {
                 </>
               ) : (
                 <>
-                  <Link href="/portal" aria-current={pathname === '/portal' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/portal" aria-current={pathname === '/portal' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium block py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                     Portal
                   </Link>
-                  <Link href="/education" aria-current={pathname === '/education' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/education" aria-current={pathname === '/education' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium block py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                     Education
                   </Link>
-                  <Link href="/profile" aria-current={pathname === '/profile' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/profile" aria-current={pathname === '/profile' ? 'page' : undefined} className="text-slate-300 hover:text-white font-medium block py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                     Profile
                   </Link>
                   {isAdmin && (
-                    <Link href="/admin" className="text-orange-300 hover:text-orange-200 font-medium focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/admin" className="text-orange-300 hover:text-orange-200 font-medium block py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-300 rounded-sm" onClick={() => setIsMenuOpen(false)}>
                       Admin Dashboard
                     </Link>
                   )}

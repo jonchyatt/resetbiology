@@ -65,7 +65,19 @@ body {
   padding-top: calc(64px + env(safe-area-inset-top, 0px));
 }
 
-html { background-color: var(--color-background); color-scheme: dark; }
+html {
+  background-color: var(--color-background);
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+button, a, [role="button"], summary {
+  touch-action: manipulation;
+}
+button, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
+}
 
 /* Materials: the header is translucent; make it solid or high-contrast when asked. */
 @media (prefers-reduced-transparency: reduce) {
