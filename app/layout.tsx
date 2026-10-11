@@ -4,6 +4,7 @@ import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
 import { Footer } from '@/components/Navigation/Footer';
 import { ClientAuth0Provider } from '@/components/Auth/ClientAuth0Provider';
+import { MotionProvider } from '@/components/MotionProvider';
 import { ToastProvider } from '@/components/ui/Toast';
 import { auth0 } from '@/lib/auth0';
 import './globals.css';
@@ -40,9 +41,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         />
         <ClientAuth0Provider user={session?.user}>
 <ToastProvider>
-            <Header />
-            {children}
-            <Footer />
+            <MotionProvider>
+              <Header />
+              {children}
+              <Footer />
+            </MotionProvider>
           </ToastProvider>
         </ClientAuth0Provider>
 
