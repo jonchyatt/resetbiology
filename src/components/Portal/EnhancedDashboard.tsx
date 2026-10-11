@@ -632,10 +632,10 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
               <div className="text-3xl">🎁</div>
               <div>
                 <p className="text-amber-200 font-semibold text-sm">
-                  Free Access — Satori Living Foundation Grant
+                  Free access
                 </p>
                 <p className="text-amber-100/70 text-xs">
-                  Free access, funded by the Satori Living Foundation. No payment required.
+                  Funded by the Satori Living Foundation. No payment, ever.
                 </p>
               </div>
             </div>
@@ -665,7 +665,7 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
                 {/* Content */}
                 <div className="flex-1 text-center md:text-left">
                   <h3 className="text-2xl font-bold text-white mb-2">
-                    Claim Your Free Access — Satori Living Foundation Grant
+                    Claim Your Free access
                   </h3>
                   <p className="text-gray-200 mb-1">
                     Free access, funded by the Satori Living Foundation — no card required.
