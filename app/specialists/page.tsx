@@ -56,7 +56,7 @@ const SPECIALISTS = [
         description: 'Breathwork, stress, vagal tone',
         icon: Wind,
         color: 'from-cyan-500 to-cyan-600',
-        path: '/breathe'
+        path: '/breath'
     },
     {
         id: 'JOURNAL',
@@ -72,7 +72,7 @@ const SPECIALISTS = [
         description: '12-week program, eye exercises',
         icon: Eye,
         color: 'from-blue-500 to-blue-600',
-        path: '/vision'
+        path: '/vision-training'
     },
     {
         id: 'NBACK',
@@ -80,7 +80,7 @@ const SPECIALISTS = [
         description: 'N-Back, mental training',
         icon: Brain,
         color: 'from-pink-500 to-pink-600',
-        path: '/nback'
+        path: '/mental-training'
     },
     {
         id: 'COURSE',
@@ -100,8 +100,8 @@ const SPECIALISTS = [
     },
     {
         id: 'SALES',
-        name: 'Subscription Help',
-        description: 'Pricing, plans, questions',
+        name: 'Co-op Questions',
+        description: 'How the member co-op works',
         icon: DollarSign,
         color: 'from-teal-500 to-teal-600',
         path: '/order'
@@ -145,7 +145,10 @@ export default function SpecialistsPage() {
                             <button
                                 key={specialist.id}
                                 onClick={() => handleSelect(specialist)}
+                                disabled={!specialist.path}
+                                aria-disabled={!specialist.path}
                                 className={`
+                                    disabled:opacity-60 disabled:cursor-default
                                     relative group p-6 rounded-2xl text-left transition-all duration-300
                                     bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm
                                     border border-gray-700/50 hover:border-primary-400/50
@@ -167,6 +170,7 @@ export default function SpecialistsPage() {
                                 <p className="text-sm text-slate-400">
                                     {specialist.description}
                                 </p>
+                                {!specialist.path && <span className="mt-1 block text-xs text-white/80">Coming soon</span>}
 
                                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Mic className="w-5 h-5 text-primary-400" />

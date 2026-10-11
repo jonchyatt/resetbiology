@@ -46,6 +46,10 @@ const PAGE_TO_AGENT: Record<string, AgentType> = {
     '/portal': 'CONCIERGE',
     '/order': 'SALES',
     '/get-started': 'ONBOARDING',
+    '/breath': 'BREATH',
+    '/vision-training': 'VISION',
+    '/mental-training': 'NBACK',
+    '/daily-history': 'JOURNAL',
 };
 
 export class AgentOrchestrator {
