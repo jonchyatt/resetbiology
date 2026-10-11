@@ -90,6 +90,8 @@ export function PeptideTracker() {
   };
 
   const [activeTab, setActiveTab] = useState<"current" | "calendar">("current");
+  const [referenceSearch, setReferenceSearch] = useState("");
+  const [referenceCategory, setReferenceCategory] = useState("All");
   const [currentProtocols, setCurrentProtocols] = useState<PeptideProtocol[]>(
     [],
   );
@@ -136,6 +138,23 @@ export function PeptideTracker() {
     Record<string, boolean>
   >({});
   const bootstrapped = useRef(false);
+
+  const filteredProtocolReferences = useMemo(() => {
+    const normalizedSearch = referenceSearch.trim().toLowerCase();
+    return peptideProtocolReferences.filter((reference) => {
+      const matchesCategory =
+        referenceCategory === "All" || reference.category === referenceCategory;
+      const searchable = [
+        reference.name,
+        reference.category,
+        reference.purpose,
+        reference.source,
+      ]
+        .join(" ")
+        .toLowerCase();
+      return matchesCategory && (!normalizedSearch || searchable.includes(normalizedSearch));
+    });
+  }, [referenceCategory, referenceSearch]);
 
   const fetchTodaysDoses = useCallback(
     async (dayKey: string = todayKey) => {
@@ -1868,22 +1887,68 @@ export function PeptideTracker() {
                   </div>
 
                   <section aria-labelledby="protocol-reference-library" className="mb-6 rounded-xl border border-primary-400/30 bg-gray-900/55 p-4">
-                    <h4 id="protocol-reference-library" className="text-base font-semibold text-primary-200">
-                      Protocol reference library
-                    </h4>
-                    <p className="mt-1 text-xs text-gray-400">
-                      Source-attributed dose ranges are reference material, not individualized recommendations.
-                    </p>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <h4 id="protocol-reference-library" className="text-base font-semibold text-primary-200">
+                          Protocol reference library
+                        </h4>
+                        <p className="mt-1 text-xs text-gray-400">
+                          Source-attributed records are reference material, not your saved protocol or individualized recommendations.
+                        </p>
+                      </div>
+                      <p className="shrink-0 text-xs font-medium text-primary-200" aria-live="polite">
+                        {filteredProtocolReferences.length} of {peptideProtocolReferences.length} records
+                      </p>
+                    </div>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                      <label className="block text-xs font-medium text-gray-300" htmlFor="protocol-reference-search">
+                        Search references
+                        <input
+                          id="protocol-reference-search"
+                          type="search"
+                          value={referenceSearch}
+                          onChange={(event) => setReferenceSearch(event.target.value)}
+                          placeholder="Name, category, purpose, or source"
+                          className="mt-1 w-full rounded-lg border border-gray-600 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-gray-500 focus:border-primary-300 focus:outline-none"
+                        />
+                      </label>
+                      <label className="block text-xs font-medium text-gray-300" htmlFor="protocol-reference-category">
+                        Category
+                        <select
+                          id="protocol-reference-category"
+                          value={referenceCategory}
+                          onChange={(event) => setReferenceCategory(event.target.value)}
+                          className="mt-1 w-full rounded-lg border border-gray-600 bg-black/30 px-3 py-2 text-sm text-white focus:border-primary-300 focus:outline-none sm:w-40"
+                        >
+                          {["All", "Recovery", "Metabolic", "Immune", "Cognitive"].map((category) => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
                     <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                      {peptideProtocolReferences.map((reference) => (
-                        <article key={reference.id} className="rounded-lg border border-gray-700 bg-black/20 p-3 text-sm">
-                          <h5 className="font-semibold text-white">{reference.name}</h5>
-                          <p className="mt-1 text-primary-200">Reference dose range: {reference.doseRange}</p>
-                          <p className="mt-1 text-xs text-gray-300">Source: {reference.source}</p>
-                          <p className="mt-1 text-xs text-gray-500">Corpus record: {reference.sourcePath}</p>
+                      {filteredProtocolReferences.map((reference) => (
+                        <article key={reference.id} className="min-w-0 rounded-lg border border-gray-700 bg-black/20 p-3 text-sm">
+                          <div className="flex items-start justify-between gap-2">
+                            <h5 className="font-semibold text-white">{reference.name}</h5>
+                            <span className="shrink-0 rounded-full border border-primary-400/30 px-2 py-0.5 text-[10px] font-medium text-primary-200">
+                              {reference.category}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-primary-200">Source dose: {reference.doseRange}</p>
+                          <p className="mt-1 text-xs text-gray-300">Source schedule: {reference.frequency}; {reference.timing}; {reference.duration}</p>
+                          <p className="mt-1 break-words text-xs text-gray-300">Source: {reference.source}</p>
+                          <a href={reference.sourceHref} className="mt-1 inline-block break-all text-xs text-primary-300 underline decoration-primary-400/60 underline-offset-2 hover:text-primary-100">
+                            Source details: {reference.sourcePath}
+                          </a>
                         </article>
                       ))}
                     </div>
+                    {filteredProtocolReferences.length === 0 && (
+                      <p className="mt-3 rounded-lg border border-gray-700 bg-black/20 p-3 text-sm text-gray-300">
+                        No protocol references match this search and category filter.
+                      </p>
+                    )}
                   </section>
 
                   {currentProtocols.length === 0 ? (
