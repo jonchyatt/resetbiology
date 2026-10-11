@@ -175,6 +175,18 @@ function ProfilePageContent() {
     )
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#020617] text-slate-200 flex items-center justify-center px-4">
+        <div className="max-w-sm w-full rounded-xl border border-white/10 bg-slate-900 p-6 text-center">
+          <h1 className="text-2xl font-semibold text-white mb-2">You're signed out</h1>
+          <p className="text-slate-300 mb-6">Log in to see and edit your profile.</p>
+          <a href="/auth/login?returnTo=/profile" className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary-400 px-5 font-semibold text-slate-950">Log in</a>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 relative pt-28"
          style={{
@@ -339,7 +351,7 @@ function ProfilePageContent() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        className="input-primary"
+                        className="input-primary text-gray-900 placeholder:text-gray-500"
                         placeholder="Enter your full name"
                       />
                     </div>
@@ -349,7 +361,7 @@ function ProfilePageContent() {
                         type="text"
                         value={formData.username}
                         onChange={(e) => setFormData({...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})}
-                        className="input-primary"
+                        className="input-primary text-gray-900 placeholder:text-gray-500"
                         placeholder="Choose a username"
                       />
                       <p className="text-xs text-gray-400 mt-1">Lowercase letters, numbers, and underscores only</p>
@@ -360,7 +372,7 @@ function ProfilePageContent() {
                         type="email"
                         value={formData.email}
                         disabled
-                        className="input-primary opacity-60 cursor-not-allowed"
+                        className="input-primary text-gray-900 placeholder:text-gray-500 opacity-60 cursor-not-allowed"
                         placeholder="Enter your email"
                       />
                       <p className="text-xs text-gray-400 mt-1">Read-only — this is the email from your login (Auth0). Contact support to change it.</p>
