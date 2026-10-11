@@ -1036,7 +1036,7 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
                 <h3 className="flex items-center text-sm font-semibold text-primary-200 uppercase tracking-wide"><NotebookPen className="mr-2 h-4 w-4" />Journal</h3>
                 <button
                   onClick={() => setEditModal({ type: 'journal', data: day.journalEntry })}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300"
+                  className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300"
                   title="Edit Journal"
                 >
                   <Edit2 className="h-4 w-4" />
@@ -1353,7 +1353,7 @@ function ActivityList({
                   {item.secondary && <p className="text-xs text-slate-400 mt-1">{item.secondary}</p>}
                   {item.meta && <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-wide">{item.meta}</p>}
                 </div>
-                <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
                   {onViewDetails && (
                     <button
                       onClick={() => onViewDetails(item)}
