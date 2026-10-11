@@ -18,6 +18,7 @@ import { DosageCalculator } from "./DosageCalculator";
 import { QuickAddOralMed } from "./QuickAddOralMed";
 import NotificationPreferences from "@/components/Notifications/NotificationPreferences";
 import PushUnavailableWarning from "@/components/Notifications/PushUnavailableWarning";
+import { peptideProtocolReferences } from "@/data/peptideProtocolReferences";
 
 // Convert base64 VAPID key to Uint8Array format required by Push API
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -50,6 +51,9 @@ interface PeptideProtocol {
   currentCycle?: number;
   isActive: boolean;
   administrationType?: string;
+  source?: string;
+  sourcePath?: string;
+  doseRange?: string;
 }
 
 interface DoseEntry {
@@ -756,7 +760,7 @@ export function PeptideTracker() {
 
       if (products && Array.isArray(products)) {
         // Transform storefront products to match our interface
-        const formattedLibrary = products.map((product: any) => ({
+        const formattedLibrary: Omit<PeptideProtocol, "startDate" | "currentCycle" | "isActive">[] = products.map((product: any) => ({
           id: product.id,
           name: product.name,
           purpose: product.description?.substring(0, 50) || "General",
@@ -768,6 +772,27 @@ export function PeptideTracker() {
           reconstitution: "2ml",
           syringeUnits: 10,
         }));
+
+        // Keep the storefront catalog, then supplement it with the source-attributed
+        // references that are already in the education corpus.
+        for (const reference of peptideProtocolReferences) {
+          if (formattedLibrary.some((item) => item.name.toLowerCase() === reference.name.toLowerCase())) continue;
+          formattedLibrary.push({
+            id: reference.id,
+            name: reference.name,
+            purpose: reference.purpose,
+            dosage: reference.doseRange,
+            timing: reference.timing,
+            frequency: reference.frequency,
+            duration: reference.duration,
+            vialAmount: reference.vialAmount,
+            reconstitution: reference.reconstitution,
+            syringeUnits: 0,
+            source: reference.source,
+            sourcePath: reference.sourcePath,
+            doseRange: reference.doseRange,
+          });
+        }
 
         // Add "Other (Custom)" option at the end
         formattedLibrary.push({
@@ -849,6 +874,23 @@ export function PeptideTracker() {
       reconstitution: "3ml",
       syringeUnits: 10,
     },
+    ...peptideProtocolReferences
+      .filter((reference) => !["Semaglutide", "BPC-157"].includes(reference.name))
+      .map((reference) => ({
+      id: reference.id,
+      name: reference.name,
+      purpose: reference.purpose,
+      dosage: reference.doseRange,
+      timing: reference.timing,
+      frequency: reference.frequency,
+      duration: reference.duration,
+      vialAmount: reference.vialAmount,
+      reconstitution: reference.reconstitution,
+      syringeUnits: 0,
+      source: reference.source,
+      sourcePath: reference.sourcePath,
+      doseRange: reference.doseRange,
+      })),
   ];
 
   const handleSaveProtocol = async (protocolData: {
@@ -1772,8 +1814,8 @@ export function PeptideTracker() {
             <span className="text-primary-400">Peptide</span> Tracker
           </h2>
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Comprehensive peptide management system. Schedule doses, track
-            progress, monitor side effects with IRB-compliant data sharing.
+            Personal peptide management. Schedule doses, track progress, and
+            record side effects for your own history.
           </p>
         </div>
 
@@ -1824,6 +1866,25 @@ export function PeptideTracker() {
                       </button>
                     </div>
                   </div>
+
+                  <section aria-labelledby="protocol-reference-library" className="mb-6 rounded-xl border border-primary-400/30 bg-gray-900/55 p-4">
+                    <h4 id="protocol-reference-library" className="text-base font-semibold text-primary-200">
+                      Protocol reference library
+                    </h4>
+                    <p className="mt-1 text-xs text-gray-400">
+                      Source-attributed dose ranges are reference material, not individualized recommendations.
+                    </p>
+                    <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                      {peptideProtocolReferences.map((reference) => (
+                        <article key={reference.id} className="rounded-lg border border-gray-700 bg-black/20 p-3 text-sm">
+                          <h5 className="font-semibold text-white">{reference.name}</h5>
+                          <p className="mt-1 text-primary-200">Reference dose range: {reference.doseRange}</p>
+                          <p className="mt-1 text-xs text-gray-300">Source: {reference.source}</p>
+                          <p className="mt-1 text-xs text-gray-500">Corpus record: {reference.sourcePath}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
 
                   {currentProtocols.length === 0 ? (
                     <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-8 border border-primary-400/30 shadow-2xl text-center">
@@ -2135,19 +2196,18 @@ export function PeptideTracker() {
                 </div>
               )}
 
-              {/* IRB Compliance Notice */}
+              {/* Personal tracking notice */}
               <div className="mt-8">
                 <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 border border-primary-400/30 shadow-xl hover:shadow-primary-400/20 transition-all duration-300 flex items-start">
                   <AlertCircle className="w-5 h-5 text-primary-300 mr-3 mt-0.5 flex-shrink-0" />
                   <div>
                     <h4 className="font-semibold text-primary-200 mb-1">
-                      IRB-Approved Research Protocol
+                      Personal tracking record
                     </h4>
                     <p className="text-gray-300 text-sm">
-                      Your peptide data is securely tracked and can be shared
-                      with healthcare providers for research purposes. All data
-                      handling follows IRB compliance standards for participant
-                      safety.
+                      Your peptide data is tracked as part of your personal
+                      record. Discuss any treatment or dosing decisions with a
+                      qualified clinician.
                     </p>
                   </div>
                 </div>
