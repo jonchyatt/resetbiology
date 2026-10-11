@@ -24,6 +24,7 @@
     "browser:edit": "ts-node tests/run-in-browser.ts click-edit",
     "browser:reload": "ts-node tests/run-in-browser.ts reload",
     "test:timezone": "tsx tests/timezone-notification-check.ts",
+    "benchmark:pf13": "node scripts/run-pf13-benchmark.mjs",
     "test:retro-family": "node scripts/retro-blaster/family-regression.mjs"
   },
   "dependencies": {
