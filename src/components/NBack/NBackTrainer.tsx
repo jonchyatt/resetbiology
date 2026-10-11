@@ -631,7 +631,7 @@ export default function NBackTrainer() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex justify-center gap-2 mb-8 px-4">
+        <div className="flex flex-wrap justify-center gap-2 mb-8 px-4">
           {([
             { id: 'training', label: 'Training',    icon: Brain       },
             { id: 'progress', label: 'Progress',    icon: TrendingUp  },
