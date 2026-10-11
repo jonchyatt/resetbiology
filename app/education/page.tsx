@@ -1746,6 +1746,9 @@ const horizonTopics = [
   }
 ]
 
+// Wave J2.5: research-in-progress teasers hidden; see /admin Archive
+const SHOW_HORIZON_TOPICS = false
+
 export default function EducationPage() {
   const [activeCategory, setActiveCategory] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState("")
@@ -1967,6 +1970,7 @@ export default function EducationPage() {
 
             {/* On The Horizon */}
             <div className="mt-12 bg-gradient-to-br from-primary-600/10 to-secondary-600/10 backdrop-blur-sm rounded-xl p-8 border border-primary-400/20 shadow-xl">
+              {SHOW_HORIZON_TOPICS && (<>
               <h3 className="text-2xl font-bold text-white mb-2">On The Horizon</h3>
               <p className="text-gray-400 mb-6">Research we are actively investigating — verified studies coming soon.</p>
 
@@ -1981,6 +1985,7 @@ export default function EducationPage() {
                   </div>
                 ))}
               </div>
+              </>)}
 
               <div className="bg-gray-800/30 rounded-lg p-6 border border-primary-400/10 text-center">
                 <h4 className="font-semibold text-white mb-2">What should we research next?</h4>
