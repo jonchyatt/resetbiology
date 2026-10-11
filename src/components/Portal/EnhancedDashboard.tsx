@@ -30,6 +30,9 @@ interface PortalModuleData {
 }
 
 // Hardcoded fallback if API fails
+// Legacy paid-trial banner. Site is free; banner sent logged-in members to the login page. Parked, not deleted (MASTER-PLAN A-3.1).
+const SHOW_LEGACY_TRIAL_BANNER = false
+
 const fallbackModules: PortalModuleData[] = [
   { slug: 'peptides', label: 'Peptides', href: '/peptides', icon: 'Target', colorFrom: 'from-teal-600/30', colorTo: 'to-teal-700/30', borderColor: 'border-teal-400/30', iconColor: 'text-teal-300', enabled: true, order: 1 },
   { slug: 'workout', label: 'Workout', href: '/workout', icon: 'Dumbbell', colorFrom: 'from-green-600/30', colorTo: 'to-green-700/30', borderColor: 'border-green-400/30', iconColor: 'text-green-300', enabled: true, order: 2 },
@@ -42,7 +45,7 @@ const fallbackModules: PortalModuleData[] = [
   { slug: 'mental-training', label: 'Mental Training', href: '/mental-training', icon: 'Zap', colorFrom: 'from-pink-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-pink-400/30', iconColor: 'text-pink-300', enabled: true, order: 9 },
   { slug: 'ear-training', label: 'Ear Training', href: '/ear-training', icon: 'Music', colorFrom: 'from-rose-600/30', colorTo: 'to-pink-700/30', borderColor: 'border-rose-400/30', iconColor: 'text-rose-300', enabled: true, order: 10 },
   { slug: 'voice-training', label: 'Voice Training', href: '/pitch-defender', icon: 'Music', colorFrom: 'from-fuchsia-600/30', colorTo: 'to-cyan-700/30', borderColor: 'border-fuchsia-400/30', iconColor: 'text-fuchsia-200', enabled: false, order: 11 },
-  { slug: 'emotional-health', label: 'Emotional Health', href: 'https://woden.whatamiappreciatingnow.com/woden/change', icon: 'HeartPulse', colorFrom: 'from-amber-600/30', colorTo: 'to-rose-700/30', borderColor: 'border-amber-400/30', iconColor: 'text-amber-200', enabled: true, order: 12 },
+  { slug: 'emotional-health', label: 'Emotional Health', href: 'https://woden.whatamiappreciatingnow.com/woden/change', icon: 'HeartPulse', colorFrom: 'from-amber-600/30', colorTo: 'to-rose-700/30', borderColor: 'border-amber-400/30', iconColor: 'text-amber-200', enabled: false, order: 12 }, // parked 2026-10: pointed off-site to a private domain; see MASTER-PLAN archive register
   { slug: 'education', label: 'Education', href: '/education', icon: 'BookOpen', colorFrom: 'from-indigo-600/30', colorTo: 'to-indigo-700/30', borderColor: 'border-indigo-400/30', iconColor: 'text-indigo-300', enabled: true, order: 13 },
 ]
 
@@ -637,7 +640,7 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
           )}
 
           {/* Trial Subscription Banner - Fallback for users without active access */}
-          {hasActiveSubscription === false && !isAdmin && showTrialBanner && (
+          {SHOW_LEGACY_TRIAL_BANNER && hasActiveSubscription === false && !isAdmin && showTrialBanner && (
             <div className="mb-8 bg-gradient-to-r from-green-600/20 via-emerald-600/20 to-green-600/20 border-2 border-green-400/40 rounded-xl p-6 shadow-lg backdrop-blur-sm relative overflow-hidden">
               {/* Close button */}
               <button
