@@ -81,6 +81,22 @@ export default function AdminDashboard() {
               </div>
             </Link>
 
+            {/* Meal plans (Nutrition) */}
+            <Link href="/admin/nutrition" className="group">
+              <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-green-400/30 shadow-2xl hover:shadow-green-400/20 group-hover:scale-105 transition-all duration-300">
+                <div className="flex items-center mb-4">
+                  <Apple className="w-8 h-8 text-green-400 mr-3" />
+                  <h3 className="text-xl font-bold text-white">Meal plans</h3>
+                </div>
+                <p className="text-gray-300 mb-4">
+                  Manage nutrition meal plans.
+                </p>
+                <div className="text-green-300 font-medium group-hover:text-green-200 transition-colors">
+                  Manage Meal Plans →
+                </div>
+              </div>
+            </Link>
+
             {/* Breath Exercises */}
             <Link href="/admin/breath" className="group">
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-teal-400/30 shadow-2xl hover:shadow-teal-400/20 group-hover:scale-105 transition-all duration-300">
@@ -284,6 +300,27 @@ export default function AdminDashboard() {
               </div>
             </Link>
           </div>
+          {/* Developer tools */}
+          <div className="max-w-6xl mx-auto mt-12">
+            <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 border border-primary-400/30 shadow-2xl">
+              <h2 className="text-2xl font-bold text-white mb-1">Developer tools</h2>
+              <p className="text-gray-300 mb-4">Internal pages. Admin login required.</p>
+              <ul className="space-y-2">
+              <li><a href="/auth/debug" className="text-primary-300 hover:text-primary-200">Auth debug</a> <span className="text-gray-500 text-sm">/auth/debug</span></li>
+              <li><a href="/test-session" className="text-primary-300 hover:text-primary-200">Test session</a> <span className="text-gray-500 text-sm">/test-session</span></li>
+              <li><a href="/portal-test" className="text-primary-300 hover:text-primary-200">Design preview (sample data)</a> <span className="text-gray-500 text-sm">/portal-test</span></li>
+              <li><a href="/admin/test" className="text-primary-300 hover:text-primary-200">Admin test</a> <span className="text-gray-500 text-sm">/admin/test</span></li>
+              <li><a href="/admin/db" className="text-primary-300 hover:text-primary-200">Database tools</a> <span className="text-gray-500 text-sm">/admin/db</span></li>
+              <li><a href="/pitch-defender/crepe-benchmark" className="text-primary-300 hover:text-primary-200">Pitch benchmark</a> <span className="text-gray-500 text-sm">/pitch-defender/crepe-benchmark</span></li>
+              <li><a href="/pitch-defender/note-entry" className="text-primary-300 hover:text-primary-200">Note entry tester</a> <span className="text-gray-500 text-sm">/pitch-defender/note-entry</span></li>
+              <li><a href="/pitch-defender/staff-tester" className="text-primary-300 hover:text-primary-200">Staff tester</a> <span className="text-gray-500 text-sm">/pitch-defender/staff-tester</span></li>
+              <li><a href="/pitch-defender/score-verify" className="text-primary-300 hover:text-primary-200">Score verify (engraving audit)</a> <span className="text-gray-500 text-sm">/pitch-defender/score-verify</span></li>
+              <li><a href="/pitch-defender/pitchforks-sprites" className="text-primary-300 hover:text-primary-200">Pitchforks sprite sheet</a> <span className="text-gray-500 text-sm">/pitch-defender/pitchforks-sprites</span></li>
+              <li><a href="/pitch-defender/lida-oliver-proof" className="text-primary-300 hover:text-primary-200">Lida Oliver proof (static file, not admin-gated)</a> <span className="text-gray-500 text-sm">/pitch-defender/lida-oliver-proof</span></li>
+              </ul>
+            </div>
+          </div>
+
 
         </div>
       </div>

@@ -212,6 +212,7 @@ export default function AssessmentsAdminPage() {
             </div>
 
             {/* Assessments Table */}
+            <p className="mb-4 rounded-lg bg-amber-500/15 border border-amber-400/40 text-amber-200 text-sm px-3 py-2">Submissions list not built yet. Intake answers are not shown here.</p>
             <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -249,10 +250,10 @@ export default function AssessmentsAdminPage() {
                           </div>
                           <div className="mt-4">
                             <a
-                              href="/assessment"
+                              href="/get-started"
                               className="inline-block bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                             >
-                              View Assessment Page
+                              Open current intake (/get-started)
                             </a>
                           </div>
                         </td>

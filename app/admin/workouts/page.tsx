@@ -184,6 +184,7 @@ export default function AdminWorkoutsPage() {
             <div>
               <h1 className="text-2xl font-bold text-white">Exercise & Program Library</h1>
               <p className="text-gray-300 mt-1">Manage exercises and workout programs</p>
+              <p className="mt-2 rounded-lg bg-amber-500/15 border border-amber-400/40 text-amber-200 text-sm px-3 py-2">Prototype: changes on this page are not saved yet and will be lost on reload.</p>
             </div>
             <div className="flex gap-3">
               <button
