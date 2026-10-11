@@ -5,6 +5,7 @@
 // repo — the browser cannot fabricate the lock. Court of record = Jon; this is his signed read.
 import { NextRequest, NextResponse } from 'next/server';
 import { put, list } from '@vercel/blob';
+import { auth0 } from '@/lib/auth0';
 
 export const runtime = 'nodejs';
 
@@ -12,6 +13,10 @@ const KEY = 'score-verify/lida-rose-a4-verdicts.json';
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth0.getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const body = await request.json();
     if (!body || !Array.isArray(body.verdicts)) {
       return NextResponse.json({ error: 'verdicts[] required' }, { status: 400 });
