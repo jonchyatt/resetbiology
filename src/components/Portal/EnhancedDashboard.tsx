@@ -626,7 +626,7 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
           {/* Vault Setup Banner - Show for users without Drive connected (top priority) */}
           <VaultBanner />
 
-          {/* Satori Living Foundation Grant Banner - Show for active subscribers who aren't admins */}
+          {/* Free access banner - Show for active subscribers who aren't admins */}
           {hasActiveSubscription && !isAdmin && (
             <div className="mb-6 bg-gradient-to-r from-amber-600/20 via-yellow-600/20 to-amber-600/20 border border-amber-400/30 rounded-xl p-4 flex items-center gap-4 backdrop-blur-sm">
               <div className="text-3xl">🎁</div>
