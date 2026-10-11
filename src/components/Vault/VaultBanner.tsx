@@ -18,7 +18,7 @@ const DISMISS_KEY = "vaultBannerDismissed"
  *  - User dismissed in this session (sessionStorage)
  */
 export function VaultBanner() {
-  const { loading, connected } = useVaultStatus()
+  const { loading, connected, error } = useVaultStatus()
   const [dismissed, setDismissed] = useState(false)
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function VaultBanner() {
     setDismissed(true)
   }
 
-  if (loading || connected || dismissed) return null
+  if (loading || connected || error || dismissed) return null
 
   return (
     <div className="mb-8 bg-gradient-to-r from-primary-600/20 via-secondary-600/20 to-primary-600/20 border-2 border-primary-400/40 rounded-xl p-6 shadow-lg backdrop-blur-sm relative overflow-hidden">

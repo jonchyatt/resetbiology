@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export interface VaultStatus {
   loading: boolean
@@ -22,7 +22,7 @@ const INITIAL: VaultStatus = {
 export function useVaultStatus(): VaultStatus & { refresh: () => Promise<void> } {
   const [status, setStatus] = useState<VaultStatus>(INITIAL)
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/integrations/google-drive/status", {
         credentials: "include",
@@ -47,11 +47,11 @@ export function useVaultStatus(): VaultStatus & { refresh: () => Promise<void> }
         error: err instanceof Error ? err.message : "unknown",
       })
     }
-  }
+  }, [])
 
   useEffect(() => {
     refresh()
-  }, [])
+  }, [refresh])
 
   return { ...status, refresh }
 }

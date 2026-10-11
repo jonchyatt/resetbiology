@@ -36,7 +36,7 @@ export function useVaultPrompt() {
   }
 
   const shouldPrompt =
-    hydrated && !status.loading && !status.connected && !dismissed
+    hydrated && !status.loading && !status.error && !status.connected && !dismissed
 
   return {
     shouldPrompt,
