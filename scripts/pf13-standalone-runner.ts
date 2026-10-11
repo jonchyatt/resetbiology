@@ -36,9 +36,7 @@ async function runPass(pass: number): Promise<Pass> {
     observations.push(row('crepe', window.id, acceptedCrepe?.frequency ?? null, acceptedCrepe?.confidence ?? 0, latency))
 
     started = performance.now()
-    const pestoSource = new Float32Array(12_288)
-    pestoSource.set(window.source)
-    const pesto = await detectPitchPesto(pestoSource, 48_000)
+    const pesto = await detectPitchPesto(window.source, 48_000)
     latency = performance.now() - started
     const acceptedPesto = pesto && pesto.confidence >= 0.3 ? pesto : null
     observations.push(row('pesto', window.id, acceptedPesto?.frequency ?? null, acceptedPesto?.confidence ?? 0, latency))

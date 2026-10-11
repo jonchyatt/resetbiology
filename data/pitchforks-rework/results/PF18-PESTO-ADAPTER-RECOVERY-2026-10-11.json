@@ -1,0 +1,5294 @@
+{
+  "source": "onnxruntime-python parity probe (browser runner unavailable: esbuild Windows binary cannot execute in this shell)",
+  "fixtures": 11,
+  "windows": 330,
+  "detectorSlots": 990,
+  "pestoMinSamples": 1024,
+  "pestoModelInputSamples": 4096,
+  "passes": [
+    [
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w000",
+        "frequency": 57.05287170410156,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007639900000185662
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w001",
+        "frequency": 76.7836685180664,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008024699999850782
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w002",
+        "frequency": 61.26072692871094,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009529599999950733
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w003",
+        "frequency": 55.519798278808594,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009489300000041112
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w004",
+        "frequency": 59.24848175048828,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009017699999958495
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w005",
+        "frequency": 58.26676940917969,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007692899999938163
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w006",
+        "frequency": 164.60560607910156,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007174200000008568
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w007",
+        "frequency": 61.06447219848633,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008454300000039439
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w008",
+        "frequency": 78.78450012207031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008651300000110496
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w009",
+        "frequency": 57.18498229980469,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007963499999959822
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w010",
+        "frequency": 60.0421028137207,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007671699999946213
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w011",
+        "frequency": 56.41372299194336,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008838200000127472
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w012",
+        "frequency": 177.38442993164062,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008779199999935372
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w013",
+        "frequency": 76.98377227783203,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.009074999999938882
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w014",
+        "frequency": 56.17976379394531,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.00882210000008854
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w015",
+        "frequency": 60.51631546020508,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007789799999954994
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w016",
+        "frequency": 57.30698013305664,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007819199999858029
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w017",
+        "frequency": 77.28414154052734,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008290199999919423
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w018",
+        "frequency": 61.12335968017578,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009186400000089634
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w019",
+        "frequency": 54.62199020385742,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009111099999927319
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w020",
+        "frequency": 58.261444091796875,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009283899999900314
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w021",
+        "frequency": 58.839317321777344,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008999899999935224
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w022",
+        "frequency": 55.96302795410156,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009090099999866652
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w023",
+        "frequency": 61.27154541015625,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009374900000011621
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w024",
+        "frequency": 187.46746826171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.009464700000080484
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w025",
+        "frequency": 57.03157424926758,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009272000000009939
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w026",
+        "frequency": 60.6889533996582,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.009071299999959592
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w027",
+        "frequency": 56.753753662109375,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008590499999854728
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w028",
+        "frequency": 76.35391998291016,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008424099999956525
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w029",
+        "frequency": 61.587982177734375,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.00844690000008086
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w000",
+        "frequency": 135.93209838867188,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008548500000188142
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w001",
+        "frequency": 128.6110382080078,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00824929999998858
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w002",
+        "frequency": 125.85710144042969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008273400000007314
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w003",
+        "frequency": 133.2837677001953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008036899999979141
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w004",
+        "frequency": 125.90162658691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008287200000040684
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w005",
+        "frequency": 128.3182373046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008301999999957843
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w006",
+        "frequency": 133.26953125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007884599999897546
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w007",
+        "frequency": 123.48026275634766,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008353800000122646
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w008",
+        "frequency": 133.2256622314453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007700899999917965
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w009",
+        "frequency": 130.80926513671875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0070081999999729305
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w010",
+        "frequency": 123.47090148925781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0076138000001719774
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w011",
+        "frequency": 133.27615356445312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007574299999987488
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w012",
+        "frequency": 127.89998626708984,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007705700000087745
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w013",
+        "frequency": 128.3169708251953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0070534999999836145
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w014",
+        "frequency": 133.27548217773438,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006097500000123546
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w015",
+        "frequency": 124.36497497558594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006358799999816256
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w016",
+        "frequency": 130.81277465820312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007107700000005934
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w017",
+        "frequency": 130.8128204345703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007271900000205278
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w018",
+        "frequency": 123.4710464477539,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007417299999815441
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w019",
+        "frequency": 133.26840209960938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0071819999998297135
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w020",
+        "frequency": 128.31761169433594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007310899999993126
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w021",
+        "frequency": 125.9079818725586,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007624399999940579
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w022",
+        "frequency": 133.28028869628906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007337599999800659
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w023",
+        "frequency": 125.8517837524414,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007066299999905823
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w024",
+        "frequency": 130.8048553466797,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00723880000009558
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w025",
+        "frequency": 133.2404327392578,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007357699999829492
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w026",
+        "frequency": 123.47074890136719,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007095599999956903
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w027",
+        "frequency": 133.259765625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008019000000103915
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w028",
+        "frequency": 128.3182373046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007274900000084017
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w029",
+        "frequency": 125.87120056152344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007533400000056645
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w000",
+        "frequency": 261.6161804199219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007249900000033449
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w001",
+        "frequency": 251.7425079345703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007269599999972343
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w002",
+        "frequency": 283.468994140625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007409400000142341
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w003",
+        "frequency": 261.6602783203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00785989999985759
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w004",
+        "frequency": 260.2952575683594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007443399999829126
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w005",
+        "frequency": 251.7423553466797,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007671000000073036
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w006",
+        "frequency": 277.1757507324219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007386699999869961
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w007",
+        "frequency": 261.662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007343400000081601
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w008",
+        "frequency": 256.7666931152344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006939200000033452
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w009",
+        "frequency": 251.74349975585938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007641899999953239
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w010",
+        "frequency": 274.5781555175781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007604399999991074
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w011",
+        "frequency": 261.66314697265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007938499999909254
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w012",
+        "frequency": 256.6398010253906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007327100000111386
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w013",
+        "frequency": 251.7530059814453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006866599999966638
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w014",
+        "frequency": 266.7008361816406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006867100000135906
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w015",
+        "frequency": 261.6626281738281,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0076652000000194676
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w016",
+        "frequency": 256.6366271972656,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007077600000002349
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w017",
+        "frequency": 251.74246215820312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007061900000053356
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w018",
+        "frequency": 263.4396057128906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006579900000133421
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w019",
+        "frequency": 266.4263000488281,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006717299999991155
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w020",
+        "frequency": 256.636474609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008300100000042221
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w021",
+        "frequency": 249.93194580078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007263699999839446
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w022",
+        "frequency": 263.8436584472656,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007604099999980463
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w023",
+        "frequency": 266.1168212890625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0073400999999648775
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w024",
+        "frequency": 256.636474609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007255200000145123
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w025",
+        "frequency": 246.9416961669922,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007127699999955439
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w026",
+        "frequency": 264.2405700683594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007631799999899158
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w027",
+        "frequency": 266.7776184082031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007360800000014933
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w028",
+        "frequency": 256.6363525390625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007184800000004543
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w029",
+        "frequency": 251.7251434326172,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007263400000056208
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w000",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0073386999999911495
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w001",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007367400000021007
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w002",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007407800000009956
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w003",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007374700000127632
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w004",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00705470000002606
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w005",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007467799999858471
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w006",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0078356999999869
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w007",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007371800000100848
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w008",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007019000000127562
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w009",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007447199999887744
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w010",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0071426000001793
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w011",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007230800000115778
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w012",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007229800000004616
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w013",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007339199999933044
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w014",
+        "frequency": 513.352294921875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0069967000001724955
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w015",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007464699999900404
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w016",
+        "frequency": 503.4852294921875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006691799999998693
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w017",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006611300000031406
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w018",
+        "frequency": 513.272705078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006737800000109928
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w019",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006485399999974106
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w020",
+        "frequency": 513.2740478515625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007508400000006077
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w021",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0072533000000021275
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w022",
+        "frequency": 513.2903442382812,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007195700000011129
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w023",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007184400000141977
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w024",
+        "frequency": 513.2763061523438,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00762340000005679
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w025",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0069602999999460735
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w026",
+        "frequency": 513.272705078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006953199999998105
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w027",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0064575999999760825
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w028",
+        "frequency": 513.272705078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006653700000015306
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w029",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007339300000012372
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w000",
+        "frequency": 1046.503662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007065400000101363
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w001",
+        "frequency": 1046.503662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007295199999816759
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w002",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007269799999903626
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w003",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0073557000000619155
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w004",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007065000000011423
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w005",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007013700000015888
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w006",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007038800000145784
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w007",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007108799999969051
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w008",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007458199999973658
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w009",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00714149999998881
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w010",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007075799999938681
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w011",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0071611000000757485
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w012",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007411799999999857
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w013",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007793399999854955
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w014",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007137600000078237
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w015",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006526399999984278
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w016",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006445399999847723
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w017",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006147000000055414
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w018",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00623619999987568
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w019",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006472799999983181
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w020",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006592899999986912
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w021",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007464300000037838
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w022",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007824600000049031
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w023",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008450899999843386
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w024",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007639200000085111
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w025",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006618099999968763
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w026",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0064351999999416876
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w027",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0080476999999064
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w028",
+        "frequency": 1046.502685546875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006626200000027893
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w029",
+        "frequency": 1046.502685546875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007074899999906847
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w000",
+        "frequency": 261.6161804199219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006951800000024377
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w001",
+        "frequency": 251.7425079345703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006855999999970663
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w002",
+        "frequency": 283.468994140625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007695300000023053
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w003",
+        "frequency": 261.6602783203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007703499999934138
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w004",
+        "frequency": 260.2952575683594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007714700000178709
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w005",
+        "frequency": 251.7423553466797,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0074980000001687586
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w006",
+        "frequency": 277.1757507324219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008109800000056566
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w007",
+        "frequency": 261.662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00816080000004149
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w008",
+        "frequency": 256.7666931152344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00821170000017446
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w009",
+        "frequency": 251.74349975585938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.010914999999840802
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w010",
+        "frequency": 274.5781555175781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008032299999968018
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w011",
+        "frequency": 261.66314697265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007613600000013321
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w012",
+        "frequency": 256.6398010253906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008053499999959968
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w013",
+        "frequency": 251.7530059814453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007229199999983393
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w014",
+        "frequency": 266.70062255859375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00712799999996605
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w015",
+        "frequency": 271.89678955078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007372799999984636
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w016",
+        "frequency": 277.1858215332031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007500200000094992
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w017",
+        "frequency": 277.1887512207031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0073829999998906715
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w018",
+        "frequency": 271.76934814453125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008139900000060152
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w019",
+        "frequency": 293.42572021484375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008497600000055172
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w020",
+        "frequency": 277.184326171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007968300000129602
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w021",
+        "frequency": 276.63995361328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007931699999971897
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w022",
+        "frequency": 266.71258544921875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00784180000005108
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w023",
+        "frequency": 288.57684326171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0077945999998974
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w024",
+        "frequency": 277.1842956542969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007537999999840395
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w025",
+        "frequency": 271.94097900390625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00717779999990853
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w026",
+        "frequency": 268.9580383300781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006866800000125295
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w027",
+        "frequency": 282.5519714355469,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006992000000082044
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w028",
+        "frequency": 281.50152587890625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007247400000096604
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w029",
+        "frequency": 277.184814453125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007247400000096604
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w000",
+        "frequency": 135.93209838867188,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00774649999993926
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w001",
+        "frequency": 128.6110382080078,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007325200000195764
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w002",
+        "frequency": 125.85710144042969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007096499999988737
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w003",
+        "frequency": 133.2837677001953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007040700000061406
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w004",
+        "frequency": 125.90162658691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006688700000040626
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w005",
+        "frequency": 128.3182373046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00757549999980256
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w006",
+        "frequency": 133.26953125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007403199999998833
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w007",
+        "frequency": 123.48026275634766,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006466300000056435
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w008",
+        "frequency": 133.2256622314453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006626599999890459
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w009",
+        "frequency": 130.80926513671875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007321999999930995
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w010",
+        "frequency": 123.47090148925781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007244700000001103
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w011",
+        "frequency": 133.27615356445312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006358900000122958
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w012",
+        "frequency": 127.89998626708984,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005879299999833165
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w013",
+        "frequency": 128.3169708251953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006198300000050949
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w014",
+        "frequency": 135.9586181640625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005907500000148502
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w015",
+        "frequency": 123.36015319824219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0065282999998999
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w016",
+        "frequency": 266.8131103515625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005794700000024022
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w017",
+        "frequency": 256.63641357421875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005735700000059296
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w018",
+        "frequency": 251.68148803710938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005649499999890395
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w019",
+        "frequency": 261.7516174316406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005876599999965038
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w020",
+        "frequency": 266.7117004394531,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006250900000168258
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w021",
+        "frequency": 256.63641357421875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0067514999998365965
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w022",
+        "frequency": 251.78732299804688,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007095499999877575
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w023",
+        "frequency": 261.7702941894531,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007570100000066304
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w024",
+        "frequency": 266.3443908691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0076837999999952444
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w025",
+        "frequency": 256.636474609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007379499999842665
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w026",
+        "frequency": 253.1923370361328,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006812300000092364
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w027",
+        "frequency": 261.7945251464844,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0069278000000849715
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w028",
+        "frequency": 261.9293212890625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006288300000051095
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w029",
+        "frequency": 256.6360778808594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007371899999952802
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w000",
+        "frequency": 133.35589599609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007461299999931725
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w001",
+        "frequency": 149.67539978027344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007272100000136561
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w002",
+        "frequency": 141.2855682373047,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006947300000092582
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w003",
+        "frequency": 138.62002563476562,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006734199999982593
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w004",
+        "frequency": 146.8612823486328,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006649599999946076
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w005",
+        "frequency": 144.01388549804688,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006636799999796494
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w006",
+        "frequency": 144.0226593017578,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00759739999989506
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w007",
+        "frequency": 149.6959686279297,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007104700000127195
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w008",
+        "frequency": 161.64479064941406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006887000000006083
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w009",
+        "frequency": 158.59185791015625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006872200000088924
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w010",
+        "frequency": 158.5830841064453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007086299999855328
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w011",
+        "frequency": 171.28424072265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006604700000025332
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w012",
+        "frequency": 175.36627197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007071199999927558
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w013",
+        "frequency": 178.82847595214844,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0070706999999856635
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w014",
+        "frequency": 187.1947021484375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007396400000061476
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w015",
+        "frequency": 184.99720764160156,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0077525000001514854
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w016",
+        "frequency": 181.46934509277344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00790540000002693
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w017",
+        "frequency": 188.59365844726562,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0066014999999879365
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w018",
+        "frequency": 199.80833435058594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006511600000067119
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w019",
+        "frequency": 195.9977264404297,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006394199999931516
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w020",
+        "frequency": 197.60231018066406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006218200000148499
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w021",
+        "frequency": 211.68922424316406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007673999999951775
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w022",
+        "frequency": 215.80462646484375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007089899999982663
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w023",
+        "frequency": 224.26239013671875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007019099999979517
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w024",
+        "frequency": 226.06915283203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007159799999953975
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w025",
+        "frequency": 220.00047302246094,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006834899999830668
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w026",
+        "frequency": 251.7410125732422,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006874299999935829
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w027",
+        "frequency": 224.2786407470703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006785199999967517
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w028",
+        "frequency": 246.27752685546875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007138499999882697
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w029",
+        "frequency": 242.23252868652344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006950899999992544
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w000",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006880100000216771
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w001",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006941999999980908
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w002",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006803400000080728
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w003",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0066973000000416505
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w004",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006900099999938902
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w005",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006343400000105248
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w006",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006433000000015454
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w007",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007035900000119
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w008",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006593299999849478
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w009",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007103000000142856
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w010",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007131900000103997
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w011",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007051300000057381
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w012",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.008931200000006356
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w013",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0077263000000584725
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w014",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00630900000010115
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w015",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006539100000054532
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w016",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006075799999962328
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w017",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005680799999936426
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w018",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006179500000143889
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w019",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007269500000120388
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w020",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0073827999999593885
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w021",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006498299999975643
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w022",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006532299999889801
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w023",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007232400000020789
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w024",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007155500000180837
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w025",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007193300000153613
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w026",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00696179999999913
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w027",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0067039000000477245
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w028",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006109900000183188
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w029",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006030600000030972
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w000",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005806699999993725
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w001",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005882100000007995
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w002",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006076899999925445
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w003",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0060320000000047
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w004",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006335600000056729
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w005",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006892200000038429
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w006",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0068281999999726395
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w007",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007850400000052105
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w008",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0074372999999923195
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w009",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007415999999921041
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w010",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007221599999866157
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w011",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007386699999869961
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w012",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007312099999808197
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w013",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007245600000032937
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w014",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0071350999999140186
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w015",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007157400000096459
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w016",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007167600000002494
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w017",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.008022999999866443
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w018",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007967600000029051
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w019",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007270000000062282
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w020",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007161099999848375
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w021",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007037399999944682
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w022",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00793910000015785
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w023",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0076573999999709486
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w024",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007483500000034837
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w025",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00761770000008255
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w026",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.008576199999879464
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w027",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.008111399999961577
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w028",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.008619999999837091
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w029",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007217300000093019
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w000",
+        "frequency": 299.7646179199219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007815600000185441
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w001",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007860899999968751
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w002",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007565600000134509
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w003",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007703999999876032
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w004",
+        "frequency": 304.3742370605469,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007542199999988952
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w005",
+        "frequency": 299.2330627441406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007802999999967142
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w006",
+        "frequency": 288.0634765625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0077481999999235995
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w007",
+        "frequency": 288.06695556640625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007858500000111235
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w008",
+        "frequency": 299.37384033203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007782299999917086
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w009",
+        "frequency": 299.42449951171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00829780000003666
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w010",
+        "frequency": 293.6209716796875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008350899999868489
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w011",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0082239999999274
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w012",
+        "frequency": 293.6647644042969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007847399999945992
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w013",
+        "frequency": 299.3736877441406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007972099999960847
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w014",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007454699999925651
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w015",
+        "frequency": 293.29376220703125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007724299999836148
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w016",
+        "frequency": 288.0653991699219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006700500000079046
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w017",
+        "frequency": 293.6650085449219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008281299999907787
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w018",
+        "frequency": 293.6655578613281,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007982300000094256
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w019",
+        "frequency": 293.75616455078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0081967999999506
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w020",
+        "frequency": 293.6670227050781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007847000000083426
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w021",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008016800000177682
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w022",
+        "frequency": 271.8990783691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008287900000141235
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w023",
+        "frequency": 305.19140625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008036699999820485
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w024",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008041399999910936
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w025",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007886099999950602
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w026",
+        "frequency": 282.5728454589844,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008011100000203442
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w027",
+        "frequency": 298.1657409667969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008751000000074782
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w028",
+        "frequency": 305.19384765625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008285200000045734
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w029",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008249400000067908
+      }
+    ],
+    [
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w000",
+        "frequency": 57.05287170410156,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007885699999860663
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w001",
+        "frequency": 76.7836685180664,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007878599999912694
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w002",
+        "frequency": 61.26072692871094,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.00801869999986593
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w003",
+        "frequency": 55.519798278808594,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.0072027999999590975
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w004",
+        "frequency": 59.24848175048828,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007066399999985151
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w005",
+        "frequency": 58.26676940917969,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007720999999946798
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w006",
+        "frequency": 164.60560607910156,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007584400000041569
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w007",
+        "frequency": 61.06447219848633,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.00791369999978997
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w008",
+        "frequency": 78.78450012207031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008080800000016097
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w009",
+        "frequency": 57.18498229980469,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.0080748999998832
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w010",
+        "frequency": 60.0421028137207,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007618099999945116
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w011",
+        "frequency": 56.41372299194336,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008272000000033586
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w012",
+        "frequency": 177.38442993164062,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007933100000172999
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w013",
+        "frequency": 76.98377227783203,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0069406999998591346
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w014",
+        "frequency": 56.17976379394531,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.00768900000002759
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w015",
+        "frequency": 60.51631546020508,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.006738199999972494
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w016",
+        "frequency": 57.30698013305664,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.006553399999802423
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w017",
+        "frequency": 77.28414154052734,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007704800000055911
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w018",
+        "frequency": 61.12335968017578,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007240700000011202
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w019",
+        "frequency": 54.62199020385742,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007245100000091043
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w020",
+        "frequency": 58.261444091796875,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007218300000204181
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w021",
+        "frequency": 58.839317321777344,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007507699999905526
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w022",
+        "frequency": 55.96302795410156,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007751900000130263
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w023",
+        "frequency": 61.27154541015625,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007436199999801829
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w024",
+        "frequency": 187.46746826171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008005899999943722
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w025",
+        "frequency": 57.03157424926758,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.007227699999930337
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w026",
+        "frequency": 60.6889533996582,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008194099999855098
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w027",
+        "frequency": 56.753753662109375,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008208799999920302
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w028",
+        "frequency": 76.35391998291016,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00840720000019246
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C2:w029",
+        "frequency": 61.587982177734375,
+        "confidence": 0.3,
+        "voiced": true,
+        "latencyMs": 0.008040300000175193
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w000",
+        "frequency": 135.93209838867188,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007888000000093598
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w001",
+        "frequency": 128.6110382080078,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008576200000106837
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w002",
+        "frequency": 125.85710144042969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008253100000047198
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w003",
+        "frequency": 133.2837677001953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008110199999919132
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w004",
+        "frequency": 125.90162658691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008050899999943795
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w005",
+        "frequency": 128.3182373046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007620699999961289
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w006",
+        "frequency": 133.26953125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00743319999992309
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w007",
+        "frequency": 123.48026275634766,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0074010000000725995
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w008",
+        "frequency": 133.2256622314453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00806670000019949
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w009",
+        "frequency": 130.80926513671875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00758470000005218
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w010",
+        "frequency": 123.47090148925781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007638199999973949
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w011",
+        "frequency": 133.27615356445312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007676000000174099
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w012",
+        "frequency": 127.89998626708984,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007621200000130557
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w013",
+        "frequency": 128.3169708251953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005988800000068295
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w014",
+        "frequency": 133.27548217773438,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0056191999999555264
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w015",
+        "frequency": 124.36497497558594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006100099999912345
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w016",
+        "frequency": 130.81277465820312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008014099999854807
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w017",
+        "frequency": 130.8128204345703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007742400000097405
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w018",
+        "frequency": 123.4710464477539,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0073994999997921695
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w019",
+        "frequency": 133.26840209960938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007997599999953309
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w020",
+        "frequency": 128.31761169433594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007254800000055184
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w021",
+        "frequency": 125.9079818725586,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0066414000000349915
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w022",
+        "frequency": 133.28028869628906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007514500000070257
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w023",
+        "frequency": 125.8517837524414,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007764700000052471
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w024",
+        "frequency": 130.8048553466797,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006668200000149227
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w025",
+        "frequency": 133.2404327392578,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006574800000180403
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w026",
+        "frequency": 123.47074890136719,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006818600000087827
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w027",
+        "frequency": 133.259765625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006693599999834987
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w028",
+        "frequency": 128.3182373046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00716669999997066
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C3:w029",
+        "frequency": 125.87120056152344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006244199999855482
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w000",
+        "frequency": 261.6161804199219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006946499999912703
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w001",
+        "frequency": 251.7425079345703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006739100000004328
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w002",
+        "frequency": 283.468994140625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00771020000001954
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w003",
+        "frequency": 261.6602783203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007955000000038126
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w004",
+        "frequency": 260.2952575683594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007772799999884228
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w005",
+        "frequency": 251.7423553466797,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007358900000099311
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w006",
+        "frequency": 277.1757507324219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007317600000078528
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w007",
+        "frequency": 261.662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0078028999998878135
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w008",
+        "frequency": 256.7666931152344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007439399999839225
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w009",
+        "frequency": 251.74349975585938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00731339999992997
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w010",
+        "frequency": 274.5781555175781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006927499999846987
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w011",
+        "frequency": 261.66314697265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006460399999923538
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w012",
+        "frequency": 256.6398010253906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005902799999830677
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w013",
+        "frequency": 251.7530059814453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006499699999949371
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w014",
+        "frequency": 266.7008361816406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006849300000112635
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w015",
+        "frequency": 261.6626281738281,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006783300000051895
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w016",
+        "frequency": 256.6366271972656,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007510700000011639
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w017",
+        "frequency": 251.74246215820312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007291200000054232
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w018",
+        "frequency": 263.4396057128906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007335299999795097
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w019",
+        "frequency": 266.4263000488281,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007563899999922796
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w020",
+        "frequency": 256.636474609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0061617999999725726
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w021",
+        "frequency": 249.93194580078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0064746000000468484
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w022",
+        "frequency": 263.8436584472656,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0071881999999732216
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w023",
+        "frequency": 266.1168212890625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006976200000053723
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w024",
+        "frequency": 256.636474609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006493599999885191
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w025",
+        "frequency": 246.9416961669922,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006538600000112638
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w026",
+        "frequency": 264.2405700683594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006325599999854603
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w027",
+        "frequency": 266.7776184082031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007273100000020349
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w028",
+        "frequency": 256.6363525390625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006263500000159183
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C4:w029",
+        "frequency": 251.7251434326172,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0067839000000731176
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w000",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0074669999999059655
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w001",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007445899999993344
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w002",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006493599999885191
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w003",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007010600000057821
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w004",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006141899999875022
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w005",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006197399999791742
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w006",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006978200000048673
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w007",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007270699999935459
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w008",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007099599999946804
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w009",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0071198000000549655
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w010",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007551299999931871
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w011",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007735499999853346
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w012",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007913700000017343
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w013",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007986999999957334
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w014",
+        "frequency": 513.352294921875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008639800000082687
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w015",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007650600000033592
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w016",
+        "frequency": 503.4852294921875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007741300000134288
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w017",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00701559999993151
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w018",
+        "frequency": 513.272705078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008091400000012072
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w019",
+        "frequency": 523.2514038085938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007089100000030157
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w020",
+        "frequency": 513.2740478515625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007465899999942849
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w021",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007857800000010684
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w022",
+        "frequency": 513.2903442382812,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007994699999926524
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w023",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00752039999997578
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w024",
+        "frequency": 513.2763061523438,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007309300000088115
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w025",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007195400000000518
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w026",
+        "frequency": 513.272705078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007113500000059503
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w027",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008270000000038635
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w028",
+        "frequency": 513.272705078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007783900000049471
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C5:w029",
+        "frequency": 523.2510986328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007609099999854152
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w000",
+        "frequency": 1046.503662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007494700000052035
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w001",
+        "frequency": 1046.503662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007449700000051962
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w002",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00713080000014088
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w003",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007830300000023271
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w004",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0076615999998921325
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w005",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007185599999957049
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w006",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0064822000001640845
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w007",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006855699999960052
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w008",
+        "frequency": 1046.503173828125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007774000000154047
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w009",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008473200000025827
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w010",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007728400000132751
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w011",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007728300000053423
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w012",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007766699999820048
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w013",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007490700000062134
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w014",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00533369999993738
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w015",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004960200000141413
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w016",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004941500000086307
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w017",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005033899999943969
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w018",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005003699999861055
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w019",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0063539999998738494
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w020",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006373999999823354
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w021",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0063032999998995365
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w022",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007132199999887234
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w023",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007072300000118048
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w024",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007111299999905896
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w025",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00731050000013056
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w026",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0060723999999936495
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w027",
+        "frequency": 1046.502197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005817499999920983
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w028",
+        "frequency": 1046.502685546875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006009100000028411
+      },
+      {
+        "detector": "pesto",
+        "windowId": "steady-C6:w029",
+        "frequency": 1046.502685546875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005607999999938329
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w000",
+        "frequency": 261.6161804199219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005609299999832729
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w001",
+        "frequency": 251.7425079345703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0076094999999440915
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w002",
+        "frequency": 283.468994140625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007217699999955585
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w003",
+        "frequency": 261.6602783203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0073052000000188855
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w004",
+        "frequency": 260.2952575683594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006825800000115123
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w005",
+        "frequency": 251.7423553466797,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006835099999989325
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w006",
+        "frequency": 277.1757507324219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006767600000102902
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w007",
+        "frequency": 261.662109375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007023899999921923
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w008",
+        "frequency": 256.7666931152344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006871399999909045
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w009",
+        "frequency": 251.74349975585938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006949200000008204
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w010",
+        "frequency": 274.5781555175781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006081199999925957
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w011",
+        "frequency": 261.66314697265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005740600000081031
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w012",
+        "frequency": 256.6398010253906,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006589200000007622
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w013",
+        "frequency": 251.7530059814453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007178699999940363
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w014",
+        "frequency": 266.70062255859375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006908600000087972
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w015",
+        "frequency": 271.89678955078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007104600000047867
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w016",
+        "frequency": 277.1858215332031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00722419999988233
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w017",
+        "frequency": 277.1887512207031,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0072001999999429245
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w018",
+        "frequency": 271.76934814453125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006890600000133418
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w019",
+        "frequency": 293.42572021484375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006659999999783395
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w020",
+        "frequency": 277.184326171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007198900000048525
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w021",
+        "frequency": 276.63995361328125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007174299999860523
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w022",
+        "frequency": 266.71258544921875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007562300000017785
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w023",
+        "frequency": 288.57684326171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007620599999881961
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w024",
+        "frequency": 277.1842956542969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004852300000038667
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w025",
+        "frequency": 271.94097900390625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006566499999962616
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w026",
+        "frequency": 268.9580383300781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0068431000001965
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w027",
+        "frequency": 282.5519714355469,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0063084999999318825
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w028",
+        "frequency": 281.50152587890625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007210999999870182
+      },
+      {
+        "detector": "pesto",
+        "windowId": "step:w029",
+        "frequency": 277.184814453125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006778000000167594
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w000",
+        "frequency": 135.93209838867188,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006728699999939636
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w001",
+        "frequency": 128.6110382080078,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007033699999965393
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w002",
+        "frequency": 125.85710144042969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006997899999987567
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w003",
+        "frequency": 133.2837677001953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00725020000004406
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w004",
+        "frequency": 125.90162658691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007095700000036231
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w005",
+        "frequency": 128.3182373046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006919700000025841
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w006",
+        "frequency": 133.26953125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007195800000090458
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w007",
+        "frequency": 123.48026275634766,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.008000799999990704
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w008",
+        "frequency": 133.2256622314453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00707509999983813
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w009",
+        "frequency": 130.80926513671875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006867899999861038
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w010",
+        "frequency": 123.47090148925781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006524699999999939
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w011",
+        "frequency": 133.27615356445312,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006635799999912706
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w012",
+        "frequency": 127.89998626708984,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006975199999942561
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w013",
+        "frequency": 128.3169708251953,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007021800000075018
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w014",
+        "frequency": 135.9586181640625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0071095999999215564
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w015",
+        "frequency": 123.36015319824219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007331799999974464
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w016",
+        "frequency": 266.8131103515625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0068071999999119726
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w017",
+        "frequency": 256.63641357421875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0061763999999584485
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w018",
+        "frequency": 251.68148803710938,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006291299999929834
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w019",
+        "frequency": 261.7516174316406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00598149999996167
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w020",
+        "frequency": 266.7117004394531,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00607480000007854
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w021",
+        "frequency": 256.63641357421875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005304199999955017
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w022",
+        "frequency": 251.78732299804688,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004385899999988396
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w023",
+        "frequency": 261.7702941894531,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0051123000000643515
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w024",
+        "frequency": 266.3443908691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007202700000107143
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w025",
+        "frequency": 256.636474609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007034599999997226
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w026",
+        "frequency": 253.1923370361328,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007121899999901871
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w027",
+        "frequency": 261.7945251464844,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006866999999829204
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w028",
+        "frequency": 261.9293212890625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007756499999914013
+      },
+      {
+        "detector": "pesto",
+        "windowId": "octave:w029",
+        "frequency": 256.6360778808594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006825899999967078
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w000",
+        "frequency": 133.35589599609375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005849099999977625
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w001",
+        "frequency": 149.67539978027344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0055542999998579035
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w002",
+        "frequency": 141.2855682373047,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004292299999860916
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w003",
+        "frequency": 138.62002563476562,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005919700000049488
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w004",
+        "frequency": 146.8612823486328,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005959899999879781
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w005",
+        "frequency": 144.01388549804688,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005888600000162114
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w006",
+        "frequency": 144.0226593017578,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006863700000167228
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w007",
+        "frequency": 149.6959686279297,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006861500000013621
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w008",
+        "frequency": 161.64479064941406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005693500000006679
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w009",
+        "frequency": 158.59185791015625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0058719000001019594
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w010",
+        "frequency": 158.5830841064453,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005722200000036537
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w011",
+        "frequency": 171.28424072265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004353699999910532
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w012",
+        "frequency": 175.36627197265625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004302699999925608
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w013",
+        "frequency": 178.82847595214844,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004375900000013644
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w014",
+        "frequency": 187.1947021484375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004618800000116607
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w015",
+        "frequency": 184.99720764160156,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004610100000036255
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w016",
+        "frequency": 181.46934509277344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004280999999991764
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w017",
+        "frequency": 188.59365844726562,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004183600000033039
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w018",
+        "frequency": 199.80833435058594,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00554069999998319
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w019",
+        "frequency": 195.9977264404297,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004229099999975006
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w020",
+        "frequency": 197.60231018066406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004231699999991179
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w021",
+        "frequency": 211.68922424316406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005420299999968847
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w022",
+        "frequency": 215.80462646484375,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005815500000153406
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w023",
+        "frequency": 224.26239013671875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005675699999983408
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w024",
+        "frequency": 226.06915283203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005923899999970672
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w025",
+        "frequency": 220.00047302246094,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.005803200000173092
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w026",
+        "frequency": 251.7410125732422,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006151400000135254
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w027",
+        "frequency": 224.2786407470703,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007106400000111535
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w028",
+        "frequency": 246.27752685546875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007048400000030597
+      },
+      {
+        "detector": "pesto",
+        "windowId": "glide:w029",
+        "frequency": 242.23252868652344,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007242599999926824
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w000",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006785700000136785
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w001",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006118600000036167
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w002",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005742199999986042
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w003",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0062202999999954045
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w004",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005589699999973163
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w005",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005526899999949819
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w006",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006082400000195776
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w007",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005736999999953696
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w008",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00562290000016219
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w009",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0072946000000229105
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w010",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007051699999919947
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w011",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0062762000000020635
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w012",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005460099999936574
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w013",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00542000000018561
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w014",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005445900000040638
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w015",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0060349000000314845
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w016",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006879999999910069
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w017",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006327299999838942
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w018",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005000599999902988
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w019",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006346299999904659
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w020",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006570899999815083
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w021",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006543200000123761
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w022",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006717600000001767
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w023",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0065055000000029395
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w024",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005984500000067783
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w025",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0058222999998633895
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w026",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006131699999968987
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w027",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007481500000039887
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w028",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007032600000002276
+      },
+      {
+        "detector": "pesto",
+        "windowId": "silence:w029",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005588299999999435
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w000",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005544699999973091
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w001",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006568400000105612
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w002",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00601490000008198
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w003",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006004800000027899
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w004",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00706520000017008
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w005",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007110700000112047
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w006",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007076399999959904
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w007",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006774399999812886
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w008",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007278900000073918
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w009",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007047199999988152
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w010",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006935999999996056
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w011",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007073600000012448
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w012",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007070199999816396
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w013",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006476300000031188
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w014",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006401399999958812
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w015",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005874100000028193
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w016",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0076186999999663385
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w017",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006174599999894781
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w018",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0060054000000491214
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w019",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.005977399999892441
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w020",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007282100000111313
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w021",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0072284999998828425
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w022",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0070771000000604545
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w023",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006874800000105097
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w024",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.00679060000015852
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w025",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0068370000001323206
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w026",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.006799300000011499
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w027",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.0067065000000638975
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w028",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007058799999867915
+      },
+      {
+        "detector": "pesto",
+        "windowId": "reference:w029",
+        "frequency": null,
+        "confidence": 0,
+        "voiced": false,
+        "latencyMs": 0.007086200000003373
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w000",
+        "frequency": 299.7646179199219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007115699999985736
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w001",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007338800000070478
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w002",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007028499999933047
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w003",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007367600000179664
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w004",
+        "frequency": 304.3742370605469,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006970200000068871
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w005",
+        "frequency": 299.2330627441406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006928600000037477
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w006",
+        "frequency": 288.0634765625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006665300000122443
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w007",
+        "frequency": 288.06695556640625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006342599999925369
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w008",
+        "frequency": 299.37384033203125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0043049999999311694
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w009",
+        "frequency": 299.42449951171875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.004251199999998789
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w010",
+        "frequency": 293.6209716796875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006206699999893317
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w011",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007694299999911891
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w012",
+        "frequency": 293.6647644042969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007074999999986176
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w013",
+        "frequency": 299.3736877441406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.00696620000007897
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w014",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007167299999991883
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w015",
+        "frequency": 293.29376220703125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007077799999933632
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w016",
+        "frequency": 288.0653991699219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006693000000041138
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w017",
+        "frequency": 293.6650085449219,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007245600000032937
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w018",
+        "frequency": 293.6655578613281,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006832399999893823
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w019",
+        "frequency": 293.75616455078125,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006867699999929755
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w020",
+        "frequency": 293.6670227050781,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0069948000000295
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w021",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007273700000041572
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w022",
+        "frequency": 271.8990783691406,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006182299999863972
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w023",
+        "frequency": 305.19140625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006201200000077733
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w024",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007508299999926749
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w025",
+        "frequency": 288.06463623046875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007218399999828762
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w026",
+        "frequency": 282.5728454589844,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007371100000000297
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w027",
+        "frequency": 298.1657409667969,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.007828500000186978
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w028",
+        "frequency": 305.19384765625,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.0061008999998648505
+      },
+      {
+        "detector": "pesto",
+        "windowId": "mix:w029",
+        "frequency": 299.373779296875,
+        "confidence": 1.0,
+        "voiced": true,
+        "latencyMs": 0.006586299999980838
+      }
+    ]
+  ]
+}
