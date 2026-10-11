@@ -26,7 +26,7 @@
   
   --color-background: #020617;
   --color-foreground: #e2e8f0;
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, 'Menlo', 'Monaco', monospace;
   
   /* Animations */
@@ -58,9 +58,8 @@
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-inter), 'Inter', ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'cv11', 'ss01';
-  font-variation-settings: 'opsz' 32;
   /* Reserve space for the fixed header + safe area so page content never hides under the nav on mobile */
   padding-top: calc(64px + env(safe-area-inset-top, 0px));
 }

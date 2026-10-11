@@ -34,8 +34,11 @@ export default async function Home() {
         <div className="mx-auto max-w-5xl">
           <div className="max-w-4xl">
             <p className="mb-6 text-sm font-semibold tracking-[0.12em] text-primary-300">RESET BIOLOGY</p>
-            <h1 className="text-balance text-4xl font-semibold leading-tight tracking-[-0.03em] text-white sm:text-5xl lg:text-6xl">
-              Reset Biology gives people the tools, the education, and an honest map to run their own biology — free, private, and with nobody standing between them and a fair price.
+            <h1 className="text-balance text-4xl font-semibold leading-[1.12] tracking-[-0.022em] text-white sm:text-5xl sm:leading-[1.08] sm:tracking-[-0.026em] lg:text-6xl lg:leading-[1.05] lg:tracking-[-0.03em]">
+              Reset Biology gives people the tools, the education, and an honest map to run their own biology
+              <span className="block font-normal text-slate-300">
+                — free, private, and with nobody standing between them and a fair price.
+              </span>
               {/* src: LMP §00 */}
             </h1>
             <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">

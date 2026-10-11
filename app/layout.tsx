@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
 import { Footer } from '@/components/Navigation/Footer';
@@ -8,6 +9,8 @@ import { MotionProvider } from '@/components/MotionProvider';
 import { ToastProvider } from '@/components/ui/Toast';
 import { auth0 } from '@/lib/auth0';
 import './globals.css';
+
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
 
 export const viewport: Viewport = {
   themeColor: '#020617',
@@ -25,7 +28,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const session = await auth0.getSession();
 
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <head>
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
