@@ -32,6 +32,8 @@ interface PortalModuleData {
 // Hardcoded fallback if API fails
 // Legacy paid-trial banner. Site is free; banner sent logged-in members to the login page. Parked, not deleted (MASTER-PLAN A-3.1).
 const SHOW_LEGACY_TRIAL_BANNER = false
+// Shows a tier from the old paid-tier quiz; hidden (Wave J2.4), see /admin Archive.
+const SHOW_LEGACY_ASSESSMENT_BANNER = false
 
 const fallbackModules: PortalModuleData[] = [
   { slug: 'peptides', label: 'Peptides', href: '/peptides', icon: 'Target', colorFrom: 'from-teal-600/30', colorTo: 'to-teal-700/30', borderColor: 'border-teal-400/30', iconColor: 'text-teal-300', enabled: true, order: 1 },
@@ -685,7 +687,7 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
           )}
 
           {/* Previous Assessment Results Banner - Show if user has quiz results but no subscription */}
-          {previousAssessment && hasActiveSubscription === false && !isAdmin && (
+          {SHOW_LEGACY_ASSESSMENT_BANNER && previousAssessment && hasActiveSubscription === false && !isAdmin && (
             <div className="mb-8 bg-gradient-to-r from-blue-600/20 via-indigo-600/20 to-blue-600/20 border border-blue-400/30 rounded-xl p-6 backdrop-blur-sm">
               <div className="flex flex-col md:flex-row items-center gap-4">
                 <div className="flex-shrink-0 bg-blue-500/30 p-3 rounded-full">
