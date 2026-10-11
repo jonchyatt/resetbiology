@@ -1426,15 +1426,15 @@ export default function VisualStudioPage() {
 
               {/* Quick info */}
               <div className="mt-4 p-4 rounded-xl bg-slate-900/50 border border-slate-700/50">
-                <div className="grid grid-cols-4 gap-4 text-center">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                   <div>
-                    <span className="block text-xl font-semibold text-teal-400">
+                    <span className="block min-w-0 text-xl font-semibold text-teal-400 [overflow-wrap:anywhere]">
                       {ORB_TYPES.find(o => o.key === orbType)?.label.split(" ")[0] || "Rainbow"}
                     </span>
                     <span className="text-xs text-slate-400">Orb</span>
                   </div>
                   <div>
-                    <span className="block text-xl font-semibold text-teal-400">
+                    <span className="block min-w-0 text-xl font-semibold text-teal-400 [overflow-wrap:anywhere]">
                       {orbType === "unity"
                         ? unityLayers.reduce((sum, l) => sum + (l.enabled ? l.particleCount : 0), 0).toLocaleString()
                         : particleCount.toLocaleString()}
@@ -1442,13 +1442,13 @@ export default function VisualStudioPage() {
                     <span className="text-xs text-slate-400">Particles</span>
                   </div>
                   <div>
-                    <span className="block text-xl font-semibold text-teal-400">
+                    <span className="block min-w-0 text-xl font-semibold text-teal-400 [overflow-wrap:anywhere]">
                       {mode === "breath" ? BREATH_PATTERNS[patternKey]?.label.split(" ")[0] : "Audio"}
                     </span>
                     <span className="text-xs text-slate-400">Mode</span>
                   </div>
                   <div>
-                    <span className="block text-xl font-semibold text-teal-400">
+                    <span className="block min-w-0 text-xl font-semibold text-teal-400 [overflow-wrap:anywhere]">
                       {skyboxEnabled ? STAR_NEST_PRESETS.find(p => p.key === skyboxPresetKey)?.label.split(" ")[0] : "Off"}
                     </span>
                     <span className="text-xs text-slate-400">Skybox</span>

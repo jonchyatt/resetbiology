@@ -31,10 +31,10 @@ export default function MentalTrainingPage() {
     <div className="relative">
       {/* Tab bar — sticky so it's visible regardless of component scroll */}
       <div className="sticky top-0 z-50 flex justify-center py-2 bg-gray-900/90 backdrop-blur-sm border-b border-gray-700/50">
-        <div className="flex gap-1 p-1 bg-gray-800/80 rounded-xl border border-gray-700/50">
+        <div className="flex max-w-full gap-1 p-1 bg-gray-800/80 rounded-xl border border-gray-700/50">
           <button
             onClick={() => setActiveTab('nback')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-3 py-2 text-xs sm:px-4 sm:text-sm rounded-lg font-medium transition-all ${
               activeTab === 'nback'
                 ? 'bg-teal-600/80 text-white shadow-lg'
                 : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
@@ -44,7 +44,7 @@ export default function MentalTrainingPage() {
           </button>
           <button
             onClick={() => setActiveTab('pitch')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-3 py-2 text-xs sm:px-4 sm:text-sm rounded-lg font-medium transition-all ${
               activeTab === 'pitch'
                 ? 'bg-teal-600/80 text-white shadow-lg'
                 : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
