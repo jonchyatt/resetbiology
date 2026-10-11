@@ -41,6 +41,7 @@ export default function AdminOrdersPage() {
   const [editTrackingUrl, setEditTrackingUrl] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -48,14 +49,18 @@ export default function AdminOrdersPage() {
 
   const loadOrders = async () => {
     try {
+      setLoadError(null);
       const response = await fetch('/api/admin/orders');
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
         setOrders(data.orders);
+      } else {
+        setLoadError('Could not load orders. Try again.');
       }
     } catch (error) {
       console.error('Failed to load orders:', error);
+      setLoadError('Could not load orders. Try again.');
     } finally {
       setLoading(false);
     }
@@ -152,14 +157,19 @@ export default function AdminOrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Order Management</h1>
           <p className="text-gray-600 mt-2">{orders.length} total orders</p>
         </div>
 
-        {orders.length === 0 ? (
+        {loadError ? (
+          <div className="bg-white rounded-lg shadow p-12 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">{loadError}</h2>
+            <button onClick={() => { setLoading(true); loadOrders(); }} className="mt-4 bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-lg font-semibold">Try again</button>
+          </div>
+        ) : orders.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 mb-2">No orders yet</h2>
@@ -246,7 +256,7 @@ export default function AdminOrdersPage() {
         {/* Order Detail Modal */}
         {showModal && selectedOrder && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white text-gray-900 rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
               <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-gray-900">
@@ -328,7 +338,7 @@ export default function AdminOrdersPage() {
                       <select
                         value={editFulfillmentStatus}
                         onChange={(e) => setEditFulfillmentStatus(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                        className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                       >
                         <option value="unfulfilled">Unfulfilled</option>
                         <option value="processing">Processing</option>

@@ -14,7 +14,7 @@ export default async function TestSessionPage() {
     const session2 = await auth0.getSession(cookieStore as any);
     
     return (
-      <div style={{ padding: 24, fontFamily: 'monospace' }}>
+      <div style={{ background: '#ffffff', color: '#111111', minHeight: '100vh', padding: 24, fontFamily: 'monospace' }}>
         <h1>Session Test Page</h1>
         
         <h2>Method 1: Direct getSession()</h2>
@@ -38,7 +38,7 @@ export default async function TestSessionPage() {
     );
   } catch (error: any) {
     return (
-      <div style={{ padding: 24, fontFamily: 'monospace' }}>
+      <div style={{ background: '#ffffff', color: '#111111', minHeight: '100vh', padding: 24, fontFamily: 'monospace' }}>
         <h1>Session Test Error</h1>
         <pre style={{ background: '#ffe0e0', padding: 10, color: 'red' }}>
           {error.message}

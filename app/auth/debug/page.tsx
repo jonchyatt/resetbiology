@@ -41,7 +41,7 @@ export default async function AuthDebugPage() {
   );
   
   return (
-    <main style={{ padding: 24, fontFamily: 'monospace' }}>
+    <main style={{ background: '#ffffff', color: '#111111', minHeight: '100vh', padding: 24, fontFamily: 'monospace' }}>
       <h1>🔍 Auth0 Debug Page</h1>
       
       {/* Quick Actions */}

@@ -11,7 +11,7 @@ export default async function AdminTestPage() {
     
     if (!session?.user) {
       return (
-        <div style={{ padding: 24 }}>
+        <div style={{ background: '#ffffff', color: '#111111', minHeight: '100vh', padding: 24 }}>
           <h1>Admin Test - No Session</h1>
           <p>You are not logged in.</p>
           <a href="/auth/login?returnTo=/admin/test">Login</a>
@@ -35,7 +35,7 @@ export default async function AdminTestPage() {
     };
     
     return (
-      <div style={{ padding: 24, fontFamily: 'monospace' }}>
+      <div style={{ background: '#ffffff', color: '#111111', minHeight: '100vh', padding: 24, fontFamily: 'monospace' }}>
         <h1>Admin Test Page - Debug Info</h1>
         
         <h2>Session Info:</h2>
@@ -75,7 +75,7 @@ export default async function AdminTestPage() {
     );
   } catch (error: any) {
     return (
-      <div style={{ padding: 24, fontFamily: 'monospace' }}>
+      <div style={{ background: '#ffffff', color: '#111111', minHeight: '100vh', padding: 24, fontFamily: 'monospace' }}>
         <h1>Admin Test Error</h1>
         <pre style={{ background: '#ffe0e0', padding: 10, color: 'red' }}>
           {error.message}
