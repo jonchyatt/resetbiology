@@ -138,7 +138,7 @@ export default async function PeptidePage({ params }: Props) {
           </div>
         </div>
 
-        <main className="container mx-auto px-4 py-8 space-y-12 max-w-7xl">
+        <main className="container mx-auto px-4 py-8 space-y-12 max-w-7xl [overflow-wrap:anywhere]">
 
           {/* Reset Biology Synthesis (top — even if pending) */}
           <section className="bg-gradient-to-r from-[#3FBFB5]/10 to-[#72C247]/10 backdrop-blur-md border border-[#3FBFB5]/30 rounded-2xl p-6">
