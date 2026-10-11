@@ -705,6 +705,7 @@ export default function PitchDefender() {
       {/* ─── MENU ──────────────────────────────────────────────────────── */}
       {state.phase === 'menu' && (
         <div className="relative z-40 flex min-h-full flex-col items-center justify-start px-4 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top,0px))]">
+          <a href="/portal" className="self-start mb-4 inline-flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10">← Back to portal</a>
           <h1
             className="text-5xl font-black text-white mb-2 tracking-wide"
             style={{ textShadow: '0 0 40px #3FBFB560, 0 0 80px #3FBFB530' }}
@@ -724,7 +725,7 @@ export default function PitchDefender() {
           )}
 
           {/* Mode selector */}
-          <div className="flex gap-3 mb-6">
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
             <button
               onClick={() => setGameMode('noteBlaster')}
               className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
@@ -844,14 +845,14 @@ export default function PitchDefender() {
             START MISSION
           </button>
 
-          <p className="text-xs text-gray-600 mt-6 text-center">
+          <p className="text-xs text-gray-400 mt-6 text-center">
             {KEYBOARD_ORDER.length} notes &middot; 10 waves &middot; {gameMode === 'echoCannon' ? 'Sing to match pitch' : 'FSRS-powered learning'}
           </p>
 
           {/* ─── Studio & Practice Tools ─────────────────────────────── */}
           <div className="mt-8 flex flex-col items-center gap-3">
             <p className="text-xs text-gray-500 uppercase tracking-widest">Studio &amp; Practice</p>
-            <p className="text-[11px] text-gray-600 max-w-xl text-center -mt-1 mb-1">
+            <p className="text-[11px] text-gray-400 max-w-xl text-center -mt-1 mb-1">
               Each tool trains a different skill. Hover any card to see what it does — or jump in and try it.
             </p>
             <div className="flex gap-3 flex-wrap justify-center max-w-5xl">
@@ -1099,19 +1100,7 @@ export default function PitchDefender() {
                 Vocal Trainer III
                 <div className="text-[11px] font-normal mt-0.5 opacity-70">Blast Mix. Volume to 400% + L/R balance + live meters. Step-by-step guide built in.</div>
               </a>
-              <a
-                href="/pitch-defender/score-verify"
-                title="Note-by-note audit: drag the scanned pages and the rendered engravings into overlay, blend opacity, and verify the engraving matches the printed score before trusting it. The lock-the-engraving surface."
-                className="px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-                style={{
-                  background: 'rgba(220, 38, 38, 0.18)',
-                  color: '#fca5a5',
-                  border: '2px solid rgba(220, 38, 38, 0.5)',
-                }}
-              >
-                Score ⟷ Engraving Audit
-                <div className="text-[11px] font-normal mt-0.5 opacity-70">Drag scans + engravings into overlay. Verify note-by-note. Lock the engraving.</div>
-              </a>
+              {/* moved to /admin → Developer tools (MASTER-PLAN A-2.1) */}
               <a
                 href="/pitch-defender/composer"
                 title="Type music in by hand: notes, lyrics, chords, slurs, dynamics. Saves once and is read by every other game. The canonical score path."
@@ -1136,14 +1125,7 @@ export default function PitchDefender() {
             >
               Parent / Teacher Settings
             </button>
-            <div className="flex gap-3 text-[11px] text-gray-500">
-              <span className="text-gray-600 uppercase tracking-wider">Dev tools:</span>
-              <a href="/pitch-defender/note-entry" className="hover:text-gray-300 transition-colors">Note Entry</a>
-              <span className="text-gray-700">&middot;</span>
-              <a href="/pitch-defender/staff-tester" className="hover:text-gray-300 transition-colors">Staff Tester</a>
-              <span className="text-gray-700">&middot;</span>
-              <a href="/pitch-defender/crepe-benchmark" className="hover:text-gray-300 transition-colors">Pitch Benchmark</a>
-            </div>
+            {/* moved to /admin → Developer tools (MASTER-PLAN A-2.1) */}
           </div>
         </div>
       )}
