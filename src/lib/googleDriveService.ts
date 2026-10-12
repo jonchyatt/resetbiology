@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import { PrismaClient } from '@prisma/client';
+import { decryptToken } from './vault-encryption';
 
 const prisma = new PrismaClient();
 
@@ -26,8 +27,9 @@ export async function getDriveClient(userId: string) {
     process.env.GOOGLE_REDIRECT_URI
   );
 
+  // The stored token is encrypted at rest (AES-256-GCM); Google needs the real one.
   auth.setCredentials({
-    refresh_token: user.googleDriveRefreshToken,
+    refresh_token: decryptToken(user.googleDriveRefreshToken).plaintext,
   });
 
   return google.drive({ version: 'v3', auth });

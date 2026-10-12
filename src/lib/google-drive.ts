@@ -1,6 +1,6 @@
 import { google, drive_v3 } from 'googleapis'
 import { prisma } from '@/lib/prisma'
-import { decryptToken, encryptToken } from '@/lib/vault-encryption'
+import { decryptToken, encryptToken, isVaultKeyConfigured } from '@/lib/vault-encryption'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -207,17 +207,24 @@ export async function getDriveClient(userId: string): Promise<drive_v3.Drive | n
 
     // Lazy migration: if we read a plaintext token AND a key is now configured,
     // re-encrypt it in the background. Don't block the request on this.
-    if (!decrypted.wasEncrypted) {
-      const reEncrypted = encryptToken(refreshToken)
-      if (reEncrypted !== refreshToken) {
-        prisma.user
-          .update({
-            where: { id: userId },
-            data: { googleDriveRefreshToken: reEncrypted },
-          })
-          .catch((err) =>
-            console.error('[google-drive] lazy re-encryption failed:', err),
-          )
+    // Guarded + own try/catch (Wave J4.4): encryptToken now throws without a
+    // key, and that must never reach the catch below, which would cut a
+    // legacy-token member off from their Drive.
+    if (!decrypted.wasEncrypted && isVaultKeyConfigured()) {
+      try {
+        const reEncrypted = encryptToken(refreshToken)
+        if (reEncrypted !== refreshToken) {
+          prisma.user
+            .update({
+              where: { id: userId },
+              data: { googleDriveRefreshToken: reEncrypted },
+            })
+            .catch((err) =>
+              console.error('[google-drive] lazy re-encryption failed:', err),
+            )
+        }
+      } catch (err) {
+        console.error('[google-drive] lazy re-encryption skipped:', err)
       }
     }
   } catch (err) {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
-import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff, Cloud, ExternalLink, RefreshCw, CheckCircle, AlertCircle, AlertTriangle } from "lucide-react"
+import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff, Cloud, ExternalLink, RefreshCw, CheckCircle, AlertCircle, AlertTriangle, Trash2 } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { DisconnectVaultModal } from "@/components/Vault/DisconnectVaultModal"
 import { useUser } from "@auth0/nextjs-auth0"
@@ -10,7 +10,9 @@ import { localDayKey } from "@/lib/localDay"
 import { useToast } from "@/components/ui/Toast"
 
 const CONNECTED_CONFIRMATION_COPY =
-  "Your data lives in your Google Drive — we ship the app, you own the data. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
+  "A copy of your data now goes to your Google Drive, in a folder you own. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
+
+const SHOW_UNFINISHED_PROFILE = false // Wave J2.3: hidden until wired; see /admin Archive
 
 function ProfilePageContent() {
   const { user, isLoading } = useUser()
@@ -36,6 +38,10 @@ function ProfilePageContent() {
   const [driveConnected, setDriveConnected] = useState(false)
   const [driveLoading, setDriveLoading] = useState(false)
   const [driveFolderUrl, setDriveFolderUrl] = useState<string | null>(null)
+  // "Your data": download everything / delete everything (member control)
+  const [showDeleteData, setShowDeleteData] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState("")
+  const [deletingData, setDeletingData] = useState(false)
   const [needsFolderReconciliation, setNeedsFolderReconciliation] = useState(false)
   const [showDisconnectModal, setShowDisconnectModal] = useState(false)
 
@@ -154,6 +160,24 @@ function ProfilePageContent() {
     }
   }
 
+  const deleteMyData = async () => {
+    if (deleteConfirmText !== "DELETE") return
+    setDeletingData(true)
+    try {
+      const res = await fetch("/api/profile/data", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: "DELETE" }),
+      })
+      if (!res.ok) throw new Error(`status ${res.status}`)
+      window.location.href = "/auth/logout"
+    } catch (error) {
+      console.error("Error deleting data:", error)
+      toast.error("We couldn't delete your data. Please try again or contact support.")
+      setDeletingData(false)
+    }
+  }
+
   // Handle sign out
   const handleSignOut = () => {
     window.location.href = "/auth/logout"
@@ -165,7 +189,7 @@ function ProfilePageContent() {
     { id: "progress", name: "Progress", icon: TrendingUp },
     { id: "settings", name: "Settings", icon: Settings },
     { id: "privacy", name: "Privacy", icon: Shield }
-  ]
+  ].filter(tab => SHOW_UNFINISHED_PROFILE || tab.id !== "settings")
 
   if (isLoading) {
     return (
@@ -207,7 +231,7 @@ function ProfilePageContent() {
             <span className="text-primary-400">Profile</span> Management
           </h2>
           <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Control your account, track progress, and manage subscription preferences
+            Your account, your progress, and your data
           </p>
         </div>
 
@@ -459,6 +483,7 @@ function ProfilePageContent() {
                       </div>
                     </div>
                   </div>
+                  {SHOW_UNFINISHED_PROFILE && (
                   <div className="card-hover-primary">
                     <h4 className="text-lg font-bold text-white mb-4">Data Export</h4>
                     <p className="text-gray-300 mb-4">Download your complete wellness data and progress reports</p>
@@ -467,10 +492,11 @@ function ProfilePageContent() {
                       Export Data — not available yet
                     </button>
                   </div>
+                  )}
                 </div>
               )}
 
-              {activeTab === "settings" && (
+              {SHOW_UNFINISHED_PROFILE && activeTab === "settings" && (
                 <div className="card-hover-primary">
                   <h3 className="text-xl font-bold text-white mb-6">Notification Preferences</h3>
                   <p className="text-sm text-amber-300 mb-4">Not available yet — these toggles aren&apos;t wired to anything.</p>
@@ -518,6 +544,75 @@ function ProfilePageContent() {
                       </div>
                     </div>
 
+                    {/* Your data: real member control (download everything, delete everything) */}
+                    <div className="bg-gray-800/50 border border-gray-600/30 rounded-lg p-5">
+                      <h4 className="font-bold text-white text-lg mb-1">Your data</h4>
+                      <p className="text-sm text-gray-300 mb-4">
+                        Everything Reset Biology holds for your account, in your hands.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <a
+                          href="/api/profile/data"
+                          download
+                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary-500 hover:bg-primary-600 px-5 font-semibold text-white transition-colors"
+                        >
+                          <Download className="w-5 h-5" />
+                          Download my data
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => { setShowDeleteData(true); setDeleteConfirmText("") }}
+                          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-red-400/50 bg-red-600/20 hover:bg-red-600/30 px-5 font-semibold text-red-200 transition-colors"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                          Delete my data
+                        </button>
+                      </div>
+                      <p className="mt-3 text-xs text-gray-400">
+                        Download gives you a JSON file of every record we hold for your account.
+                      </p>
+
+                      {showDeleteData && (
+                        <div className="mt-4 rounded-lg border border-red-400/40 bg-red-950/40 p-4">
+                          <p className="text-sm text-red-100 font-semibold mb-2">This permanently deletes your data from Reset Biology.</p>
+                          <ul className="list-disc list-inside text-sm text-gray-200 space-y-1 mb-3">
+                            <li>Your protocols, doses, reminders, journal, workouts, meals, sessions, progress and profile are removed from our database. This can&apos;t be undone.</li>
+                            <li>Files in your Google Drive are <span className="font-semibold">not</span> touched. They stay yours; delete them in Drive if you want them gone. We stop our access to your Drive.</li>
+                            <li>Your sign-in stays. Signing in again starts a fresh, empty account.</li>
+                          </ul>
+                          <p className="text-sm text-gray-300 mb-2">Want a copy first? Use Download my data above.</p>
+                          <label htmlFor="delete-confirm" className="block text-sm text-gray-200 mb-1">
+                            Type <span className="font-mono font-bold text-white">DELETE</span> to confirm
+                          </label>
+                          <input
+                            id="delete-confirm"
+                            value={deleteConfirmText}
+                            onChange={(e) => setDeleteConfirmText(e.target.value)}
+                            autoComplete="off"
+                            className="w-full min-h-11 rounded-lg bg-gray-900 border border-gray-600 px-3 text-white mb-3"
+                          />
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            <button
+                              type="button"
+                              onClick={deleteMyData}
+                              disabled={deleteConfirmText !== "DELETE" || deletingData}
+                              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-red-600 hover:bg-red-700 px-5 font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {deletingData ? "Deleting…" : "Permanently delete my data"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowDeleteData(false)}
+                              disabled={deletingData}
+                              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-gray-600 px-5 text-gray-200"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Google Drive Sync Section */}
                     <div className="bg-gradient-to-r from-blue-600/20 to-cyan-600/20 border border-blue-400/30 rounded-lg p-5">
                       <div className="flex items-start gap-4">
@@ -527,7 +622,8 @@ function ProfilePageContent() {
                         <div className="flex-1">
                           <h4 className="font-bold text-white text-lg mb-1">Google Drive Sync</h4>
                           <p className="text-sm text-gray-300 mb-2">
-                            Automatically sync your daily journal entries, food photos, workout summaries, and progress reports to your Google Drive.
+                            {/* src: RULING-2026-10-11 Drive option A */}
+                            Optional. Keep your own copy of your journal, workouts, meals, doses and training sessions in Google Drive, plus progress photos.
                           </p>
                           {!driveConnected && (
                             <p className="text-xs text-primary-300 mb-4">
@@ -607,7 +703,7 @@ function ProfilePageContent() {
                           )}
 
                           <div className="mt-4 text-xs text-gray-400">
-                            <p className="mb-1">When connected, we'll sync to your Drive:</p>
+                            <p className="mb-1">When connected, we copy to your Drive:</p>
                             <ul className="list-disc list-inside space-y-0.5">
                               <li>📓 Daily journal entries</li>
                               <li>🏋️ Workout summaries</li>
@@ -618,12 +714,13 @@ function ProfilePageContent() {
                               <li>🧠 Memory (N-Back) scores</li>
                               <li>👤 Profile & preferences</li>
                             </ul>
-                            <p className="mt-2 text-gray-500">Your data stays on YOUR Drive - we just visit it.</p>
+                            <p className="mt-2 text-gray-500">Your account works the same with or without Drive. Files in your Drive stay yours.</p>
                           </div>
                         </div>
                       </div>
                     </div>
 
+                    {SHOW_UNFINISHED_PROFILE && (
                     <div className="space-y-4">
                       <button disabled title="Not available in this portal" className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 opacity-60 cursor-not-allowed">
                         <div className="flex items-center gap-3">
@@ -640,6 +737,7 @@ function ProfilePageContent() {
                         <span className="text-gray-400">Not available yet</span>
                       </button>
                     </div>
+                    )}
                   </div>
                 </div>
               )}

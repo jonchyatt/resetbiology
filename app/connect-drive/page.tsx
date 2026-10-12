@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic"
 export const metadata = {
   title: "Vault Setup — Reset Biology",
   description:
-    "Connect your Google Drive to enable peptide tracking, dose reminders, and personalized coaching. You own your data.",
+    // src: RULING-2026-10-11 Drive option A
+    "Optional: connect Google Drive to keep your own copy of your data, save progress photos, and take your data with you.",
 }
 
 export default async function ConnectDrivePage() {

@@ -101,6 +101,16 @@ export async function GET(req: NextRequest) {
       return redirectToReturn(returnTo, 'drive=error&reason=no_refresh_token')
     }
 
+    // Wave J4.4: encrypt once, before touching Drive. Without a valid
+    // VAULT_TOKEN_KEY we refuse to store the token unencrypted.
+    let encryptedRefreshToken: string
+    try {
+      encryptedRefreshToken = encryptToken(tokens.refresh_token)
+    } catch (encryptError) {
+      console.error('[oauth-callback] refusing to store Drive token:', encryptError)
+      return redirectToReturn(returnTo, 'drive=error&reason=vault_key')
+    }
+
     oauth2Client.setCredentials(tokens)
 
     // Create a folder in user's Google Drive
@@ -142,7 +152,7 @@ export async function GET(req: NextRequest) {
       await prisma.user.update({
         where: { id: state },
         data: {
-          googleDriveRefreshToken: encryptToken(tokens.refresh_token),
+          googleDriveRefreshToken: encryptedRefreshToken,
           googleDriveConnectedAt: new Date(),
           googleDriveSyncEnabled: false,
           driveVaultState: {
@@ -171,12 +181,11 @@ export async function GET(req: NextRequest) {
     })
 
     // Update user with Drive credentials. Refresh token is encrypted at rest
-    // via VAULT_TOKEN_KEY (AES-256-GCM); falls through to plaintext if the env
-    // var isn't set yet — see vault-encryption.ts for graceful-degradation contract.
+    // via VAULT_TOKEN_KEY (AES-256-GCM); never stored as plaintext (Wave J4.4).
     await prisma.user.update({
       where: { id: state },
       data: {
-        googleDriveRefreshToken: encryptToken(tokens.refresh_token),
+        googleDriveRefreshToken: encryptedRefreshToken,
         driveFolder: folderId,
         driveAccountEmail: currentAccountEmail,
         googleDriveConnectedAt: new Date(),

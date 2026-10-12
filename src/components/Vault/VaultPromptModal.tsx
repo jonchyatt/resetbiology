@@ -1,6 +1,6 @@
 "use client"
 
-import { Cloud, Lock, X } from "lucide-react"
+import { Cloud, X } from "lucide-react"
 import Link from "next/link"
 import { useVaultPrompt } from "@/hooks/useVaultPrompt"
 
@@ -12,19 +12,18 @@ export interface VaultPromptModalProps {
 }
 
 /**
- * Just-in-time modal that fires on tracking pages when the user has not
- * yet connected their Google Drive Vault. Soft-block: user can dismiss
- * for the session, but the page makes clear that tracking-feature data
- * persistence requires a connected Vault.
+ * Just-in-time invitation on tracking pages when the user has not yet
+ * connected Google Drive. Drive is OPTIONAL (Jon ruling 2026-10-11, Drive
+ * option A): everything is already saved in the account; Drive adds a copy
+ * the member owns. "Not now" is remembered for 30 days (useVaultPrompt).
  *
  * Visual canon mirrors AgeVerificationModal — same shell, primary→secondary
  * gradient CTA, gray-900 inner. ui-specialist confirmed this is the
  * canonical first-touch modal pattern.
  */
-export function VaultPromptModal({
-  trackerName = "this tracker",
-  trackerVerb = "save your data",
-}: VaultPromptModalProps) {
+// ponytail: trackerName/trackerVerb stay in the props (four pages pass them) but the
+// optional-Drive copy no longer names the tracker; drop them when those pages are next touched.
+export function VaultPromptModal(_props: VaultPromptModalProps) {
   const { shouldPrompt, dismiss } = useVaultPrompt()
 
   if (!shouldPrompt) return null
@@ -50,23 +49,24 @@ export function VaultPromptModal({
             <Cloud className="w-12 h-12 text-primary-400" />
           </div>
           <h2 id="vault-prompt-title" className="text-2xl md:text-3xl font-bold text-white text-center">
-            Set up your Vault
+            {/* src: RULING-2026-10-11 Drive option A */}
+            Keep your own copy in Google Drive
           </h2>
-          <p className="text-sm text-primary-300 mt-2 flex items-center gap-1.5">
-            <Lock className="w-4 h-4" aria-hidden="true" />
-            Required for {trackerName}
+          <p className="text-sm text-primary-300 mt-2">
+            Optional · about 30 seconds
           </p>
         </div>
 
         <div className="mb-8 text-center">
           <p className="text-gray-200 text-base mb-4">
-            Reset Biology stores your tracking data on{" "}
-            <span className="text-primary-300 font-semibold">your own Google Drive</span> —
-            you own it, we don&apos;t keep copies.
+            {/* src: RULING-2026-10-11 Drive option A */}
+            Everything you log is already saved in your Reset Biology account. Connect Google
+            Drive and we also keep a copy in{" "}
+            <span className="text-primary-300 font-semibold">a folder you own</span>.
           </p>
           <p className="text-gray-400 text-sm mb-2">
-            Connect once to {trackerVerb}, get personalized coaching from your voice agents,
-            and receive dose reminders. Takes about 30 seconds.
+            Drive adds progress photos, a copy you can open any time, and data you can take
+            with you. Your voice coaches can also use your history.
           </p>
           <p className="text-xs text-gray-500 italic">
             We can only see files we create. Nothing else in your Drive is accessible to us.
@@ -79,14 +79,14 @@ export function VaultPromptModal({
             className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-bold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-primary-500/50"
           >
             <Cloud className="w-5 h-5" />
-            Set up my Vault
+            Connect Google Drive
           </Link>
 
           <button
             onClick={dismiss}
             className="w-full inline-flex items-center justify-center gap-2 bg-gray-800/60 hover:bg-gray-700/70 text-gray-200 font-medium py-3 px-6 rounded-lg border border-gray-700 transition-all"
           >
-            Maybe later
+            Not now
           </button>
         </div>
       </div>

@@ -6,11 +6,12 @@ import type { AudioLibraryEntry } from "@/data/audio-library"
 
 interface AudioPlayerProps {
   module: AudioLibraryEntry
+  startAt?: number
   onProgress?: (progress: number) => void
   onComplete?: () => void
 }
 
-export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps) {
+export function AudioPlayer({ module, startAt, onProgress, onComplete }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -37,6 +38,7 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
 
     const handleLoadedMetadata = () => {
       setDuration(audio.duration)
+      if (startAt && startAt < audio.duration - 5) audio.currentTime = startAt
     }
 
     const handleEnded = () => {

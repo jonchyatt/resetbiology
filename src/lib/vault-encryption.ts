@@ -7,12 +7,12 @@
  * Format: base64url( version(1) | nonce(12) | ciphertext | tag(16) )
  * Key: VAULT_TOKEN_KEY env var, base64-encoded 32 bytes.
  *
- * Graceful degradation: if VAULT_TOKEN_KEY is missing, encryption becomes
- * a passthrough (logs a warning once). Lets the system run during the
- * window between deploy and key provisioning. Lazy migration handles
- * pre-encryption tokens — decrypt() detects the format and returns
- * plaintext unchanged with `wasEncrypted: false`, so the caller can
- * re-encrypt on the next write opportunity.
+ * Wave J4.4: STORING is strict, READING is lenient.
+ *   - encryptToken throws VAULT_KEY_MISSING when the key is missing or
+ *     invalid, so a new Drive token is never saved unencrypted.
+ *   - decryptToken still accepts legacy plaintext tokens (logged once per
+ *     process), so members connected before the key existed keep working.
+ *     Callers re-encrypt them lazily only when isVaultKeyConfigured().
  *
  * @see docs/PHASE-2-DRIVE-PRIMARY.md (Codex HIGH-2 finding)
  */
@@ -26,6 +26,7 @@ const VERSION = 0x01
 
 let cachedKey: Buffer | null = null
 let warnedMissingKey = false
+let warnedLegacyRead = false
 
 function getKey(): Buffer | null {
   if (cachedKey) return cachedKey
@@ -33,7 +34,7 @@ function getKey(): Buffer | null {
   if (!raw) {
     if (!warnedMissingKey) {
       console.warn(
-        '[vault-encryption] VAULT_TOKEN_KEY not set — refresh tokens will be stored UNENCRYPTED. Set this env var ASAP.',
+        '[vault-encryption] VAULT_TOKEN_KEY not set — new Drive connections are refused until it is set (existing tokens still read). Set this env var ASAP.',
       )
       warnedMissingKey = true
     }
@@ -43,7 +44,7 @@ function getKey(): Buffer | null {
     const buf = Buffer.from(raw, 'base64')
     if (buf.length !== 32) {
       console.error(
-        `[vault-encryption] VAULT_TOKEN_KEY must decode to 32 bytes, got ${buf.length}. Encryption disabled.`,
+        `[vault-encryption] VAULT_TOKEN_KEY must decode to 32 bytes, got ${buf.length}. New Drive connections are refused until fixed.`,
       )
       return null
     }
@@ -54,6 +55,9 @@ function getKey(): Buffer | null {
     return null
   }
 }
+
+/** True when VAULT_TOKEN_KEY is present and decodes to 32 bytes (Wave J4.3). */
+export const isVaultKeyConfigured = () => !!getKey()
 
 /**
  * Test if a string looks like our encrypted format (vs legacy plaintext).
@@ -72,15 +76,18 @@ function looksEncrypted(value: string): boolean {
 }
 
 /**
- * Encrypt a token. If no key is provisioned, returns the plaintext unchanged
- * (graceful degradation). Always idempotent — passing already-encrypted input
- * returns it unchanged.
+ * Encrypt a token. Throws Error('VAULT_KEY_MISSING') if no valid key is
+ * provisioned (never returns plaintext). Idempotent — passing
+ * already-encrypted input returns it unchanged.
  */
 export function encryptToken(plaintext: string): string {
   if (!plaintext) return plaintext
   if (looksEncrypted(plaintext)) return plaintext
   const key = getKey()
-  if (!key) return plaintext
+  if (!key) {
+    console.error('[vault-encryption] REFUSING to store Drive token unencrypted: VAULT_TOKEN_KEY missing or invalid')
+    throw new Error('VAULT_KEY_MISSING')
+  }
 
   const nonce = randomBytes(NONCE_LEN)
   const cipher = createCipheriv(ALG, key, nonce)
@@ -98,7 +105,13 @@ export function encryptToken(plaintext: string): string {
  */
 export function decryptToken(value: string): { plaintext: string; wasEncrypted: boolean } {
   if (!value) return { plaintext: value, wasEncrypted: false }
-  if (!looksEncrypted(value)) return { plaintext: value, wasEncrypted: false }
+  if (!looksEncrypted(value)) {
+    if (!warnedLegacyRead) {
+      console.error('[vault-encryption] legacy plaintext token read (re-encrypts on next use once VAULT_TOKEN_KEY is set)')
+      warnedLegacyRead = true
+    }
+    return { plaintext: value, wasEncrypted: false }
+  }
 
   const key = getKey()
   if (!key) {
@@ -125,4 +138,5 @@ export function decryptToken(value: string): { plaintext: string; wasEncrypted: 
 export function __resetForTests() {
   cachedKey = null
   warnedMissingKey = false
+  warnedLegacyRead = false
 }
