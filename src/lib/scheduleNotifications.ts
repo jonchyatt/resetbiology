@@ -138,20 +138,53 @@ export async function scheduleNotificationsForProtocol(
       }
     }
 
-    // Bulk insert notifications
+    // Idempotent: never create a reminder that already exists (sent or not)
+    // for the same dose time and channel. The nightly replenish calls this
+    // every day without forceReschedule, which used to stack duplicates.
+    let toCreate = notifications
     if (notifications.length > 0) {
+      const times = notifications.map((n) => n.doseTime.getTime())
+      const existing = await prisma.scheduledNotification.findMany({
+        where: {
+          protocolId,
+          doseTime: { gte: new Date(Math.min(...times)), lte: new Date(Math.max(...times)) },
+        },
+        select: { doseTime: true, type: true },
+      })
+      toCreate = dropExistingReminders(notifications, existing)
+    }
+
+    // Bulk insert notifications
+    if (toCreate.length > 0) {
       await prisma.scheduledNotification.createMany({
-        data: notifications
+        data: toCreate
       })
     }
 
-    console.log(`✅ Scheduled ${notifications.length} notifications for protocol ${protocolId}`)
-    return { scheduled: notifications.length, message: 'Success' }
+    console.log(`✅ Scheduled ${toCreate.length} notifications for protocol ${protocolId}`)
+    return { scheduled: toCreate.length, message: 'Success' }
 
   } catch (error) {
     console.error('Error scheduling notifications:', error)
     throw error
   }
+}
+
+/**
+ * Pure: drop planned reminders that already exist for the same dose time and
+ * channel, and duplicates within the plan itself.
+ */
+export function dropExistingReminders<T extends { doseTime: Date; type: string }>(
+  planned: T[],
+  existing: Array<{ doseTime: Date; type: string }>,
+): T[] {
+  const have = new Set(existing.map((e) => `${new Date(e.doseTime).getTime()}|${e.type}`))
+  return planned.filter((n) => {
+    const key = `${n.doseTime.getTime()}|${n.type}`
+    if (have.has(key)) return false
+    have.add(key)
+    return true
+  })
 }
 
 /**
