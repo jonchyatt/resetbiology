@@ -74,7 +74,7 @@ export default async function Home() {
               <h3 className="mt-2 text-lg font-semibold text-primary-300">Work your day</h3>
               <div className="mt-3 space-y-3 text-pretty leading-7 text-slate-300">
                 <p>Use the daily check-in, nutrition, breath, mind training, and journal. {/* src: LMP §2.2 */}</p>
-                <p>Your data is yours: keep your own copy in Google Drive any time. {/* src: RULING-2026-10-11 Drive option A */}</p>
+                <p>Your data, your choice: keep it in your Reset Biology account, or in your own Google Drive too. {/* src: RULING-2026-10-11 Drive option A + Jon 'give them the sense of control' */}</p>
               </div>
             </li>
             <li className="rounded-xl border border-white/10 p-6">
@@ -95,7 +95,7 @@ export default async function Home() {
             Built by a clinician, not a marketer. {/* src: LMP §00 */}
           </p>
           <p className="max-w-xl text-pretty text-lg leading-8 text-primary-100">
-            Your data is yours. Connect Google Drive and keep your own copy, in a folder you control. {/* src: RULING-2026-10-11 Drive option A */}
+            Your data, your choice. Keep it in your Reset Biology account, or connect Google Drive and keep your own copy in a folder you control. {/* src: RULING-2026-10-11 Drive option A + Jon 'give them the sense of control' */}
           </p>
         </div>
       </section>

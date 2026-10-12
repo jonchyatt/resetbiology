@@ -23,7 +23,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What data do you hold?",
-    answer: <p>What you log is saved in your Reset Biology account. Connect Google Drive and we also keep a copy in a folder you own; progress photos are stored only there. {/* src: RULING-2026-10-11 Drive option A */}</p>,
+    answer: <p>Your choice. What you log is saved in your Reset Biology account, or, if you connect Google Drive, in your account and in a folder you own. Progress photos are stored only in your Drive. {/* src: RULING-2026-10-11 Drive option A */}</p>,
   },
 ]
 
