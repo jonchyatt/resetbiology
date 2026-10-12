@@ -1,3 +1,4 @@
+import { commerceAllowed } from '@/lib/commerce'
 import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
@@ -16,6 +17,9 @@ import { getStripe } from '@/lib/stripe'
  * 4. User can cancel anytime during trial to avoid charges
  */
 export async function POST(req: NextRequest) {
+  if (!(await commerceAllowed())) {
+    return NextResponse.json({ error: 'The shop is closed.' }, { status: 403 })
+  }
   try {
     const session = await auth0.getSession()
     const user = await getUserFromSession(session)
