@@ -52,6 +52,21 @@ export default function PeptideDetailPage() {
     }
   }, [slug]);
 
+  const [articleSlug, setArticleSlug] = useState<string | null>(null);
+  useEffect(() => {
+    if (!peptide) return;
+    const s = peptide.slug.toLowerCase();
+    const candidates = [...new Set([s, s.replace(/-\d+(\.\d+)?(mg|mcg|iu|ml).*$/, ''), s.replace(/-(single-vial|vial|package)$/, '')])];
+    let live = true;
+    (async () => {
+      for (const c of candidates) {
+        const r = await fetch(`/api/peptides/education-library/${c}`);
+        if (r.ok) { if (live) setArticleSlug(c); return; }
+      }
+    })();
+    return () => { live = false; };
+  }, [peptide]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center">
@@ -66,8 +81,8 @@ export default function PeptideDetailPage() {
         <div className="text-center text-white">
           <h1 className="text-3xl font-bold mb-4">Peptide Not Found</h1>
           <p className="text-gray-300 mb-6">The peptide you're looking for doesn't exist.</p>
-          <Link href="/order" className="btn-primary">
-            Back to Order Page
+          <Link href="/education/peptides" className="btn-primary">
+            Browse the peptide library
           </Link>
         </div>
       </div>
@@ -85,8 +100,8 @@ export default function PeptideDetailPage() {
       <div className="container mx-auto px-4 relative z-10">
         {/* Back Button */}
         <div className="mb-6">
-          <Link href="/order" className="text-primary-400 hover:text-primary-300 transition-colors">
-            ← Back to All Peptides
+          <Link href="/education/peptides" className="text-primary-400 hover:text-primary-300 transition-colors">
+            ← Peptide research library
           </Link>
         </div>
 
@@ -113,33 +128,21 @@ export default function PeptideDetailPage() {
 
             {/* Product Info */}
             <div className="space-y-6">
-              {/* Price */}
+              {/* Calculate Dosage + research link (price and cart parked, Wave J J1.3) */}
               <div className="bg-black/20 backdrop-blur-sm rounded-lg p-6 border border-primary-400/30">
-                <div className="flex justify-between items-baseline mb-4">
-                  <span className="text-4xl font-bold text-white">
-                    ${peptide.price}
-                  </span>
-                  {/* {peptide.partnerPrice > 0 && (
-                    <span className="text-sm text-gray-400 line-through">
-                      ${(peptide.partnerPrice * 2).toFixed(2)}
-                    </span>
-                  )} */}
-                </div>
-                {/* {peptide.subscriptionPrice && (
-                  <div className="text-sm text-green-400 mb-4">
-                    Subscribe & Save: ${peptide.subscriptionPrice}/mo
-                  </div>
-                )} */}
                 <div className="space-y-2">
-                  <button className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 text-white py-3 px-6 rounded-lg hover:from-primary-600 hover:to-secondary-600 transition-all font-medium shadow-lg hover:shadow-primary-400/30 hover:scale-105 duration-300">
-                    Add to Cart
-                  </button>
                   <button 
                     onClick={() => setShowCalculator(true)}
                     className="w-full border border-primary-400/30 text-primary-200 py-3 px-6 rounded-lg hover:bg-primary-600/20 hover:border-primary-400/30 transition-all backdrop-blur-sm"
                   >
                     Calculate Dosage
                   </button>
+                  <Link
+                    href={articleSlug ? `/education/peptides/${articleSlug}` : '/education/peptides'}
+                    className="block w-full text-center border border-primary-400/30 text-primary-200 py-3 px-6 rounded-lg hover:bg-primary-600/20 hover:border-primary-400/30 transition-all backdrop-blur-sm"
+                  >
+                    {articleSlug ? `Read the research on ${peptide.name}` : 'Browse the peptide research library'}
+                  </Link>
                 </div>
               </div>
 
@@ -157,16 +160,6 @@ export default function PeptideDetailPage() {
                 </div>
               )}
 
-              {/* Stock Status */}
-              <div className="text-center">
-                <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
-                  peptide.inStock 
-                    ? 'bg-green-600/20 text-green-200 border border-green-400/30' 
-                    : 'bg-red-600/20 text-red-200 border border-red-400/30'
-                }`}>
-                  {peptide.inStock ? 'In Stock' : 'Out of Stock'}
-                </span>
-              </div>
             </div>
           </div>
         </div>
@@ -216,22 +209,6 @@ export default function PeptideDetailPage() {
           </div>
         )} */}
 
-        {/* Source Information */}
-        <div className="bg-gradient-to-br from-gray-600/20 to-gray-700/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-gray-400/30">
-          <h2 className="text-xl font-bold text-gray-300 mb-4">Product Information</h2>
-          <div className="space-y-2 text-gray-300">
-            <p><strong>Product ID:</strong> {peptide.id}</p>
-            <p><strong>Category:</strong> {peptide.category}</p>
-            {peptide.originalUrl && (
-              <p>
-                <strong>Source:</strong> 
-                <a href={peptide.originalUrl} target="_blank" rel="noopener noreferrer" className="text-primary-400 hover:text-primary-300 ml-2">
-                  View Original Product →
-                </a>
-              </p>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Dosage Calculator Modal */}
