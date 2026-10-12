@@ -3,6 +3,7 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef, type UIEvent } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
+import { FastVisionCommands } from '@/lib/speech/FastVisionCommands'
 import { SpeechQueue } from '@/lib/vision/audioKit'
 import {
   SCREEN_E_LINE_MULTIPLIERS,
@@ -143,6 +144,10 @@ export default function BinocularChart({
   // Voice — on-demand only, NO preload. Model loads when user taps Voice ON.
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [voiceStatus, setVoiceStatus] = useState<WhisperStatus>('idle')
+  const [voiceRoute, setVoiceRoute] = useState<'local' | 'browser' | null>(null)
+  const [primingVoice, setPrimingVoice] = useState(false)
+  const browserOnlyVoiceRef = useRef(false)
+  const voiceRouteRef = useRef<'local' | 'browser' | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const pendingVoiceDirectionsRef = useRef<EDirection[]>([])
   const voiceDrainTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -239,6 +244,13 @@ export default function BinocularChart({
     }
   }, [chartData, currentLineIndex, currentLetterIndex, exerciseType, onAnswer, advanceToNext, regenerateChart, binocularMode])
 
+  const handleManualDirection = useCallback((direction: EDirection) => {
+    // A tap during chart motion becomes the next answer instead of disappearing.
+    pendingVoiceDirectionsRef.current = []
+    if (acceptingAnswerRef.current && !voiceDrainTimerRef.current) handleAnswer(direction)
+    else pendingVoiceDirectionsRef.current = [direction]
+  }, [handleAnswer])
+
   // Keyboard hotkeys for E-directional mode (desktop)
   useEffect(() => {
     if (exerciseType !== 'e-directional' || showDistancePrompt) return
@@ -250,11 +262,11 @@ export default function BinocularChart({
         ',': 'down', 'ArrowDown': 'down',
       }
       const dir = keyMap[e.key]
-      if (dir) { e.preventDefault(); pendingVoiceDirectionsRef.current = []; handleAnswer(dir) }
+      if (dir) { e.preventDefault(); handleManualDirection(dir) }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [exerciseType, showDistancePrompt, handleAnswer])
+  }, [exerciseType, showDistancePrompt, handleManualDirection])
 
   // Stable ref so voice callbacks always call latest handleAnswer
   const handleAnswerRef = useRef(handleAnswer)
@@ -272,20 +284,25 @@ export default function BinocularChart({
     }, 320)
   }
 
-  // On-demand Whisper — NO preload, only loads when voiceEnabled flips to true
+  // Keep one active microphone route; open prompts use browser speech.
   useEffect(() => {
     if (!voiceEnabled) {
       WhisperService.stop()
+      FastVisionCommands.stop()
       pendingVoiceDirectionsRef.current = []
       if (voiceDrainTimerRef.current) clearTimeout(voiceDrainTimerRef.current)
       voiceDrainTimerRef.current = null
       setIsSpeaking(false)
+      voiceRouteRef.current = null
+      setVoiceRoute(null)
       return
     }
 
     const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
+    const useLocal = !browserOnlyVoiceRef.current && exerciseType === 'e-directional' && !showDistancePrompt
+    let cancelled = false
 
-    WhisperService.start(mode, {
+    const listeners = {
       onResult: (answer, rawTranscript) => {
         // Distance prompt voice commands
         if (showDistancePromptRef.current) {
@@ -310,17 +327,50 @@ export default function BinocularChart({
       },
       onStatusChange: (status) => {
         setVoiceStatus(status)
-        if (status === 'error') setVoiceEnabled(false)
+        if (status === 'error' && voiceRouteRef.current === 'browser') setVoiceEnabled(false)
       },
       onSpeechChange: (speaking) => {
         setIsSpeaking(speaking)
       },
-    }).catch(() => {
-      setVoiceEnabled(false)
-    })
+    } satisfies Parameters<typeof WhisperService.start>[1]
 
-    return () => { WhisperService.stop() }
-  }, [voiceEnabled, exerciseType])
+    const startBrowser = async () => {
+      FastVisionCommands.stop()
+      await FastVisionCommands.waitForStop()
+      if (cancelled) return
+      voiceRouteRef.current = 'browser'
+      setVoiceRoute('browser')
+      try { await WhisperService.start(mode, listeners) }
+      catch { if (!cancelled) setVoiceEnabled(false) }
+    }
+    if (useLocal) {
+      voiceRouteRef.current = 'local'
+      setVoiceRoute('local')
+      void FastVisionCommands.start('directions', listeners)
+        .catch(() => { if (!cancelled) void startBrowser() })
+    } else {
+      void startBrowser()
+    }
+
+    return () => {
+      cancelled = true
+      FastVisionCommands.stop()
+      WhisperService.stop()
+    }
+  }, [voiceEnabled, exerciseType, showDistancePrompt])
+
+  const toggleVoice = async () => {
+    if (voiceEnabled) { setVoiceEnabled(false); return }
+    if (primingVoice) return
+    browserOnlyVoiceRef.current = false
+    if (exerciseType === 'e-directional' && !showDistancePrompt) {
+      setPrimingVoice(true)
+      try { await FastVisionCommands.primeMicrophone() }
+      catch { browserOnlyVoiceRef.current = true }
+      finally { setPrimingVoice(false) }
+    }
+    setVoiceEnabled(true)
+  }
 
   const handleDistanceAdjust = (dir: 'closer' | 'further') => {
     setShowDistancePrompt(false); regenerateChart()
@@ -447,7 +497,7 @@ export default function BinocularChart({
       {dirs.map(dir => {
         const Icon = ArrowIcons[dir]
         return (
-          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => { pendingVoiceDirectionsRef.current = []; handleAnswer(dir) }}
+          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => handleManualDirection(dir)}
             aria-label={`${eye === 'left' ? 'Left' : 'Right'} eye answer: ${dir}`}
             className={`flex-1 flex items-center ${iconAlign === 'right' ? 'justify-end pr-1' : 'justify-start pl-1'} active:scale-95 transition-transform cursor-pointer select-none`}>
             <Icon className={`${arrowIco} ${binocularMode === 'redgreen' ? 'shrink-0' : ''} text-gray-300`} strokeWidth={2.5} />
@@ -465,7 +515,7 @@ export default function BinocularChart({
       {dirs.map(dir => {
         const Icon = ArrowIcons[dir]
         return (
-          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => { pendingVoiceDirectionsRef.current = []; handleAnswer(dir) }}
+          <button key={dir} data-binocular-answer-arrow={dir} onClick={() => handleManualDirection(dir)}
             aria-label={`${eye === 'left' ? 'Left' : 'Right'} eye answer: ${dir}`}
             className="flex-1 flex items-center justify-center active:scale-95 transition-transform cursor-pointer select-none">
             <Icon className={`${arrowIco} ${binocularMode === 'redgreen' ? 'shrink-0' : ''} text-gray-300`} strokeWidth={2.5} />
@@ -682,7 +732,8 @@ export default function BinocularChart({
         {/* Voice toggle — below charts, outside binocular area, large tap target */}
         <div className={`flex justify-center ${binocularMode !== 'redgreen' || exerciseType === 'letters' ? 'pb-2' : ''}`}>
           <button
-            onClick={() => setVoiceEnabled(v => !v)}
+            onClick={() => { void toggleVoice() }}
+            disabled={primingVoice}
             className={`flex items-center gap-2 px-5 py-2 rounded-xl font-semibold text-sm transition-all ${
               voiceEnabled
                 ? isSpeaking ? 'bg-green-600 text-white animate-pulse' : 'bg-primary-600 text-white'
@@ -690,8 +741,10 @@ export default function BinocularChart({
             }`}
           >
             {voiceEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-            {voiceEnabled
-              ? voiceStatus === 'loading' ? 'Loading voice...' : isSpeaking ? 'Hearing...' : 'Voice ON'
+            {primingVoice ? 'Opening mic...' : voiceEnabled
+              ? voiceStatus === 'loading' ? `Loading ${voiceRoute === 'local' ? 'local' : 'browser'}...` :
+                isSpeaking ? `Hearing · ${voiceRoute === 'local' ? 'on-device' : 'browser'}` :
+                  `Voice ON · ${voiceRoute === 'local' ? 'on-device' : 'browser'}`
               : 'Voice OFF'}
           </button>
         </div>

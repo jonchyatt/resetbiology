@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChevronDown, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, MoveHorizontal, Mic, MicOff } from 'lucide-react'
 import { WhisperService, type WhisperStatus } from '@/lib/speech'
+import { FastVisionCommands } from '@/lib/speech/FastVisionCommands'
 import { SpeechQueue } from '@/lib/vision/audioKit'
 import GaborPatch from './GaborPatch'
 import GaborResponseCompass from './GaborResponseCompass'
@@ -207,6 +208,10 @@ export default function SnellenChart({
   // Voice recognition state — model loads ON-DEMAND only when user taps Voice ON (no preload)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [voiceStatus, setVoiceStatus] = useState<WhisperStatus>('idle')
+  const [voiceRoute, setVoiceRoute] = useState<'local' | 'browser' | null>(null)
+  const [primingVoice, setPrimingVoice] = useState(false)
+  const browserOnlyVoiceRef = useRef(false)
+  const voiceRouteRef = useRef<'local' | 'browser' | null>(null)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [lastHeard, setLastHeard] = useState<string>('')
 
@@ -294,22 +299,25 @@ export default function SnellenChart({
     }
   }, [feedback])
 
-  // NO preload — model only loads when user taps "Voice ON"
-  // This fixes the crash where the ~40MB model was downloading on every mount.
-
-  // Start/stop Whisper voice recognition (on-demand only)
+  // Start the command model only after Voice ON; browser speech handles open prompts.
   useEffect(() => {
     if (!voiceEnabled) {
       WhisperService.stop()
+      FastVisionCommands.stop()
       pendingVoiceDirectionsRef.current = []
       setIsSpeaking(false)
       setLastHeard('')
+      voiceRouteRef.current = null
+      setVoiceRoute(null)
       return
     }
 
     const mode = exerciseType === 'e-directional' ? 'e-directional' : 'letters'
+    const useLocal = !browserOnlyVoiceRef.current && !showDistancePrompt &&
+      (exerciseType === 'e-directional' || isGaborPractice)
+    let cancelled = false
 
-    WhisperService.start(mode, {
+    const listeners = {
       onResult: (answer, rawTranscript) => {
         setLastHeard(rawTranscript.trim().split(/\s+/).pop() || '')
         if (showDistancePromptRef.current) {
@@ -337,21 +345,50 @@ export default function SnellenChart({
       },
       onStatusChange: (status) => {
         setVoiceStatus(status)
-        if (status === 'error') {
-          setVoiceEnabled(false)
-        }
+        if (status === 'error' && voiceRouteRef.current === 'browser') setVoiceEnabled(false)
       },
       onSpeechChange: (speaking) => {
         setIsSpeaking(speaking)
       },
-    }).catch(() => {
-      setVoiceEnabled(false)
-    })
+    } satisfies Parameters<typeof WhisperService.start>[1]
+
+    const startBrowser = async () => {
+      FastVisionCommands.stop()
+      await FastVisionCommands.waitForStop()
+      if (cancelled) return
+      voiceRouteRef.current = 'browser'
+      setVoiceRoute('browser')
+      try { await WhisperService.start(mode, listeners) }
+      catch { if (!cancelled) setVoiceEnabled(false) }
+    }
+    if (useLocal) {
+      voiceRouteRef.current = 'local'
+      setVoiceRoute('local')
+      void FastVisionCommands.start(isGaborPractice ? 'numbers' : 'directions', listeners)
+        .catch(() => { if (!cancelled) void startBrowser() })
+    } else {
+      void startBrowser()
+    }
 
     return () => {
+      cancelled = true
+      FastVisionCommands.stop()
       WhisperService.stop()
     }
-  }, [voiceEnabled, exerciseType, isGaborPractice])
+  }, [voiceEnabled, exerciseType, isGaborPractice, showDistancePrompt])
+
+  const toggleVoice = async () => {
+    if (voiceEnabled) { setVoiceEnabled(false); return }
+    if (primingVoice) return
+    browserOnlyVoiceRef.current = false
+    if ((exerciseType === 'e-directional' || isGaborPractice) && !showDistancePrompt) {
+      setPrimingVoice(true)
+      try { await FastVisionCommands.primeMicrophone() }
+      catch { browserOnlyVoiceRef.current = true }
+      finally { setPrimingVoice(false) }
+    }
+    setVoiceEnabled(true)
+  }
 
   // Listen for voice direction events
   const handleLineByLineAnswerRef = useRef((..._args: Parameters<typeof handleLineByLineAnswer>) => {})
@@ -875,7 +912,8 @@ export default function SnellenChart({
           {/* Voice control — only loads model when tapped ON */}
           <div className="flex items-center justify-center gap-3 mb-2">
             <button
-              onClick={() => setVoiceEnabled(!voiceEnabled)}
+              onClick={() => { void toggleVoice() }}
+              disabled={primingVoice}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                 voiceEnabled
                   ? isSpeaking
@@ -886,15 +924,16 @@ export default function SnellenChart({
               title={voiceEnabled ? 'Voice ON (tap to disable)' : 'Voice OFF (tap to enable)'}
             >
               {voiceEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-              {voiceEnabled ? 'Voice ON' : 'Voice OFF'}
+              {primingVoice ? 'Opening mic...' : voiceEnabled ? 'Voice ON' : 'Voice OFF'}
             </button>
             {voiceEnabled && (
               <span className={`text-xs ${isGaborPractice ? 'text-gray-100' : 'text-gray-500'}`}>
-                {voiceStatus === 'loading' ? 'Loading model...' :
-                 isSpeaking ? 'Hearing...' :
-                 lastHeard ? `Heard: "${lastHeard}"` :
-                 isGaborPractice ? 'Say a number from 1 to 8' :
-                 exerciseType === 'e-directional' ? 'Say up/down/left/right' : 'Say the letter name'}
+                {voiceStatus === 'loading' ? `Loading ${voiceRoute === 'local' ? 'local commands' : 'browser speech'}...` :
+                 isSpeaking ? `${voiceRoute === 'local' ? 'On-device' : 'Browser'} hearing...` :
+                 lastHeard ? `${voiceRoute === 'local' ? 'On-device' : 'Browser'} heard: "${lastHeard}"` :
+                 voiceRoute === 'browser' ? 'Browser listening' :
+                 isGaborPractice ? 'On-device listening · Say 1–8' :
+                 exerciseType === 'e-directional' ? 'On-device listening · Say up/down/left/right' : 'Say the letter name'}
               </span>
             )}
           </div>
@@ -903,7 +942,10 @@ export default function SnellenChart({
             <GaborResponseCompass onSelect={handleGaborAnswer} />
           ) : exerciseType === 'e-directional' ? (
             <DirectionButtons
-              onSelect={direction => { pendingVoiceDirectionsRef.current = []; handleLineByLineAnswer(direction) }}
+              onSelect={direction => {
+                pendingVoiceDirectionsRef.current = [direction]
+                drainVoiceDirectionsRef.current()
+              }}
               compact={deviceMode === 'phone'}
             />
           ) : (

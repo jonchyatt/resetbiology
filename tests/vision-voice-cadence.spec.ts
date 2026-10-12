@@ -8,6 +8,12 @@ async function installFakeRecognition(page: Page) {
     Math.random = () => 0 // deterministic upward targets for this interaction check
     const sessions: Array<{ onresult: ((event: unknown) => void) | null }> = []
     Object.assign(window, { __visionRecognitionSessions: sessions })
+    // Keep these browser-transcript regressions on their intended engine.
+    // The local command path has separate score-stream coverage.
+    Object.defineProperty(navigator, 'mediaDevices', {
+      configurable: true,
+      value: { getUserMedia: async () => { throw new Error('browser-route test') } },
+    })
     class FakeRecognition {
       onresult: ((event: unknown) => void) | null = null
       onend: (() => void) | null = null
@@ -46,6 +52,7 @@ test('four live direction words score one at a time before any final transcript'
   await page.getByRole('button', { name: 'E →' }).click()
   await page.getByRole('button', { name: 'Start Training' }).click()
   await page.getByRole('button', { name: 'Voice OFF' }).click()
+  await expect(page.getByText('Browser listening')).toBeVisible()
 
   for (const [index, phrase] of ['right', 'right left', 'right left up', 'right left up down'].entries()) {
     await say(page, 0, phrase, false)
@@ -93,6 +100,20 @@ test('binocular arrows and voice continue after each other', async ({ page }) =>
   await expect.poll(() => attempts(page)).toBe(4)
   await say(page, 1, 'up')
   await expect.poll(() => attempts(page), { timeout: 2000 }).toBe(5)
+})
+
+test('binocular tap during voice target motion is retained', async ({ page }) => {
+  await installFakeRecognition(page)
+  await page.goto('/vision-training')
+  await page.getByRole('button', { name: 'Focus Training' }).click()
+  await page.getByRole('button', { name: 'E →' }).click()
+  await page.getByRole('button', { name: /Duplicate Identical pair/ }).click()
+  await page.getByRole('button', { name: 'Start Training' }).click()
+  await page.getByRole('button', { name: 'Voice OFF' }).click()
+
+  await say(page, 0, 'up')
+  await page.locator('[data-binocular-answer-arrow="up"]').first().click()
+  await expect.poll(() => attempts(page), { timeout: 2000 }).toBe(2)
 })
 
 test('one six-word utterance survives the Snellen three-miss chart reset', async ({ page }) => {
