@@ -12,6 +12,8 @@ import { useToast } from "@/components/ui/Toast"
 const CONNECTED_CONFIRMATION_COPY =
   "Your data lives in your Google Drive — we ship the app, you own the data. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
 
+const SHOW_UNFINISHED_PROFILE = false // Wave J2.3: hidden until wired; see /admin Archive
+
 function ProfilePageContent() {
   const { user, isLoading } = useUser()
   const router = useRouter()
@@ -165,7 +167,7 @@ function ProfilePageContent() {
     { id: "progress", name: "Progress", icon: TrendingUp },
     { id: "settings", name: "Settings", icon: Settings },
     { id: "privacy", name: "Privacy", icon: Shield }
-  ]
+  ].filter(tab => SHOW_UNFINISHED_PROFILE || tab.id !== "settings")
 
   if (isLoading) {
     return (
@@ -207,7 +209,7 @@ function ProfilePageContent() {
             <span className="text-primary-400">Profile</span> Management
           </h2>
           <p className="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto font-medium leading-relaxed drop-shadow-sm">
-            Control your account, track progress, and manage subscription preferences
+            Your account, your progress, and your data
           </p>
         </div>
 
@@ -459,6 +461,7 @@ function ProfilePageContent() {
                       </div>
                     </div>
                   </div>
+                  {SHOW_UNFINISHED_PROFILE && (
                   <div className="card-hover-primary">
                     <h4 className="text-lg font-bold text-white mb-4">Data Export</h4>
                     <p className="text-gray-300 mb-4">Download your complete wellness data and progress reports</p>
@@ -467,10 +470,11 @@ function ProfilePageContent() {
                       Export Data — not available yet
                     </button>
                   </div>
+                  )}
                 </div>
               )}
 
-              {activeTab === "settings" && (
+              {SHOW_UNFINISHED_PROFILE && activeTab === "settings" && (
                 <div className="card-hover-primary">
                   <h3 className="text-xl font-bold text-white mb-6">Notification Preferences</h3>
                   <p className="text-sm text-amber-300 mb-4">Not available yet — these toggles aren&apos;t wired to anything.</p>
@@ -624,6 +628,7 @@ function ProfilePageContent() {
                       </div>
                     </div>
 
+                    {SHOW_UNFINISHED_PROFILE && (
                     <div className="space-y-4">
                       <button disabled title="Not available in this portal" className="w-full flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-600/30 opacity-60 cursor-not-allowed">
                         <div className="flex items-center gap-3">
@@ -640,6 +645,7 @@ function ProfilePageContent() {
                         <span className="text-gray-400">Not available yet</span>
                       </button>
                     </div>
+                    )}
                   </div>
                 </div>
               )}
