@@ -70,10 +70,8 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
   const seek = (time: number) => {
     const audio = audioRef.current
     if (!audio) return
-    
-    // Prevent seeking beyond current progress (prevents gaming)
-    const maxSeek = Math.max(currentTime, time)
-    audio.currentTime = Math.min(maxSeek, duration)
+    const end = duration || audio.duration || 0
+    audio.currentTime = Math.max(0, end ? Math.min(time, end) : time)
   }
 
   const skipForward = () => seek(currentTime + 15)
@@ -121,11 +119,6 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
             <Clock className="w-4 h-4 mr-1" />
             {duration > 0 ? formatTime(duration) : 'Loading audio…'}
           </div>
-          {module.requiredForDeposit && (
-            <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold">
-              Core module
-            </div>
-          )}
         </div>
       </div>
 
@@ -215,17 +208,10 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
-              {module.requiredForDeposit ? (
-                <div className="flex items-center">
-                  <Award className="w-4 h-4 mr-2" />
-                  Mark Core Module Complete
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <Award className="w-4 h-4 mr-2" />
-                  Claim +100 Points
-                </div>
-              )}
+              <div className="flex items-center">
+                <Award className="w-4 h-4 mr-2" />
+                Claim +100 Points
+              </div>
             </button>
           </div>
         </div>
@@ -236,7 +222,6 @@ export function AudioPlayer({ module, onProgress, onComplete }: AudioPlayerProps
         <div className="mt-4 bg-yellow-50 p-3 rounded-lg border border-yellow-200">
           <p className="text-yellow-800 text-sm">
             <strong>🎯 {Math.round(progressPercent)}% complete</strong> - Don't lose your progress! 
-            {module.requiredForDeposit && " This module is part of the core curriculum."}
           </p>
         </div>
       )}
