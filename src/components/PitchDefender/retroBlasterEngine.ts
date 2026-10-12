@@ -33,6 +33,7 @@ export const MAX_SIM_STEP_MS = 50
 export const STIMULUS_ACK_TIMEOUT_MS = 1000
 export const STIMULUS_ACK_ACCEPT_MAX_MS = MAX_SIM_STEP_MS
 export const INTRODUCTION_DURATION_MS = 2400
+export const AGENCY_NOTES = ['C4', 'A4'] as const
 
 export const FORMATION_COLUMNS = 5
 export const FORMATION_ROWS = 3
@@ -175,6 +176,24 @@ export type InputMode = 'click' | 'mic'
 export type Phase = 'menu' | 'tutorial' | 'playing' | 'ceremony' | 'game_over'
 export type VisualKind = 0 | 1 | 2 | 3
 export const VISUAL_KIND_COUNT = 4
+export type AgencyNote = typeof AGENCY_NOTES[number]
+export type RetroPlayStyle = 'classic' | 'agency-prototype'
+export type AgencyActionKind = 'intercept' | 'chain-break'
+export type AgencyStage =
+  | 'awaiting-cue'
+  | 'awaiting-ack'
+  | 'recognizing'
+  | 'awaiting-replay'
+  | 'charged'
+  | 'resolved'
+
+export function pickAgencyPromptNote(rng: () => number = Math.random): AgencyNote {
+  const raw = rng()
+  const sample = Number.isFinite(raw)
+    ? Math.max(0, Math.min(1 - Number.EPSILON, raw))
+    : 0
+  return AGENCY_NOTES[Math.floor(sample * AGENCY_NOTES.length)]
+}
 
 export interface NoteSoulSnapshot {
   note: string
@@ -320,6 +339,108 @@ export interface BlindStimulusAck extends BlindStimulusRequest {
   readonly dispatchedAtDirectorClockMs: number
 }
 
+export interface AgencyStimulusRequest {
+  requestId: string
+  gameId: string
+  encounterId: string
+  promptId: string
+  cueAttemptId: number
+  note: AgencyNote
+  requestedAtDirectorClockMs: number
+}
+
+export interface AgencyStimulusAck extends AgencyStimulusRequest {
+  dispatched: boolean
+  dispatchedAtDirectorClockMs: number
+}
+
+export interface AgencyPromptState {
+  promptId: string
+  note: AgencyNote
+  cueAttemptId: number
+  assisted: boolean
+  revealNote: boolean
+  gradeRecorded: boolean
+  responseOpenedAtDirectorClockMs: number | null
+  stimulusRequest: AgencyStimulusRequest | null
+}
+
+export interface AgencyCharge {
+  chargeId: string
+  earnedFromPromptId: string
+  assisted: boolean
+}
+
+export interface AgencyResolution {
+  action: AgencyActionKind
+  destroyedAlienIds: string[]
+  escapedAlienIds: string[]
+  scoreDelta: number
+  shieldDelta: number
+  resolvedAtDirectorClockMs: number
+}
+
+export interface AgencyEncounterState {
+  encounterId: string
+  stage: AgencyStage
+  prompt: AgencyPromptState
+  charge: AgencyCharge | null
+  decisionId: string | null
+  threatAlienId: string
+  blockerAlienIds: readonly [string, string]
+  resolution: AgencyResolution | null
+}
+
+export interface AgencyViewState {
+  encounterId: string
+  stage: AgencyStage
+  prompt: Omit<AgencyPromptState, 'note'> & { note: AgencyNote | '?' }
+  charge: AgencyCharge | null
+  decisionId: string | null
+  threatAlienId: string
+  blockerAlienIds: readonly [string, string]
+  resolution: AgencyResolution | null
+}
+
+export interface AgencyActionPlan {
+  action: AgencyActionKind
+  destroyedAlienIds: string[]
+  escapedAlienIds: string[]
+  scoreDelta: number
+  shieldDelta: number
+}
+
+export type PendingAgencyCommand =
+  | {
+      kind: 'answer'
+      gameId: string
+      encounterId: string
+      promptId: string
+      cueAttemptId: number
+      answeredNote: AgencyNote
+      inputMode: 'click'
+    }
+  | {
+      kind: 'replay' | 'guide'
+      gameId: string
+      encounterId: string
+      promptId: string
+      cueAttemptId: number
+    }
+  | {
+      kind: 'continue'
+      gameId: string
+      encounterId: string
+    }
+  | {
+      kind: 'spend'
+      gameId: string
+      encounterId: string
+      decisionId: string
+      chargeId: string
+      action: AgencyActionKind
+    }
+
 export interface ActiveAttack {
   readonly attackId: string
   readonly alienId: string
@@ -412,14 +533,17 @@ export interface EngineInput {
   reducedMotion: boolean
   pitch: EnginePitch | null
   pendingAnswer?: PendingAttackAnswer | null
+  pendingAgencyCommand?: PendingAgencyCommand | null
   latencyMs?: number
   fsrs?: Record<string, NoteMemory>
   isActive?: boolean
   memoryEpochMs?: number
   voiceTimeoutObservation?: Readonly<{ healthy: boolean; heard: boolean }>
+  agencyToneSuppressed?: boolean
   ceremonyToneAck?: CeremonyToneAck | null
   pianoReadiness?: PianoReadinessObservation | null
   blindStimulusAck?: BlindStimulusAck | null
+  agencyStimulusAck?: AgencyStimulusAck | null
   curriculumUnlockAck?: CurriculumUnlockAck | null
   colorHints?: boolean
 }
@@ -429,6 +553,7 @@ export type EngineEvent =
   | { kind: 'sfx'; name: 'shoot' | 'wrong' | 'explosion' }
   | { kind: 'playNote'; note: string; delayMs: number; guard: 'attack' | 'none'; targetAlienId: string; attackId: string | null; terminalAlreadyRecorded: boolean }
   | ({ kind: 'blindStimulusRequest' } & BlindStimulusRequest)
+  | ({ kind: 'agencyStimulusRequest' } & AgencyStimulusRequest)
   | ({ kind: 'curriculumUnlockRequest' } & PendingCurriculumUnlock)
   | { kind: 'curriculumSaveBlocked' }
   | { kind: 'unlock'; note: string; inputMode: InputMode }
@@ -497,6 +622,9 @@ export interface GameState {
   nextCeremonySerial: number
   pendingCurriculumUnlock: PendingCurriculumUnlock | null
   nextCurriculumUnlockSerial: number
+  playStyle?: RetroPlayStyle
+  agency?: AgencyEncounterState | null
+  agencyEncounterSerial?: number
 }
 
 export interface ViewState {
@@ -538,6 +666,7 @@ export interface ViewState {
   lastCompletedWavePacing: WavePacingReceipt | null
   introductionCeremony: IntroductionCeremony | null
   noteButtons: Array<{ note: string; hue: number; active: boolean; keyNum: number }>
+  agency?: AgencyViewState | null
 }
 
 export interface TickResult {
@@ -741,9 +870,10 @@ export function createInitialState(
   clockMs = 1,
   gameId = `fixture:${clockMs}`,
   pace: RetroPace | null = null,
+  playStyle: RetroPlayStyle = 'classic',
 ): GameState {
   const demandFloorMs = pace ? retroMinimumDemandIntervalMs(pace) : ENGINE_DEMAND_FLOOR_MS[difficulty]
-  return {
+  const state: GameState = {
     gameId,
     aliens: [], lasers: [], particles: [], playerX: W / 2,
     score: 0, combo: 0, maxCombo: 0, wave: 1,
@@ -766,6 +896,11 @@ export function createInitialState(
     pendingIntroductions: [], introductionCeremony: null, nextCeremonySerial: 0,
     pendingCurriculumUnlock: null, nextCurriculumUnlockSerial: 0,
   }
+  if (playStyle !== 'classic') {
+    state.playStyle = playStyle
+    if (playStyle === 'agency-prototype') state.agencyEncounterSerial = 0
+  }
+  return state
 }
 
 export function beginWave(
@@ -793,8 +928,111 @@ export function beginWave(
   buildWaveQueue(gs, fsrs, memoryEpochMs)
 }
 
+function agencyNote(value: AgencyNote): AgencyNote {
+  return AGENCY_NOTES.includes(value) ? value : 'C4'
+}
+
+export function beginAgencyEncounter(gs: GameState, agencyPromptNote: AgencyNote = 'C4'): void {
+  const promptNote = agencyNote(agencyPromptNote)
+  const encounterSerial = gs.agencyEncounterSerial ?? 0
+  gs.agencyEncounterSerial = encounterSerial + 1
+  const encounterId = encounterSerial === 0
+    ? `${gs.gameId}:agency:encounter`
+    : `${gs.gameId}:agency:encounter:${encounterSerial}`
+  const threatAlienId = `${gs.gameId}:agency:threat`
+  const blockerAlienIds = [
+    `${gs.gameId}:agency:blocker:0`,
+    `${gs.gameId}:agency:blocker:1`,
+  ] as const
+  const alternateNote: AgencyNote = promptNote === 'C4' ? 'A4' : 'C4'
+  const roster = [
+    { alienId: threatAlienId, slot: 10, note: promptNote, visualId: `${gs.gameId}:agency:threat` },
+    { alienId: blockerAlienIds[0], slot: 6, note: alternateNote, visualId: `${gs.gameId}:agency:blocker:0` },
+    { alienId: blockerAlienIds[1], slot: 7, note: promptNote, visualId: `${gs.gameId}:agency:blocker:1` },
+  ] as const
+
+  gs.playStyle = 'agency-prototype'
+  gs.phase = 'playing'
+  gs.playerX = W / 2
+  gs.unlockedNotes = [...AGENCY_NOTES]
+  gs.aliens = roster.map(({ alienId, slot, note, visualId }) => {
+    const anchor = formationAnchor(slot)
+    const colorInfo = NOTE_COLORS[note]
+    return {
+      alienId,
+      visualId,
+      visualKind: (slot % VISUAL_KIND_COUNT) as VisualKind,
+      x: anchor.x,
+      y: anchor.y,
+      entering: false,
+      entryT: 1,
+      entryTargetX: anchor.x,
+      formationSlot: slot,
+      formationX: anchor.x,
+      formationY: anchor.y,
+      note,
+      hue: colorInfo?.hue ?? 0,
+      soul: snapshotNoteSoul(note, undefined, gs.clockMs),
+      diveServiceCount: 0,
+      alive: true,
+      frame: slot % 2,
+      hitTimer: 0,
+    }
+  })
+  gs.lasers = []
+  gs.particles = []
+  gs.wave = 1
+  gs.waveIntroTimer = 0
+  gs.spawnQueue = []
+  gs.spawnedThisWave = roster.length
+  gs.alienCountThisWave = roster.length
+  gs.nextSpawnAt = Number.MAX_SAFE_INTEGER
+  gs.lastProgressAt = gs.directorClockMs
+  gs.hintCount = 0
+  gs.wrongMessage = ''
+  gs.wrongTimer = 0
+  gs.matchStartAt = 0
+  gs.matchTargetAlienId = null
+  gs.micCooldownMs = 0
+  gs.answerCooldownMs = 0
+  gs.nextAttackAtMs = Number.MAX_SAFE_INTEGER
+  gs.directorCursorSlot = 0
+  gs.lastDemandAtMs = null
+  gs.requiredAnswerEventsMs = []
+  gs.waveStartedAtMs = gs.directorClockMs
+  gs.lastCompletedWavePacing = null
+  gs.waveSoulByNote = {}
+  gs.rosterServiceCount = {}
+  gs.pendingIntroductions = []
+  gs.introductionCeremony = null
+  gs.pendingCurriculumUnlock = null
+  gs.blindProbePending = false
+  gs.signalCheckDisposition = 'wave-1'
+  gs.activeAttack = null
+  gs.chargeProgress = 0
+  gs.agency = {
+      encounterId,
+      stage: 'awaiting-cue',
+      prompt: {
+        promptId: `${encounterId}:prompt:${encounterSerial}`,
+      note: promptNote,
+      cueAttemptId: 0,
+      assisted: false,
+      revealNote: false,
+      gradeRecorded: false,
+      responseOpenedAtDirectorClockMs: null,
+      stimulusRequest: null,
+    },
+    charge: null,
+    decisionId: null,
+    threatAlienId,
+    blockerAlienIds,
+    resolution: null,
+  }
+}
+
 function cloneState(state: GameState): GameState {
-  return {
+  const clone: GameState = {
     ...state,
     aliens: state.aliens.map(a => ({ ...a, soul: { ...a.soul } })),
     lasers: state.lasers.map(l => ({ ...l })),
@@ -829,19 +1067,128 @@ function cloneState(state: GameState): GameState {
       ? { ...state.lastCompletedWavePacing, requiredAnswerEventsMs: [...state.lastCompletedWavePacing.requiredAnswerEventsMs] }
       : null,
   }
+  if (state.agency) {
+    clone.agency = {
+      ...state.agency,
+      prompt: {
+        ...state.agency.prompt,
+        stimulusRequest: state.agency.prompt.stimulusRequest
+          ? { ...state.agency.prompt.stimulusRequest }
+          : null,
+      },
+      charge: state.agency.charge ? { ...state.agency.charge } : null,
+      blockerAlienIds: [...state.agency.blockerAlienIds] as [string, string],
+      resolution: state.agency.resolution
+        ? {
+            ...state.agency.resolution,
+            destroyedAlienIds: [...state.agency.resolution.destroyedAlienIds],
+            escapedAlienIds: [...state.agency.resolution.escapedAlienIds],
+          }
+        : null,
+    }
+  }
+  return clone
+}
+
+export function agencyAckMatches(
+  request: AgencyStimulusRequest,
+  ack: AgencyStimulusAck,
+): boolean {
+  return ack.requestId === request.requestId &&
+    ack.gameId === request.gameId &&
+    ack.encounterId === request.encounterId &&
+    ack.promptId === request.promptId &&
+    ack.cueAttemptId === request.cueAttemptId &&
+    ack.note === request.note &&
+    ack.requestedAtDirectorClockMs === request.requestedAtDirectorClockMs
+}
+
+export function agencyAnswerCorrect(prompt: AgencyPromptState, answer: AgencyNote): boolean {
+  return prompt.note === answer
+}
+
+export function agencyActionPlan(state: GameState, action: AgencyActionKind): AgencyActionPlan {
+  const agency = state.agency
+  if (!agency) throw new Error('Agency action requested without an agency encounter')
+  if (action !== 'intercept' && action !== 'chain-break') {
+    throw new Error(`Unknown agency action: ${String(action)}`)
+  }
+  return action === 'intercept'
+    ? {
+        action,
+        destroyedAlienIds: [agency.threatAlienId],
+        escapedAlienIds: [...agency.blockerAlienIds],
+        scoreDelta: 100,
+        shieldDelta: 0,
+      }
+    : {
+        action,
+        destroyedAlienIds: [...agency.blockerAlienIds],
+        escapedAlienIds: [agency.threatAlienId],
+        scoreDelta: 250,
+      shieldDelta: -1,
+    }
+}
+
+function isAgencyActionKind(value: unknown): value is AgencyActionKind {
+  return value === 'intercept' || value === 'chain-break'
+}
+
+export function invalidateAgencyCueForLifecycle(state: GameState): boolean {
+  const agency = state.agency
+  if (!agency || (agency.stage !== 'awaiting-ack' && agency.stage !== 'recognizing')) return false
+  agency.prompt.stimulusRequest = null
+  agency.prompt.responseOpenedAtDirectorClockMs = null
+  agency.prompt.cueAttemptId++
+  agency.prompt.assisted = true
+  agency.stage = 'awaiting-replay'
+  clearMicTarget(state)
+  return true
+}
+
+function agencyViewProjection(agency: AgencyEncounterState): AgencyViewState {
+  const revealNote = agency.prompt.revealNote || agency.stage === 'resolved'
+  return {
+    encounterId: agency.encounterId,
+    stage: agency.stage,
+    prompt: {
+      ...agency.prompt,
+      note: revealNote ? agency.prompt.note : '?',
+      stimulusRequest: revealNote && agency.prompt.stimulusRequest
+        ? { ...agency.prompt.stimulusRequest }
+        : null,
+    },
+    charge: agency.charge ? { ...agency.charge } : null,
+    decisionId: agency.decisionId,
+    threatAlienId: agency.threatAlienId,
+    blockerAlienIds: [...agency.blockerAlienIds] as [string, string],
+    resolution: agency.resolution
+      ? {
+          ...agency.resolution,
+          destroyedAlienIds: [...agency.resolution.destroyedAlienIds],
+          escapedAlienIds: [...agency.resolution.escapedAlienIds],
+        }
+      : null,
+  }
 }
 
 export function toViewState(gs: GameState, inputMode: InputMode, colorHints = true): ViewState {
-  const target = gs.matchTargetAlienId ? gs.aliens.find(item => item.alienId === gs.matchTargetAlienId) : null
+  const agencyMode = gs.playStyle === 'agency-prototype' && gs.agency !== null && gs.agency !== undefined
+  const target = agencyMode || !gs.matchTargetAlienId
+    ? null
+    : gs.aliens.find(item => item.alienId === gs.matchTargetAlienId)
   const activeCue = gs.activeAttack ? cueOf(gs.activeAttack) : null
   const answerOpen = gs.activeAttack?.phase === 'outbound' && gs.activeAttack.outcome === null
-  const identityMaskActive = gs.phase === 'playing' && inputMode === 'click' && (
+  const classicIdentityMaskActive = gs.phase === 'playing' && inputMode === 'click' && (
     gs.blindProbePending ||
     (activeCue?.owner === 'r8c-probe' && activeCue.policy === 'blind' && gs.activeAttack?.outcome === null)
   )
-  const answerMaskActive = gs.phase === 'playing' && inputMode === 'click' &&
+  const identityMaskActive = agencyMode || classicIdentityMaskActive
+  const answerMaskActive = !agencyMode && gs.phase === 'playing' && inputMode === 'click' &&
     activeCue?.owner === 'ordinary' && activeCue.policy === 'safe-try' && gs.activeAttack?.outcome === null
-  const supportMode: SupportMode = identityMaskActive
+  const supportMode: SupportMode = agencyMode
+    ? 'guided'
+    : identityMaskActive
     ? 'signal-check'
     : answerMaskActive
       ? 'safe-try'
@@ -851,7 +1198,9 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
     note: '?', reviewed: false, r: 0.5, calm: 0.5, due: false,
     agitation: 0.5, divePressure: 0,
   }
-  const viewAttack = gs.activeAttack
+  const viewAttack = agencyMode
+    ? null
+    : gs.activeAttack
     ? safeTryProjection
       ? {
           ...gs.activeAttack,
@@ -870,10 +1219,12 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
           : null,
         }
     : null
-  return {
+  const view: ViewState = {
     // Structural answer-leak closure: while the playfield is masked, no ship,
     // slot, visual identity, or soul enters the renderer or production datasets.
-    aliens: safeTryProjection
+    aliens: agencyMode
+      ? gs.aliens.map(a => ({ ...a, note: '?', hue: 190, soul: { ...neutralSoul } }))
+      : safeTryProjection
       ? []
       : gs.aliens.map(a => identityMaskActive
       ? { ...a, note: '?', hue: 190, soul: { ...neutralSoul } }
@@ -881,10 +1232,19 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
     lasers: safeTryProjection ? [] : gs.lasers.map(l => ({ ...l })),
     particles: safeTryProjection ? [] : gs.particles.map(p => ({ ...p })),
     playerX: safeTryProjection ? W / 2 : gs.playerX,
-    charge: {
-      fraction: safeTryProjection ? 0 : Math.min(1, gs.chargeProgress / CHARGE_FULL_MS),
-      targetNote: identityMaskActive || answerMaskActive ? null : isTargetableAlien(target) ? target.note : null,
-    },
+    charge: agencyMode
+      ? {
+          fraction: gs.agency?.stage === 'charged'
+            ? 1
+            : gs.agency?.stage === 'recognizing'
+              ? Math.min(1, gs.chargeProgress / CHARGE_FULL_MS)
+              : 0,
+          targetNote: null,
+        }
+      : {
+          fraction: safeTryProjection ? 0 : Math.min(1, gs.chargeProgress / CHARGE_FULL_MS),
+          targetNote: identityMaskActive || answerMaskActive ? null : isTargetableAlien(target) ? target.note : null,
+        },
     hud: {
       score: gs.score, combo: gs.combo, wave: gs.wave,
       shields: gs.cityHealth, unlockedNotes: [...gs.unlockedNotes],
@@ -896,7 +1256,7 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
     flashTimer: gs.flashTimer,
     wrongMessage: safeTryProjection ? '' : gs.wrongMessage,
     wrongTimer: safeTryProjection ? 0 : gs.wrongTimer,
-    spotlightIdx: safeTryProjection
+    spotlightIdx: agencyMode || safeTryProjection
       ? -1
       : gs.activeAttack
         ? gs.aliens.findIndex(item => item.alienId === gs.activeAttack?.alienId)
@@ -923,10 +1283,12 @@ export function toViewState(gs: GameState, inputMode: InputMode, colorHints = tr
     noteButtons: gs.unlockedNotes.map((note, i) => ({
       note,
       hue: NOTE_COLORS[note]?.hue ?? 0,
-      active: Boolean(colorHints && !identityMaskActive && !answerMaskActive && answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
+      active: Boolean(!agencyMode && colorHints && !identityMaskActive && !answerMaskActive && answerOpen && gs.activeAttack && noteClass(gs.activeAttack.note) === noteClass(note)),
       keyNum: i + 1,
     })),
   }
+  if (agencyMode && gs.agency) view.agency = agencyViewProjection(gs.agency)
+  return view
 }
 
 export function findAlienById(gs: GameState, alienId: string): Alien | undefined {
@@ -1408,6 +1770,301 @@ function applyCurriculumUnlockAck(gs: GameState, input: EngineInput, events: Eng
   events.push({ kind: 'unlock', note: pending.note, inputMode: input.inputMode })
 }
 
+function agencyPromptCommandMatches(
+  gs: GameState,
+  command: Extract<PendingAgencyCommand, { kind: 'answer' | 'replay' | 'guide' }>,
+): boolean {
+  const agency = gs.agency
+  return Boolean(agency && command.gameId === gs.gameId &&
+    command.encounterId === agency.encounterId &&
+    command.promptId === agency.prompt.promptId &&
+    command.cueAttemptId === agency.prompt.cueAttemptId)
+}
+
+function agencyEnterReplay(gs: GameState, revealNote: boolean): void {
+  const agency = gs.agency
+  if (!agency) return
+  agency.prompt.stimulusRequest = null
+  agency.prompt.responseOpenedAtDirectorClockMs = null
+  agency.prompt.assisted = true
+  agency.prompt.revealNote = revealNote
+  agency.stage = 'awaiting-replay'
+  clearMicTarget(gs)
+}
+
+function agencyEarnCharge(gs: GameState, assisted: boolean): void {
+  const agency = gs.agency
+  if (!agency) return
+  agency.prompt.revealNote = true
+  agency.charge = {
+    chargeId: `${agency.prompt.promptId}:charge`,
+    earnedFromPromptId: agency.prompt.promptId,
+    assisted,
+  }
+  agency.decisionId = `${agency.prompt.promptId}:decision:${agency.prompt.cueAttemptId}`
+  agency.stage = 'charged'
+  gs.chargeProgress = CHARGE_FULL_MS
+  clearMicTarget(gs)
+}
+
+function agencyResolveClick(
+  gs: GameState,
+  command: Extract<PendingAgencyCommand, { kind: 'answer' }>,
+  latencyMs: number,
+  events: EngineEvent[],
+  inputMode: InputMode,
+): void {
+  const agency = gs.agency
+  if (inputMode !== 'click' || command.inputMode !== 'click' ||
+      !agency || agency.stage !== 'recognizing' || !agencyPromptCommandMatches(gs, command)) return
+  const prompt = agency.prompt
+  const correct = agencyAnswerCorrect(prompt, command.answeredNote)
+  if (!correct) {
+    if (!prompt.gradeRecorded && !prompt.assisted) {
+      events.push({ kind: 'grade', note: prompt.note, correct: false, latencyMs, inputMode: 'click' })
+      prompt.gradeRecorded = true
+    }
+    events.push({ kind: 'sfx', name: 'wrong' })
+    gs.wrongMessage = 'WRONG CUE - GUIDED RECHARGE OR REPLAY. NO SHIELD LOST.'
+    gs.wrongTimer = 2
+    agencyEnterReplay(gs, true)
+    return
+  }
+
+  if (!prompt.assisted && !prompt.gradeRecorded) {
+    events.push({ kind: 'grade', note: prompt.note, correct: true, latencyMs, inputMode: 'click' })
+    prompt.gradeRecorded = true
+  }
+  events.push({ kind: 'sfx', name: 'shoot' })
+  agencyEarnCharge(gs, prompt.assisted)
+}
+
+function agencyResolveMic(
+  gs: GameState,
+  input: EngineInput,
+  events: EngineEvent[],
+): void {
+  const agency = gs.agency
+  if (!agency || agency.stage !== 'recognizing' || input.inputMode !== 'mic') return
+  if (!input.isListening) {
+    clearMicTarget(gs)
+    return
+  }
+  if (input.agencyToneSuppressed) {
+    clearMicTarget(gs)
+    return
+  }
+  const healthy = input.voiceTimeoutObservation?.healthy === true
+  if (!healthy) {
+    clearMicTarget(gs)
+    return
+  }
+  const pitch = input.pitch
+  if (!pitch?.isActive ||
+      !Number.isFinite(pitch.frequency) || pitch.frequency <= 0 ||
+      !Number.isFinite(pitch.confidence) || pitch.confidence < MIC_CONFIDENCE_FLOOR) {
+    clearMicTarget(gs)
+    return
+  }
+  const centsOff = octaveFoldedCents(pitch.frequency, noteToFreq(agency.prompt.note))
+  if (Math.abs(centsOff) > MIC_TOLERANCE_CENTS) {
+    if (gs.matchStartAt > 0) clearMicTarget(gs)
+    return
+  }
+  if (gs.matchTargetAlienId !== agency.prompt.promptId || gs.matchStartAt === 0) {
+    gs.matchTargetAlienId = agency.prompt.promptId
+    gs.matchStartAt = gs.directorClockMs
+  }
+  if (gs.matchStartAt <= 0) return
+  const held = gs.directorClockMs - gs.matchStartAt
+  gs.chargeProgress = Math.min(CHARGE_FULL_MS, Math.max(0, held))
+  if (held >= MIC_HOLD_MS) {
+    if (!agency.prompt.assisted && !agency.prompt.gradeRecorded) {
+      events.push({ kind: 'grade', note: agency.prompt.note, correct: true, latencyMs: input.latencyMs ?? 2000, inputMode: 'mic' })
+      agency.prompt.gradeRecorded = true
+    }
+    events.push({ kind: 'sfx', name: 'shoot' })
+    agencyEarnCharge(gs, agency.prompt.assisted)
+  }
+}
+
+function agencyActionEffects(
+  gs: GameState,
+  plan: AgencyActionPlan,
+  events: EngineEvent[],
+  rng: () => number,
+): void {
+  const destroyed = new Set(plan.destroyedAlienIds)
+  const affected = new Set([...plan.destroyedAlienIds, ...plan.escapedAlienIds])
+  for (const alien of gs.aliens) {
+    if (!affected.has(alien.alienId)) continue
+    alien.alive = false
+    alien.hitTimer = destroyed.has(alien.alienId) ? 0.4 : 0
+    if (destroyed.has(alien.alienId)) {
+      gs.lasers.push({
+        x: gs.playerX,
+        y: PLAYER_Y,
+        hue: alien.hue,
+        active: true,
+        hits: false,
+        targetY: alien.y + ALIEN_H / 2,
+        targetAlienId: alien.alienId,
+        attackId: null,
+      })
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2
+        gs.particles.push({
+          x: alien.x + ALIEN_W / 2,
+          y: alien.y + ALIEN_H / 2,
+          vx: Math.cos(angle) * (35 + rng() * 45) * SPACE_SCALE,
+          vy: Math.sin(angle) * (35 + rng() * 45) * SPACE_SCALE,
+          life: 0.35 + rng() * 0.25,
+          hue: alien.hue,
+        })
+      }
+    }
+  }
+  events.push({ kind: 'sfx', name: 'shoot' })
+  if (plan.destroyedAlienIds.length > 0) events.push({ kind: 'sfx', name: 'explosion' })
+}
+
+function advanceAgencyEffects(gs: GameState, dt: number): void {
+  if (dt <= 0) return
+
+  if (gs.flashTimer > 0) gs.flashTimer = Math.max(0, gs.flashTimer - dt)
+  if (gs.wrongTimer > 0) {
+    gs.wrongTimer = Math.max(0, gs.wrongTimer - dt)
+    if (gs.wrongTimer === 0) gs.wrongMessage = ''
+  }
+
+  for (const alien of gs.aliens) {
+    if (alien.hitTimer > 0) alien.hitTimer = Math.max(0, alien.hitTimer - dt)
+  }
+
+  for (const laser of gs.lasers) {
+    if (!laser.active) continue
+    laser.y -= LASER_SPEED * dt
+    if (laser.y <= laser.targetY || laser.y < -LASER_H) laser.active = false
+  }
+  gs.lasers = gs.lasers.filter(laser => laser.active)
+
+  gs.particles = gs.particles.filter(particle => {
+    particle.x += particle.vx * dt
+    particle.y += particle.vy * dt
+    particle.life -= dt
+    return particle.life > 0
+  })
+}
+
+function processAgencyEncounter(
+  gs: GameState,
+  input: EngineInput,
+  latencyMs: number,
+  events: EngineEvent[],
+  rng: () => number,
+): void {
+  const agency = gs.agency
+  if (!agency) return
+
+  const command = input.pendingAgencyCommand
+  if (command?.kind === 'continue') {
+    if (agency.stage === 'resolved' && gs.cityHealth > 0 &&
+        command.gameId === gs.gameId && command.encounterId === agency.encounterId) {
+      beginAgencyEncounter(gs, pickAgencyPromptNote(rng))
+    }
+    return
+  }
+
+  if (command?.kind === 'spend' && isAgencyActionKind(command.action) && agency.stage === 'charged' &&
+      command.gameId === gs.gameId && command.encounterId === agency.encounterId &&
+      command.decisionId === agency.decisionId && agency.charge?.chargeId === command.chargeId) {
+    const plan = agencyActionPlan(gs, command.action)
+    agency.resolution = {
+      ...plan,
+      resolvedAtDirectorClockMs: gs.directorClockMs,
+    }
+    gs.score += plan.scoreDelta
+    gs.cityHealth = Math.max(0, gs.cityHealth + plan.shieldDelta)
+    agency.charge = null
+    agency.prompt.revealNote = true
+    agency.prompt.stimulusRequest = null
+    agency.prompt.responseOpenedAtDirectorClockMs = null
+    agency.stage = 'resolved'
+    agencyActionEffects(gs, plan, events, rng)
+    clearMicTarget(gs)
+    if (gs.cityHealth <= 0) {
+      gs.phase = 'game_over'
+      events.push({ kind: 'gameOver' })
+    }
+    return
+  }
+
+  if (command?.kind === 'guide' && agency.stage !== 'charged' && agency.stage !== 'resolved' &&
+      agencyPromptCommandMatches(gs, command)) {
+    agency.prompt.cueAttemptId++
+    agency.prompt.stimulusRequest = null
+    agency.prompt.responseOpenedAtDirectorClockMs = gs.directorClockMs
+    agency.prompt.assisted = true
+    agency.prompt.revealNote = true
+    agency.stage = 'recognizing'
+    clearMicTarget(gs)
+    return
+  }
+
+  if (command?.kind === 'replay' && agency.stage !== 'charged' && agency.stage !== 'resolved' &&
+      agencyPromptCommandMatches(gs, command)) {
+    agency.prompt.cueAttemptId++
+    agency.prompt.stimulusRequest = null
+    agency.prompt.responseOpenedAtDirectorClockMs = null
+    agency.prompt.assisted = true
+    agency.prompt.revealNote = false
+    agency.stage = 'awaiting-cue'
+    clearMicTarget(gs)
+    return
+  }
+
+  if (agency.stage === 'awaiting-cue') {
+    const request: AgencyStimulusRequest = {
+      requestId: `${agency.encounterId}:stimulus:${agency.prompt.cueAttemptId}`,
+      gameId: gs.gameId,
+      encounterId: agency.encounterId,
+      promptId: agency.prompt.promptId,
+      cueAttemptId: agency.prompt.cueAttemptId,
+      note: agency.prompt.note,
+      requestedAtDirectorClockMs: gs.directorClockMs,
+    }
+    agency.prompt.stimulusRequest = request
+    agency.stage = 'awaiting-ack'
+    events.push({ kind: 'agencyStimulusRequest', ...request })
+    return
+  }
+
+  if (agency.stage === 'awaiting-ack') {
+    const request = agency.prompt.stimulusRequest
+    const ack = input.agencyStimulusAck
+    if (request && ack && agencyAckMatches(request, ack)) {
+      const acceptanceDelta = gs.directorClockMs - request.requestedAtDirectorClockMs
+      if (!ack.dispatched || ack.dispatchedAtDirectorClockMs !== request.requestedAtDirectorClockMs ||
+          acceptanceDelta < 0 || acceptanceDelta > STIMULUS_ACK_ACCEPT_MAX_MS) {
+        agency.prompt.cueAttemptId++
+        agencyEnterReplay(gs, false)
+      } else {
+        agency.stage = 'recognizing'
+        agency.prompt.responseOpenedAtDirectorClockMs = gs.directorClockMs
+      }
+    } else if (request && gs.directorClockMs - request.requestedAtDirectorClockMs >= STIMULUS_ACK_TIMEOUT_MS) {
+      agency.prompt.cueAttemptId++
+      agencyEnterReplay(gs, false)
+    }
+    return
+  }
+
+  if (agency.stage === 'recognizing') {
+    if (command?.kind === 'answer') agencyResolveClick(gs, command, latencyMs, events, input.inputMode)
+    agencyResolveMic(gs, input, events)
+  }
+}
+
 export function tick(state: GameState, input: EngineInput, dtMs: number, rng: () => number): TickResult {
   const gs = cloneState(state)
   const events: EngineEvent[] = []
@@ -1415,7 +2072,7 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   const isActive = input.isActive !== false
   const stepMs = isActive ? Math.min(elapsedMs, MAX_SIM_STEP_MS) : 0
 
-  if (isActive) applyCurriculumUnlockAck(gs, input, events)
+  if (isActive && gs.playStyle !== 'agency-prototype') applyCurriculumUnlockAck(gs, input, events)
 
   if (gs.phase === 'ceremony') {
     const activeCeremony = gs.introductionCeremony
@@ -1451,6 +2108,12 @@ export function tick(state: GameState, input: EngineInput, dtMs: number, rng: ()
   if (gs.micCooldownMs === 0 && gs.matchStartAt === -1) gs.matchStartAt = 0
 
   if (gs.phase !== 'playing' || !isActive) {
+    return { state: gs, viewState: toViewState(gs, input.inputMode, input.colorHints !== false), events }
+  }
+
+  if (gs.playStyle === 'agency-prototype' && gs.agency) {
+    processAgencyEncounter(gs, input, input.latencyMs ?? 2000, events, rng)
+    advanceAgencyEffects(gs, dt)
     return { state: gs, viewState: toViewState(gs, input.inputMode, input.colorHints !== false), events }
   }
 

@@ -36,13 +36,15 @@ import {
   type RetroPlacementTrial,
 } from './retroBlasterPlacement'
 import { usePitchDetection } from './usePitchDetection'
-import { getPianoReadiness, initAudio, loadPianoSamples, playPianoNote } from './audioEngine'
 import {
-  H, MIC_CONFIDENCE_FLOOR, STARTING_SHIELDS, W,
-  beginWave, createInitialState, isTargetableAlien, noteButtonRects, noteForKeyboardInput, requestFullCueHelp,
+  getPianoReadiness, initAudio, isWithinToneSuppressionWindow, loadPianoSamples, playPianoNote,
+} from './audioEngine'
+import {
+  AGENCY_NOTES, ALIEN_H, ALIEN_W, H, MIC_CONFIDENCE_FLOOR, PLAYER_Y, STARTING_SHIELDS, W,
+  beginAgencyEncounter, beginWave, createInitialState, invalidateAgencyCueForLifecycle, isTargetableAlien, noteButtonRects, noteForKeyboardInput, pickAgencyPromptNote, requestFullCueHelp,
   resetOrdinaryCueSupport, tick, toViewState,
-  type BlindStimulusAck, type CeremonyToneAck, type CurriculumUnlockAck, type Difficulty, type EngineEvent, type GameState, type InputMode,
-  type PendingAttackAnswer, type Phase, type PianoReadinessObservation, type ViewState,
+  type AgencyActionKind, type AgencyNote, type AgencyStimulusAck, type BlindStimulusAck, type CeremonyToneAck, type CurriculumUnlockAck, type Difficulty, type EngineEvent, type GameState, type InputMode,
+  type PendingAgencyCommand, type PendingAttackAnswer, type Phase, type PianoReadinessObservation, type RetroPlayStyle, type ViewState,
 } from './retroBlasterEngine'
 import {
   advanceMicVfxFreshness,
@@ -95,6 +97,7 @@ function clearRetroAudioReceipt(canvas: HTMLCanvasElement | null): void {
 }
 
 type PendingSafeTryAudioReceipt = Omit<RetroAudioReceipt, 'sequence'>
+export type DeferredAgencyAudioReceipt = Omit<RetroAudioReceipt, 'sequence'>
 
 function flushPendingSafeTryAudioReceipt(
   pending: { current: PendingSafeTryAudioReceipt | null },
@@ -105,6 +108,22 @@ function flushPendingSafeTryAudioReceipt(
   pending.current = null
   publish(receipt) // publish-after-reveal
   return true
+}
+
+export function deferAgencyStimulusReceipt(
+  pending: { current: DeferredAgencyAudioReceipt | null },
+  receipt: DeferredAgencyAudioReceipt,
+  dispatched: boolean,
+): void {
+  pending.current = dispatched ? receipt : null
+}
+
+export function flushAgencyStimulusReceiptAfterReveal(
+  pending: { current: DeferredAgencyAudioReceipt | null },
+  publish: (receipt: DeferredAgencyAudioReceipt) => void,
+  revealed: boolean,
+): boolean {
+  return revealed && flushPendingSafeTryAudioReceipt(pending, publish)
 }
 
 function discardPendingSafeTryAudioReceipt(
@@ -166,14 +185,17 @@ export function buildRetroBlasterState(
   gameId = `fixture:${clockMs}`,
   memoryEpochMs = 0,
   pace: RetroPace | null = null,
+  playStyle: RetroPlayStyle = 'classic',
+  agencyPromptNote: AgencyNote = pickAgencyPromptNote(),
 ): GameState {
   const store = activeLaneStore(stores, inputMode)
   const unlocked = [...sessionRoster]
   for (const note of unlocked) {
     if (!store[note]) store[note] = createNote(note)
   }
-  const state = createInitialState(difficulty, unlocked, clockMs, gameId, pace)
-  beginWave(state, store, memoryEpochMs)
+  const state = createInitialState(difficulty, unlocked, clockMs, gameId, pace, playStyle)
+  if (playStyle === 'agency-prototype') beginAgencyEncounter(state, agencyPromptNote)
+  else beginWave(state, store, memoryEpochMs)
   return state
 }
 
@@ -218,9 +240,13 @@ export default function RetroBlasterII() {
   const stateRef = useRef<GameState | null>(null)
   const familyStoresRef = useRef<RetroBlasterFamilyStores>({ voice: {}, ear: {} })
   const rafRef = useRef(0)
-  const lastTimeRef = useRef(0)
+    const lastTimeRef = useRef(0)
   const notePlayTimeRef = useRef(0)
   const pendingAnswerRef = useRef<PendingAttackAnswer | null>(null)
+  const pendingAgencyCommandRef = useRef<PendingAgencyCommand | null>(null)
+  const pendingAgencyStimulusAckRef = useRef<AgencyStimulusAck | null>(null)
+  const pendingAgencyAudioReceiptRef = useRef<PendingSafeTryAudioReceipt | null>(null)
+  const playStyleRef = useRef<RetroPlayStyle>('classic')
   const inputModeRef = useRef<InputMode>('click')
   const listeningRef = useRef(false)
   const colorHintsRef = useRef(true)
@@ -424,6 +450,9 @@ export default function RetroBlasterII() {
     ceremonyBusyRef.current = false
     pendingCeremonyToneAckRef.current = null
     pendingBlindStimulusAckRef.current = null
+    pendingAgencyCommandRef.current = null
+    pendingAgencyStimulusAckRef.current = null
+    pendingAgencyAudioReceiptRef.current = null
     abortCurriculumSession()
     discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
     clearRetroAudioReceipt(lastCanvasRef.current)
@@ -495,11 +524,25 @@ export default function RetroBlasterII() {
     return true
   }, [writeAudioReceipt])
 
+  const invalidateAgencyForLifecycle = useCallback(() => {
+    pendingAgencyCommandRef.current = null
+    pendingAgencyStimulusAckRef.current = null
+    pendingAgencyAudioReceiptRef.current = null
+    const state = stateRef.current
+    if (!state || state.playStyle !== 'agency-prototype') return false
+    if (!invalidateAgencyCueForLifecycle(state)) return false
+    flushSync(() => setDisplayView(toViewState(state, inputModeRef.current, colorHintsRef.current)))
+    return true
+  }, [])
+
   useEffect(() => {
     const syncActivity = () => {
       visibilityActiveRef.current = document.visibilityState === 'visible'
       focusActiveRef.current = document.hasFocus()
-      if (!visibilityActiveRef.current || !focusActiveRef.current) revealSafeTryForLifecycle()
+      if (!visibilityActiveRef.current || !focusActiveRef.current) {
+        revealSafeTryForLifecycle()
+        invalidateAgencyForLifecycle()
+      }
       if (visibilityActiveRef.current && focusActiveRef.current) {
         lastTimeRef.current = performance.now()
         if (stateRef.current?.phase === 'ceremony') setCeremonyMessage('')
@@ -519,7 +562,10 @@ export default function RetroBlasterII() {
         }
       }
     }
-    const resetForViewportChange = () => { revealSafeTryForLifecycle() }
+    const resetForViewportChange = () => {
+      revealSafeTryForLifecycle()
+      invalidateAgencyForLifecycle()
+    }
     syncActivity()
     document.addEventListener('visibilitychange', syncActivity)
     window.addEventListener('focus', syncActivity)
@@ -533,7 +579,7 @@ export default function RetroBlasterII() {
       window.removeEventListener('resize', resetForViewportChange)
       window.removeEventListener('orientationchange', resetForViewportChange)
     }
-  }, [revealSafeTryForLifecycle])
+  }, [invalidateAgencyForLifecycle, revealSafeTryForLifecycle])
 
   const dispatchCeremonyTone = useCallback((ceremonyId: string, note: string) => {
     const live = stateRef.current?.introductionCeremony
@@ -554,6 +600,37 @@ export default function RetroBlasterII() {
     }
     pendingCeremonyToneAckRef.current = { ceremonyId, note, dispatched }
     return dispatched
+  }, [writeAudioReceipt])
+
+  const dispatchAgencyStimulus = useCallback((event: Extract<EngineEvent, { kind: 'agencyStimulusRequest' }>) => {
+    const cur = stateRef.current
+    const agency = cur?.agency
+    const request = agency?.prompt.stimulusRequest
+    const active = document.visibilityState === 'visible' && document.hasFocus()
+    const readiness = getPianoReadiness(event.note)
+    const exactLiveTuple = Boolean(cur && agency && request &&
+      cur.playStyle === 'agency-prototype' && cur.gameId === event.gameId &&
+      agency.encounterId === event.encounterId && agency.stage === 'awaiting-ack' &&
+      agency.prompt.promptId === event.promptId && agency.prompt.cueAttemptId === event.cueAttemptId &&
+      request.requestId === event.requestId &&
+      request.requestedAtDirectorClockMs === event.requestedAtDirectorClockMs)
+    let dispatched = false
+    pendingAgencyAudioReceiptRef.current = null
+    if (exactLiveTuple && active && readiness.sampleReady && readiness.contextState === 'running') {
+      dispatched = playPianoNote(event.note, { exact: true, durationMs: 600 })
+      if (dispatched) {
+        deferAgencyStimulusReceipt(pendingAgencyAudioReceiptRef, {
+          kind: 'piano', note: event.note, guard: 'agency-stimulus', requestId: event.requestId,
+          gameId: event.gameId, attackId: null, ceremonyId: null, terminalAlreadyRecorded: false,
+        }, true)
+        notePlayTimeRef.current = Date.now()
+      }
+    }
+    pendingAgencyStimulusAckRef.current = {
+      ...event,
+      dispatched,
+      dispatchedAtDirectorClockMs: event.requestedAtDirectorClockMs,
+    }
   }, [writeAudioReceipt])
 
   const applyEvents = useCallback((events: EngineEvent[], gs: GameState) => {
@@ -603,6 +680,8 @@ export default function RetroBlasterII() {
           playPianoNote(event.note)
           if (event.guard === 'attack') notePlayTimeRef.current = Date.now()
         }, event.delayMs)
+      } else if (event.kind === 'agencyStimulusRequest') {
+        dispatchAgencyStimulus(event)
       } else if (event.kind === 'blindStimulusRequest') {
         const cur = stateRef.current
         const attack = cur?.activeAttack
@@ -645,12 +724,15 @@ export default function RetroBlasterII() {
         setActivePace(event.to)
       } else if (event.kind === 'gameOver') {
         abortCurriculumSession()
+        pendingAgencyCommandRef.current = null
+        pendingAgencyStimulusAckRef.current = null
+        pendingAgencyAudioReceiptRef.current = null
         setFinalStats({ score: gs.score, wave: gs.wave, maxCombo: gs.maxCombo })
         if (inputModeRef.current === 'mic') stopListening()
         setPhase('game_over')
       }
     }
-  }, [abortCurriculumSession, dispatchCeremonyTone, runCurriculumCommit, stopListening, writeAudioReceipt])
+  }, [abortCurriculumSession, dispatchAgencyStimulus, dispatchCeremonyTone, runCurriculumCommit, stopListening, writeAudioReceipt])
 
   const gameLoop = useCallback((now: number) => {
     const gs = stateRef.current
@@ -660,6 +742,8 @@ export default function RetroBlasterII() {
     lastTimeRef.current = now
     const pendingAnswer = pendingAnswerRef.current
     pendingAnswerRef.current = null
+    const pendingAgencyCommand = pendingAgencyCommandRef.current
+    pendingAgencyCommandRef.current = null
     const memoryEpochMs = Date.now()
     const latencyMs = notePlayTimeRef.current > 0 ? memoryEpochMs - notePlayTimeRef.current : 2000
     const laneStore = activeLaneStore(familyStoresRef.current, inputModeRef.current)
@@ -679,6 +763,7 @@ export default function RetroBlasterII() {
     )
     micVfxFreshnessRef.current = freshness.state
     const gameplayActive = visibilityActiveRef.current && focusActiveRef.current
+    const agencyToneSuppressed = gs.playStyle === 'agency-prototype' && isWithinToneSuppressionWindow()
     let pianoReadiness: PianoReadinessObservation | null = null
     if (gameplayActive && gs.phase === 'playing') {
       const readinessRows = gs.unlockedNotes.map(note => [note, getPianoReadiness(note)] as const)
@@ -694,6 +779,8 @@ export default function RetroBlasterII() {
     if (gameplayActive) pendingCeremonyToneAckRef.current = null
     const blindStimulusAck = gameplayActive ? pendingBlindStimulusAckRef.current : null
     if (gameplayActive) pendingBlindStimulusAckRef.current = null
+    const agencyStimulusAck = gameplayActive ? pendingAgencyStimulusAckRef.current : null
+    pendingAgencyStimulusAckRef.current = null
     const curriculumUnlockAck = gameplayActive ? pendingCurriculumUnlockAckRef.current : null
     if (gameplayActive) pendingCurriculumUnlockAckRef.current = null
     const voiceHealthy = inputModeRef.current === 'mic' &&
@@ -712,14 +799,17 @@ export default function RetroBlasterII() {
       reducedMotion: reducedMotionRef.current,
       pitch: capturedPitch,
       pendingAnswer,
+      pendingAgencyCommand,
       latencyMs,
       fsrs: laneStore,
       isActive: gameplayActive,
       memoryEpochMs,
       voiceTimeoutObservation: { healthy: voiceHealthy, heard: voiceHeard },
+      agencyToneSuppressed,
       ceremonyToneAck,
       pianoReadiness,
       blindStimulusAck,
+      agencyStimulusAck,
       curriculumUnlockAck,
       colorHints: colorHintsRef.current,
     }, dtMs, Math.random)
@@ -812,7 +902,9 @@ export default function RetroBlasterII() {
       }
     }
     const revealsSafeTry = renderedAnswerMaskRef.current && !result.viewState.answerMaskActive
-    if ((wasCeremony && result.state.phase === 'playing') || revealsSafeTry) {
+    const revealsAgencyCue = pendingAgencyAudioReceiptRef.current !== null &&
+      result.state.playStyle === 'agency-prototype' && result.state.agency?.prompt.revealNote === true
+    if ((wasCeremony && result.state.phase === 'playing') || revealsSafeTry || revealsAgencyCue) {
       flushSync(() => setDisplayView(result.viewState))
     } else {
       setDisplayView(result.viewState)
@@ -822,6 +914,9 @@ export default function RetroBlasterII() {
       // Covers answer/help, timeout, life loss, gameOver, and waveComplete after reveal.
       flushPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef, writeAudioReceipt)
     }
+    if (revealsAgencyCue) {
+      flushAgencyStimulusReceiptAfterReveal(pendingAgencyAudioReceiptRef, writeAudioReceipt, true)
+    }
     applyEvents(result.events, result.state)
     if (result.state.phase === 'playing' || result.state.phase === 'ceremony') {
       rafRef.current = requestAnimationFrame(gameLoop)
@@ -830,7 +925,11 @@ export default function RetroBlasterII() {
   }, [applyEvents, livePitchRef, micSourceHealthRef, pitchGenerationRef, writeAudioReceipt])
 
   const buildState = useCallback((): GameState => {
-    return buildRetroBlasterState(
+    const playStyle = playStyleRef.current
+    const agencyPromptNote = playStyle === 'agency-prototype'
+      ? pickAgencyPromptNote(Math.random)
+      : 'C4' as AgencyNote
+    const state = buildRetroBlasterState(
       difficulty,
       inputMode,
       familyStoresRef.current,
@@ -839,7 +938,10 @@ export default function RetroBlasterII() {
       crypto.randomUUID(),
       Date.now(),
       activePaceRef.current,
+      playStyle,
+      agencyPromptNote,
     )
+    return state
   }, [difficulty, inputMode])
 
   const prepareEarReadiness = useCallback(async (readinessId = readinessIdRef.current) => {
@@ -970,6 +1072,9 @@ export default function RetroBlasterII() {
     if (listeningRef.current) stopListening()
     stateRef.current = null
     pendingAnswerRef.current = null
+    pendingAgencyCommandRef.current = null
+    pendingAgencyStimulusAckRef.current = null
+    pendingAgencyAudioReceiptRef.current = null
     pendingCeremonyToneAckRef.current = null
     pendingBlindStimulusAckRef.current = null
     discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
@@ -1046,6 +1151,9 @@ export default function RetroBlasterII() {
     setReadinessStatus('idle')
     setReadinessMessage('')
     pendingAnswerRef.current = null
+    pendingAgencyCommandRef.current = null
+    pendingAgencyStimulusAckRef.current = null
+    pendingAgencyAudioReceiptRef.current = null
     pendingCeremonyToneAckRef.current = null
     pendingBlindStimulusAckRef.current = null
     discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
@@ -1073,6 +1181,10 @@ export default function RetroBlasterII() {
     lastSoulDatasetRef.current = ''
     pendingCeremonyToneAckRef.current = null
     pendingBlindStimulusAckRef.current = null
+    pendingAgencyCommandRef.current = null
+    pendingAgencyStimulusAckRef.current = null
+    pendingAgencyAudioReceiptRef.current = null
+    pendingAnswerRef.current = null
     discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
     clearRetroAudioReceipt(canvasRef.current)
     pianoObservationIdRef.current = 0
@@ -1155,6 +1267,9 @@ export default function RetroBlasterII() {
     pendingCeremonyToneAckRef.current = null
     pendingAnswerRef.current = null
     pendingBlindStimulusAckRef.current = null
+    pendingAgencyCommandRef.current = null
+    pendingAgencyStimulusAckRef.current = null
+    pendingAgencyAudioReceiptRef.current = null
     discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
     clearRetroAudioReceipt(canvasRef.current)
     if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
@@ -1231,7 +1346,8 @@ export default function RetroBlasterII() {
     return () => window.removeEventListener('keydown', onReadinessKey)
   }, [phase, inputMode, answerEarReadiness])
 
-  const handleInsertCoin = useCallback(() => {
+  const handleInsertCoin = useCallback((playStyle: RetroPlayStyle = 'classic') => {
+    playStyleRef.current = playStyle
     let seen = false
     try { seen = localStorage.getItem(TUTORIAL_KEY) === '1' } catch {}
     if (seen) enterReadiness()
@@ -1471,6 +1587,18 @@ export default function RetroBlasterII() {
   const replayActiveNote = useCallback(() => {
     const gs = stateRef.current
     if (!gs || gs.phase !== 'playing') return
+    if (gs.playStyle === 'agency-prototype' && gs.agency) {
+      if (!visibilityActiveRef.current || !focusActiveRef.current ||
+          gs.agency.stage === 'charged' || gs.agency.stage === 'resolved' || pendingAgencyCommandRef.current) return
+      pendingAgencyCommandRef.current = {
+        kind: 'replay',
+        gameId: gs.gameId,
+        encounterId: gs.agency.encounterId,
+        promptId: gs.agency.prompt.promptId,
+        cueAttemptId: gs.agency.prompt.cueAttemptId,
+      }
+      return
+    }
     const attack = gs.activeAttack
     if (!visibilityActiveRef.current || !focusActiveRef.current ||
         attack?.phase !== 'outbound' || attack.outcome !== null || attack.cuePolicy === 'blind' ||
@@ -1493,6 +1621,18 @@ export default function RetroBlasterII() {
 
   const revealFullCueHelp = useCallback(() => {
     const gs = stateRef.current
+    if (gs?.playStyle === 'agency-prototype' && gs.agency) {
+      if (!visibilityActiveRef.current || !focusActiveRef.current ||
+          gs.agency.stage === 'charged' || gs.agency.stage === 'resolved' || pendingAgencyCommandRef.current) return
+      pendingAgencyCommandRef.current = {
+        kind: 'guide',
+        gameId: gs.gameId,
+        encounterId: gs.agency.encounterId,
+        promptId: gs.agency.prompt.promptId,
+        cueAttemptId: gs.agency.prompt.cueAttemptId,
+      }
+      return
+    }
     const attack = gs?.activeAttack
     if (!gs || !attack || !requestFullCueHelp(gs, attack.attackId)) return
     flushSync(() => setDisplayView(toViewState(gs, inputModeRef.current, colorHintsRef.current)))
@@ -1502,6 +1642,21 @@ export default function RetroBlasterII() {
 
   const processHit = useCallback((answeredNote: string) => {
     const gs = stateRef.current
+    if (gs?.playStyle === 'agency-prototype' && gs.agency) {
+      if (inputModeRef.current !== 'click' || !visibilityActiveRef.current || !focusActiveRef.current ||
+          gs.agency.stage !== 'recognizing' || pendingAgencyCommandRef.current ||
+          !AGENCY_NOTES.includes(answeredNote as AgencyNote)) return
+      pendingAgencyCommandRef.current = {
+        kind: 'answer',
+        gameId: gs.gameId,
+        encounterId: gs.agency.encounterId,
+        promptId: gs.agency.prompt.promptId,
+        cueAttemptId: gs.agency.prompt.cueAttemptId,
+        answeredNote: answeredNote as AgencyNote,
+        inputMode: 'click',
+      }
+      return
+    }
     const attack = gs?.activeAttack
     if (!gs || gs.phase !== 'playing' || inputModeRef.current !== 'click' || pendingAnswerRef.current ||
         !visibilityActiveRef.current || !focusActiveRef.current ||
@@ -1512,6 +1667,35 @@ export default function RetroBlasterII() {
       gameId: gs.gameId,
       alienId: attack.alienId,
       attackId: attack.attackId,
+    }
+  }, [])
+
+  const spendAgencyCharge = useCallback((action: AgencyActionKind) => {
+    const gs = stateRef.current
+    const agency = gs?.agency
+    if (!gs || gs.playStyle !== 'agency-prototype' || !agency || agency.stage !== 'charged' ||
+        !agency.charge || !agency.decisionId || pendingAgencyCommandRef.current ||
+        !visibilityActiveRef.current || !focusActiveRef.current) return
+    pendingAgencyCommandRef.current = {
+      kind: 'spend',
+      gameId: gs.gameId,
+      encounterId: agency.encounterId,
+      decisionId: agency.decisionId,
+      chargeId: agency.charge.chargeId,
+      action,
+    }
+  }, [])
+
+  const continueAgencyEncounter = useCallback(() => {
+    const gs = stateRef.current
+    const agency = gs?.agency
+    if (!gs || gs.playStyle !== 'agency-prototype' || !agency || agency.stage !== 'resolved' ||
+        gs.cityHealth <= 0 || pendingAgencyCommandRef.current ||
+        !visibilityActiveRef.current || !focusActiveRef.current) return
+    pendingAgencyCommandRef.current = {
+      kind: 'continue',
+      gameId: gs.gameId,
+      encounterId: agency.encounterId,
     }
   }, [])
 
@@ -1674,10 +1858,15 @@ export default function RetroBlasterII() {
             </>
           )}
         </section>
-        <button onClick={handleInsertCoin}
+        <button onClick={() => handleInsertCoin('classic')}
           className="min-h-14 px-10 py-3 text-lg font-bold tracking-widest transition-all active:scale-95"
           style={{ background: '#3FBFB5', color: '#000', border: '2px solid #5dddd3', boxShadow: '0 0 24px rgba(60,191,181,0.4)' }}>
           INSERT COIN - START
+        </button>
+        <button onClick={() => handleInsertCoin('agency-prototype')}
+          className="mt-3 min-h-14 border-2 border-fuchsia-300 bg-fuchsia-300/10 px-6 py-3 text-sm font-black tracking-widest text-fuchsia-100 transition-all active:scale-95"
+          aria-label="Start tactical encounter C slash A prototype">
+          TACTICAL ENCOUNTER — C/A PROTOTYPE
         </button>
         <button onClick={() => { try { localStorage.removeItem(TUTORIAL_KEY) } catch {}; setPhase('tutorial') }}
           className="mt-4 min-h-11 px-4 text-sm text-gray-300 hover:text-white tracking-wider">
@@ -1692,6 +1881,7 @@ export default function RetroBlasterII() {
   }
 
   if (phase === 'tutorial') {
+    const agencyTutorial = playStyleRef.current === 'agency-prototype'
     return (
       <div className="fixed inset-0 bg-black flex flex-col items-center justify-center px-6 overflow-y-auto py-8"
         style={{ fontFamily: 'monospace' }}>
@@ -1704,15 +1894,25 @@ export default function RetroBlasterII() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">👾</div>
             <div>
-              <div className="text-base text-[#3FBFB5] font-bold">One active alien shows a glowing ?</div>
-              <div className="text-sm text-gray-300">That alien sends the target note. Ignore the other formation ships until a new target becomes active.</div>
+              <div className="text-base text-[#3FBFB5] font-bold">
+                {agencyTutorial ? 'Three ships form one tactical encounter' : 'One active alien shows a glowing ?'}
+              </div>
+              <div className="text-sm text-gray-300">
+                {agencyTutorial
+                  ? 'The encounter shows tactical roles, but the C/A cue stays hidden until you listen or ask for guided help.'
+                  : 'That alien sends the target note. Ignore the other formation ships until a new target becomes active.'}
+              </div>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <div className="text-2xl">🔊</div>
             <div>
-              <div className="text-base text-yellow-300 font-bold">Listen, answer, fire</div>
-              <div className="text-sm text-gray-300">{inputMode === 'mic' ? 'Hear the active alien, then sing and hold the same pitch.' : 'Hear the active alien, then press its number key or tap its note button.'} Replay is always available before you answer.</div>
+              <div className="text-base text-yellow-300 font-bold">{agencyTutorial ? 'Listen, answer, choose' : 'Listen, answer, fire'}</div>
+              <div className="text-sm text-gray-300">
+                {agencyTutorial
+                  ? `${inputMode === 'mic' ? 'Hear the hidden C/A cue, then sing and hold it steadily.' : 'Hear the hidden C/A cue, then press C or A.'} A correct answer earns one charge; then choose INTERCEPT or CHAIN BREAK. Replay is always available.`
+                  : `${inputMode === 'mic' ? 'Hear the active alien, then sing and hold the same pitch.' : 'Hear the active alien, then press its number key or tap its note button.'} Replay is always available before you answer.`}
+              </div>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -1741,15 +1941,23 @@ export default function RetroBlasterII() {
           <div className="flex items-start gap-3">
             <div className="text-2xl">🐢</div>
             <div>
-              <div className="text-base text-gray-100 font-bold">The game finds a comfortable pace</div>
-              <div className="text-sm text-gray-300">Four untimed C/A signals choose a provisional pace. EASY uses it; TRUE PLAY goes one level hotter. Two early misses are protected and can slow the run automatically.</div>
+              <div className="text-base text-gray-100 font-bold">{agencyTutorial ? 'The encounter has no vocal deadline' : 'The game finds a comfortable pace'}</div>
+              <div className="text-sm text-gray-300">
+                {agencyTutorial
+                  ? 'Take an unhurried healthy hold. Wrong or interrupted attempts open assisted recharge; they do not cost a shield.'
+                  : 'Four untimed C/A signals choose a provisional pace. EASY uses it; TRUE PLAY goes one level hotter. Two early misses are protected and can slow the run automatically.'}
+              </div>
             </div>
           </div>
           <div className="flex items-start gap-3">
             <div className="text-2xl">🎯</div>
             <div>
-              <div className="text-base text-cyan-300 font-bold">Answer only the active target</div>
-              <div className="text-sm text-gray-300">The cannon aims automatically after your answer. The alien marked <span className="font-black text-yellow-200">?</span> is the one you are answering now.</div>
+              <div className="text-base text-cyan-300 font-bold">{agencyTutorial ? 'Your charge is a tactical choice' : 'Answer only the active target'}</div>
+              <div className="text-sm text-gray-300">
+                {agencyTutorial
+                  ? 'INTERCEPT earns +100 with no shield loss. CHAIN BREAK earns +250 and costs one shield. NEXT ENCOUNTER keeps your score and remaining shields.'
+                  : <>The cannon aims automatically after your answer. The alien marked <span className="font-black text-yellow-200">?</span> is the one you are answering now.</>}
+              </div>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -1767,6 +1975,9 @@ export default function RetroBlasterII() {
         </button>
         <button onClick={() => {
           abortCurriculumSession()
+          pendingAgencyCommandRef.current = null
+          pendingAgencyStimulusAckRef.current = null
+          pendingAgencyAudioReceiptRef.current = null
           pendingBlindStimulusAckRef.current = null
           discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
           clearRetroAudioReceipt(canvasRef.current)
@@ -2046,6 +2257,9 @@ export default function RetroBlasterII() {
           </button>
           <button onClick={() => {
             abortCurriculumSession()
+            pendingAgencyCommandRef.current = null
+            pendingAgencyStimulusAckRef.current = null
+            pendingAgencyAudioReceiptRef.current = null
             pendingBlindStimulusAckRef.current = null
             discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
             clearRetroAudioReceipt(canvasRef.current)
@@ -2063,12 +2277,14 @@ export default function RetroBlasterII() {
   const identityMaskActive = displayView?.identityMaskActive === true
   const answerMaskActive = displayView?.answerMaskActive === true
   const supportMode = displayView?.supportMode ?? 'guided'
-  const showTargetIdentity = colorHints && !identityMaskActive && !answerMaskActive
+  const agencyView = displayView?.agency ?? null
+  const agencyMode = agencyView !== null
+  const showTargetIdentity = !agencyMode && colorHints && !identityMaskActive && !answerMaskActive
   const activeAlien = displayView?.aliens[displayView.spotlightIdx]
   const activeNoteName = showTargetIdentity && activeAlien?.alive ? activeAlien.note.replace(/\d/, '') : null
   const matchProgress = displayView?.charge.fraction ?? 0
   const matchTargetNote = displayView?.charge.targetNote ?? null
-  const displayUnlocked = displayView?.hud.unlockedNotes ?? []
+  const displayUnlocked = agencyMode ? [...AGENCY_NOTES] : (displayView?.hud.unlockedNotes ?? [])
   const liveChoiceNames = displayUnlocked
     .map((note, index) => `${note.replace(/\d/, '')} [${index + 1}]`)
     .join(' / ')
@@ -2076,13 +2292,29 @@ export default function RetroBlasterII() {
   const isCeremony = displayView?.phase === 'ceremony' && activeCeremony !== null
   const activeLane = inputMode === 'mic' ? 'voice' : 'ear'
   const activeAttack = displayView?.activeAttack
-  const responseOpen = activeAttack?.phase === 'outbound' &&
-    activeAttack.outcome === null && activeAttack.demandAtMs !== null
+  const responseOpen = agencyMode
+    ? agencyView.stage === 'recognizing' && inputMode === 'click'
+    : activeAttack?.phase === 'outbound' &&
+      activeAttack.outcome === null && activeAttack.demandAtMs !== null
   const blindResponseOpen = activeAttack?.cuePolicy === 'blind' && activeAttack.outcome === null &&
     (activeAttack.phase === 'awaiting-stimulus' || responseOpen)
-  const replayLocked = activeLane === 'ear' && identityMaskActive
-  const cabinetUnit = activeLane === 'voice' ? 'VOICE DEFENSE UNIT' : 'EAR DEFENSE UNIT'
-  const instructionCopy = isCeremony
+  const replayLocked = !agencyMode && activeLane === 'ear' && identityMaskActive
+  const cabinetUnit = agencyMode
+    ? 'TACTICAL AGENCY PROTOTYPE'
+    : activeLane === 'voice' ? 'VOICE DEFENSE UNIT' : 'EAR DEFENSE UNIT'
+  const instructionCopy = agencyMode
+    ? agencyView.stage === 'charged'
+      ? 'CHARGE READY → CHOOSE INTERCEPT OR CHAIN BREAK'
+      : agencyView.stage === 'resolved'
+        ? 'ENCOUNTER RESOLVED → NEXT ENCOUNTER KEEPS SCORE AND SHIELDS'
+        : agencyView.stage === 'recognizing'
+          ? agencyView.prompt.note === '?'
+            ? 'CUE HEARD → ANSWER C OR A'
+            : `GUIDED RECHARGE → ANSWER ${agencyView.prompt.note.replace(/\d/, '')}`
+          : agencyView.stage === 'awaiting-replay'
+            ? 'REPLAY THE CUE OR USE GUIDED RECHARGE'
+            : 'TACTICAL ENCOUNTER → LISTEN FOR THE NEXT CUE'
+    : isCeremony
     ? 'NEW SIGNAL → REFERENCE INTRODUCTION ONLY → NOT SCORED'
     : answerMaskActive
       ? responseOpen
@@ -2103,7 +2335,19 @@ export default function RetroBlasterII() {
             ? `ANSWER NOW → PRESS ${activeNoteName} [${displayUnlocked.findIndex(note => note.replace(/\d/, '') === activeNoteName) + 1}]`
             : 'ANSWER NOW → PRESS THE MATCHING NOTE (OR TAP ITS BUTTON)'
           : 'STAND BY → LISTEN FOR THE NEXT TARGET SIGNAL'
-  const helperCopy = !isCeremony && answerMaskActive
+  const helperCopy = agencyMode
+    ? agencyView.stage === 'charged'
+      ? 'INTERCEPT PRESERVES ALL SHIELDS · CHAIN BREAK DESTROYS MORE SHIPS FOR ONE SHIELD'
+      : agencyView.stage === 'resolved'
+        ? 'CHOOSE NEXT ENCOUNTER TO KEEP SCORE AND SHIELDS, OR QUIT FOR A NEW RUN.'
+        : agencyView.stage === 'recognizing'
+          ? inputMode === 'mic'
+            ? 'VOICE MATCHING IS UNHURRIED · HOLD A HEALTHY FRESH CUE FOR 300 MS'
+            : 'ONE CLICK ANSWER · WRONG FIRST TRY OPENS ASSISTED RECHARGE WITHOUT A SHIELD LOSS'
+          : agencyView.stage === 'awaiting-replay'
+            ? 'GUIDED RECHARGE REVEALS THE NOTE AND NEVER WRITES A GRADE.'
+            : 'ONE CUE · NO VOICE TIMER · GUIDED RECHARGE IS ALWAYS AVAILABLE'
+    : !isCeremony && answerMaskActive
     ? 'THE PLAYFIELD IS HIDDEN ON PURPOSE · EVERY NAMED CHOICE BELOW IS LIVE · FULL HELP REVEALS NORMAL GUIDANCE'
     : !isCeremony && blindResponseOpen
     ? 'FORMATION IDENTITIES HIDDEN · REPLAY LOCKED UNTIL ANSWER'
@@ -2111,14 +2355,25 @@ export default function RetroBlasterII() {
       ? activeLane === 'voice'
         ? 'ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE REFERENCE'
         : 'ACTIVE ALIEN SHOWS ? · SPACE REPLAYS THE NOTE'
-      : null
+       : null
   const ceremonyStatus = ceremonyMessage || (
     activeCeremony?.toneStatus === 'acknowledged'
       ? 'REFERENCE SENT - NEXT WAVE READY.'
       : activeCeremony?.toneStatus === 'blocked'
         ? 'SIGNAL PATH NOT READY - RETRY SIGNAL.'
-        : 'REFERENCE SIGNAL PENDING...'
+         : 'REFERENCE SIGNAL PENDING...'
   )
+  const agencyThreatAlien = agencyMode && agencyView
+    ? displayView?.aliens.find(alien => alien.alienId === agencyView.threatAlienId)
+    : undefined
+  const agencyBlockerAliens = agencyMode && agencyView
+    ? agencyView.blockerAlienIds.map(alienId => displayView?.aliens.find(alien => alien.alienId === alienId))
+    : []
+  const agencyResolution = agencyView?.resolution
+  const agencyBeamLasers = agencyMode && agencyResolution && displayView
+    ? displayView.lasers.filter(laser => laser.active && laser.targetAlienId !== null &&
+      agencyResolution.destroyedAlienIds.includes(laser.targetAlienId))
+    : []
 
   return (
     <div className="fixed inset-0 min-w-0 flex flex-col items-center justify-start pt-3 px-3 overflow-x-hidden overflow-y-auto"
@@ -2152,14 +2407,16 @@ export default function RetroBlasterII() {
           </div>
         </div>
         <div className="mb-2 text-sm font-bold text-emerald-200" data-retro-active-pace>
-          PACE {activePace.toUpperCase()} · {retroPaceConfig(activePace).responseWindowMs / 1000}s ANSWER WINDOW
+          {agencyMode
+            ? 'TACTICAL ENCOUNTER · NO VOICE TIMER'
+            : `PACE ${activePace.toUpperCase()} · ${retroPaceConfig(activePace).responseWindowMs / 1000}s ANSWER WINDOW`}
         </div>
         <div className="flex justify-center gap-2 flex-wrap text-sm">
           {displayUnlocked.map((note, i) => {
             const hue = NOTE_COLORS[note]?.hue ?? 0
             const isActiveNote = showTargetIdentity && activeNoteName === note.replace(/\d/, '')
             const noteLabel = `${note.replace(/\d/, '')}=${i + 1}`
-            const neutralAnswerChoice = answerMaskActive
+            const neutralAnswerChoice = answerMaskActive || agencyMode
             const responseStyle = {
               borderColor: !neutralAnswerChoice && colorHints ? `hsl(${hue}, 70%, 55%)` : '#607080',
               background: isActiveNote
@@ -2193,6 +2450,34 @@ export default function RetroBlasterII() {
             {helperCopy}
           </div>
         )}
+        {agencyMode && agencyView.stage === 'charged' && (
+          <div className="mt-3 flex flex-wrap justify-center gap-2" data-retro-agency-actions aria-label="Tactical charge actions">
+            <button type="button" onClick={() => spendAgencyCharge('intercept')}
+              className="min-h-12 border-2 border-emerald-300 bg-emerald-300/10 px-4 py-2 text-sm font-black text-emerald-100 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              aria-label="Intercept for 100 points and lose no shields">
+              INTERCEPT · +100 · NO SHIELD LOSS
+            </button>
+            <button type="button" onClick={() => spendAgencyCharge('chain-break')}
+              className="min-h-12 border-2 border-fuchsia-300 bg-fuchsia-300/10 px-4 py-2 text-sm font-black text-fuchsia-100 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              aria-label="Chain break for 250 points and lose one shield">
+              CHAIN BREAK · +250 · -1 SHIELD
+            </button>
+          </div>
+        )}
+        {agencyMode && agencyView.stage === 'resolved' && (displayView?.hud.shields ?? 0) > 0 && (
+          <button type="button" onClick={continueAgencyEncounter}
+            className="mt-3 min-h-12 border-2 border-cyan-300 bg-cyan-300/10 px-5 py-2 text-sm font-black text-cyan-100 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            aria-label="Start the next encounter while keeping score and shields">
+            NEXT ENCOUNTER · KEEP SCORE / SHIELDS
+          </button>
+        )}
+        {agencyMode && agencyView.stage !== 'charged' && agencyView.stage !== 'resolved' && (
+          <button type="button" onClick={revealFullCueHelp}
+            className="mt-3 min-h-11 border border-cyan-200 bg-cyan-200/10 px-4 py-2 text-xs font-black tracking-widest text-cyan-100 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            aria-label="Guided recharge reveals the C or A note without grading">
+            GUIDED RECHARGE · REVEAL C/A · NO GRADE
+          </button>
+        )}
         {displayView?.wrongMessage && (
           <div className="mt-2 min-h-11 border border-red-300/50 bg-red-300/10 px-3 py-2 text-base font-black text-red-100"
             role="status" aria-live="assertive" data-retro-feedback>{displayView.wrongMessage}</div>
@@ -2210,12 +2495,70 @@ export default function RetroBlasterII() {
           <span className="text-fuchsia-300">RETRO BLASTER</span>
           <span className="text-cyan-300" data-retro-cabinet-unit>{cabinetUnit}</span>
         </div>
-        <div className="relative overflow-hidden border border-cyan-300/30 bg-black"
-          style={{ boxShadow: 'inset 0 0 32px rgba(0,0,0,0.82)' }}>
-          <canvas ref={bindCanvasRef} width={W} height={H} onClick={handleCanvasClick}
+         <div className="relative overflow-hidden border border-cyan-300/30 bg-black"
+           style={{ boxShadow: 'inset 0 0 32px rgba(0,0,0,0.82)' }}>
+           <canvas ref={bindCanvasRef} width={W} height={H} onClick={handleCanvasClick}
             data-retro-canvas-answer={answerMaskActive ? 'inert' : 'active'}
-            className="block w-full"
-            style={{ imageRendering: 'pixelated', cursor: 'pointer', aspectRatio: `${W} / ${H}`, maxHeight: 'calc(100vh - 210px)' }} />
+             className="block w-full"
+             style={{ imageRendering: 'pixelated', cursor: 'pointer', aspectRatio: `${W} / ${H}`, maxHeight: 'calc(100vh - 210px)' }} />
+            {agencyMode && agencyView && (
+              <div className="pointer-events-none absolute inset-0 z-10" data-retro-agency-tactical-overlay aria-hidden="true">
+                {agencyBeamLasers.map((laser, index) => {
+                  const target = displayView?.aliens.find(alien => alien.alienId === laser.targetAlienId)
+                  if (!target) return null
+                  const cannonX = displayView?.playerX ?? W / 2
+                  const cannonY = PLAYER_Y
+                  const targetX = target.x + ALIEN_W / 2
+                  const targetY = target.y + ALIEN_H / 2
+                  const dx = targetX - cannonX
+                  const dy = targetY - cannonY
+                  const length = Math.max(1, Math.hypot(dx, dy))
+                  const angle = Math.atan2(dy, dx) - Math.PI / 2
+                  return (
+                    <div key={`${laser.targetAlienId}:${index}`} data-retro-agency-cannon-beam
+                      className="absolute top-0 left-0 origin-top rounded-full"
+                      style={{
+                        left: `${(cannonX / W) * 100}%`,
+                        top: `${(cannonY / H) * 100}%`,
+                        width: reducedMotion ? '3px' : '4px',
+                        height: `${(length / H) * 100}%`,
+                        transform: `translateX(-50%) rotate(${angle}rad)`,
+                        background: reducedMotion ? '#c8f5ff' : 'linear-gradient(#fff, #67e8f9, #a78bfa)',
+                        boxShadow: reducedMotion ? '0 0 7px #c8f5ff' : '0 0 8px #67e8f9, 0 0 15px rgba(167,139,250,0.7)',
+                        opacity: 0.9,
+                        transition: reducedMotion ? 'none' : 'opacity 80ms ease-out',
+                      }} />
+                  )
+                })}
+                {[
+                  { alien: agencyThreatAlien, label: 'SCOUT', color: '#fbbf24' },
+                  ...agencyBlockerAliens.map(alien => ({ alien, label: 'LINKED', color: '#c084fc' })),
+                ].filter(({ alien }) => Boolean(alien?.alive)).map(({ alien, label, color }) => alien && (
+                 <div key={alien.alienId} className="absolute border-2"
+                   style={{
+                     left: `${(alien.x / W) * 100}%`,
+                     top: `${(alien.y / H) * 100}%`,
+                     width: `${(ALIEN_W / W) * 100}%`,
+                     height: `${(ALIEN_H / H) * 100}%`,
+                     borderColor: color,
+                     opacity: alien.alive ? 0.78 : 0.25,
+                   }}>
+                   <span className="absolute -top-4 left-0 whitespace-nowrap text-[8px] font-black tracking-widest" style={{ color }}>{label}</span>
+                 </div>
+               ))}
+               {matchProgress > 0 && (
+                 <div className="absolute bottom-[7%] left-1/2 -translate-x-1/2" data-retro-agency-charge
+                   aria-label={matchProgress >= 1 ? 'Agency charge ready' : 'Agency charge accumulating'}>
+                   <div className="text-center text-[9px] font-black tracking-[0.22em]" style={{ color: matchProgress >= 1 ? '#4ade80' : '#fbbf24' }}>
+                     {matchProgress >= 1 ? 'CHARGE READY' : 'CHARGING'}
+                   </div>
+                   <div className="mt-1 h-2 w-28 overflow-hidden border border-white/30 bg-black/80">
+                     <div className="h-full" style={{ width: `${matchProgress * 100}%`, background: matchProgress >= 1 ? '#4ade80' : '#fbbf24' }} />
+                   </div>
+                 </div>
+               )}
+             </div>
+           )}
           {answerMaskActive && (
             <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center border border-cyan-200/30 bg-[#02050d] text-center"
               data-retro-safe-try-scrim aria-hidden="true">
@@ -2275,7 +2618,7 @@ export default function RetroBlasterII() {
           )}
         </div>
       </div>
-      {!isCeremony && inputMode === 'mic' && matchProgress > 0 && (
+      {!isCeremony && !agencyMode && inputMode === 'mic' && matchProgress > 0 && (
         <div className="mt-2 w-full max-w-[960px] flex items-center justify-center gap-3"
           data-retro-vocal-meter
           style={{ fontFamily: 'monospace' }}>
@@ -2332,6 +2675,9 @@ export default function RetroBlasterII() {
           abortCurriculumSession()
           if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0 }
           if (inputMode === 'mic') stopListening()
+          pendingAgencyCommandRef.current = null
+          pendingAgencyStimulusAckRef.current = null
+          pendingAgencyAudioReceiptRef.current = null
           pendingBlindStimulusAckRef.current = null
           discardPendingSafeTryAudioReceipt(pendingSafeTryAudioReceiptRef)
           clearRetroAudioReceipt(canvasRef.current)

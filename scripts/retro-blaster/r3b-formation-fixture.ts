@@ -388,8 +388,31 @@ function validateStateMachineAndPacing(): void {
 
 async function validateShellAudioContract(): Promise<void> {
   const shell = await readFile(resolve(root, 'src/components/PitchDefender/RetroBlasterII.tsx'), 'utf8')
-  assert.equal((shell.match(/playPianoNote\(/g) ?? []).length, 7,
-    'pitched playback must remain limited to demand, replay/readiness, guarded R8b/R8c sites, and the one tutorial/placement coaching dispatcher')
+  const totalPianoCalls = (shell.match(/playPianoNote\(/g) ?? []).length
+  assert.equal(totalPianoCalls, 8,
+    'pitched playback must remain limited to the seven classic sites plus one guarded agency stimulus site')
+  const agencyDispatchStart = shell.indexOf('const dispatchAgencyStimulus = ')
+  const agencyDispatchEnd = shell.indexOf('\n  }, [writeAudioReceipt])', agencyDispatchStart)
+  assert.ok(agencyDispatchStart >= 0 && agencyDispatchEnd > agencyDispatchStart,
+    'agency stimulus dispatcher must remain an isolated callback')
+  const agencyDispatchBlock = shell.slice(agencyDispatchStart, agencyDispatchEnd)
+  const agencyPianoCalls = (agencyDispatchBlock.match(/playPianoNote\(/g) ?? []).length
+  assert.equal(agencyPianoCalls, 1,
+    'the isolated agency dispatch block must contain exactly one piano call')
+  assert.equal(totalPianoCalls - agencyPianoCalls, 7,
+    'the seven classic piano sites must remain unchanged in count')
+  assert.match(agencyDispatchBlock,
+    /const exactLiveTuple = Boolean\(cur && agency && request &&[\s\S]*cur\.playStyle === 'agency-prototype'[\s\S]*request\.requestedAtDirectorClockMs === event\.requestedAtDirectorClockMs/,
+    'agency playback must require the live agency request identity')
+  assert.match(agencyDispatchBlock,
+    /const active = document\.visibilityState === 'visible' && document\.hasFocus\(\)/,
+    'agency playback must require a visible focused document')
+  assert.match(agencyDispatchBlock,
+    /if \(exactLiveTuple && active && readiness\.sampleReady && readiness\.contextState === 'running'\) \{\s*dispatched = playPianoNote\(event\.note, \{ exact: true, durationMs: 600 \}\)/,
+    'agency playback must require sample/context readiness and exact 600ms playback')
+  const mutatedAgencyDispatchBlock = `${agencyDispatchBlock}\n      playPianoNote(event.note)`
+  assert.notEqual((mutatedAgencyDispatchBlock.match(/playPianoNote\(/g) ?? []).length, 1,
+    'an extra unprotected agency piano call must fail the one-call contract')
   assert.match(shell, /getPianoReadiness\(RADIO_CHECK_NOTE\)/,
     'R8a output dispatch must be guarded by the ratified readiness observer')
   assert.match(shell, /This checks audio and controls, never your musical ability/,

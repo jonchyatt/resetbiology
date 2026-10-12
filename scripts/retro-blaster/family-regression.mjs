@@ -22,6 +22,7 @@ const cases = [
   ['R9a curriculum', [tsx, 'scripts/retro-blaster/r9a-curriculum-fixture.ts', '--green', 'data/retro-blaster-rework/runtime-logs/r9a-green-local/family-fixture-result.json']],
   ['R10 first-player mastery', [tsx, 'scripts/retro-blaster/r10-first-player-fixture.ts']],
   ['R8c signal check', [tsx, 'scripts/retro-blaster/r8c-signal-check-fixture.ts', '--green', 'data/retro-blaster-rework/runtime-logs/r8c-green-local/family-fixture-result.json']],
+  ['Agency encounter', [tsx, 'scripts/retro-blaster/agency-encounter-fixture.ts']],
 ]
 
 const rows = []
