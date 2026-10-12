@@ -55,6 +55,9 @@ function getKey(): Buffer | null {
   }
 }
 
+/** True when VAULT_TOKEN_KEY is present and decodes to 32 bytes (Wave J4.3). */
+export const isVaultKeyConfigured = () => !!getKey()
+
 /**
  * Test if a string looks like our encrypted format (vs legacy plaintext).
  * Heuristic: base64url-decoded buffer starts with our VERSION byte AND is
