@@ -28,16 +28,33 @@ async function attempts(page: Page) {
   return Number(score?.match(/\(\d+\/(\d+)\)/)?.[1] ?? -1)
 }
 
-async function say(page: Page, resultIndex: number, words: string) {
-  await page.evaluate(({ resultIndex, words }) => {
+async function say(page: Page, resultIndex: number, words: string, isFinal = true) {
+  await page.evaluate(({ resultIndex, words, isFinal }) => {
     const sessions = (window as unknown as { __visionRecognitionSessions: Array<{ onresult: ((event: unknown) => void) | null }> }).__visionRecognitionSessions
     const results = Array.from({ length: resultIndex + 1 }, (_, index) => ({
-      isFinal: true,
+      isFinal,
       0: { transcript: index === resultIndex ? words : 'up' },
     }))
     sessions.at(-1)?.onresult?.({ resultIndex, results })
-  }, { resultIndex, words })
+  }, { resultIndex, words, isFinal })
 }
+
+test('four live direction words score one at a time before any final transcript', async ({ page }) => {
+  await installFakeRecognition(page)
+  await page.goto('/vision-training')
+  await page.getByRole('button', { name: 'Focus Training' }).click()
+  await page.getByRole('button', { name: 'E →' }).click()
+  await page.getByRole('button', { name: 'Start Training' }).click()
+  await page.getByRole('button', { name: 'Voice OFF' }).click()
+
+  for (const [index, phrase] of ['right', 'right left', 'right left up', 'right left up down'].entries()) {
+    await say(page, 0, phrase, false)
+    await expect.poll(() => attempts(page), { timeout: 1400 }).toBe(index + 1)
+    if (index < 3) await page.waitForTimeout(850)
+  }
+  await say(page, 0, 'right left up down')
+  await expect.poll(() => attempts(page), { timeout: 1000 }).toBe(4)
+})
 
 test('direction buttons and continuous voice share the chart without losing later words', async ({ page }) => {
   await installFakeRecognition(page)

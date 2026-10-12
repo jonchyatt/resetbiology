@@ -1,25 +1,26 @@
 export type SpokenDirection = 'up' | 'down' | 'left' | 'right'
 
-/** Emits a word once its prefix survives an interim revision, or on the final result. */
+/** Emits exact direction words from live hypotheses without waiting for utterance finalization. */
 export class StableDirectionWords {
-  private previous = new Map<number, string[]>()
   private emitted = new Map<number, number>()
 
   read(resultIndex: number, transcript: string, isFinal: boolean): SpokenDirection[] {
     const words = transcript.toLowerCase().match(/[a-z]+/g) ?? []
-    const prior = this.previous.get(resultIndex) ?? []
-    let stableCount = isFinal ? words.length : 0
-    if (!isFinal) {
-      while (stableCount < prior.length && words[stableCount] === prior[stableCount]) stableCount++
-    }
+    const isDirection = (word: string): word is SpokenDirection =>
+      word === 'up' || word === 'down' || word === 'left' || word === 'right'
+    // An unfinished non-command tail can still become a direction ("do" -> "down").
+    // ponytail: Exact interim direction words score immediately; if live corrections
+    // prove frequent, add a measured acoustic confidence gate at this seam.
+    const last = words.at(-1)
+    const readyCount = !isFinal && last && !isDirection(last) && !/\s$/.test(transcript)
+      ? words.length - 1 : words.length
 
     const output: SpokenDirection[] = []
-    for (let index = this.emitted.get(resultIndex) ?? 0; index < stableCount; index++) {
+    for (let index = this.emitted.get(resultIndex) ?? 0; index < readyCount; index++) {
       const word = words[index]
-      if (word === 'up' || word === 'down' || word === 'left' || word === 'right') output.push(word)
+      if (isDirection(word)) output.push(word)
     }
-    this.previous.set(resultIndex, words)
-    this.emitted.set(resultIndex, Math.max(this.emitted.get(resultIndex) ?? 0, stableCount))
+    this.emitted.set(resultIndex, Math.max(this.emitted.get(resultIndex) ?? 0, readyCount))
     return output
   }
 }
