@@ -10,7 +10,7 @@ import { localDayKey } from "@/lib/localDay"
 import { useToast } from "@/components/ui/Toast"
 
 const CONNECTED_CONFIRMATION_COPY =
-  "Your data lives in your Google Drive — we ship the app, you own the data. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
+  "A copy of your data now goes to your Google Drive, in a folder you own. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
 
 const SHOW_UNFINISHED_PROFILE = false // Wave J2.3: hidden until wired; see /admin Archive
 
@@ -531,7 +531,8 @@ function ProfilePageContent() {
                         <div className="flex-1">
                           <h4 className="font-bold text-white text-lg mb-1">Google Drive Sync</h4>
                           <p className="text-sm text-gray-300 mb-2">
-                            Automatically sync your daily journal entries, food photos, workout summaries, and progress reports to your Google Drive.
+                            {/* src: RULING-2026-10-11 Drive option A */}
+                            Optional. Keep your own copy of your journal, workouts, meals, doses and training sessions in Google Drive, plus progress photos.
                           </p>
                           {!driveConnected && (
                             <p className="text-xs text-primary-300 mb-4">
@@ -611,7 +612,7 @@ function ProfilePageContent() {
                           )}
 
                           <div className="mt-4 text-xs text-gray-400">
-                            <p className="mb-1">When connected, we'll sync to your Drive:</p>
+                            <p className="mb-1">When connected, we copy to your Drive:</p>
                             <ul className="list-disc list-inside space-y-0.5">
                               <li>📓 Daily journal entries</li>
                               <li>🏋️ Workout summaries</li>
@@ -622,7 +623,7 @@ function ProfilePageContent() {
                               <li>🧠 Memory (N-Back) scores</li>
                               <li>👤 Profile & preferences</li>
                             </ul>
-                            <p className="mt-2 text-gray-500">Your data stays on YOUR Drive - we just visit it.</p>
+                            <p className="mt-2 text-gray-500">Your account works the same with or without Drive. Files in your Drive stay yours.</p>
                           </div>
                         </div>
                       </div>

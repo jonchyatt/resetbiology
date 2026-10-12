@@ -2,20 +2,20 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Cloud, Lock, X } from "lucide-react"
+import { Cloud, X } from "lucide-react"
 import { useVaultStatus } from "@/hooks/useVaultStatus"
+import { isSnoozed, snooze } from "@/hooks/useVaultPrompt"
 
 const DISMISS_KEY = "vaultBannerDismissed"
 
 /**
- * Portal-level soft prompt for unconnected users.
- * Encourages users to connect their Google Drive Vault — the architectural
- * core of Reset Biology's data-sovereignty model.
+ * Portal-level invitation for unconnected users. Drive is optional (Jon
+ * ruling 2026-10-11): it adds a copy the member owns.
  *
  * Hides automatically when:
  *  - User is loading status
  *  - User is already connected
- *  - User dismissed in this session (sessionStorage)
+ *  - User dismissed it in the last 30 days (localStorage snooze)
  */
 export function VaultBanner() {
   const { loading, connected, error } = useVaultStatus()
@@ -23,13 +23,11 @@ export function VaultBanner() {
 
   useEffect(() => {
     if (typeof window === "undefined") return
-    setDismissed(sessionStorage.getItem(DISMISS_KEY) === "true")
+    setDismissed(isSnoozed(DISMISS_KEY))
   }, [])
 
   const handleDismiss = () => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem(DISMISS_KEY, "true")
-    }
+    if (typeof window !== "undefined") snooze(DISMISS_KEY)
     setDismissed(true)
   }
 
@@ -54,16 +52,15 @@ export function VaultBanner() {
 
         <div className="flex-1 text-center md:text-left">
           <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2 justify-center md:justify-start">
-            Set up your Reset Biology Vault
-            <Lock className="w-5 h-5 text-primary-300" aria-hidden="true" />
+            {/* src: RULING-2026-10-11 Drive option A */}
+            Keep your own copy in Google Drive
           </h3>
           <p className="text-gray-200 mb-1">
-            Reset Biology stores your tracking data on{" "}
-            <span className="text-primary-300 font-semibold">your own Google Drive</span> — you own it,
-            we don&apos;t keep copies.
+            Your data is saved in your Reset Biology account. Connect Google Drive to also keep a copy in{" "}
+            <span className="text-primary-300 font-semibold">a folder you own</span>.
           </p>
           <p className="text-sm text-gray-300">
-            Required for peptide tracking, dose reminders, and personalized voice coaches. ~30 seconds.
+            Adds progress photos, a copy you can open any time, and data you can take with you. Optional, about 30 seconds.
           </p>
         </div>
 

@@ -12,6 +12,9 @@ import {
   FolderOpen,
   ExternalLink,
   AlertCircle,
+  Camera,
+  Download,
+  MessageCircle,
 } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useVaultStatus } from "@/hooks/useVaultStatus"
@@ -30,8 +33,9 @@ const FOLDER_PREVIEW: Array<{ icon: string; label: string }> = [
 const PRINCIPLES: Array<{ icon: typeof Shield; title: string; body: string }> = [
   {
     icon: Shield,
-    title: "You own every byte",
-    body: "Your protocols, doses, sessions, and journal entries live in YOUR Google Drive. Reset Biology doesn't keep copies on our servers.",
+    // src: RULING-2026-10-11 Drive option A
+    title: "Your data, in your hands",
+    body: "Everything you log is saved in your Reset Biology account. Connecting Drive adds a copy in a folder you own: open it, download it, and keep it if you ever leave.",
   },
   {
     icon: Lock,
@@ -40,8 +44,33 @@ const PRINCIPLES: Array<{ icon: typeof Shield; title: string; body: string }> = 
   },
   {
     icon: HeartPulse,
-    title: "Required for tracking + reminders",
-    body: "Peptide protocols, dose schedules, push notifications, and personalized voice coaches all read from your Vault. Set it up once, then it just works.",
+    // src: RULING-2026-10-11 Drive option A
+    title: "Optional",
+    body: "Every tracker, protocol and reminder works without Drive. Connect it when you want the extras below.",
+  },
+]
+
+// src: RULING-2026-10-11 Drive option A — what connecting Drive adds (claims match FACT-SHEET §D and disconnect/route.ts)
+const DRIVE_ADDS: Array<{ icon: typeof Shield; title: string; body: string }> = [
+  {
+    icon: Camera,
+    title: "Progress photos",
+    body: "Save before-and-after photos straight to your own Drive. Photos live only there.",
+  },
+  {
+    icon: FolderOpen,
+    title: "Your data in your own hands",
+    body: "Your journal, workouts, meals, doses, breath, vision and memory sessions are copied to your Drive about every 5 minutes. Open or download them any time.",
+  },
+  {
+    icon: Download,
+    title: "Take it with you",
+    body: "Files in your Drive stay yours. Disconnecting stops new copies; it never deletes anything.",
+  },
+  {
+    icon: MessageCircle,
+    title: "Coaches that know your history",
+    body: "Voice coaches read your Drive copy to tailor their answers.",
   },
 ]
 
@@ -82,7 +111,7 @@ export function ConnectDriveSetup() {
       <div className="relative z-10">
         <PortalHeader
           section="Vault Setup"
-          subtitle="Sync your tracking data to your own Google Drive"
+          subtitle="Optional: keep your own copy in Google Drive"
           showPeptideInfo={false}
         />
 
@@ -93,14 +122,36 @@ export function ConnectDriveSetup() {
               <Cloud className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 text-shadow-lg">
-              {connected ? "Your Vault is connected" : "Set up your Reset Biology Vault"}
+              {connected ? "Your Vault is connected" : "Keep your own copy in Google Drive"}
             </h1>
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
               {connected
-                ? "All your tracking data syncs to your own Google Drive. You own it, you control it."
-                : "Reset Biology stores your tracking data on YOUR Google Drive — not on our servers."}
+                ? "A copy of your data now goes to your own Google Drive. You own it and control it."
+                : "Optional: keep your own copy of your Reset Biology data in Google Drive."}
             </p>
           </div>
+
+          {/* What connecting Drive adds (invitation, never a requirement) */}
+          {!connected && (
+            <div className="mb-8">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 text-center">
+                What connecting Drive adds
+              </h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {DRIVE_ADDS.map(({ icon: Icon, title, body }) => (
+                  <div key={title} className="card-hover-secondary">
+                    <div className="flex flex-col items-center text-center p-2">
+                      <div className="w-12 h-12 mb-3 bg-primary-500/20 rounded-full flex items-center justify-center">
+                        <Icon className="w-6 h-6 text-primary-300" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
+                      <p className="text-sm text-gray-300">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Status pills (post-OAuth feedback) */}
           {isJustConnected && connected && (
@@ -139,7 +190,7 @@ export function ConnectDriveSetup() {
                   You&apos;re all set!
                 </h2>
                 <p className="text-gray-300 mb-6 max-w-xl">
-                  Every protocol, dose, workout, meal, breath session, vision drill, and journal entry now syncs to your{" "}
+                  A copy of your protocols, doses, workouts, meals, breath sessions, vision drills and journal entries now goes to your{" "}
                   <span className="text-primary-300 font-semibold">Reset Biology Data</span> folder in Google Drive.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
