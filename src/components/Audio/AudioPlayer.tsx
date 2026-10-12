@@ -2,10 +2,10 @@
 
 import { useState, useRef, useEffect } from "react"
 import { Play, Pause, SkipBack, SkipForward, Volume2, Clock, BookOpen, Award } from "lucide-react"
-import type { MentalMasteryModule } from "@/types"
+import type { AudioLibraryEntry } from "@/data/audio-library"
 
 interface AudioPlayerProps {
-  module: MentalMasteryModule
+  module: AudioLibraryEntry
   onProgress?: (progress: number) => void
   onComplete?: () => void
 }

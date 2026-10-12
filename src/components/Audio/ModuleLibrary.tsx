@@ -5,16 +5,13 @@ import { Play, Lock, CheckCircle } from "lucide-react"
 import { AudioPlayer } from "./AudioPlayer"
 import { useToast } from "@/components/ui/Toast"
 import { useUser } from "@auth0/nextjs-auth0"
-import type { MentalMasteryModule } from "@/types"
-
-// released:false = admin-only preview (members never see it)
-type LibraryModule = MentalMasteryModule & { available: boolean; released: boolean }
+import { AUDIO_LIBRARY, type AudioLibraryEntry } from "@/data/audio-library"
 
 export function ModuleLibrary() {
   const toast = useToast()
   const { user } = useUser()
   const isAdmin = ((user as any)?.['https://resetbiology.com/claims/role'] ?? (user as any)?.role) === 'admin'
-  const [selectedModule, setSelectedModule] = useState<MentalMasteryModule | null>(null)
+  const [selectedModule, setSelectedModule] = useState<AudioLibraryEntry | null>(null)
   const [completedModules, setCompletedModules] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -64,85 +61,7 @@ export function ModuleLibrary() {
     }
   }, [toast])
 
-  const modules: LibraryModule[] = [
-    {
-      id: 'module-1',
-      title: 'Mental Mastery Module 1',
-      description: 'Foundation: Reset your relationship with food, body, and medication dependency.',
-      audioUrl: '/1mmm1.mp3',
-      category: 'Foundation',
-      requiredForDeposit: true,
-      order: 1,
-      available: true,
-      released: false, // 0:31 clip of Jon's real voice, not a module: admin preview only
-    },
-    {
-      id: 'module-2', 
-      title: 'Breaking the Shame-Hunger Cycle',
-      description: 'Foundation: How shame creates hunger signals and perpetuates medication dependency.',
-      audioUrl: '/audio/foundation-shame-cycle.mp3',
-      category: 'Foundation',
-      requiredForDeposit: true,
-      order: 2,
-      available: false,
-      released: false,
-    },
-    {
-      id: 'module-3',
-      title: 'Your Identity Beyond the Scale',
-      description: 'Foundation: Building an identity that supports long-term metabolic health independent of medications.',
-      audioUrl: '/audio/foundation-identity.mp3',
-      category: 'Foundation',
-      requiredForDeposit: true,
-      order: 3,
-      available: false,
-      released: false,
-    },
-    {
-      id: 'module-4',
-      title: 'Stress Biology & Cortisol Mastery',
-      description: 'Integration: Advanced stress management techniques that work synergistically with Retatrutide.',
-      audioUrl: '/audio/integration-stress-mastery.mp3',
-      category: 'Integration',
-      requiredForDeposit: true,
-      order: 4,
-      available: false,
-      released: false,
-    },
-    {
-      id: 'module-5',
-      title: 'The Confidence Protocol',
-      description: 'Integration: Building unshakeable confidence as your body transforms.',
-      audioUrl: '/audio/integration-confidence.mp3',
-      category: 'Integration',
-      requiredForDeposit: false,
-      order: 5,
-      available: false,
-      released: false,
-    },
-    {
-      id: 'module-6',
-      title: 'Metabolic Freedom Formula',
-      description: 'Mastery: The complete system for maintaining results after tapering off Retatrutide.',
-      audioUrl: '/audio/mastery-freedom-formula.mp3',
-      category: 'Mastery',
-      requiredForDeposit: true,
-      order: 6,
-      available: false,
-      released: false,
-    },
-    {
-      id: 'module-7',
-      title: 'The Graduate Protocol',
-      description: 'Mastery: Advanced strategies for helping others achieve metabolic freedom.',
-      audioUrl: '/audio/mastery-graduate-protocol.mp3',
-      category: 'Mastery',
-      requiredForDeposit: false,
-      order: 7,
-      available: false,
-      released: false,
-    }
-  ]
+  const modules: AudioLibraryEntry[] = AUDIO_LIBRARY
 
   // Members see released entries only; admins also see unreleased ones as a preview.
   const visibleModules = modules.filter(m => m.available && (m.released || isAdmin))
@@ -203,7 +122,7 @@ export function ModuleLibrary() {
     }
   }
 
-  const isModuleAccessible = (module: LibraryModule) => {
+  const isModuleAccessible = (module: AudioLibraryEntry) => {
     if (!module.available) return false
 
     // Foundation modules: Always accessible
@@ -284,7 +203,7 @@ export function ModuleLibrary() {
       )}
 
       {/* Module Categories */}
-      {['Foundation', 'Integration', 'Mastery'].map(category => {
+      {['Foundation', 'Integration', 'Mastery', 'Bonus'].map(category => {
         const categoryModules = visibleModules.filter(m => m.category === category)
         if (!categoryModules.length) return null
         
@@ -294,6 +213,7 @@ export function ModuleLibrary() {
               {category === 'Foundation' && <span className="text-green-600 mr-2">🌱</span>}
               {category === 'Integration' && <span className="text-blue-600 mr-2">🔗</span>}
               {category === 'Mastery' && <span className="text-purple-600 mr-2">👑</span>}
+              {category === 'Bonus' && <span className="text-yellow-600 mr-2">⭐</span>}
               {category} Phase
             </h2>
             

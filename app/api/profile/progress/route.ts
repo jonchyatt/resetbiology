@@ -4,6 +4,7 @@ import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { todayLocalKey, utcMidnightToDayKey } from '@/lib/localDay'
 import { computeDayStreak } from '@/lib/streak'
+import { RELEASED_COUNT } from '@/data/audio-library'
 
 // ponytail: there is no DB-backed Mental Mastery module catalog — the
 // portal_modules table (scripts/seed-portal-modules.ts) is dashboard nav
@@ -14,7 +15,7 @@ import { computeDayStreak } from '@/lib/streak'
 // 12 is their combined size — the real total of what's offered today. If a
 // DB-backed module catalog ever ships, swap this constant for a query
 // against it instead of hardcoding a bigger number.
-const KNOWN_MODULE_CATALOG_SIZE = 1 // ponytail: only module-1 has audio until Wave J6 lands; J6.2 replaces this with the library's count
+const KNOWN_MODULE_CATALOG_SIZE = RELEASED_COUNT // members' listenable recordings (src/data/audio-library.ts)
 
 // GET: real per-user progress numbers for the Profile page's Progress tab
 // (app/profile/page.tsx) — replaces the "0/30" hardcoded literals.
