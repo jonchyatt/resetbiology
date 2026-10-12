@@ -38,16 +38,16 @@ function ensureVapid(): boolean {
 async function sendMongoNotifications() {
   const now = new Date()
 
-  // Defensive: exclude any pre-generated row whose protocol now routes to
-  // Drive. The Drive on-demand pass is the source of truth for those, and
-  // `createProtocol`/`updateProtocol` already skip pre-generation when
-  // connected — but a future migration / replenish bug could leave stragglers.
-  // Codex P2.4-HIGH-2 fix.
+  // Wave J4.2: one reminder path for everyone, Drive-linked or not. Rows on a
+  // Drive-linked protocol were excluded here until now, so any old unsent
+  // ones are stale: those only send inside the same lookback window the old
+  // Drive pass used, so turning this on can't fire a burst of old reminders.
+  const staleCutoff = new Date(now.getTime() - DRIVE_LOOKBACK_MINUTES * 60 * 1000)
   const notifications = await prisma.scheduledNotification.findMany({
     where: {
       reminderTime: { lte: now },
       sent: false,
-      protocol: { driveProtocolId: null },
+      NOT: { reminderTime: { lt: staleCutoff }, protocol: { driveProtocolId: { not: null } } },
     },
     include: {
       user: {
@@ -143,9 +143,45 @@ async function sendMongoNotifications() {
 }
 
 // ---------------------------------------------------------------------------
-// PASS 2 — Drive on-demand compute (Phase 2.4)
+// PASS 2 — heal Drive-connected members whose protocols were blanked (Wave J4.2)
 // ---------------------------------------------------------------------------
 
+// Finds connected members who still have an active protocol blanked by the
+// old Drive-canonical design and loads their protocols once, which runs the
+// fill-only heal in protocols-store (details copied back from their Drive
+// copy, reminders scheduled into Pass 1). Once nobody is left, this pass
+// costs one query.
+async function healConnectedUsers() {
+  const blankRows = await prisma.user_peptide_protocols.findMany({
+    where: {
+      isActive: true,
+      driveProtocolId: { not: null },
+      OR: [{ dosage: '' }, { frequency: '' }],
+    },
+    select: { userId: true },
+  })
+  const userIds = [...new Set(blankRows.map((r) => r.userId))]
+  if (userIds.length === 0) return { found: 0, sent: 0, failed: 0, results: [], errors: [] }
+
+  const connected = await prisma.user.findMany({
+    where: { id: { in: userIds }, googleDriveRefreshToken: { not: null } },
+    select: { id: true },
+  })
+
+  const results: Array<{ userId: string; status: string }> = []
+  const errors: Array<{ userId: string; error: string }> = []
+  for (const { id: userId } of connected) {
+    try {
+      await listActiveProtocolsLite(userId)
+      results.push({ userId, status: 'heal-attempted' })
+    } catch (err: any) {
+      errors.push({ userId, error: `heal failed: ${err.message}` })
+    }
+  }
+  return { found: 0, sent: 0, failed: errors.length, results, errors }
+}
+
+// ponytail: replaced by Pass 1 for everyone (Wave J4.2); kept for one release in case of rollback
 async function sendDriveReminders() {
   const now = new Date()
   const windowStart = new Date(now.getTime() - DRIVE_LOOKBACK_MINUTES * 60 * 1000)
@@ -533,7 +569,7 @@ async function sendNotifications() {
         results: [],
         errors: [{ id: 'pass-1', error: err.message }],
       })),
-      sendDriveReminders().catch((err) => ({
+      healConnectedUsers().catch((err) => ({
         found: 0,
         sent: 0,
         failed: 0,

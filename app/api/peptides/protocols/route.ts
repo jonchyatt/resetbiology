@@ -12,9 +12,8 @@ import {
   listActiveProtocols,
   updateProtocol,
 } from '@/lib/protocols-store'
-import { isVaultConnected } from '@/lib/vaultService'
 
-// GET: Load user's active peptide protocols (Drive-primary when connected)
+// GET: Load user's active peptide protocols (Mongo is the store; Drive is a copy)
 export async function GET() {
   try {
     const session = await auth0.getSession()
@@ -67,7 +66,6 @@ export async function POST(request: Request) {
     }
 
     const userTimezone = body.timezone || body.clientTimezone || null
-    const driveConnected = await isVaultConnected(user.id)
 
     // Notification preferences are stored in Mongo regardless of storage path
     // — they're per-user UI state, not protocol definition data.
@@ -83,15 +81,11 @@ export async function POST(request: Request) {
         },
       })
 
-      // P2.3 contract: for Drive-connected users we DO NOT pre-generate
-      // ScheduledNotification rows. P2.4 will compute reminders on-demand
-      // from Drive data on each /api/notifications/send tick.
-      if (!driveConnected) {
-        await scheduleNotificationsForProtocol(user.id, result.protocol.id, {
-          daysAhead: 30,
-          timezone: userTimezone ?? undefined,
-        })
-      }
+      // Wave J4.2: one reminder path for everyone, Drive connected or not.
+      await scheduleNotificationsForProtocol(user.id, result.protocol.id, {
+        daysAhead: 30,
+        timezone: userTimezone ?? undefined,
+      })
     } catch (error) {
       console.error('Error setting up notifications for new protocol:', error)
       // Don't fail the request if notification setup fails
@@ -144,13 +138,11 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: result.error }, { status: result.status })
     }
 
-    const driveConnected = await isVaultConnected(user.id)
-
     if (typeof body.isActive === 'boolean' || result.timingChanged) {
       try {
         if (body.isActive === false) {
           await cancelNotificationsForProtocol(user.id, protocolId)
-        } else if (!driveConnected && (body.isActive === true || result.timingChanged)) {
+        } else if (body.isActive === true || result.timingChanged) {
           await scheduleNotificationsForProtocol(user.id, protocolId, {
             daysAhead: 30,
             forceReschedule: true,
