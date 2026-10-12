@@ -24,7 +24,8 @@
     "browser:edit": "ts-node tests/run-in-browser.ts click-edit",
     "browser:reload": "ts-node tests/run-in-browser.ts reload",
     "test:timezone": "tsx tests/timezone-notification-check.ts",
-    "check:peptide-history": "node scripts/check-peptide-history-report.mjs"
+    "check:peptide-history": "node scripts/check-peptide-history-report.mjs",
+    "check:weekly-reset-report": "node scripts/check-weekly-reset-report.mjs"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
