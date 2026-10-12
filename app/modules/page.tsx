@@ -21,7 +21,7 @@ export default function ModulesPage() {
                   <img src="/logo1.png" alt="Reset Biology" className="h-8 w-auto mr-3 drop-shadow-lg" />
                   <div>
                     <h1 className="text-xl font-bold text-white drop-shadow-lg">Portal</h1>
-                    <span className="text-lg text-gray-200 drop-shadow-sm">• Mental Mastery Modules</span>
+                    <span className="text-lg text-gray-200 drop-shadow-sm">• Guided audio</span>
                   </div>
                 </div>
                 <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">

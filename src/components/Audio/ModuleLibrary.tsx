@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Play, Lock, CheckCircle } from "lucide-react"
+import { Play, CheckCircle } from "lucide-react"
 import { AudioPlayer } from "./AudioPlayer"
 import { useToast } from "@/components/ui/Toast"
 import { useUser } from "@auth0/nextjs-auth0"
@@ -122,27 +122,15 @@ export function ModuleLibrary() {
     }
   }
 
-  const isModuleAccessible = (module: AudioLibraryEntry) => {
-    if (!module.available) return false
+  // Nothing is locked: every listed recording plays.
+  const isModuleAccessible = (module: AudioLibraryEntry) => module.available
 
-    // Foundation modules: Always accessible
-    if (module.category === 'Foundation') return true
-    
-    // Integration modules: Need 2 foundation modules
-    if (module.category === 'Integration') {
-      const foundationComplete = modules
-        .filter(m => m.category === 'Foundation')
-        .filter(m => completedModules.includes(m.id))
-        .length
-      return foundationComplete >= 2
-    }
-    
-    // Mastery modules: Need 4 total modules
-    if (module.category === 'Mastery') {
-      return completedModules.length >= 4
-    }
-    
-    return false
+  const POS_KEY = (id: string) => `rb_audio_pos_${id}`
+  const savePosition = (id: string, seconds: number) => {
+    try { localStorage.setItem(POS_KEY(id), String(Math.floor(seconds))) } catch {}
+  }
+  const loadPosition = (id: string) => {
+    try { return Number(localStorage.getItem(POS_KEY(id))) || 0 } catch { return 0 }
   }
 
   const completedAvailableCount = visibleModules.filter(module => completedModules.includes(module.id)).length
@@ -150,34 +138,35 @@ export function ModuleLibrary() {
   if (selectedModule) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <button 
-            onClick={() => setSelectedModule(null)}
-            className="text-primary-600 hover:text-primary-700 font-semibold"
-          >
-            ← Back to Library
-          </button>
-          <div className="text-sm text-gray-500">
-            Module {selectedModule.order} of {visibleModules.length}
-          </div>
-        </div>
-        
-              <AudioPlayer 
-                module={selectedModule}
-                onComplete={() => void handleModuleComplete(selectedModule.id)}
-              />
+        <button
+          onClick={() => setSelectedModule(null)}
+          className="text-primary-600 hover:text-primary-700 font-semibold"
+        >
+          ← Back to Library
+        </button>
+        <AudioPlayer
+          module={selectedModule}
+          startAt={loadPosition(selectedModule.id)}
+          onProgress={(percent) => {
+            if (selectedModule.duration && percent > 0 && percent < 98) {
+              savePosition(selectedModule.id, (percent / 100) * selectedModule.duration)
+            }
+          }}
+          onComplete={() => void handleModuleComplete(selectedModule.id)}
+        />
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      {/* Library Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Mental Mastery Library</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Guided Audio</h1>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Explore psychology-based audio coaching for food, body, and medication-related habits.
-          Complete available modules to track your learning progress.
+          Psychology-based audio coaching for food, body, and medication-related habits.
+        </p>
+        <p className="mt-2 text-sm font-semibold text-primary-600">
+          {completedAvailableCount} of {visibleModules.length} listened
         </p>
       </div>
 
@@ -187,26 +176,16 @@ export function ModuleLibrary() {
         </div>
       )}
 
-      {/* Progress Overview */}
-      <div className="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-lg p-6 border border-primary-200">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">Your Learning Progress</h2>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-primary-600">{completedAvailableCount} of {visibleModules.length}</p>
-            <p className="text-sm text-gray-600">listened</p>
-          </div>
-        </div>
-      </div>
-
       {visibleModules.length === 0 && (
         <p className="text-center text-gray-600">New guided audio is on its way. Check back soon.</p>
       )}
 
-      {/* Module Categories */}
       {['Foundation', 'Integration', 'Mastery', 'Bonus'].map(category => {
-        const categoryModules = visibleModules.filter(m => m.category === category)
+        const categoryModules = visibleModules
+          .filter(m => m.category === category)
+          .sort((x, y) => x.order - y.order)
         if (!categoryModules.length) return null
-        
+
         return (
           <div key={category} className="space-y-4">
             <h2 className="text-xl font-bold text-gray-900 flex items-center">
@@ -214,74 +193,51 @@ export function ModuleLibrary() {
               {category === 'Integration' && <span className="text-blue-600 mr-2">🔗</span>}
               {category === 'Mastery' && <span className="text-purple-600 mr-2">👑</span>}
               {category === 'Bonus' && <span className="text-yellow-600 mr-2">⭐</span>}
-              {category} Phase
+              {category} <span className="ml-2 text-sm font-normal text-gray-500">({categoryModules.length})</span>
             </h2>
-            
+
             <div className="grid gap-4">
               {categoryModules.map(module => {
-                const isComingSoon = !module.available
-                const isCompleted = module.available && completedModules.includes(module.id)
-                const isAccessible = isModuleAccessible(module)
-                
+                const isCompleted = completedModules.includes(module.id)
+                const isFirst = module.id === 'mmm1-reset-relationship-food'
                 return (
-                  <div 
+                  <div
                     key={module.id}
-                    className={`bg-white rounded-lg p-4 border transition-all ${
-                      isComingSoon ? 'border-gray-100 bg-gray-50' :
-                      isCompleted ? 'border-green-200 bg-green-50' :
-                      isAccessible ? 'border-gray-200 hover:border-primary-200 cursor-pointer' :
-                      'border-gray-100 bg-gray-50'
+                    className={`rounded-lg p-4 border transition-all cursor-pointer ${
+                      isCompleted ? 'border-green-200 bg-green-50' : 'bg-white border-gray-200 hover:border-primary-200'
                     }`}
-                    onClick={() => isAccessible && setSelectedModule(module)}
+                    onClick={() => isModuleAccessible(module) && setSelectedModule(module)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center mb-2">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
                           {isCompleted ? (
-                            <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-                          ) : isAccessible ? (
-                            <Play className="w-5 h-5 text-primary-500 mr-2" />
+                            <CheckCircle className="w-5 h-5 text-green-500" />
                           ) : (
-                            <Lock className="w-5 h-5 text-gray-400 mr-2" />
+                            <Play className="w-5 h-5 text-primary-500" />
                           )}
-                          
-                          <h3 className={`text-lg font-semibold ${
-                            isCompleted ? 'text-green-800' :
-                            isAccessible ? 'text-gray-900' : 'text-gray-500'
-                          }`}>
+                          <h3 className={`text-lg font-semibold ${isCompleted ? 'text-green-800' : 'text-gray-900'}`}>
                             {module.title}
                           </h3>
-                          
+                          {isFirst && (
+                            <span className="bg-primary-100 text-primary-700 px-2 py-1 rounded-full text-xs">Start here</span>
+                          )}
                           {!module.released && (
-                            <span className="ml-3 bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                            <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
                               Preview: not released
                             </span>
                           )}
                         </div>
-                        
-                        <p className={`text-sm mb-2 ${
-                          isAccessible ? 'text-gray-600' : 'text-gray-400'
-                        }`}>
-                          {module.description}
-                        </p>
-                        
-                        <div className="flex items-center text-xs text-gray-500">
-                        </div>
+                        <p className="text-sm mb-2 text-gray-600">{module.description}</p>
+                        {module.duration ? (
+                          <p className="text-xs text-gray-500">{Math.round(module.duration / 60)} min</p>
+                        ) : null}
                       </div>
-                      
                       <div className="text-right ml-4">
                         {isCompleted ? (
-                          <div className="text-green-600 font-semibold text-sm">
-                            ✓ Complete
-                          </div>
-                        ) : isAccessible ? (
-                          <div className="text-primary-600 font-semibold text-sm">
-                            Start →
-                          </div>
+                          <div className="text-green-600 font-semibold text-sm">✓ Listened</div>
                         ) : (
-                          <div className="text-gray-400 text-sm">
-                            Locked
-                          </div>
+                          <div className="text-primary-600 font-semibold text-sm">Play →</div>
                         )}
                       </div>
                     </div>
@@ -292,23 +248,6 @@ export function ModuleLibrary() {
           </div>
         )
       })}
-
-      {/* Library Footer Psychology */}
-      <div className="bg-gray-800 text-white rounded-lg p-6 text-center">
-        <h3 className="text-lg font-bold mb-2">🎯 Your Mental Mastery Journey</h3>
-        <p className="text-gray-300 mb-4">
-          Each module builds on the last to support your ongoing learning, with or without medications.
-          Complete available modules to track your learning progress.
-        </p>
-        <div className="flex justify-center space-x-6 text-sm">
-          <div>
-            <span className="text-green-400 font-semibold">{completedAvailableCount}</span> Completed
-          </div>
-          <div>
-            <span className="text-yellow-400 font-semibold">{visibleModules.filter(m => isModuleAccessible(m) && !completedModules.includes(m.id)).length}</span> Available
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
