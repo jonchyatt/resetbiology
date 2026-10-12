@@ -540,6 +540,7 @@ export interface EngineInput {
   memoryEpochMs?: number
   voiceTimeoutObservation?: Readonly<{ healthy: boolean; heard: boolean }>
   agencyToneSuppressed?: boolean
+  agencyMicObservation?: Readonly<{ generation: number; observedAtMs: number }>
   ceremonyToneAck?: CeremonyToneAck | null
   pianoReadiness?: PianoReadinessObservation | null
   blindStimulusAck?: BlindStimulusAck | null
@@ -625,6 +626,8 @@ export interface GameState {
   playStyle?: RetroPlayStyle
   agency?: AgencyEncounterState | null
   agencyEncounterSerial?: number
+  agencyMicGeneration?: number
+  agencyMicObservedAtMs?: number
 }
 
 export interface ViewState {
@@ -1846,6 +1849,25 @@ function agencyResolveMic(
 ): void {
   const agency = gs.agency
   if (!agency || agency.stage !== 'recognizing' || input.inputMode !== 'mic') return
+  const observation = input.agencyMicObservation
+  if (!observation || !Number.isFinite(observation.generation) ||
+      !Number.isFinite(observation.observedAtMs)) {
+    clearMicTarget(gs)
+    gs.agencyMicGeneration = undefined
+    gs.agencyMicObservedAtMs = undefined
+    return
+  }
+  const previousGeneration = gs.agencyMicGeneration
+  const previousObservedAt = gs.agencyMicObservedAtMs
+  const generationAdvanced = previousGeneration !== undefined && observation.generation > previousGeneration
+  const elapsed = previousObservedAt === undefined ? 0 : observation.observedAtMs - previousObservedAt
+  const resetObservation = previousGeneration === undefined || observation.generation < previousGeneration ||
+    elapsed < 0 || elapsed > 1000
+  if (resetObservation) clearMicTarget(gs)
+  if (generationAdvanced || resetObservation) {
+    gs.agencyMicGeneration = observation.generation
+    gs.agencyMicObservedAtMs = observation.observedAtMs
+  }
   if (!input.isListening) {
     clearMicTarget(gs)
     return
@@ -1871,12 +1893,17 @@ function agencyResolveMic(
     if (gs.matchStartAt > 0) clearMicTarget(gs)
     return
   }
+  // Like Pitchforks III: cached render frames may draw a hold, never earn one.
+  // Keep elapsed between detector updates, so 1:2 or 1:3 sampling still works.
+  if (!generationAdvanced || resetObservation) return
   if (gs.matchTargetAlienId !== agency.prompt.promptId || gs.matchStartAt === 0) {
     gs.matchTargetAlienId = agency.prompt.promptId
     gs.matchStartAt = gs.directorClockMs
+    gs.chargeProgress = 0
+    return
   }
   if (gs.matchStartAt <= 0) return
-  const held = gs.directorClockMs - gs.matchStartAt
+  const held = gs.chargeProgress + Math.min(100, Math.max(0, elapsed))
   gs.chargeProgress = Math.min(CHARGE_FULL_MS, Math.max(0, held))
   if (held >= MIC_HOLD_MS) {
     if (!agency.prompt.assisted && !agency.prompt.gradeRecorded) {

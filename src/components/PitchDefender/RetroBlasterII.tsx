@@ -806,6 +806,7 @@ export default function RetroBlasterII() {
       memoryEpochMs,
       voiceTimeoutObservation: { healthy: voiceHealthy, heard: voiceHeard },
       agencyToneSuppressed,
+      agencyMicObservation: { generation: capturedPitchGeneration, observedAtMs: now },
       ceremonyToneAck,
       pianoReadiness,
       blindStimulusAck,

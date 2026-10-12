@@ -23,6 +23,7 @@ import {
   type ViewState,
 } from '../../src/components/PitchDefender/retroBlasterEngine'
 import { noteToFreq } from '../../src/components/PitchDefender/pitchMath'
+import { advanceMicVfxFreshness } from '../../src/components/PitchDefender/retroBlasterRenderer'
 import {
   applyRetroBlasterFamilyEvent,
   deferAgencyStimulusReceipt,
@@ -173,13 +174,15 @@ function micPitch(note: 'C4' | 'A4', confidence = 0.95) {
   }
 }
 
-function micTick(state: GameState, pitch: EngineInput['pitch'], healthy = true, suppressed = false, dtMs = 50) {
+function micTick(state: GameState, pitch: EngineInput['pitch'], healthy = true, suppressed = false, dtMs = 50,
+  generation = (state.agencyMicGeneration ?? 0) + 1, observedAtMs = state.clockMs + dtMs) {
   return tick(state, input({
     inputMode: 'mic',
     isListening: true,
     pitch,
     voiceTimeoutObservation: { healthy, heard: pitch?.isActive === true },
     agencyToneSuppressed: suppressed,
+    agencyMicObservation: { generation, observedAtMs },
   }), dtMs, () => 0.5)
 }
 
@@ -457,6 +460,79 @@ run('agency mic rejects nonfinite and nonpositive pitch values before cents math
   const repeated = micTick(state, match)
   assert.equal(repeated.events.length, 0)
   assert.equal(repeated.state.agency?.charge?.chargeId, chargeId)
+})
+
+run('cached detector generations cannot finish a near-complete hold inside renderer grace', () => {
+  const opened = openCue('C4', 'mic')
+  let state = acceptCue(opened.state, opened.request, 'mic').state
+  let freshness = { lastGeneration: 0, hasObservedMicGeneration: false, staleGameFrames: 0 }
+  let gradeCount = 0
+  const step = (generation: number) => {
+    const next = advanceMicVfxFreshness(freshness, generation, true)
+    freshness = next.state
+    const result = micTick(state, micPitch('C4'), next.hasFreshGeneration, false, 17, generation)
+    state = result.state
+    gradeCount += result.events.filter(event => event.kind === 'grade').length
+  }
+  for (let generation = 1; generation <= 18; generation++) step(generation)
+  assert.equal(state.chargeProgress, 272)
+  const before = state
+  for (let i = 0; i < 3; i++) step(18)
+  assert.equal(state.chargeProgress, 272)
+  assert.equal(before.chargeProgress, 272, 'tick must not mutate its input')
+  assert.equal(state.agency?.stage, 'recognizing')
+  assert.equal(gradeCount, 0)
+  step(19)
+  assert.equal(state.agency?.stage, 'charged')
+  assert.equal(gradeCount, 1)
+  step(19)
+  assert.equal(gradeCount, 1)
+})
+
+run('one detector update per two or three frames earns a normal fresh hold', () => {
+  for (const cadence of [2, 3]) {
+    const opened = openCue('C4', 'mic')
+    let state = acceptCue(opened.state, opened.request, 'mic').state
+    let freshness = { lastGeneration: 0, hasObservedMicGeneration: false, staleGameFrames: 0 }
+    let grades = 0
+    for (let frame = 0; frame < 40; frame++) {
+      const generation = 1 + Math.floor(frame / cadence)
+      const next = advanceMicVfxFreshness(freshness, generation, true)
+      freshness = next.state
+      const result = micTick(state, micPitch('C4'), next.hasFreshGeneration, false, 17, generation)
+      state = result.state
+      grades += result.events.filter(event => event.kind === 'grade').length
+    }
+    assert.equal(state.agency?.stage, 'charged', `cadence ${cadence}`)
+    assert.equal(grades, 1)
+  }
+})
+
+run('missing, reset, invalid and long-gap observations cannot carry a previous hold', () => {
+  for (const interruption of ['missing', 'reset', 'invalid', 'long-gap', 'unhealthy', 'suppressed'] as const) {
+    const opened = openCue('C4', 'mic')
+    let state = acceptCue(opened.state, opened.request, 'mic').state
+    for (let i = 0; i < 7; i++) state = micTick(state, micPitch('C4')).state
+    assert.equal(state.chargeProgress, 250)
+    const generation = state.agencyMicGeneration!
+    if (interruption === 'missing') {
+      state = tick(state, input({ inputMode: 'mic', isListening: true, pitch: micPitch('C4'),
+        voiceTimeoutObservation: { healthy: true, heard: true } }), 17, () => 0.5).state
+    } else {
+      state = micTick(state, micPitch('C4'), interruption !== 'unhealthy', interruption === 'suppressed',
+        interruption === 'long-gap' ? 1200 : 17,
+        interruption === 'reset' ? 0 : interruption === 'invalid' ? NaN : generation + 1).state
+    }
+    assert.equal(state.chargeProgress, 0, interruption)
+    assert.equal(state.agency?.stage, 'recognizing', interruption)
+    const recovered = micTick(state, micPitch('C4'))
+    assert.equal(recovered.events.some(event => event.kind === 'grade'), false, interruption)
+  }
+})
+
+run('shell passes captured generation and monotonic frame time to agency scoring', () => {
+  const source = readFileSync('src/components/PitchDefender/RetroBlasterII.tsx', 'utf8')
+  assert.match(source, /agencyMicObservation:\s*\{\s*generation:\s*capturedPitchGeneration,\s*observedAtMs:\s*now\s*\}/)
 })
 
 run('paused ticks preserve agency clocks, holds, actions, score, and shields', () => {

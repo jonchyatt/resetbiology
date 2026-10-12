@@ -19,6 +19,7 @@ F2 | DONE | exit0 job35837; parent agency17/17 twice, three probes pass, full bu
 V1 | PENDING | read-only original task plus committed diff
 
 ## Attempts
+F3 | lead takeover authorized by Jon after V1 FAIL | generation/time gated agency hold, shell wiring, four new regression groups | focused21/21 PASS, full npm build42715 exit0, family10PASS/5historicFAIL using dbdc3e77 baseline | Terra review pending; local only
 L1 attempt 1 | Luna/max | luna-build-ticket.md | dispatched | exact four-file contract, baseline full tsc and build PASS; family 9 pass/5 historical failures
 S1 attempt 1 | Sol/max | sol-source-ticket.md | running | source and doctrine reads
 Baseline checks | operator | R9b behavior 12/12 PASS; family 5 PASS/9 FAIL; shared native dependencies and stale fixture hash failures; typecheck missing three type definitions. Exact-lock candidate dependency restoration in progress, not a source change.
