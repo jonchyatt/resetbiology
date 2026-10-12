@@ -1,9 +1,10 @@
 /**
  * Migrate Peptide Protocols Mongo → Drive (Phase 2.5)
  *
- * One-shot per user that pushes existing Mongo-canonical protocols up to
- * Drive's `Profile/protocols.json` and converts the Mongo rows into thin
- * pointers (driveProtocolId set, canonical fields blanked).
+ * One-shot per user that copies existing protocols up to Drive's
+ * `Profile/protocols.json` and links each Mongo row to its copy
+ * (driveProtocolId set). Mongo stays the store (Wave J4.1): no field is
+ * blanked and no reminder is deleted.
  *
  * Concurrency model (post-Codex P2.5 review):
  *   - Per-user advisory lock via `User.vaultMigrationStartedAt`. Two parallel
@@ -347,37 +348,10 @@ export async function migratePeptidesToVault(userId: string): Promise<MigrationR
       }
     }
 
-    // Drive is the canonical source of truth now; blank the Mongo definition
-    // fields and cancel future ScheduledNotifications so Pass 1 stops sending.
-    let migrated = 0
-    for (const { mongoId } of claimed) {
-      try {
-        await prisma.user_peptide_protocols.update({
-          where: { id: mongoId },
-          data: {
-            dosage: '',
-            frequency: '',
-            timing: null,
-            notes: null,
-            updatedAt: new Date(),
-          },
-        })
-        await prisma.scheduledNotification.deleteMany({
-          where: {
-            userId,
-            protocolId: mongoId,
-            sent: false,
-            reminderTime: { gte: new Date() },
-          },
-        })
-        migrated += 1
-      } catch (err: any) {
-        errors.push({
-          protocolId: mongoId,
-          error: `mongo blank failed: ${err.message}`,
-        })
-      }
-    }
+    // Wave J4.1: Drive is a COPY. Mongo keeps every detail and every queued
+    // reminder; nothing is blanked or deleted here. Claiming driveProtocolId
+    // is all the Drive copy needs.
+    const migrated = claimed.length
 
     return {
       ok: errors.length === 0,

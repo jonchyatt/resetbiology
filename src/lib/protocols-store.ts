@@ -1,22 +1,17 @@
 /**
- * Protocols Store — Drive-Primary Storage for Peptide Protocols (Phase 2.3)
+ * Protocols Store — peptide protocols (Mongo is the store, Drive is a copy)
  *
- * Single seam between the API routes and the storage layer. When a user has
- * connected their Google Drive Vault, protocol definitions live in their
- * `Profile/protocols.json` and Mongo holds a thin pointer row. Otherwise the
- * legacy pure-Mongo path runs unchanged.
+ * Wave J4.1 (Jon ruling 2026-10-11, Drive option A): Mongo ALWAYS holds the
+ * full protocol (dosage/frequency/timing/notes). When a member has connected
+ * Google Drive, a best-effort copy also goes to `Profile/protocols.json`.
+ * A failed Drive copy is logged and never fails the request.
  *
- * Routing decision: per-call, based on `user.googleDriveConnectedAt && driveFolder`.
- * No sync, no migration — the path is determined fresh each call. P2.5 will
- * handle one-time migration of existing users' Mongo data into Drive.
- *
- * Mongo row shape for Drive-connected users:
- *   - id                  (Mongo ObjectId, used by peptide_doses + scheduledNotifications relations)
- *   - userId, peptideId   (foreign keys preserved)
- *   - driveProtocolId     (canonical id used inside protocols.json)
- *   - isActive            (mirrored for fast filtering)
- *   - createdAt, updatedAt
- *   - dosage/frequency/timing/notes/etc. = "" / null  (NOT persisted)
+ * Heal: older Drive-connected rows were blanked in Mongo (the Phase 2.3/2.5
+ * "Drive is canonical" design). On read, if a connected member has such a
+ * blank row, we read their Drive copy once and FILL ONLY the empty fields.
+ * Fill-only and idempotent: a field that already has a value is never
+ * written, nothing is deleted, and reminders are only scheduled for a
+ * protocol that has none queued. See tests/protocols-heal-check.ts.
  *
  * Drive JSON shape (Profile/protocols.json):
  *   { version: 1, updatedAt: ISO, protocols: [{ id, peptideName, peptideSlug, dosage, ... }] }
@@ -27,6 +22,7 @@ import type { drive_v3 } from 'googleapis'
 import { prisma } from '@/lib/prisma'
 import { getDriveClient, getSubfolderId } from '@/lib/google-drive'
 import { isVaultConnected } from '@/lib/vaultService'
+import { scheduleNotificationsForProtocol } from '@/lib/scheduleNotifications'
 
 // ---------------- Types ----------------
 
@@ -261,11 +257,140 @@ function toApiShape(args: {
   }
 }
 
+// ---------------- Heal (fill-only) ----------------
+
+const DETAIL_FIELDS = ['dosage', 'frequency', 'timing', 'notes'] as const
+type DetailField = (typeof DETAIL_FIELDS)[number]
+
+export interface HealRow {
+  id: string
+  driveProtocolId: string | null
+  dosage: string | null
+  frequency: string | null
+  timing: string | null
+  notes: string | null
+}
+
+/** The Mongo fields one row can get from its Drive copy. Only empty fields appear. */
+export interface DriveDetailFill {
+  id: string
+  dosage?: string
+  frequency?: string
+  timing?: string | null
+  notes?: string | null
+}
+
+function isBlank(v: unknown): boolean {
+  return v === null || v === undefined || v === ''
+}
+
+/** A row the old Drive-canonical design blanked in Mongo. */
+function needsHeal(row: HealRow): boolean {
+  return !!row.driveProtocolId && (isBlank(row.dosage) || isBlank(row.frequency))
+}
+
+/**
+ * Pure. For each row linked to a Drive record, return ONLY the fields that are
+ * empty in Mongo and non-empty in Drive. A field that already has a value is
+ * never returned, so applying the result can never overwrite member data.
+ */
+export function mergeDriveDetails(
+  rows: HealRow[],
+  file: ProtocolsFile | null | undefined,
+): DriveDetailFill[] {
+  const byId = new Map((file?.protocols ?? []).map((p) => [p.id, p]))
+  const fills: DriveDetailFill[] = []
+  for (const row of rows) {
+    if (!row.driveProtocolId) continue
+    const drive = byId.get(row.driveProtocolId)
+    if (!drive) continue
+    const fill: DriveDetailFill = { id: row.id }
+    for (const k of DETAIL_FIELDS) {
+      if (isBlank(row[k]) && !isBlank(drive[k])) (fill as any)[k] = drive[k]
+    }
+    if (Object.keys(fill).length > 1) fills.push(fill)
+  }
+  return fills
+}
+
+/** Mongo filter: every field we are about to fill is STILL empty (race-safe fill-only). */
+function stillEmptyWhere(fields: DetailField[]) {
+  return fields.map((k) =>
+    k === 'dosage' || k === 'frequency'
+      ? { [k]: '' }
+      : { OR: [{ [k]: null }, { [k]: '' }, { [k]: { isSet: false } }] },
+  )
+}
+
+/**
+ * If any row was blanked by the old design, read the Drive copy once and fill
+ * the empty fields in Mongo. Never throws; on any failure the rows come back
+ * unchanged. Reminders are scheduled only for a healed active row that has no
+ * future reminder queued (fills missing reminders, never replaces them).
+ */
+async function healBlankRows<T extends HealRow>(
+  userId: string,
+  rows: T[],
+): Promise<T[]> {
+  if (!rows.some(needsHeal)) return rows
+  try {
+    if (!(await isVaultConnected(userId))) return rows
+    const file = await readProtocolsFile(userId)
+    const fills = mergeDriveDetails(rows.filter(needsHeal), file)
+    if (fills.length === 0) return rows
+
+    const applied = new Map<string, DriveDetailFill>()
+    for (const fill of fills) {
+      const { id, ...data } = fill
+      const fields = Object.keys(data) as DetailField[]
+      const res = await prisma.user_peptide_protocols.updateMany({
+        where: { id, userId, AND: stillEmptyWhere(fields) as any },
+        data: { ...data, updatedAt: new Date() },
+      })
+      if (res.count !== 1) continue // someone else filled it first; leave their value alone
+      applied.set(id, fill)
+      console.log('[protocols-store] healed blank protocol from Drive copy', { userId, protocolId: id, fields })
+
+      try {
+        const queued = await prisma.scheduledNotification.count({
+          where: { protocolId: id, sent: false, reminderTime: { gte: new Date() } },
+        })
+        if (queued === 0) await scheduleNotificationsForProtocol(userId, id, { daysAhead: 30 })
+      } catch (err) {
+        console.error('[protocols-store] heal: reminder scheduling failed', { protocolId: id, err })
+      }
+    }
+
+    return rows.map((row) => {
+      const fill = applied.get(row.id)
+      if (!fill) return row
+      const { id: _id, ...data } = fill
+      return { ...row, ...data } as T
+    })
+  } catch (err) {
+    console.error('[protocols-store] heal failed; returning rows unchanged', { userId, err })
+    return rows
+  }
+}
+
+/** Best-effort Drive copy: apply `mutate` to protocols.json. Logs and returns false on any failure. */
+async function copyToDrive(userId: string, mutate: (file: ProtocolsFile) => boolean): Promise<boolean> {
+  try {
+    const file = await readProtocolsFile(userId)
+    if (!file) return false
+    if (!mutate(file)) return false
+    const wrote = await writeProtocolsFile(userId, file)
+    if (!wrote) console.error('[protocols-store] drive copy failed', { userId })
+    return wrote
+  } catch (err) {
+    console.error('[protocols-store] drive copy failed', { userId, err })
+    return false
+  }
+}
+
 // ---------------- Public API ----------------
 
 export async function listActiveProtocols(userId: string): Promise<ApiProtocolShape[]> {
-  const connected = await isVaultConnected(userId)
-
   const mongoRows = await prisma.user_peptide_protocols.findMany({
     where: { userId, isActive: true },
     include: {
@@ -275,23 +400,10 @@ export async function listActiveProtocols(userId: string): Promise<ApiProtocolSh
     orderBy: { createdAt: 'desc' },
   })
 
-  if (!connected) {
-    return mongoRows.map((row) => toApiShape({ mongoRow: row, storage: 'mongo' }))
-  }
-
-  const file = await readProtocolsFile(userId)
-  const driveById = new Map<string, DriveProtocolRecord>(
-    (file?.protocols ?? []).map((p) => [p.id, p]),
+  const rows = await healBlankRows(userId, mongoRows)
+  return rows.map((row) =>
+    toApiShape({ mongoRow: row, storage: row.driveProtocolId ? 'drive' : 'mongo' }),
   )
-
-  return mongoRows.map((row) => {
-    const driveRecord = row.driveProtocolId ? driveById.get(row.driveProtocolId) : undefined
-    return toApiShape({
-      mongoRow: row,
-      driveRecord,
-      storage: row.driveProtocolId ? 'drive' : 'mongo',
-    })
-  })
 }
 
 export async function createProtocol(
@@ -314,68 +426,18 @@ export async function createProtocol(
   const startDate = input.startDate ? new Date(input.startDate) : new Date()
   const endDate = input.endDate ? new Date(input.endDate) : null
   const administrationType = (input.administrationType || 'injection') as AdministrationType
+  const driveProtocolId = connected ? randomUUID() : null
+  const timing = connected ? input.timing ?? null : input.timing || 'AM'
 
-  if (connected) {
-    const driveProtocolId = randomUUID()
-    const nowIso = new Date().toISOString()
-    const driveRecord: DriveProtocolRecord = {
-      id: driveProtocolId,
-      peptideName: peptide.name,
-      peptideSlug: peptide.slug,
-      peptideId: peptide.id,
-      dosage: input.dosage,
-      frequency: input.frequency,
-      timing: input.timing ?? null,
-      notes: input.notes ?? null,
-      startDate: startDate.toISOString(),
-      endDate: endDate ? endDate.toISOString() : null,
-      isActive: true,
-      administrationType,
-      createdAt: nowIso,
-      updatedAt: nowIso,
-    }
-
-    const file = (await readProtocolsFile(userId)) ?? emptyProtocolsFile()
-    file.protocols.push(driveRecord)
-    const wrote = await writeProtocolsFile(userId, file)
-    if (!wrote) {
-      return { ok: false, status: 502, error: 'Failed to write protocol to your Google Drive Vault' }
-    }
-
-    // Thin pointer row — preserves doses + notification relations without
-    // duplicating the protocol definition.
-    const pointer = await prisma.user_peptide_protocols.create({
-      data: {
-        userId,
-        peptideId: peptide.id,
-        driveProtocolId,
-        startDate,
-        endDate,
-        dosage: '', // canonical lives in Drive
-        frequency: '',
-        timing: null,
-        notes: null,
-        isActive: true,
-        administrationType,
-        updatedAt: new Date(),
-      },
-      include: { peptides: true },
-    })
-
-    return {
-      ok: true,
-      protocol: toApiShape({ mongoRow: pointer, driveRecord, storage: 'drive' }),
-    }
-  }
-
-  // Legacy pure-Mongo path (unchanged behavior)
+  // Mongo is the store: always the full protocol.
   const mongoRow = await prisma.user_peptide_protocols.create({
     data: {
       userId,
       peptideId: peptide.id,
+      ...(driveProtocolId ? { driveProtocolId } : {}),
       dosage: input.dosage,
       frequency: input.frequency,
-      timing: input.timing || 'AM',
+      timing,
       notes: input.notes ?? null,
       startDate,
       endDate,
@@ -386,7 +448,33 @@ export async function createProtocol(
     include: { peptides: true },
   })
 
-  return { ok: true, protocol: toApiShape({ mongoRow, storage: 'mongo' }) }
+  if (driveProtocolId) {
+    const nowIso = new Date().toISOString()
+    await copyToDrive(userId, (file) => {
+      file.protocols.push({
+        id: driveProtocolId,
+        peptideName: peptide.name,
+        peptideSlug: peptide.slug,
+        peptideId: peptide.id,
+        dosage: input.dosage,
+        frequency: input.frequency,
+        timing,
+        notes: input.notes ?? null,
+        startDate: startDate.toISOString(),
+        endDate: endDate ? endDate.toISOString() : null,
+        isActive: true,
+        administrationType,
+        createdAt: nowIso,
+        updatedAt: nowIso,
+      })
+      return true
+    })
+  }
+
+  return {
+    ok: true,
+    protocol: toApiShape({ mongoRow, storage: driveProtocolId ? 'drive' : 'mongo' }),
+  }
 }
 
 export async function updateProtocol(
@@ -394,70 +482,24 @@ export async function updateProtocol(
   protocolId: string,
   patch: ProtocolPatch,
 ): Promise<{ ok: true; protocol: ApiProtocolShape; timingChanged: boolean } | { ok: false; status: number; error: string }> {
-  const existing = await prisma.user_peptide_protocols.findUnique({
+  const found = await prisma.user_peptide_protocols.findUnique({
     where: { id: protocolId },
   })
-  if (!existing || existing.userId !== userId) {
+  if (!found || found.userId !== userId) {
     return { ok: false, status: 404, error: 'Protocol not found or access denied' }
   }
+  // Heal first, so a partial edit of a blanked row can't strand its other fields.
+  const [existing] = await healBlankRows(userId, [found])
 
-  const useDrive = !!existing.driveProtocolId
-  const nowIso = new Date().toISOString()
-
-  let driveRecord: DriveProtocolRecord | undefined
-  let timingChanged = false
-
-  if (useDrive) {
-    const file = await readProtocolsFile(userId)
-    if (!file) {
-      return { ok: false, status: 502, error: 'Could not read protocols from your Vault' }
-    }
-    const idx = file.protocols.findIndex((p) => p.id === existing.driveProtocolId)
-    if (idx < 0) {
-      return { ok: false, status: 404, error: 'Protocol not found in your Vault' }
-    }
-    const previous = file.protocols[idx]
-    const next: DriveProtocolRecord = {
-      ...previous,
-      dosage: patch.dosage ?? previous.dosage,
-      frequency: patch.frequency ?? previous.frequency,
-      timing: patch.timing !== undefined ? patch.timing : previous.timing,
-      notes: patch.notes !== undefined ? patch.notes : previous.notes,
-      endDate:
-        patch.endDate !== undefined
-          ? patch.endDate
-            ? new Date(patch.endDate).toISOString()
-            : null
-          : previous.endDate,
-      isActive: patch.isActive ?? previous.isActive,
-      administrationType: patch.administrationType ?? previous.administrationType,
-      updatedAt: nowIso,
-    }
-    timingChanged = patch.timing !== undefined && previous.timing !== next.timing
-    file.protocols[idx] = next
-    const wrote = await writeProtocolsFile(userId, file)
-    if (!wrote) {
-      return { ok: false, status: 502, error: 'Failed to update protocol in your Vault' }
-    }
-    driveRecord = next
-  }
-
-  // Mongo update — for Drive users, only mirror isActive + endDate + administrationType
-  // (the relation-relevant fields). For legacy users, full record update.
   const updateData: Record<string, unknown> = { updatedAt: new Date() }
   if (typeof patch.isActive === 'boolean') updateData.isActive = patch.isActive
   if (patch.endDate !== undefined) updateData.endDate = patch.endDate ? new Date(patch.endDate) : null
   if (patch.administrationType) updateData.administrationType = patch.administrationType
-
-  if (!useDrive) {
-    if (patch.dosage !== undefined) updateData.dosage = patch.dosage
-    if (patch.frequency !== undefined) updateData.frequency = patch.frequency
-    if (patch.timing !== undefined) {
-      updateData.timing = patch.timing
-      timingChanged = patch.timing !== existing.timing
-    }
-    if (patch.notes !== undefined) updateData.notes = patch.notes
-  }
+  if (patch.dosage !== undefined) updateData.dosage = patch.dosage
+  if (patch.frequency !== undefined) updateData.frequency = patch.frequency
+  if (patch.notes !== undefined) updateData.notes = patch.notes
+  const timingChanged = patch.timing !== undefined && patch.timing !== existing.timing
+  if (patch.timing !== undefined) updateData.timing = patch.timing
 
   const mongoRow = await prisma.user_peptide_protocols.update({
     where: { id: protocolId },
@@ -465,9 +507,32 @@ export async function updateProtocol(
     include: { peptides: true },
   })
 
+  if (existing.driveProtocolId) {
+    const nowIso = new Date().toISOString()
+    await copyToDrive(userId, (file) => {
+      const idx = file.protocols.findIndex((p) => p.id === existing.driveProtocolId)
+      if (idx < 0) return false
+      const previous = file.protocols[idx]
+      // A row that is still blank (heal could not run) must not blank the Drive copy it heals from.
+      const keep = needsHeal(mongoRow)
+      file.protocols[idx] = {
+        ...previous,
+        dosage: keep ? previous.dosage : mongoRow.dosage,
+        frequency: keep ? previous.frequency : mongoRow.frequency,
+        timing: keep ? previous.timing : mongoRow.timing,
+        notes: keep ? previous.notes : mongoRow.notes,
+        endDate: mongoRow.endDate ? mongoRow.endDate.toISOString() : null,
+        isActive: mongoRow.isActive,
+        administrationType: (mongoRow.administrationType ?? previous.administrationType) as AdministrationType,
+        updatedAt: nowIso,
+      }
+      return true
+    })
+  }
+
   return {
     ok: true,
-    protocol: toApiShape({ mongoRow, driveRecord, storage: useDrive ? 'drive' : 'mongo' }),
+    protocol: toApiShape({ mongoRow, storage: existing.driveProtocolId ? 'drive' : 'mongo' }),
     timingChanged,
   }
 }
@@ -480,33 +545,27 @@ export async function archiveProtocol(
   if (!existing) return { ok: false, status: 404, error: 'Protocol not found' }
   if (existing.userId !== userId) return { ok: false, status: 403, error: 'Access denied' }
 
-  if (existing.driveProtocolId) {
-    const file = await readProtocolsFile(userId)
-    if (file) {
-      const idx = file.protocols.findIndex((p) => p.id === existing.driveProtocolId)
-      if (idx >= 0) {
-        file.protocols[idx] = {
-          ...file.protocols[idx],
-          isActive: false,
-          updatedAt: new Date().toISOString(),
-        }
-        await writeProtocolsFile(userId, file)
-      }
-    }
-  }
-
-  // Mongo: archive (preserve dose history)
+  // Mongo first: archive (preserve dose history)
   await prisma.user_peptide_protocols.update({
     where: { id: protocolId },
     data: { isActive: false, updatedAt: new Date() },
   })
 
+  if (existing.driveProtocolId) {
+    await copyToDrive(userId, (file) => {
+      const idx = file.protocols.findIndex((p) => p.id === existing.driveProtocolId)
+      if (idx < 0) return false
+      file.protocols[idx] = { ...file.protocols[idx], isActive: false, updatedAt: new Date().toISOString() }
+      return true
+    })
+  }
+
   return { ok: true }
 }
 
 /**
- * For P2.4 notification compute. Returns active protocol definitions
- * (Drive or Mongo, normalized) without dose history. Cheaper read.
+ * For the notification cron. Active protocol definitions from Mongo (healed
+ * from the Drive copy when a row was blanked), without dose history.
  */
 export interface ActiveProtocolForCron {
   protocolId: string // Mongo id (used as ScheduledNotification.protocolId)
@@ -522,43 +581,22 @@ export interface ActiveProtocolForCron {
 }
 
 export async function listActiveProtocolsLite(userId: string): Promise<ActiveProtocolForCron[]> {
-  const connected = await isVaultConnected(userId)
-  const rows = await prisma.user_peptide_protocols.findMany({
+  const found = await prisma.user_peptide_protocols.findMany({
     where: { userId, isActive: true },
     include: { peptides: true },
   })
+  const rows = await healBlankRows(userId, found)
 
-  if (!connected) {
-    return rows.map((r) => ({
-      protocolId: r.id,
-      driveProtocolId: null,
-      userId: r.userId,
-      peptideName: r.peptides?.name ?? 'Unknown',
-      dosage: r.dosage,
-      frequency: r.frequency,
-      timing: r.timing,
-      startDate: r.startDate,
-      endDate: r.endDate,
-      administrationType: r.administrationType ?? 'injection',
-    }))
-  }
-
-  const file = await readProtocolsFile(userId)
-  const byId = new Map<string, DriveProtocolRecord>((file?.protocols ?? []).map((p) => [p.id, p]))
-
-  return rows.map((r) => {
-    const drive = r.driveProtocolId ? byId.get(r.driveProtocolId) : undefined
-    return {
-      protocolId: r.id,
-      driveProtocolId: r.driveProtocolId,
-      userId: r.userId,
-      peptideName: drive?.peptideName ?? r.peptides?.name ?? 'Unknown',
-      dosage: drive?.dosage ?? r.dosage,
-      frequency: drive?.frequency ?? r.frequency,
-      timing: drive?.timing ?? r.timing,
-      startDate: drive ? new Date(drive.startDate) : r.startDate,
-      endDate: drive ? (drive.endDate ? new Date(drive.endDate) : null) : r.endDate,
-      administrationType: drive?.administrationType ?? r.administrationType ?? 'injection',
-    }
-  })
+  return rows.map((r) => ({
+    protocolId: r.id,
+    driveProtocolId: r.driveProtocolId ?? null,
+    userId: r.userId,
+    peptideName: r.peptides?.name ?? 'Unknown',
+    dosage: r.dosage,
+    frequency: r.frequency,
+    timing: r.timing,
+    startDate: r.startDate,
+    endDate: r.endDate,
+    administrationType: r.administrationType ?? 'injection',
+  }))
 }
