@@ -25,6 +25,7 @@
     "browser:reload": "ts-node tests/run-in-browser.ts reload",
     "test:timezone": "tsx tests/timezone-notification-check.ts",
     "test:retro-family": "node scripts/retro-blaster/family-regression.mjs"
+    ,"check:pf21-offline": "node scripts/pitchforks/pf21-offline-check.mjs"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.10.0",
