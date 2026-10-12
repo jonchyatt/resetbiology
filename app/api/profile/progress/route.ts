@@ -14,7 +14,7 @@ import { computeDayStreak } from '@/lib/streak'
 // 12 is their combined size — the real total of what's offered today. If a
 // DB-backed module catalog ever ships, swap this constant for a query
 // against it instead of hardcoding a bigger number.
-const KNOWN_MODULE_CATALOG_SIZE = 7
+const KNOWN_MODULE_CATALOG_SIZE = 1 // ponytail: only module-1 has audio until Wave J6 lands; J6.2 replaces this with the library's count
 
 // GET: real per-user progress numbers for the Profile page's Progress tab
 // (app/profile/page.tsx) — replaces the "0/30" hardcoded literals.

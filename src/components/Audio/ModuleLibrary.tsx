@@ -1,15 +1,19 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Play, Lock, CheckCircle, Star } from "lucide-react"
+import { Play, Lock, CheckCircle } from "lucide-react"
 import { AudioPlayer } from "./AudioPlayer"
 import { useToast } from "@/components/ui/Toast"
+import { useUser } from "@auth0/nextjs-auth0"
 import type { MentalMasteryModule } from "@/types"
 
-type LibraryModule = MentalMasteryModule & { available: boolean }
+// released:false = admin-only preview (members never see it)
+type LibraryModule = MentalMasteryModule & { available: boolean; released: boolean }
 
 export function ModuleLibrary() {
   const toast = useToast()
+  const { user } = useUser()
+  const isAdmin = ((user as any)?.['https://resetbiology.com/claims/role'] ?? (user as any)?.role) === 'admin'
   const [selectedModule, setSelectedModule] = useState<MentalMasteryModule | null>(null)
   const [completedModules, setCompletedModules] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)
@@ -70,6 +74,7 @@ export function ModuleLibrary() {
       requiredForDeposit: true,
       order: 1,
       available: true,
+      released: false, // 0:31 clip of Jon's real voice, not a module: admin preview only
     },
     {
       id: 'module-2', 
@@ -80,6 +85,7 @@ export function ModuleLibrary() {
       requiredForDeposit: true,
       order: 2,
       available: false,
+      released: false,
     },
     {
       id: 'module-3',
@@ -90,6 +96,7 @@ export function ModuleLibrary() {
       requiredForDeposit: true,
       order: 3,
       available: false,
+      released: false,
     },
     {
       id: 'module-4',
@@ -100,6 +107,7 @@ export function ModuleLibrary() {
       requiredForDeposit: true,
       order: 4,
       available: false,
+      released: false,
     },
     {
       id: 'module-5',
@@ -110,6 +118,7 @@ export function ModuleLibrary() {
       requiredForDeposit: false,
       order: 5,
       available: false,
+      released: false,
     },
     {
       id: 'module-6',
@@ -120,6 +129,7 @@ export function ModuleLibrary() {
       requiredForDeposit: true,
       order: 6,
       available: false,
+      released: false,
     },
     {
       id: 'module-7',
@@ -130,8 +140,12 @@ export function ModuleLibrary() {
       requiredForDeposit: false,
       order: 7,
       available: false,
+      released: false,
     }
   ]
+
+  // Members see released entries only; admins also see unreleased ones as a preview.
+  const visibleModules = modules.filter(m => m.available && (m.released || isAdmin))
 
   const handleModuleComplete = async (moduleId: string) => {
     if (isSaving) return
@@ -212,9 +226,7 @@ export function ModuleLibrary() {
     return false
   }
 
-  const requiredModules = modules.filter(module => module.available && module.requiredForDeposit)
-  const completedRequiredCount = requiredModules.filter(module => completedModules.includes(module.id)).length
-  const completedAvailableCount = modules.filter(module => module.available && completedModules.includes(module.id)).length
+  const completedAvailableCount = visibleModules.filter(module => completedModules.includes(module.id)).length
 
   if (selectedModule) {
     return (
@@ -227,7 +239,7 @@ export function ModuleLibrary() {
             ← Back to Library
           </button>
           <div className="text-sm text-gray-500">
-            Module {selectedModule.order} of {modules.filter(module => module.available).length}
+            Module {selectedModule.order} of {visibleModules.length}
           </div>
         </div>
         
@@ -261,26 +273,20 @@ export function ModuleLibrary() {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-900">Your Learning Progress</h2>
           <div className="text-right">
-            <p className="text-2xl font-bold text-primary-600">{completedRequiredCount}</p>
-            <p className="text-sm text-gray-600">/ {requiredModules.length} Required</p>
+            <p className="text-2xl font-bold text-primary-600">{completedAvailableCount} of {visibleModules.length}</p>
+            <p className="text-sm text-gray-600">listened</p>
           </div>
         </div>
-        
-        <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
-          <div 
-            className="bg-gradient-to-r from-primary-400 to-secondary-400 h-3 rounded-full transition-all duration-500"
-            style={{ width: `${requiredModules.length ? (completedRequiredCount / requiredModules.length) * 100 : 0}%` }}
-          />
-        </div>
-        
-        <p className="text-sm text-gray-600 text-center">
-          {requiredModules.length - completedRequiredCount} modules remaining to secure your stake
-        </p>
       </div>
+
+      {visibleModules.length === 0 && (
+        <p className="text-center text-gray-600">New guided audio is on its way. Check back soon.</p>
+      )}
 
       {/* Module Categories */}
       {['Foundation', 'Integration', 'Mastery'].map(category => {
-        const categoryModules = modules.filter(m => m.category === category)
+        const categoryModules = visibleModules.filter(m => m.category === category)
+        if (!categoryModules.length) return null
         
         return (
           <div key={category} className="space-y-4">
@@ -326,8 +332,10 @@ export function ModuleLibrary() {
                             {module.title}
                           </h3>
                           
-                          {module.requiredForDeposit && module.available && (
-                            <Star className="w-4 h-4 text-yellow-500 ml-2" />
+                          {!module.released && (
+                            <span className="ml-3 bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-xs">
+                              Preview: not released
+                            </span>
                           )}
                         </div>
                         
@@ -338,11 +346,6 @@ export function ModuleLibrary() {
                         </p>
                         
                         <div className="flex items-center text-xs text-gray-500">
-                          {module.requiredForDeposit && module.available && (
-                            <span className="ml-3 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                              Core module
-                            </span>
-                          )}
                         </div>
                       </div>
                       
@@ -350,10 +353,6 @@ export function ModuleLibrary() {
                         {isCompleted ? (
                           <div className="text-green-600 font-semibold text-sm">
                             ✓ Complete
-                          </div>
-                        ) : isComingSoon ? (
-                          <div className="text-gray-400 text-sm">
-                            Coming soon
                           </div>
                         ) : isAccessible ? (
                           <div className="text-primary-600 font-semibold text-sm">
@@ -386,10 +385,7 @@ export function ModuleLibrary() {
             <span className="text-green-400 font-semibold">{completedAvailableCount}</span> Completed
           </div>
           <div>
-            <span className="text-yellow-400 font-semibold">{modules.filter(m => m.available && isModuleAccessible(m) && !completedModules.includes(m.id)).length}</span> Available
-          </div>
-          <div>
-            <span className="text-gray-400 font-semibold">{modules.filter(m => !m.available).length}</span> Coming soon
+            <span className="text-yellow-400 font-semibold">{visibleModules.filter(m => isModuleAccessible(m) && !completedModules.includes(m.id)).length}</span> Available
           </div>
         </div>
       </div>
