@@ -3,7 +3,7 @@ import { ArrowLeft, Shield, Mail } from "lucide-react"
 
 export const metadata = {
   title: "Privacy Policy - Reset Biology",
-  description: "How Reset Biology collects, uses, and protects your data, including our Google Drive Vault integration.",
+  description: "How Reset Biology, a free wellness-tracking and education service, collects, stores and shares your data, including our optional Google Drive integration.",
 }
 
 const sections = [
@@ -18,7 +18,7 @@ const sections = [
   { id: "limited-use", label: "Google Limited Use Disclosure" },
   { id: "your-choices", label: "Your Rights & Choices" },
   { id: "retention", label: "Data Retention" },
-  { id: "children", label: "Children's Privacy" },
+  { id: "children", label: "Who Can Sign Up" },
   { id: "changes", label: "Changes to This Policy" },
   { id: "contact", label: "Contact Us" },
 ]
@@ -50,7 +50,7 @@ export default function PrivacyPolicyPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Your Data, <span className="text-primary-400">Your Ownership</span>
             </h1>
-            <p className="text-gray-400">Last updated: July 14, 2026</p>
+            <p className="text-gray-400">Last updated: October 14, 2026</p>
           </div>
 
           {/* Table of contents */}
@@ -72,14 +72,14 @@ export default function PrivacyPolicyPage() {
             <section id="overview">
               <h2 className="text-2xl font-bold text-white mb-3">Overview</h2>
               <p>
-                Reset Biology ("Reset Biology," "we," "us," or "our") operates a
-                licensed medical provider-led, IRB-approved peptide therapy and
-                metabolic health coaching platform at resetbiology.com (the
-                "Service"). This Privacy Policy explains what information we
-                collect, how we use it, how we store it, and the choices you
-                have — including a dedicated section on our optional Google
-                Drive integration, since that integration is reviewed directly
-                by Google as part of our OAuth verification.
+                Reset Biology ("Reset Biology," "we," "us," or "our") runs a
+                free wellness-tracking and education service at
+                resetbiology.com (the "Service"). Reset Biology does not sell
+                anything on this site and does not take payment. This Privacy
+                Policy explains what we collect, where it is stored, which
+                outside services handle it, and your choices, including our
+                optional Google Drive integration, which Google reviews as
+                part of our app verification.
               </p>
               {/* entity form deliberately unstated — no RB legal entity documented; Satori Enterprises d/b/a link unverified (entity-specialist 2026-07-15) */}
             </section>
@@ -88,29 +88,32 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-bold text-white mb-3">Information We Collect</h2>
               <ul className="space-y-3">
                 <li>
+                  <strong className="text-white">What you tell us when you start.</strong>{" "}
+                  On the Get Started page you give us a name, your email address, what you want to focus on, and the page that sent you. We save this before you create an account, so your portal is ready when you sign in.
+                </li>
+                <li>
                   <strong className="text-white">Account information.</strong>{" "}
-                  We use Auth0 to handle sign-in. When you create an account we
-                  receive your name, email address, and authentication
-                  identifiers from Auth0. We do not store your password — Auth0
-                  handles that.
+                  Sign-in is handled by Auth0. If you choose “Continue with Google,” Google shares your name, email address and profile photo with Auth0, which passes them to us. We never see or store your password. On your first sign-in we create a member record with your email, name, photo, sign-in ID and a member number.
                 </li>
                 <li>
-                  <strong className="text-white">Health and program data you enter.</strong>{" "}
-                  Journal entries, nutrition logs, workout summaries, breath
-                  and vision-training session results, peptide and medication
-                  dosing records, quiz and assessment answers, and any other
-                  information you enter into the app.
+                  <strong className="text-white">What you enter.</strong>{" "}
+                  Journal entries, meals, workouts, check-ins, breath, vision and memory-training sessions, guided-audio completions, daily tasks, peptide and medication protocols and doses, and reminder settings.
                 </li>
                 <li>
-                  <strong className="text-white">Payment information.</strong>{" "}
-                  Payments are processed by our third-party payment processor;
-                  Reset Biology does not store full credit card numbers.
+                  <strong className="text-white">Progress photos.</strong>{" "}
+                  Only if you connect Google Drive. They are stored in your Drive, not in our database.
                 </li>
                 <li>
-                  <strong className="text-white">Usage data.</strong>{" "}
-                  Standard technical data such as pages visited within the
-                  app, session timestamps, and device/browser information
-                  needed to operate the Service.
+                  <strong className="text-white">Voice, chat and uploads.</strong>{" "}
+                  When you talk to a voice coach, your audio and messages are sent to OpenAI to be transcribed and answered. When you type in the chat on a peptide research page, your text is sent to Cloudflare’s AI service. Recordings you choose to upload to the Vocal Trainer are stored with Vercel Blob at a web address that anyone who has the link can open.
+                </li>
+                <li>
+                  <strong className="text-white">Notifications.</strong>{" "}
+                  If you turn on browser notifications, we store the delivery address your browser gives us. Email reminders can name the peptide you are tracking.
+                </li>
+                <li>
+                  <strong className="text-white">Technical data.</strong>{" "}
+                  Our sign-in provider checks your session on each page you visit. We do not use analytics, advertising or tracking scripts.
                 </li>
               </ul>
             </section>
@@ -119,10 +122,11 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-bold text-white mb-3">The Google Drive Vault</h2>
               <div className="bg-gradient-to-br from-primary-900/30 to-secondary-900/30 border border-primary-400/30 rounded-2xl p-6 mb-4">
                 <p className="text-white font-medium">
-                  Your data lives in your Google Drive — we ship the app, you
-                  own the data. This app can only touch files it created; it
-                  cannot see the rest of your Drive. Disconnect anytime — your
-                  files stay yours.
+                  Your data is yours. Everything you log is saved in your
+                  Reset Biology account. Connect Google Drive and we also keep
+                  a copy in a folder you own. This app can only touch files it
+                  created, and cannot see the rest of your Drive. Disconnect
+                  any time; your files stay yours.
                 </p>
               </div>
               <p className="mb-3">
@@ -131,8 +135,8 @@ export default function PrivacyPolicyPage() {
                 workout summaries, breath and vision-training sessions, and
                 peptide/medication dosing records — to a folder named "Reset
                 Biology Data" in <strong className="text-white">your own Google Drive</strong>,
-                so you retain a personal, exportable copy of your data outside
-                our servers.
+                so you keep your own copy that you can open, download and take
+                with you.
               </p>
               <p className="mb-3">
                 <strong className="text-white">What we access.</strong> We use
@@ -147,11 +151,12 @@ export default function PrivacyPolicyPage() {
                 is connected.
               </p>
               <p>
-                <strong className="text-white">How we use it.</strong> Data is
-                written to the folder we create only when you take an action
-                in the Reset Biology app (logging a workout, a meal, a peptide
-                dose, a journal entry, etc.). Connecting the Vault is entirely
-                optional — the Service works without it.
+                <strong className="text-white">How we use it.</strong> About
+                every five minutes we copy your new journal, workout,
+                nutrition-tracker, dose, breath, vision and memory-training
+                records to the folder we created. Progress photos are saved
+                only there. Connecting Drive is optional: every tracker,
+                protocol and reminder works without it.
               </p>
             </section>
 
@@ -162,7 +167,6 @@ export default function PrivacyPolicyPage() {
                 <li>To personalize your program based on the data you provide.</li>
                 <li>To communicate with you about your account, program updates, and support requests.</li>
                 <li>To maintain the security and integrity of the Service.</li>
-                <li>To comply with legal and regulatory obligations related to our IRB-approved research protocol.</li>
               </ul>
               <p className="mt-3">
                 We do not use your health or program data for advertising, and
@@ -173,43 +177,36 @@ export default function PrivacyPolicyPage() {
             <section id="ai-coaching">
               <h2 className="text-2xl font-bold text-white mb-3">AI Coaching & Your Vault Data</h2>
               <p>
-                Reset Biology's AI coaching features are designed to give you
-                personalized guidance based on your own program history. When
-                you use an AI coaching feature and you have connected your
-                Google Drive Vault, our coaching agents may read data from{" "}
-                <strong className="text-white">files our application created
-                in your Drive</strong> — the same journal, nutrition, workout,
-                and dosing records described above — in order to personalize
-                the guidance you receive. This access is limited to files our
-                app created (the same <code className="text-primary-300">drive.file</code> scope
-                described above); our AI coaching features never access files
-                elsewhere in your Drive that our app did not create. If you
-                have not connected the Vault, AI coaching draws only on the
-                data stored in your Reset Biology account.
+                Our voice coaches can tailor their answers to your own
+                history. If you have connected Google Drive, a coach reads the
+                files our app created in your Drive, a shortened summary is
+                sent to OpenAI, and the answer comes back to you. Coaches
+                never open files our app did not create. If you have not
+                connected Drive, coaches answer without your history.
               </p>
             </section>
 
             <section id="cookies">
               <h2 className="text-2xl font-bold text-white mb-3">Cookies & Analytics</h2>
               <p>
-                We use essential cookies to keep you signed in and to maintain
-                your session through our authentication provider (Auth0). As
-                of the effective date of this policy, Reset Biology does not
-                use third-party advertising cookies or third-party tracking
-                pixels on the Service. If that changes, we will update this
-                policy.
+                We use only the cookies needed to keep you signed in, set by
+                our sign-in provider, Auth0. We do not use advertising
+                cookies, analytics or tracking pixels. If that changes, we
+                will update this policy first.
               </p>
             </section>
 
             <section id="storage-security">
               <h2 className="text-2xl font-bold text-white mb-3">Data Storage & Security</h2>
               <p className="mb-3">
-                Your program data is stored in our database (MongoDB) so the
-                app can function. When you connect the Google Drive Vault, a
-                copy of the same data is also written to the Drive folder our
-                app creates for you. OAuth refresh tokens used to write to
-                your Drive are stored{" "}
-                <strong className="text-white">encrypted using AES-256-GCM</strong>.
+                Your account and everything you enter are stored in our
+                database (MongoDB), whether or not you connect Google Drive.
+                That is what lets the app work on every device. If you connect
+                Drive, a copy also goes to the folder our app creates in your
+                Drive. The sign-in keys that let us write to your Drive are
+                stored{" "}
+                <strong className="text-white">encrypted (AES-256-GCM)</strong>;
+                the app refuses to store them any other way.
               </p>
               <p>
                 We use reasonable administrative, technical, and physical
@@ -226,8 +223,7 @@ export default function PrivacyPolicyPage() {
                 it with third parties, except:
               </p>
               <ul className="list-disc list-inside space-y-2 mt-3">
-                <li>With service providers who help us operate the Service (e.g., hosting, payment processing, authentication) under confidentiality obligations.</li>
-                <li>With licensed medical providers involved in your care under our IRB-approved protocol.</li>
+                <li>With the services that run the Service for us: Auth0 (sign-in), Google (only if you connect Drive or sign in with Google), Vercel (hosting and Vocal Trainer uploads), our database host (MongoDB), OpenAI (voice coaches), Cloudflare (peptide-page chat), Resend (emails), your browser&apos;s push service (notifications), and USDA FoodData Central and Open Food Facts (your food searches).</li>
                 <li>When required by law, regulation, legal process, or governmental request.</li>
                 <li>To protect the rights, property, or safety of Reset Biology, our users, or the public.</li>
               </ul>
@@ -268,12 +264,14 @@ export default function PrivacyPolicyPage() {
                   >
                     myaccount.google.com/permissions
                   </a>
-                  . Disconnecting stops future syncs; files already written to
-                  your Drive remain yours and are not deleted by us.
+                  . Disconnecting stops new copies. Files already in your Drive
+                  stay yours and we never delete them, and your Reset Biology
+                  account keeps working the same.
                 </li>
+                <li>Download a copy of your data, or delete your data, yourself from your Profile page (Download my data, Delete my data).</li>
                 <li>Request a copy of the personal data we hold about you.</li>
                 <li>Request correction of inaccurate data.</li>
-                <li>Request deletion of your account and associated data, subject to any records we are required to retain for regulatory or medical-recordkeeping reasons.</li>
+                <li>Request deletion of your account and the data you entered.</li>
               </ul>
               <p className="mt-3">
                 To exercise any of these choices, contact us at{" "}
@@ -287,24 +285,26 @@ export default function PrivacyPolicyPage() {
             <section id="retention">
               <h2 className="text-2xl font-bold text-white mb-3">Data Retention</h2>
               <p>
-                We retain your information for as long as your account is
-                active. If you request deletion of your account (contact{" "}
-                <a href="mailto:support@resetbiology.com" className="text-primary-300 hover:text-primary-200 underline">
-                  support@resetbiology.com
-                </a>
-                ), we delete the copies of your data held on our servers.
-                Files already written to your own Google Drive Vault are
-                yours — we never delete them, whether or not you request
-                account deletion or disconnect the Vault.
+                We keep your account data while your account is open. When
+                you ask us to delete your account, we delete your account and
+                the records you entered from our database. Files in your own
+                Google Drive are yours; we never delete them.
               </p>
             </section>
 
             <section id="children">
-              <h2 className="text-2xl font-bold text-white mb-3">Children's Privacy</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">Who Can Sign Up</h2>
               <p>
-                The Service is intended for adults and is not directed to
-                individuals under 18. We do not knowingly collect personal
-                information from children under 18.
+                Anyone can create an account. We don&apos;t ask your age and
+                don&apos;t check it, because nothing is sold on this site. The
+                Service is not designed for children under 13, and we do not
+                knowingly collect personal information from a child under 13.
+                If you are a parent or guardian and believe your child under 13
+                has an account, email{" "}
+                <a href="mailto:support@resetbiology.com" className="text-primary-300 hover:text-primary-200 underline">
+                  support@resetbiology.com
+                </a>{" "}
+                and we will delete it.
               </p>
             </section>
 

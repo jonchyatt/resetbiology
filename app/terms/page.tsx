@@ -3,7 +3,7 @@ import { ArrowLeft, FileText, Mail } from "lucide-react"
 
 export const metadata = {
   title: "Terms of Service - Reset Biology",
-  description: "Terms of Service for the Reset Biology peptide therapy and metabolic health coaching platform.",
+  description: "Terms of Service for Reset Biology, a free wellness-tracking and education service.",
 }
 
 const sections = [
@@ -13,7 +13,7 @@ const sections = [
   { id: "accounts", label: "Account Responsibilities" },
   { id: "acceptable-use", label: "Acceptable Use" },
   { id: "vault-integration", label: "Google Drive Vault Integration" },
-  { id: "payments", label: "Payments & Subscriptions" },
+  { id: "payments", label: "No Payments" },
   { id: "intellectual-property", label: "Intellectual Property" },
   { id: "termination", label: "Termination" },
   { id: "disclaimers", label: "Disclaimers" },
@@ -50,7 +50,7 @@ export default function TermsOfServicePage() {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Terms of <span className="text-primary-400">Service</span>
             </h1>
-            <p className="text-gray-400">Last updated: July 14, 2026</p>
+            <p className="text-gray-400">Last updated: October 14, 2026</p>
           </div>
 
           {/* Table of contents */}
@@ -85,13 +85,15 @@ export default function TermsOfServicePage() {
             <section id="the-service">
               <h2 className="text-2xl font-bold text-white mb-3">The Service</h2>
               <p>
-                Reset Biology is a licensed medical provider-led, IRB-approved
-                research program and coaching platform focused on peptide
-                therapy and metabolic health. The Service includes
-                educational content, guided training modules (breath,
-                vision, workout, nutrition), a client portal, an optional
-                Google Drive Vault integration for exporting your own data,
-                and AI-assisted coaching features.
+                Reset Biology is a free wellness-tracking and education
+                service. It includes educational content and research
+                summaries, guided training tools (breath, vision, memory, ear
+                and voice training, workout, nutrition and guided audio), a
+                protocol and dose tracker, a member portal, an optional Google
+                Drive integration that keeps your own copy of your data, and
+                AI-assisted coaching. Reset Biology does not provide medical
+                care, does not sell anything on this site, and takes no
+                payment.
               </p>
             </section>
 
@@ -102,12 +104,12 @@ export default function TermsOfServicePage() {
                   The Service, including any educational content, research
                   summaries, protocol descriptions, and AI-generated coaching
                   responses, is provided for informational and educational
-                  purposes as part of an IRB-approved research protocol. It is{" "}
+                  purposes only. It is{" "}
                   <strong className="text-white">not a substitute for
                   individualized medical advice, diagnosis, or treatment</strong>{" "}
                   from your own qualified healthcare provider. Peptide therapy
                   and related protocols carry individual risks; always consult
-                  your licensed medical provider before starting, stopping, or
+                  your own healthcare provider before starting, stopping, or
                   changing any therapy, medication, or dosing regimen, and
                   before making decisions based on content from the Service.
                   If you believe you are experiencing a medical emergency,
@@ -122,7 +124,7 @@ export default function TermsOfServicePage() {
                 <li>You must provide accurate information when creating your account and keep it up to date.</li>
                 <li>You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.</li>
                 <li>You must notify us promptly at <a href="mailto:support@resetbiology.com" className="text-primary-300 hover:text-primary-200 underline">support@resetbiology.com</a> of any unauthorized use of your account.</li>
-                <li>You must be at least 18 years old to create an account.</li>
+                <li>Anyone may create an account; we do not check age. If you are under 18, use the Service with a parent&apos;s or guardian&apos;s permission. The Service is not designed for children under 13.</li>
               </ul>
             </section>
 
@@ -152,20 +154,19 @@ export default function TermsOfServicePage() {
                 </Link>
                 . Connecting this integration is optional, governed by Google's
                 own terms of service in addition to these Terms, and may be
-                disconnected by you at any time. We are not responsible for
+                disconnected by you at any time. Your Reset Biology account
+                does not depend on it. We are not responsible for
                 the availability, performance, or policies of Google's
                 services.
               </p>
             </section>
 
             <section id="payments">
-              <h2 className="text-2xl font-bold text-white mb-3">Payments & Subscriptions</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">No Payments</h2>
               <p>
-                Certain features of the Service require payment. Fees are
-                disclosed to you before you are charged. Payments are
-                processed by our third-party payment processor. Except where
-                required by law or explicitly stated at time of purchase,
-                fees are non-refundable.
+                The Service is free and nothing is sold on this site. If that
+                ever changes, we will update these Terms before any payment is
+                taken.
               </p>
             </section>
 
@@ -216,7 +217,7 @@ export default function TermsOfServicePage() {
               <h2 className="text-2xl font-bold text-white mb-3">Limitation of Liability</h2>
               <p>
                 To the fullest extent permitted by law, Reset Biology and its
-                officers, employees, and licensed providers will not be
+                officers and employees will not be
                 liable for any indirect, incidental, special, consequential,
                 or punitive damages, or any loss of data, profits, or
                 goodwill, arising out of or related to your use of the
