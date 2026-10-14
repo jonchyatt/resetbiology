@@ -57,7 +57,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Foundation',
     order: 4,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm5-metabolic-awakening',
@@ -68,7 +68,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Foundation',
     order: 5,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm6-craving-decoder',
@@ -79,7 +79,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Foundation',
     order: 6,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm7-energy-surge',
@@ -90,7 +90,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Foundation',
     order: 7,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm8-plate-prophet',
@@ -101,7 +101,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Foundation',
     order: 8,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm9-stress-dissolve',
@@ -112,7 +112,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Foundation',
     order: 9,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm10-restaurant-ritual',
@@ -123,7 +123,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Foundation',
     order: 10,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm11-weekend-warrior',
@@ -134,7 +134,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 11,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm12-travel-transform',
@@ -145,7 +145,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 12,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm13-family-navigator',
@@ -156,7 +156,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 13,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm14-office-optimizer',
@@ -167,7 +167,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 14,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm15-exercise-enthusiast',
@@ -178,7 +178,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 15,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm16-sleep-sculptor',
@@ -189,7 +189,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 16,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm17-hydration-highway',
@@ -200,7 +200,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 17,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm18-grocery-guardian',
@@ -211,7 +211,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 18,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm19-prep-prophet',
@@ -222,7 +222,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 19,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm20-progress-protector',
@@ -233,7 +233,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Integration',
     order: 20,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm22-identity-integration',
@@ -244,7 +244,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 22,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm24-celebration-circuit',
@@ -255,7 +255,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 24,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm25-mentor-mindset',
@@ -266,7 +266,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 25,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm26-lifetime-learner',
@@ -277,7 +277,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 26,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm27-resilience-response',
@@ -288,7 +288,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 27,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm28-victory-visualization',
@@ -299,7 +299,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 28,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm29-community-champion',
@@ -310,7 +310,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 29,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm30-freedom-formula',
@@ -321,7 +321,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Mastery',
     order: 30,
     available: true,
-    released: false,
+    released: true,
   },
   {
     id: 'mmm-bonus-cortisol-crusher',
@@ -332,7 +332,7 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
     category: 'Bonus',
     order: 999,
     available: true,
-    released: false,
+    released: true,
   },
   // Earlier entries kept for the record: the 0:31 clip (admin preview) and six that never had audio (hidden).
   {
