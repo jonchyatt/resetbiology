@@ -7,10 +7,12 @@ import { useToast } from "@/components/ui/Toast"
 import { useUser } from "@auth0/nextjs-auth0"
 import { AUDIO_LIBRARY, type AudioLibraryEntry } from "@/data/audio-library"
 
-export function ModuleLibrary() {
+export function ModuleLibrary({ isAdmin: isAdminFromServer = false }: { isAdmin?: boolean } = {}) {
   const toast = useToast()
   const { user } = useUser()
-  const isAdmin = ((user as any)?.['https://resetbiology.com/claims/role'] ?? (user as any)?.role) === 'admin'
+  // The server checks the database role too (same rule as /admin); the token claim alone misses admins
+  // whose login (e.g. Google) carries no role claim.
+  const isAdmin = isAdminFromServer || ((user as any)?.['https://resetbiology.com/claims/role'] ?? (user as any)?.role) === 'admin'
   const [selectedModule, setSelectedModule] = useState<AudioLibraryEntry | null>(null)
   const [completedModules, setCompletedModules] = useState<string[]>([])
   const [isSaving, setIsSaving] = useState(false)

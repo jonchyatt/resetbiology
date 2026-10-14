@@ -1,7 +1,9 @@
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
 import { ModuleLibrary } from "@/components/Audio/ModuleLibrary"
+import { isAdminRequest } from "@/lib/adminGuard"
 
-export default function ModulesPage() {
+export default async function ModulesPage() {
+  const isAdmin = await isAdminRequest()
   return (
     <ProtectedRoute>
       <div
@@ -32,7 +34,7 @@ export default function ModulesPage() {
           </div>
           <div className="container mx-auto px-4 py-8">
             <div className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30">
-              <ModuleLibrary />
+              <ModuleLibrary isAdmin={isAdmin} />
             </div>
           </div>
         </div>
