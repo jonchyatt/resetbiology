@@ -52,6 +52,10 @@ export default async function Home() {
                 We sell nothing. {/* src: LMP §00 */}
               </p>
             </div>
+            <p className="rb-hero-rise mt-8 inline-flex items-center gap-2 rounded-full border border-primary-400/30 bg-primary-950/40 px-3 py-1 text-sm text-primary-100">
+              <span className="font-semibold text-primary-300">Sign in with ChatGPT:</span> integration coming soon
+              {/* src: OpenAI partner interest form submitted 2026-10-14 (jarvis data/rb-byo-chatgpt/SUBMITTED-RECEIPT-2026-10-14.md); not live, not approved */}
+            </p>
           </div>
         </div>
       </section>
