@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Mail } from "lucide-react"
 import { usePathname } from "next/navigation"
+import { NewsletterSignup } from "@/components/Newsletter/NewsletterSignup"
 
 // Full-screen Pitch Defender games own the entire viewport. Rendering the
 // site footer beside a fixed game stage makes its logo cover live gameplay.
@@ -20,6 +21,9 @@ export function Footer() {
 
   return (
     <footer className="border-t border-white/10 bg-slate-950 px-4 py-12 text-slate-300">
+      <div className="mx-auto mb-8 max-w-xl">
+        <NewsletterSignup source="footer" />
+      </div>
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1fr_auto] md:items-start">
         <div className="max-w-2xl">
           <img src="/reset-logo-pro.png" alt="Reset Biology" draggable={false} decoding="async" width={64} height={64} className="h-16 w-auto object-contain mix-blend-lighten" />

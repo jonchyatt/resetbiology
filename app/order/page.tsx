@@ -1,7 +1,13 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PortalHeader } from '@/components/Navigation/PortalHeader';
+
+export const metadata: Metadata = {
+  title: 'The peptide co-op connection',
+  description:
+    'Reset Biology sells nothing and takes no payment on this site. Ordering and management happen through a member-owned peptide co-op run by Adam Hyatt, FNP, at Zion Direct Care under his own license.',
+  alternates: { canonical: '/order' },
+};
 
 export default function PeptideCoopPage() {
   return (

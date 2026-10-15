@@ -6,6 +6,10 @@ import PeptideChatBox from '@/components/PeptideChat/PeptideChatBox';
 
 type Props = { params: Promise<{ slug: string }> };
 
+function buildPeptideDescription(card: NonNullable<ReturnType<typeof getPeptide>>) {
+  return `${card.peptide} cross-expert reference: dosing protocols, acute vs chronic context, female-specific guidance, and Reset Biology synthesis. ${Object.values(card.experts).reduce((s: number, e: any) => s + (e.summary?.mention_count || 0), 0)} cited mentions across podcast and newsletter sources.`;
+}
+
 export async function generateStaticParams() {
   return listPeptideSlugs().map(slug => ({ slug }));
 }
@@ -13,10 +17,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const card = getPeptide(slug);
-  if (!card) return { title: 'Peptide not found | Reset Biology' };
+  if (!card) return { title: { absolute: 'Peptide not found | Reset Biology' } };
   return {
-    title: `${card.peptide} — Hunter, Taylor, Bachmeyer | Reset Biology`,
-    description: `${card.peptide} cross-expert reference: dosing protocols, acute vs chronic context, female-specific guidance, and Reset Biology synthesis. ${Object.values(card.experts).reduce((s: number, e: any) => s + (e.summary?.mention_count || 0), 0)} cited mentions across podcast and newsletter sources.`,
+    title: { absolute: `${card.peptide} — Hunter, Taylor, Bachmeyer | Reset Biology` },
+    description: buildPeptideDescription(card),
     alternates: { canonical: `/education/peptides/${slug}` },
   };
 }
@@ -76,11 +80,22 @@ export default async function PeptidePage({ params }: Props) {
     mentions: card.aliases.map(alt => ({ '@type': 'Thing', name: alt })),
   };
 
+  const article = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: card.peptide,
+    about: card.peptide,
+    author: { '@type': 'Organization', name: 'Reset Biology' },
+    publisher: { '@type': 'Organization', name: 'Reset Biology' },
+    mainEntityOfPage: `https://resetbiology.com/education/peptides/${slug}`,
+    description: buildPeptideDescription(card),
+  };
+
   return (
     <div className="min-h-screen bg-black relative">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, article]) }}
       />
 
       <div className="fixed inset-0 z-0">

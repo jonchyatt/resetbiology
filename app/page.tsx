@@ -1,8 +1,27 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import type { Metadata } from "next"
 import { FAQSection } from "@/components/Hero/FAQSection"
 import { auth0 } from "@/lib/auth0"
 import { prisma } from "@/lib/prisma"
+
+export const metadata: Metadata = { alternates: { canonical: "/" } }
+
+const organization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Reset Biology",
+  url: "https://resetbiology.com",
+  logo: "https://resetbiology.com/apple-touch-icon.png",
+  description: "Free account, check-in, nutrition, breath and mind training, journal. Reset Biology sells nothing, takes no payment. Education and tools, not medical advice.",
+}
+
+const website = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Reset Biology",
+  url: "https://resetbiology.com",
+}
 
 export default async function Home() {
   const session = await auth0.getSession()
@@ -22,6 +41,7 @@ export default async function Home() {
 
   return (
     <main className="bg-slate-950 text-slate-100">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([organization, website]) }} />
       <aside className="border-b border-primary-400/25 bg-slate-900 px-4 py-3 text-center text-sm text-slate-200">
         Free. Funded by the Satori Living Foundation. {/* src: LMP §00 */}
       </aside>

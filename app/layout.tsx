@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { Viewport } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { Header } from '@/components/Navigation/Header';
@@ -12,6 +12,9 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
 
+const ROOT_DEFAULT_TITLE = 'Reset Biology: free tools to run your own biology';
+const ROOT_DEFAULT_DESCRIPTION = 'Free account, check-in, nutrition, breath and mind training, journal. Reset Biology sells nothing, takes no payment. Education and tools, not medical advice.';
+
 export const viewport: Viewport = {
   themeColor: '#020617',
   colorScheme: 'dark',
@@ -19,7 +22,18 @@ export const viewport: Viewport = {
   interactiveWidget: 'resizes-content',
 };
 
-export const metadata = { title: 'ResetBiology' };
+export const metadata: Metadata = {
+  metadataBase: new URL('https://resetbiology.com'),
+  title: { default: ROOT_DEFAULT_TITLE, template: '%s | Reset Biology' },
+  description: ROOT_DEFAULT_DESCRIPTION,
+  openGraph: {
+    siteName: 'Reset Biology',
+    type: 'website',
+    title: ROOT_DEFAULT_TITLE,
+    description: ROOT_DEFAULT_DESCRIPTION,
+  },
+  twitter: { card: 'summary' },
+};
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   // Server-side session read so Auth0Provider can seed useUser()'s SWR cache
