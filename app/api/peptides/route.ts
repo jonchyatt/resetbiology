@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
       where: {
         active: true,
         storefront: true,
+        category: { not: 'non-peptide' },
         isTrackable: true  // Only show trackable products in peptide dropdown
       },
       select: {

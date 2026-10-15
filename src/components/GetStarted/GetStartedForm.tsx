@@ -143,8 +143,7 @@ export function GetStartedForm() {
               {submitting ? "One moment…" : "Create my free account"}
             </button>
             <p className="mt-3 text-sm text-slate-400">
-              Next you&apos;ll create a sign-in, then land in your portal. No payment, ever, on this
-              path.
+              Next you&apos;ll get a one-time code by email (or continue with Google), then land in your portal. No payment, ever, on this path.
             </p>
           </div>
         </form>

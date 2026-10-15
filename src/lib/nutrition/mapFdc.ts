@@ -1,3 +1,4 @@
+// FDC lists Energy twice (KJ and KCAL); a raw banana read 371 (kJ) on 2026-10-15, ev_b699d196.
 import type { NormalizedFood, Nutrients } from './types';
 
 type FdcFood = {
@@ -13,9 +14,17 @@ type FdcFood = {
   }>;
 };
 
-const findNutrient = (nutrients: FdcFood['foodNutrients'], name: string): number | null => {
+const findNutrient = (
+  nutrients: FdcFood['foodNutrients'],
+  name: string,
+  unit?: string,
+): number | null => {
   if (!nutrients) return null;
-  const hit = nutrients.find((nutrient) => nutrient.nutrientName?.toLowerCase().includes(name.toLowerCase()));
+  const hit = nutrients.find(
+    (nutrient) =>
+      nutrient.nutrientName?.toLowerCase().includes(name.toLowerCase()) &&
+      (!unit || nutrient.unitName?.toUpperCase() === unit),
+  );
   return typeof hit?.value === 'number' ? hit.value : null;
 };
 
@@ -24,7 +33,7 @@ export function mapFdcFood(food: FdcFood): NormalizedFood {
     food.servingSize && food.servingSizeUnit ? 'serving' : '100g';
 
   const nutrients: Nutrients = {
-    kcal: findNutrient(food.foodNutrients, 'Energy') ?? null,
+    kcal: findNutrient(food.foodNutrients, 'Energy', 'KCAL') ?? null,
     protein_g: findNutrient(food.foodNutrients, 'Protein') ?? null,
     fat_g: findNutrient(food.foodNutrients, 'Total lipid') ?? null,
     carb_g: findNutrient(food.foodNutrients, 'Carbohydrate') ?? null,

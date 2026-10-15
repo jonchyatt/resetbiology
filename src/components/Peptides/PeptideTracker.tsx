@@ -184,6 +184,18 @@ export type DoseSlot = {
   period: "am" | "pm" | "any";
 };
 
+export function normalizeSlotId(id: string): string {
+  return /^\d+$/.test(id) ? `slot-${id}` : id;
+}
+
+function normalizeSlotKey(slotKey: string): string {
+  const separatorIndex = slotKey.lastIndexOf("::");
+  if (separatorIndex === -1) return slotKey;
+  return `${slotKey.slice(0, separatorIndex + 2)}${normalizeSlotId(
+    slotKey.slice(separatorIndex + 2),
+  )}`;
+}
+
 type DoseScheduleDecision = "scheduled" | "off_schedule" | "unknown";
 
 export type CalendarSlotRecord = {
@@ -311,8 +323,15 @@ export function matchCompletionSlot({
   existingSlotKey?: string;
 }): DoseSlot | undefined {
   // A canonical slot key is durable identity. Prefer it over all inference.
+  const normalizedExistingSlotKey = existingSlotKey
+    ? normalizeSlotKey(existingSlotKey)
+    : undefined;
   const durableMatch = slots.find(
-    (slot) => existingSlotKey === buildPeptideDoseSlotKey(protocolId, localDay, slot.id),
+    (slot) => normalizedExistingSlotKey === buildPeptideDoseSlotKey(
+      protocolId,
+      localDay,
+      normalizeSlotId(slot.id),
+    ),
   );
   if (durableMatch) return durableMatch;
   if (existingSlotKey) return undefined;
@@ -329,8 +348,10 @@ export function reconcileCalendarSlotRecords(
   scheduled: CalendarSlotRecord[],
   completed: CalendarSlotRecord[],
 ): CalendarSlotRecord[] {
-  const pending = new Map(scheduled.map((record) => [record.slotKey, record]));
-  completed.forEach((record) => pending.delete(record.slotKey));
+  const pending = new Map(
+    scheduled.map((record) => [normalizeSlotKey(record.slotKey), record]),
+  );
+  completed.forEach((record) => pending.delete(normalizeSlotKey(record.slotKey)));
   // Every historical log remains visible. A matching pending slot is consumed
   // at most once, so duplicate historical logs cannot overwrite each other.
   return [...completed, ...pending.values()];
@@ -343,7 +364,10 @@ export function selectDoseEntrySlot<T extends { id: string; scheduledTime: strin
   if (requestedScheduledDoseId) {
     // A stale clicked row is not permission to switch the member to another
     // slot. Fail closed and let the next render offer the currently valid row.
-    return pendingSlots.find((slot) => slot.id === requestedScheduledDoseId);
+    return pendingSlots.find(
+      (slot) =>
+        normalizeSlotKey(slot.id) === normalizeSlotKey(requestedScheduledDoseId),
+    );
   }
   return [...pendingSlots].sort(
     (a, b) => scheduledTimeSortValue(a.scheduledTime) - scheduledTimeSortValue(b.scheduledTime),
@@ -370,10 +394,10 @@ export function resolveDoseEntryIntent<T extends { id: string; scheduledTime: st
   }
 
   const currentPendingSlots = pendingSlots.filter((slot) =>
-    currentValidScheduledDoseIds.has(slot.id));
+    currentValidScheduledDoseIds.has(normalizeSlotKey(slot.id)));
   if (
     requestedScheduledDoseId
-    && !currentValidScheduledDoseIds.has(requestedScheduledDoseId)
+    && !currentValidScheduledDoseIds.has(normalizeSlotKey(requestedScheduledDoseId))
   ) {
     return { kind: "abort" };
   }
@@ -397,6 +421,7 @@ interface DoseEntry {
   scheduledTime: string | null;
   actualTime?: string;
   localTime?: string | null;
+  dosage?: string;
   completed: boolean;
   notes?: string;
   sideEffects?: string[];
@@ -536,6 +561,7 @@ export function PeptideTracker() {
                 completed: true,
                 actualTime: dose.doseDate,
                 localTime: dose.localTime || null,
+                dosage: typeof dose.dosage === "string" ? dose.dosage : undefined,
                 notes: dose.notes || dose.sideEffects || "",
                 sideEffects: dose.sideEffects
                   ? String(dose.sideEffects)
@@ -544,7 +570,10 @@ export function PeptideTracker() {
                       .filter(Boolean)
                   : undefined,
                 dateKey: doseDateKey,
-                slotKey: typeof dose.slotKey === "string" ? dose.slotKey : undefined,
+                slotKey:
+                  typeof dose.slotKey === "string"
+                    ? normalizeSlotKey(dose.slotKey)
+                    : undefined,
               } as DoseEntry | null;
             })
             .filter(Boolean) as DoseEntry[];
@@ -635,8 +664,12 @@ export function PeptideTracker() {
                   protocolId: protocol.id,
                   protocolName: protocol.name,
                   localDay,
-                  slotId: slot.id,
-                  slotKey: buildPeptideDoseSlotKey(protocol.id, localDay, slot.id),
+                  slotId: normalizeSlotId(slot.id),
+                  slotKey: buildPeptideDoseSlotKey(
+                    protocol.id,
+                    localDay,
+                    normalizeSlotId(slot.id),
+                  ),
                   scheduledTime: slot.time,
                   status: "pending",
                 });
@@ -687,9 +720,15 @@ export function PeptideTracker() {
         : undefined;
       // Older rows without a durable, unambiguous slot ID remain visible but
       // cannot consume an AM/PM or same-day sibling slot.
-      const slotId = matchedSlot?.id || `legacy-${dose?.id || "dose"}`;
+      const slotId = matchedSlot
+        ? normalizeSlotId(matchedSlot.id)
+        : `legacy-${dose?.id || "dose"}`;
       const slotKey = matchedSlot
-        ? buildPeptideDoseSlotKey(protocolId, localDay, matchedSlot.id)
+        ? buildPeptideDoseSlotKey(
+            protocolId,
+            localDay,
+            normalizeSlotId(matchedSlot.id),
+          )
         : `display-only::${protocolId}::${localDay}::${slotId}`;
 
       return [{
@@ -1131,7 +1170,8 @@ export function PeptideTracker() {
         // Bacteriostatic Water). Kept empty/zero — the member must type or
         // pick a real prep in the calculator (RegimenSourcePicker / manual
         // entry), never inherit a placeholder as if it were real.
-        const formattedLibrary = products.map((product: any) => ({
+        // RB-FIX-1 I-6: picker lists tracker peptides only (live storefront: Bacteriostatic Water category=null, isTrackable=false)
+        const formattedLibrary = products.filter((product: any) => product.isTrackable === true).map((product: any) => ({
           id: product.id,
           name: product.name,
           purpose: product.description?.substring(0, 50) || "General",
@@ -1449,7 +1489,11 @@ export function PeptideTracker() {
             ? {
                 ...dose,
                 scheduledTime: matched.time,
-                slotKey: buildPeptideDoseSlotKey(protocol.id, dayKey, matched.id),
+                slotKey: buildPeptideDoseSlotKey(
+                  protocol.id,
+                  dayKey,
+                  normalizeSlotId(matched.id),
+                ),
               }
             : dose;
         });
@@ -1462,15 +1506,21 @@ export function PeptideTracker() {
               dose.dateKey === dayKey &&
               activeIds.has(dose.peptideId),
           )
-          .map((dose) => [dose.id, dose]),
+          .map((dose) => [normalizeSlotKey(dose.id), dose]),
       );
 
       const hasLoggedForSlot = (
         protocolId: string,
         slot: DoseSlot,
       ) => {
-        const slotKey = buildPeptideDoseSlotKey(protocolId, dayKey, slot.id);
-        return logged.some((dose) => dose.slotKey === slotKey);
+        const slotKey = buildPeptideDoseSlotKey(
+          protocolId,
+          dayKey,
+          normalizeSlotId(slot.id),
+        );
+        return logged.some(
+          (dose) => dose.slotKey && normalizeSlotKey(dose.slotKey) === slotKey,
+        );
       };
 
       activeProtocols.forEach((protocol) => {
@@ -1487,7 +1537,11 @@ export function PeptideTracker() {
           return;
         }
         slotsForProtocol(protocol).forEach((slot) => {
-          const pendingId = buildPeptideDoseSlotKey(protocol.id, dayKey, slot.id);
+          const pendingId = buildPeptideDoseSlotKey(
+            protocol.id,
+            dayKey,
+            normalizeSlotId(slot.id),
+          );
           const alreadyLogged = hasLoggedForSlot(protocol.id, slot);
           const alreadyPending = pendingMap.has(pendingId);
 
@@ -1628,7 +1682,11 @@ export function PeptideTracker() {
     const currentLocalDay = dateToLocalKey(today);
     const currentValidScheduledDoseIds = new Set(
       slotsForProtocol(protocol).map((slot) =>
-        buildPeptideDoseSlotKey(protocol.id, currentLocalDay, slot.id)),
+        buildPeptideDoseSlotKey(
+          protocol.id,
+          currentLocalDay,
+          normalizeSlotId(slot.id),
+        )),
     );
 
     const entryIntent = resolveDoseEntryIntent(
@@ -1646,18 +1704,10 @@ export function PeptideTracker() {
       return;
     }
 
-    // Row 34 LOW (mutation-arc parity contract): the contract's literal
-    // phrase is "…already logged today…" (no "for all doses"). Deliberately
-    // NOT matched byte-for-byte — "for all doses" is load-bearing on this
-    // exact H6 gate two lines above, which only fires once every slot for a
-    // twice-daily (AM+PM) protocol is completed. Dropping "for all doses"
-    // would make the alert read as if the whole protocol is done for the day
-    // even on a single-dose completion, which H6 explicitly guards against.
-    // Amending the contract's expectation here rather than the code.
+    // Once every scheduled slot is complete, another entry is explicitly
+    // off-schedule rather than blocked.
     if (todaysScheduledDoses.length > 0 && todaysPendingDoses.length === 0) {
-      alert(
-        `${protocol.name} already logged for all doses today. Check completed doses in your history.`,
-      );
+      openDoseEntry(protocol, undefined, true);
       return;
     }
 
@@ -1676,7 +1726,18 @@ export function PeptideTracker() {
   const openEditModal = (protocol: PeptideProtocol) => {
     setEditingProtocol(protocol);
     setCustomDosage(protocol.dosage);
-    setCustomFrequency(protocol.frequency);
+    setCustomFrequency(
+      [
+        "Daily",
+        "Every other day",
+        "3x per week",
+        "2x per week",
+        "5 days on, 2 days off",
+        "Once per week",
+      ].includes(protocol.frequency)
+        ? protocol.frequency
+        : "",
+    );
     setCustomTiming(protocol.timing);
     setCustomDuration(protocol.duration);
 
@@ -1811,21 +1872,38 @@ export function PeptideTracker() {
     // (the normal path); fall back to the protocol's own schedule for the
     // unscheduled-override path where there's no pending row id.
     const pendingSlot = todaysDoses.find(
-      (dose) => dose.id === selectedProtocol.scheduledDoseId,
+      (dose) =>
+        selectedProtocol.scheduledDoseId
+        && normalizeSlotKey(dose.id)
+          === normalizeSlotKey(selectedProtocol.scheduledDoseId),
     );
-    // Scheduled writes require the exact clicked pending row. If it vanished
-    // or lost its canonical key, fail closed before the POST. A truly
-    // off-schedule entry has no row and intentionally omits slotKey.
+    // A missing or changed scheduled row becomes an explicit off-schedule
+    // entry before any POST. A truly off-schedule entry omits slotKey.
     if (
       (!selectedProtocol.hasNoScheduledRow && !pendingSlot?.slotKey) ||
-      (selectedProtocol.scheduledDoseId && pendingSlot?.id !== selectedProtocol.scheduledDoseId)
+      (selectedProtocol.scheduledDoseId
+        && (!pendingSlot
+          || normalizeSlotKey(pendingSlot.id)
+            !== normalizeSlotKey(selectedProtocol.scheduledDoseId)))
     ) {
+      setSelectedProtocol({
+        ...selectedProtocol,
+        scheduledDoseId: undefined,
+        hasNoScheduledRow: true,
+      });
       return;
     }
     const scheduledTime =
       pendingSlot?.scheduledTime ??
       slotsForProtocol(selectedProtocol)[0]?.time ??
       loggedTime24h;
+    // Server validation still stores a single-time slot as ::0. Keep the UI
+    // normalized to ::slot-0 and translate only at this persistence boundary.
+    const slotKeyForPost = selectedProtocol.hasNoScheduledRow
+      ? undefined
+      : slotsForProtocol(selectedProtocol)[0]?.id === "0"
+        ? pendingSlot?.slotKey?.replace(/::slot-0$/, "::0")
+        : pendingSlot?.slotKey;
 
     // Save dose to database
     try {
@@ -1843,7 +1921,7 @@ export function PeptideTracker() {
           doseDate: now.toISOString(),
           localDate: `${year}-${month}-${day}`,
           localTime: `${hours}:${minutes}:${seconds}`,
-          slotKey: pendingSlot?.slotKey,
+          slotKey: slotKeyForPost,
         }),
       });
 
@@ -1862,6 +1940,10 @@ export function PeptideTracker() {
           scheduledTime,
           actualTime: now.toISOString(),
           localTime: `${hours}:${minutes}:${seconds}`,
+          dosage:
+            typeof data.dose?.dosage === "string"
+              ? data.dose.dosage
+              : selectedProtocol.dosage,
           completed: true,
           notes: doseNotes || undefined,
           sideEffects: doseSideEffects.length > 0 ? doseSideEffects : undefined,
@@ -1869,7 +1951,9 @@ export function PeptideTracker() {
           // The server is authoritative for persisted identity. Never
           // reconstruct a completed slot from the client request/fallback.
           slotKey:
-            typeof data.dose?.slotKey === "string" ? data.dose.slotKey : undefined,
+            typeof data.dose?.slotKey === "string"
+              ? normalizeSlotKey(data.dose.slotKey)
+              : undefined,
         };
 
         // H6: remove only the SPECIFIC pending slot being completed (the
@@ -1887,7 +1971,7 @@ export function PeptideTracker() {
             // this protocol" behavior, which is a no-op risk only when
             // there's just one slot to begin with.
             if (!targetId) return false;
-            return dose.id !== targetId;
+            return normalizeSlotKey(dose.id) !== normalizeSlotKey(targetId);
           });
           // Add the new completed dose
           return [
@@ -2023,7 +2107,7 @@ export function PeptideTracker() {
             <div className="min-w-0">
               <p className="font-semibold text-white truncate">{name}</p>
               <p className="text-sm text-white/70 truncate">
-                {protocol?.dosage ? `${protocol.dosage} · ` : ""}
+                {dose.dosage ? `${dose.dosage} · ` : ""}
                 {timeLabel}
               </p>
             </div>
@@ -2118,12 +2202,20 @@ export function PeptideTracker() {
         (nextDoseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
       );
       if (daysUntil === 0) {
-        statusBadge = {
-          text: nextDoseTime
-            ? `Coming Due: ${nextDoseTime}`
-            : "Coming Due Today",
-          className: "bg-amber-500/20 text-amber-300 border-amber-400/40",
-        };
+        const isOverdue =
+          nextDoseTime !== null
+          && nextDoseTime < new Date().toTimeString().slice(0, 5);
+        statusBadge = isOverdue
+          ? {
+              text: `Overdue: ${nextDoseTime}`,
+              className: "bg-red-500/20 text-red-300 border-red-400/40",
+            }
+          : {
+              text: nextDoseTime
+                ? `Coming Due: ${nextDoseTime}`
+                : "Coming Due Today",
+              className: "bg-amber-500/20 text-amber-300 border-amber-400/40",
+            };
       } else if (daysUntil === 1) {
         statusBadge = {
           text: "Coming Due Tomorrow",
@@ -3116,7 +3208,11 @@ export function PeptideTracker() {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 max-w-md w-full border border-primary-400/30 shadow-2xl">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-white">Log Dose</h3>
+                <h3 className="text-xl font-bold text-white">
+                  {selectedProtocol.hasNoScheduledRow
+                    ? "Extra dose (off schedule)"
+                    : "Log Dose"}
+                </h3>
                 <button
                   onClick={() => setShowDoseModal(false)}
                   className="text-gray-400 hover:text-white transition-colors"

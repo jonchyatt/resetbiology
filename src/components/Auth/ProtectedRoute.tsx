@@ -2,6 +2,23 @@
 
 import { ReactNode, useEffect, useState } from "react"
 
+const PUBLIC_PATHS = [
+  "/",
+  "/get-started",
+  "/order",
+  "/education",
+  "/specialists",
+  "/breath",
+  "/terms",
+  "/privacy",
+  "/contact",
+  "/about"
+]
+
+function isPublicPath(pathname: string) {
+  return PUBLIC_PATHS.some(path => pathname === path || pathname.startsWith(`${path}/`))
+}
+
 interface ProtectedRouteProps {
   children: ReactNode
   fallback?: ReactNode
@@ -12,8 +29,11 @@ export function ProtectedRoute({
   fallback
 }: ProtectedRouteProps) {
   const [status, setStatus] = useState<"checking" | "authed">("checking")
+  const publicPath =
+    typeof window !== "undefined" && isPublicPath(window.location.pathname)
 
   useEffect(() => {
+    if (publicPath) return
     let cancelled = false
     fetch("/auth/profile")
       .then(res => {
@@ -32,7 +52,11 @@ export function ProtectedRoute({
         }
       })
     return () => { cancelled = true }
-  }, [])
+  }, [publicPath])
+
+  if (publicPath) {
+    return <>{children}</>
+  }
 
   if (status !== "authed") {
     return <>{fallback ?? null}</>

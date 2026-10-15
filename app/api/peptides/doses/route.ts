@@ -151,6 +151,16 @@ export async function POST(request: Request) {
       }
     })
 
+    try {
+      await appendPeptideDoseToJournal(user.id, dose.doseDate, {
+        peptideName: protocol.peptides.name,
+        dosage,
+        timeLabel: localTime || time || dose.doseDate.toISOString().slice(11, 16),
+      })
+    } catch (err) {
+      console.error('journal append failed', err)
+    }
+
     // Mark 'peptides' daily task as completed
     const today = startOfDay(new Date())
     await prisma.dailyTask.upsert({

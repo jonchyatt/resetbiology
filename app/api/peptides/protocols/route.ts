@@ -13,6 +13,26 @@ import {
   updateProtocol,
 } from '@/lib/protocols-store'
 
+function deriveEndDate(startDate: string | Date | undefined, duration: unknown): string | undefined {
+  if (typeof duration !== 'string') return undefined
+
+  const match = duration.match(/^(\d+)\s*(day|days|week|weeks|month|months)$/)
+  if (!match) return undefined
+
+  const date = startDate ? new Date(startDate) : new Date()
+  if (Number.isNaN(date.getTime())) return undefined
+
+  const amount = Number(match[1])
+  if (!Number.isSafeInteger(amount)) return undefined
+
+  const unit = match[2]
+  const days = unit.startsWith('week') ? amount * 7 : unit.startsWith('month') ? amount * 30 : amount
+  if (!Number.isSafeInteger(days)) return undefined
+
+  date.setUTCDate(date.getUTCDate() + days)
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString()
+}
+
 // GET: Load user's active peptide protocols (Mongo is the store; Drive is a copy)
 export async function GET() {
   try {
@@ -24,7 +44,17 @@ export async function GET() {
     }
 
     const protocols = await listActiveProtocols(user.id)
-    return NextResponse.json({ success: true, protocols })
+    const protocolsWithoutPrices = protocols.map((protocol) => {
+      if (!protocol.peptides) return protocol
+
+      const { price: _price, inStock: _inStock, ...peptides } = protocol.peptides as typeof protocol.peptides & {
+        price?: unknown
+        inStock?: unknown
+      }
+      return { ...protocol, peptides }
+    })
+
+    return NextResponse.json({ success: true, protocols: protocolsWithoutPrices })
   } catch (error) {
     console.error('GET /api/peptides/protocols error:', error)
     return NextResponse.json(
@@ -56,7 +86,7 @@ export async function POST(request: Request) {
       timing: body.timing,
       notes: body.notes,
       startDate: body.startDate,
-      endDate: body.endDate,
+      endDate: body.endDate === undefined ? deriveEndDate(body.startDate, body.duration) : body.endDate,
       timezone: body.timezone || body.clientTimezone,
       administrationType: body.administrationType,
     })
@@ -130,7 +160,7 @@ export async function PATCH(request: Request) {
       frequency: body.frequency,
       timing: body.timing,
       notes: body.notes,
-      endDate: body.endDate,
+      endDate: body.endDate === undefined ? deriveEndDate(body.startDate, body.duration) : body.endDate,
       administrationType: body.administrationType,
     })
 
