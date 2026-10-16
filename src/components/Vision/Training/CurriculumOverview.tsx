@@ -131,7 +131,7 @@ export default function CurriculumOverview({
               className="mt-6 w-full sm:w-auto px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
             >
               <Play className="w-4 h-4" />
-              Try one move free — 90 seconds, no signup
+              {requiresSignIn ? "Try one move free — 90 seconds, no signup" : "Try one move free — 90 seconds"}
             </button>
           )}
         </div>

@@ -206,11 +206,13 @@ export default function SessionRemindersCard() {
         <div className="flex items-center justify-between gap-4 py-1">
           <div className="flex items-center gap-2">
             <Bell className="w-5 h-5 text-primary-400" />
-            <span className="text-white font-medium">Push notification</span>
+            <label htmlFor="vision-reminder-push" className="text-white font-medium cursor-pointer">Push notification</label>
           </div>
           <button
             type="button"
-            aria-pressed={pushEnabled}
+            id="vision-reminder-push"
+            role="switch"
+            aria-checked={pushEnabled}
             onClick={() => handlePushToggle(!pushEnabled)}
             disabled={busy}
             className={`relative h-7 w-12 rounded-full transition-colors disabled:opacity-50 ${
@@ -228,11 +230,13 @@ export default function SessionRemindersCard() {
         <div className="flex items-center justify-between gap-4 py-1">
           <div className="flex items-center gap-2">
             <Mail className="w-5 h-5 text-blue-400" />
-            <span className="text-white font-medium">Email reminder</span>
+            <label htmlFor="vision-reminder-email" className="text-white font-medium cursor-pointer">Email reminder</label>
           </div>
           <button
             type="button"
-            aria-pressed={emailEnabled}
+            id="vision-reminder-email"
+            role="switch"
+            aria-checked={emailEnabled}
             onClick={() => handleEmailToggle(!emailEnabled)}
             disabled={busy}
             className={`relative h-7 w-12 rounded-full transition-colors disabled:opacity-50 ${

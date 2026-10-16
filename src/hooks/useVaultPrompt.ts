@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { useVaultStatus } from "./useVaultStatus"
 
 const DISMISS_KEY = "vaultPromptDismissed"
+// Shown once per browser: set the first time the prompt is displayed, never cleared.
+const SEEN_KEY = "vaultPromptSeen"
 const SNOOZE_MS = 30 * 24 * 60 * 60 * 1000
 
 /** True if `key` holds a snooze timestamp under 30 days old. Storage can throw (private mode): treat as not snoozed. */
@@ -39,10 +41,12 @@ export function useVaultPrompt() {
   const status = useVaultStatus()
   const [dismissed, setDismissed] = useState(false)
   const [hydrated, setHydrated] = useState(false)
+  const [seenBefore, setSeenBefore] = useState(false)
 
   useEffect(() => {
     if (typeof window === "undefined") return
     setDismissed(isSnoozed(DISMISS_KEY))
+    try { setSeenBefore(localStorage.getItem(SEEN_KEY) === "1") } catch { /* storage blocked: fall back to the 30-day snooze */ }
     setHydrated(true)
   }, [])
 
@@ -52,7 +56,12 @@ export function useVaultPrompt() {
   }
 
   const shouldPrompt =
-    hydrated && !status.loading && !status.error && !status.connected && !dismissed
+    hydrated && !status.loading && !status.error && !status.connected && !dismissed && !seenBefore
+
+  useEffect(() => {
+    if (!shouldPrompt) return
+    try { localStorage.setItem(SEEN_KEY, "1") } catch { /* ignore */ }
+  }, [shouldPrompt])
 
   return {
     shouldPrompt,

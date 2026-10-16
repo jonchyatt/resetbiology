@@ -139,6 +139,8 @@ export function VisionTraining() {
   const [activeTab, setActiveTab] = useState<TabMode>('today')
   const [isEnrolled, setIsEnrolled] = useState(false)
   const [enrolling, setEnrolling] = useState(false)
+  const [leaveConfirming, setLeaveConfirming] = useState(false)
+  const [leaving, setLeaving] = useState(false)
   const [loading, setLoading] = useState(true)
   const [requiresSignIn, setRequiresSignIn] = useState(false)
   const [enrollmentError, setEnrollmentError] = useState<string | null>(null)
@@ -270,6 +272,24 @@ export function VisionTraining() {
 
     setEnrollmentError(outcome.message)
     toast.info(outcome.message)
+  }
+
+  // Leave the 12-week programme (same server action the tester reset uses: removes the enrolment and its session history).
+  const handleLeaveProgram = async () => {
+    setLeaving(true)
+    try {
+      const response = await fetch('/api/vision/program', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...currentVisionLocalDayInput(), action: 'reset_program' })
+      })
+      const data = await response.json().catch(() => null)
+      if (!response.ok || !data?.success) throw new Error(data?.error || 'Leave request failed')
+      window.location.reload()
+    } catch {
+      toast.info('We could not remove you from the programme just yet. Nothing was changed. Please try again.')
+      setLeaving(false)
+    }
   }
 
   const toggleNightMode = () => {
@@ -429,6 +449,20 @@ export function VisionTraining() {
                         <span>{progressPercent.toFixed(0)}%</span>
                       </div>
                     </div>
+
+                    {leaveConfirming ? (
+                      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-200" role="alert">
+                        <span>Leave the 12-week programme? This removes your programme progress and session history. You can join again later.</span>
+                        <button onClick={handleLeaveProgram} disabled={leaving} className="px-3 py-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white rounded-lg transition-colors">
+                          {leaving ? 'Leaving...' : 'Yes, leave'}
+                        </button>
+                        <button onClick={() => setLeaveConfirming(false)} disabled={leaving} className="px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Cancel</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setLeaveConfirming(true)} className="px-3 py-1 text-sm rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 transition-colors">
+                        Leave programme
+                      </button>
+                    )}
 
                     {/* Daily Practice Component (has session content + progress summary) */}
                     <DailyPractice nightMode={nightMode} />
