@@ -1,6 +1,7 @@
 "use client"
 
 import { ReactNode, useEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 
 const PUBLIC_PATHS = [
   "/",
@@ -29,8 +30,11 @@ export function ProtectedRoute({
   fallback
 }: ProtectedRouteProps) {
   const [status, setStatus] = useState<"checking" | "authed">("checking")
-  const publicPath =
-    typeof window !== "undefined" && isPublicPath(window.location.pathname)
+  // Router pathname, not window.location: during a client-side navigation the
+  // address bar still shows the PREVIOUS (public) page when this first renders,
+  // which let the member UI through for logged-out visitors.
+  const pathname = usePathname() ?? ""
+  const publicPath = isPublicPath(pathname)
 
   useEffect(() => {
     if (publicPath) return
@@ -42,17 +46,17 @@ export function ProtectedRoute({
           setStatus("authed")
         } else {
           window.location.href =
-            `/auth/login?returnTo=${encodeURIComponent(window.location.pathname)}`
+            `/auth/login?returnTo=${encodeURIComponent(pathname)}`
         }
       })
       .catch(() => {
         if (!cancelled) {
           window.location.href =
-            `/auth/login?returnTo=${encodeURIComponent(window.location.pathname)}`
+            `/auth/login?returnTo=${encodeURIComponent(pathname)}`
         }
       })
     return () => { cancelled = true }
-  }, [publicPath])
+  }, [publicPath, pathname])
 
   if (publicPath) {
     return <>{children}</>
