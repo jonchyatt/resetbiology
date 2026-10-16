@@ -1,15 +1,15 @@
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
-import { JournalHistory } from "@/components/Journal/JournalHistory"
+import { JournalExplorer } from "@/components/Journal/JournalExplorer"
 
 export const metadata = {
-  title: "Daily History - Reset Biology",
-  description: "Review your daily journal, peptides, nutrition, workouts, breath practice, and mindset modules in one place.",
+  title: "Daily Journal - Reset Biology",
+  description: "Search and organize your private daily journal and linked activity history.",
 }
 
 export default function DailyHistoryPage() {
   return (
     <ProtectedRoute>
-      <JournalHistory />
+      <JournalExplorer />
     </ProtectedRoute>
   )
 }
