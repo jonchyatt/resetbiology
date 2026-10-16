@@ -403,7 +403,23 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
   const [editModal, setEditModal] = useState<{ type: string; data: any } | null>(null)
   const [editForm, setEditForm] = useState<any>({})
   const [saving, setSaving] = useState(false)
+  const [confirmDeleteEntry, setConfirmDeleteEntry] = useState(false)
   const toast = useToast()
+
+  const deleteJournalEntry = async () => {
+    setSaving(true)
+    try {
+      const response = await fetch(`/api/journal/entry/${day.journalEntry.id}`, { method: 'DELETE' })
+      if (!response.ok) throw new Error('Failed to delete')
+      toast.success('Journal entry deleted')
+      setConfirmDeleteEntry(false)
+      await onSaved()
+    } catch {
+      toast.error('Failed to delete journal entry')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   const closeEditModal = () => {
     setEditModal(null)
@@ -1042,6 +1058,21 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
                   <Edit2 className="h-4 w-4" />
                 </button>
               </div>
+              {confirmDeleteEntry ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-200" role="alert">
+                  <span>Delete this day&apos;s journal entry?</span>
+                  <button onClick={deleteJournalEntry} disabled={saving} className="px-3 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white rounded-lg transition-colors">
+                    {saving ? 'Deleting...' : 'Yes, delete'}
+                  </button>
+                  <button onClick={() => setConfirmDeleteEntry(false)} disabled={saving} className="px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => setConfirmDeleteEntry(true)} className="mt-3 px-3 py-1 text-sm rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 transition-colors">
+                  Delete entry
+                </button>
+              )}
               <ul className="mt-3 space-y-2 text-sm text-slate-200">
                 {entry.reasonsValidation && <li><strong>Success Today:</strong> {entry.reasonsValidation}</li>}
                 {entry.affirmationGoal && <li><strong>I am:</strong> {entry.affirmationGoal}</li>}

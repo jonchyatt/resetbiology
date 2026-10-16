@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { mergeNoteLines } from '@/lib/peptideDoseJournal'
 import { localDayKey, dayKeyToUtcMidnight } from '@/lib/localDay'
 
 type TasksPayload = Record<string, boolean>
@@ -109,6 +110,8 @@ export async function POST(request: NextRequest) {
       const mergedEntry = {
         ...previous,
         ...entryPayload,
+        // RB-FIX-3: a stale dashboard save must not drop earlier dose lines
+        peptideNotes: mergeNoteLines((previous as any)?.peptideNotes, entryPayload.peptideNotes),
         tasksCompleted: tasksMerged,
       }
 

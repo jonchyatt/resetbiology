@@ -76,7 +76,8 @@ export async function POST(request: Request) {
     try {
       const resend = new Resend(process.env.RESEND_API_KEY)
       const result = await resend.emails.send({
-        from: 'Reset Biology <orders@resetbiology.com>',
+        from: process.env.NEWSLETTER_FROM || 'Reset Biology <notes@resetbiology.com>',
+        replyTo: 'notes@resetbiology.com',
         to: email,
         subject: 'Confirm your Reset Biology notes',
         text: `Confirm your Reset Biology notes: ${confirmLink}\nUnsubscribe: ${unsubscribeLink}`,

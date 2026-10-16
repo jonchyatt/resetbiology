@@ -70,3 +70,31 @@ export async function PATCH(
     )
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const params = await context.params
+    const session = await auth0.getSession(request)
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    const user = await getUserFromSession(session)
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+    // deleteMany scoped to userId: only the owner's entry can match
+    const result = await prisma.journalEntry.deleteMany({
+      where: { id: params.id, userId: user.id }
+    })
+    if (result.count === 0) {
+      return NextResponse.json({ error: 'Journal entry not found or unauthorized' }, { status: 404 })
+    }
+    return NextResponse.json({ ok: true })
+  } catch (error: any) {
+    console.error('Error deleting journal entry:', error)
+    return NextResponse.json({ error: 'Failed to delete journal entry' }, { status: 500 })
+  }
+}

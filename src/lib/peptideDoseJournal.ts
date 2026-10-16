@@ -3,6 +3,26 @@
 // stores the day key as UTC midnight (dayKeyToUtcMidnight), same as foods/log.
 import { dayKeyToUtcMidnight, isValidDayKey, localDayKey } from '@/lib/localDay'
 
+// RB-FIX-3: every dose adds its own line; earlier lines are never replaced,
+// and only an exact duplicate line is skipped.
+const NL = String.fromCharCode(10)
+
+export function appendNoteLine(current: unknown, line: string): string {
+  const cur = typeof current === 'string' ? current : ''
+  if (!cur) return line
+  return cur.split(NL).includes(line) ? cur : cur + NL + line
+}
+
+// Dashboard saves send their own (possibly stale) peptideNotes; keep any lines
+// already stored for the day and add the incoming ones after them.
+export function mergeNoteLines(stored: unknown, incoming: unknown): string {
+  let out = typeof stored === 'string' ? stored : ''
+  for (const line of (typeof incoming === 'string' ? incoming : '').split(NL)) {
+    if (line) out = appendNoteLine(out, line)
+  }
+  return out
+}
+
 type JournalDb = {
   journalEntry: {
     findFirst: (args: any) => Promise<any>
@@ -37,8 +57,7 @@ export async function appendPeptideDoseToJournal(
       entryData = {}
     }
 
-    const previous = typeof entryData.peptideNotes === 'string' && entryData.peptideNotes.length > 0 ? `${entryData.peptideNotes}\n` : ''
-    entryData.peptideNotes = `${previous}${note}`
+    entryData.peptideNotes = appendNoteLine(entryData.peptideNotes, note)
 
     const tasksCompleted = typeof entryData.tasksCompleted === 'object' && entryData.tasksCompleted !== null
       ? { ...entryData.tasksCompleted }
