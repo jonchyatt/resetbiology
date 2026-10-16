@@ -52,6 +52,7 @@ export interface DosageCalculatorProps {
       frequency: string; // formatted string like "Mon-Fri AM"
     };
     duration: string;
+    endDate: string | null;
     vialAmount: string;
     reconstitution: string;
     notes?: string;
@@ -140,6 +141,26 @@ const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, 
 
 const formatNumber = (n: number, digits = 2) =>
   Number.isFinite(n) ? Number(n.toFixed(digits)) : 0;
+
+const getProtocolEndDate = (duration: string): string | null => {
+  const match = duration.match(/^(\d+)\s*(day|days|week|weeks|month|months)$/);
+  if (!match) return null;
+
+  const amount = Number(match[1]);
+  if (!Number.isSafeInteger(amount)) return null;
+
+  const unit = match[2];
+  const days = unit === "month" || unit === "months"
+    ? amount * 30
+    : unit === "week" || unit === "weeks"
+      ? amount * 7
+      : amount;
+  if (!Number.isSafeInteger(days)) return null;
+
+  const endDate = new Date();
+  endDate.setDate(endDate.getDate() + days);
+  return `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, "0")}-${String(endDate.getDate()).padStart(2, "0")}`;
+};
 
 export type PreparationState = "absent" | "complete" | "invalid";
 
@@ -288,6 +309,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   // mount-effect invoke and programmatic seeds (imported peptide, deep-link
   // ?peptide=<slug>, defaultInputs) without tripping.
   const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+  const [desiredDoseTouched, setDesiredDoseTouched] = useState<boolean>(false);
   const [isCustomPeptide, setIsCustomPeptide] = useState<boolean>(false);
   const [customPeptideName, setCustomPeptideName] = useState<string>("");
 
@@ -360,6 +382,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     if (mode === 'addProtocol' && normalizedPreparation.state === 'invalid') {
       e.push("Enter both vial amount and total volume, or leave both blank.");
     }
+    // Keep invalid state for disabled Save buttons; displayedErrors gates the message.
     if (inputs.desiredDose <= 0) e.push("Desired dose must be greater than 0.");
     setErrors(e);
   }, [inputs, importedPeptide, mode, preparation]);
@@ -373,6 +396,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const handleSave = async () => {
     if (!onSaveToLog) return;
     setHasInteracted(true);
+    setDesiredDoseTouched(true);
     try {
       setIsSaving(true);
       await onSaveToLog({
@@ -444,6 +468,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
   const handleProtocolSave = async () => {
     if (!onSaveProtocol || mode !== 'addProtocol') return;
     setHasInteracted(true);
+    setDesiredDoseTouched(true);
     const normalizedPreparation = normalizePreparation(preparation.peptideAmount, preparation.totalVolume);
     if (normalizedPreparation.state === 'invalid') return;
 
@@ -498,6 +523,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
           frequency: formatScheduleString(scheduleType, daysToSave, selectedTimes)
         },
         duration,
+        endDate: getProtocolEndDate(duration),
         ...protocolPreparationPayload(normalizedPreparation),
         notes,
         administrationType,
@@ -535,6 +561,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
       if (peptide.id) setSelectedPeptideId(peptide.id);
       setCustomPeptideName('');
     }
+    setDesiredDoseTouched(false);
 
     // New peptide selected: citation-grounded dose/route from the previous
     // selection no longer applies. Clear dose + admin-type back to the
@@ -633,21 +660,27 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
     };
   }, [peptideLibrary]);
 
+  const displayedErrors = errors.filter(
+    (error) => error !== "Desired dose must be greater than 0." || desiredDoseTouched,
+  );
+
   return (
     <div className="bg-gray-900/60 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20">
       {/* Alerts */}
       {hasInteracted && errors.length > 0 && (
-        <div className="mb-4 bg-red-900/20 border border-red-500/30 text-red-200 rounded-2xl p-4 flex items-start gap-2" role="alert">
-          <AlertCircle className="w-5 h-5 mt-0.5" />
-          <div>
-            <p className="font-semibold">Please correct the following:</p>
-            <ul className="list-disc list-inside text-sm">
-              {errors.map((e, i) => (
-                <li key={i}>{e}</li>
-              ))}
-            </ul>
+        displayedErrors.length > 0 && (
+          <div className="mb-4 bg-red-900/20 border border-red-500/30 text-red-200 rounded-2xl p-4 flex items-start gap-2" role="alert">
+            <AlertCircle className="w-5 h-5 mt-0.5" />
+            <div>
+              <p className="font-semibold">Please correct the following:</p>
+              <ul className="list-disc list-inside text-sm">
+                {displayedErrors.map((e, i) => (
+                  <li key={i}>{e}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
+        )
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[minmax(360px,1.15fr)_minmax(240px,0.85fr)_minmax(320px,1fr)] gap-6">
@@ -830,11 +863,13 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                   value={inputs.desiredDose === 0 ? "" : inputs.desiredDose}
                   onChange={(e) => {
                     setHasInteracted(true);
+                    setDesiredDoseTouched(true);
                     setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) || 0 }));
                   }}
                   onBlur={(e) => {
                     if (e.target.value === "") return; // empty stays empty — no forced default
                     setHasInteracted(true);
+                    setDesiredDoseTouched(true);
                     setInputs((s) => ({ ...s, desiredDose: clamp(parseFloat(e.target.value) || 0, unitMinMax.min, unitMinMax.max) }));
                   }}
                   className="flex-1 min-w-0 bg-black/20 border border-white/15 rounded-lg px-3 py-2 text-white placeholder-white/40 focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 transition-all"
@@ -879,6 +914,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
               value={inputs.desiredDose}
               onChange={(e) => {
                 setHasInteracted(true);
+                setDesiredDoseTouched(true);
                 setInputs((s) => ({ ...s, desiredDose: parseFloat(e.target.value) }));
               }}
               className="w-full accent-primary-400"

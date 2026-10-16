@@ -403,7 +403,7 @@ function ProfilePageContent() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-                      <p className="text-sm text-gray-300 bg-gray-800/50 border border-gray-600/30 rounded-lg px-4 py-3">Managed by your Auth0 login — use "Forgot password" on the sign-in screen to change it.</p>
+                      <p className="text-sm text-gray-300 bg-gray-800/50 border border-gray-600/30 rounded-lg px-4 py-3">Sign-in uses a one-time code sent to your email, or Google. There is no password to manage.</p>
                     </div>
                     <div className="pt-4">
                       <button

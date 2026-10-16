@@ -19,7 +19,8 @@ export async function GET(
       return NextResponse.json({ error: 'Peptide not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ peptide });
+    const { price, inStock, ...publicPeptide } = peptide;
+    return NextResponse.json({ peptide: publicPeptide });
   } catch (error) {
     console.error('Error fetching peptide:', error);
     return NextResponse.json({ error: 'Failed to fetch peptide' }, { status: 500 });
