@@ -42,3 +42,8 @@ export default async function ModulesPage() {
     </ProtectedRoute>
   )
 }
+
+export const metadata = {
+  title: "Guided Audio",
+  description: "Free guided audio for food, body and habit awareness.",
+}

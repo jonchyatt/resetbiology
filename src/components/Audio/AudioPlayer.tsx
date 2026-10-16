@@ -156,6 +156,7 @@ export function AudioPlayer({ module, startAt, onProgress, onComplete }: AudioPl
         <div className="flex items-center space-x-3">
           <button
             onClick={skipBackward}
+            aria-label="Back 15 seconds" title="Back 15 seconds"
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
           >
             <SkipBack className="w-4 h-4" />
@@ -163,6 +164,7 @@ export function AudioPlayer({ module, startAt, onProgress, onComplete }: AudioPl
           
           <button
             onClick={togglePlay}
+            aria-label={isPlaying ? "Pause" : "Play"} title={isPlaying ? "Pause" : "Play"}
             className="p-3 rounded-full bg-primary-500 hover:bg-primary-600 text-white transition-colors"
           >
             {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
@@ -170,6 +172,7 @@ export function AudioPlayer({ module, startAt, onProgress, onComplete }: AudioPl
           
           <button
             onClick={skipForward}
+            aria-label="Forward 15 seconds" title="Forward 15 seconds"
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
           >
             <SkipForward className="w-4 h-4" />
@@ -179,6 +182,7 @@ export function AudioPlayer({ module, startAt, onProgress, onComplete }: AudioPl
         <div className="flex items-center space-x-3">
           <button
             onClick={handleSpeedChange}
+            aria-label={`Playback speed ${playbackRate}x, tap to change`} title="Playback speed"
             className="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold transition-colors"
           >
             {playbackRate}x

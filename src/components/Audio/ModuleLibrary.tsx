@@ -142,7 +142,7 @@ export function ModuleLibrary({ isAdmin: isAdminFromServer = false }: { isAdmin?
       <div className="space-y-6">
         <button
           onClick={() => setSelectedModule(null)}
-          className="text-primary-600 hover:text-primary-700 font-semibold"
+          className="text-primary-300 hover:text-primary-200 font-semibold"
         >
           ← Back to Library
         </button>
@@ -163,11 +163,11 @@ export function ModuleLibrary({ isAdmin: isAdminFromServer = false }: { isAdmin?
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Guided Audio</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-white mb-2">Guided Audio</h1>
+        <p className="text-slate-300 max-w-2xl mx-auto">
           Psychology-based audio coaching for food, body, and medication-related habits.
         </p>
-        <p className="mt-2 text-sm font-semibold text-primary-600">
+        <p className="mt-2 text-sm font-semibold text-primary-300">
           {completedAvailableCount} of {visibleModules.length} listened
         </p>
       </div>
@@ -179,7 +179,7 @@ export function ModuleLibrary({ isAdmin: isAdminFromServer = false }: { isAdmin?
       )}
 
       {visibleModules.length === 0 && (
-        <p className="text-center text-gray-600">New guided audio is on its way. Check back soon.</p>
+        <p className="text-center text-slate-300">New guided audio is on its way. Check back soon.</p>
       )}
 
       {['Foundation', 'Integration', 'Mastery', 'Bonus'].map(category => {
@@ -190,12 +190,12 @@ export function ModuleLibrary({ isAdmin: isAdminFromServer = false }: { isAdmin?
 
         return (
           <div key={category} className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center">
+            <h2 className="text-xl font-bold text-white flex items-center">
               {category === 'Foundation' && <span className="text-green-600 mr-2">🌱</span>}
               {category === 'Integration' && <span className="text-blue-600 mr-2">🔗</span>}
               {category === 'Mastery' && <span className="text-purple-600 mr-2">👑</span>}
               {category === 'Bonus' && <span className="text-yellow-600 mr-2">⭐</span>}
-              {category} <span className="ml-2 text-sm font-normal text-gray-500">({categoryModules.length})</span>
+              {category} <span className="ml-2 text-sm font-normal text-slate-300">({categoryModules.length})</span>
             </h2>
 
             <div className="grid gap-4">
