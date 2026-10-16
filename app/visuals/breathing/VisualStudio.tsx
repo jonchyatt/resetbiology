@@ -406,7 +406,22 @@ function BackgroundPresetPicker({
 // MAIN PAGE COMPONENT
 // ============================================================================
 
-export default function VisualStudioPage() {
+// Internal skybox names are for admins only; visitors and members see plain names.
+const MEMBER_SKY_LABELS: Record<string, string> = {
+  darkWorld1: "Deep Dark World",
+  starNestFX: "Star Field",
+  crazyFractal: "Fractal Storm",
+  normal: "Classic",
+  rotating: "Rotating Dark World",
+  hsvRainbow: "Colour Cycle",
+  hsvNormal: "Colour Cycle: Classic",
+  hsvGreen: "Colour Cycle: Green Nebula",
+  hsvDarkWorld: "Colour Cycle: Dark World",
+  hsvCrazyFractal: "Colour Cycle: Fractal Storm",
+};
+
+export default function VisualStudioPage({ isAdmin = false }: { isAdmin?: boolean }) {
+  const skyLabel = (p: { key: string; label: string }) => (isAdmin ? p.label : MEMBER_SKY_LABELS[p.key] ?? p.label);
   // State for mode and patterns
   const [mode, setMode] = useState<"breath" | "audio">("breath");
   const [patternKey, setPatternKey] = useState("autophagy");
@@ -1204,10 +1219,12 @@ export default function VisualStudioPage() {
                             : "border-slate-600 hover:border-slate-500 hover:bg-slate-800/50"
                         }`}
                       >
-                        <span className="block text-sm font-medium text-slate-200">{preset.label}</span>
-                        <span className="block text-xs text-slate-400 mt-0.5">
-                          Iterations: {preset.iterations} | Vol steps: {preset.volsteps}
-                        </span>
+                        <span className="block text-sm font-medium text-slate-200">{skyLabel(preset)}</span>
+                        {isAdmin && (
+                          <span className="block text-xs text-slate-400 mt-0.5">
+                            Iterations: {preset.iterations} | Vol steps: {preset.volsteps}
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -1360,7 +1377,7 @@ export default function VisualStudioPage() {
             <div className="flex rounded-xl bg-slate-900/50 p-1 border border-slate-700/50">
               {[
                 { key: "mode", label: "Mode" },
-                { key: "export", label: "Export" },
+                ...(isAdmin ? [{ key: "export", label: "Export" }] : []),
               ].map((tab) => (
                 <button
                   key={tab.key}
@@ -1378,7 +1395,7 @@ export default function VisualStudioPage() {
 
             {/* Left Tab Content */}
             <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-2 space-y-4">
-              {renderTabContent(leftTab)}
+              {renderTabContent(isAdmin ? leftTab : "mode")}
             </div>
           </div>
 
@@ -1449,7 +1466,7 @@ export default function VisualStudioPage() {
                   </div>
                   <div>
                     <span className="block min-w-0 text-xl font-semibold text-teal-400 [overflow-wrap:anywhere]">
-                      {skyboxEnabled ? STAR_NEST_PRESETS.find(p => p.key === skyboxPresetKey)?.label.split(" ")[0] : "Off"}
+                      {skyboxEnabled ? (() => { const sp = STAR_NEST_PRESETS.find(p => p.key === skyboxPresetKey); return sp ? skyLabel(sp).split(" ")[0] : "On"; })() : "Off"}
                     </span>
                     <span className="text-xs text-slate-400">Skybox</span>
                   </div>
