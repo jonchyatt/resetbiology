@@ -5,7 +5,7 @@ import { getUserFromSession } from '@/lib/getUserFromSession'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 import { validatePeptideDoseSlotKey } from '@/lib/peptide-dose-slot'
 import { appendPeptideDoseToJournal } from '@/lib/peptideDoseJournal'
-import { dayKeyToUtcMidnight, isValidDayKey, localDayKey } from '@/lib/localDay'
+import { dayKeyToUtcMidnight, formatNoteTime, isValidDayKey, localDayKey } from '@/lib/localDay'
 
 // POST: Log a peptide dose
 export async function POST(request: Request) {
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
       await appendPeptideDoseToJournal(prisma, user.id, dose.doseDate, localDate, {
         peptideName: protocol.peptides.name,
         dosage,
-        timeLabel: localTime || time || dose.doseDate.toISOString().slice(11, 16),
+        timeLabel: formatNoteTime(localTime || time, dose.doseDate),
       })
     } catch (err) {
       console.error('journal append failed', err)

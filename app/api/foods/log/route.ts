@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
-import { dayKeyToUtcMidnight, isValidDayKey, localDayKey } from '@/lib/localDay';
+import { dayKeyToUtcMidnight, formatNoteTime, isValidDayKey, localDayKey } from '@/lib/localDay';
 import { awardNutritionPoints } from '@/lib/nutritionPoints';
 
 export const runtime = 'nodejs';
@@ -102,13 +102,7 @@ export async function POST(req: Request) {
 
     // RB-FIX-2: label with the member's own clock (localTime "HH:MM[:SS]"), not
     // the server's (UTC on Vercel: a 6:47 PM meal read "12:47 AM").
-    const localClock = typeof localTime === 'string' ? localTime.match(/^(\d{1,2}):(\d{2})/) : null;
-    const timestamp = localClock && Number(localClock[1]) < 24
-      ? `${Number(localClock[1]) % 12 || 12}:${localClock[2]} ${Number(localClock[1]) < 12 ? 'AM' : 'PM'}`
-      : logTimestamp.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-        });
+    const timestamp = formatNoteTime(localTime, logTimestamp);
     const nutritionNote = `Nutrition tracked at ${timestamp}`;
 
     const existingJournal = await prisma.journalEntry.findFirst({

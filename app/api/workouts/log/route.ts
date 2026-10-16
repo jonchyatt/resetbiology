@@ -3,7 +3,7 @@ import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
 import { awardWorkoutPoints } from '@/lib/workoutPoints';
-import { dayKeyToUtcMidnight } from '@/lib/localDay';
+import { dayKeyToUtcMidnight, formatNoteTime } from '@/lib/localDay';
 
 export async function POST(request: Request) {
   try {
@@ -119,10 +119,7 @@ export async function POST(request: Request) {
     const nextDay = new Date(startOfDay);
     nextDay.setDate(nextDay.getDate() + 1);
 
-    const timestamp = now.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+    const timestamp = formatNoteTime(localTime, now);
     const workoutNote = `Workout logged (${exerciseName || 'Workout'}) at ${timestamp}`;
 
     const existingJournal = await prisma.journalEntry.findFirst({

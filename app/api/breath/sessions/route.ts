@@ -3,7 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
-import { dayKeyToUtcMidnight, todayLocalKey } from '@/lib/localDay'
+import { dayKeyToUtcMidnight, formatNoteTime, todayLocalKey } from '@/lib/localDay'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -11,7 +11,7 @@ function startOfDay(date: Date) {
   return d
 }
 
-async function appendBreathToJournal(userId: string, timestamp: Date, summary: { cycles: number; durationSeconds: number }, localDate: unknown): Promise<string> {
+async function appendBreathToJournal(userId: string, timestamp: Date, summary: { cycles: number; durationSeconds: number }, localDate: unknown, localTime?: unknown): Promise<string> {
   const dayStart = startOfDay(timestamp)
   const dayEnd = new Date(dayStart)
   dayEnd.setDate(dayEnd.getDate() + 1)
@@ -27,7 +27,7 @@ async function appendBreathToJournal(userId: string, timestamp: Date, summary: {
   })
 
   const minutes = Math.max(1, Math.round(summary.durationSeconds / 60))
-  const note = `Breath session - ${summary.cycles} cycles - ${minutes} min at ${timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
+  const note = `Breath session - ${summary.cycles} cycles - ${minutes} min at ${formatNoteTime(localTime, timestamp)}`
 
   if (existing) {
     let entryData: any = {}
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
     const journalNote = await appendBreathToJournal(user.id, new Date(), {
       cycles: sessionData.cyclesCompleted,
       durationSeconds: totalDuration / 1000,
-    }, sessionData.localDate)
+    }, sessionData.localDate, sessionData.localTime)
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
     await enqueueDriveSync(user.id, new Date(), ['breath']).catch(err => console.error('Drive enqueue failed:', err))

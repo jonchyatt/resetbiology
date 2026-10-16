@@ -3,7 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { resolveUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync, drainDriveSyncRowsNow } from '@/lib/driveSyncQueue'
-import { dayKeyToUtcMidnight, todayLocalKey } from '@/lib/localDay'
+import { dayKeyToUtcMidnight, formatNoteTime, todayLocalKey } from '@/lib/localDay'
 
 function startOfDay(date: Date) {
   const d = new Date(date)
@@ -11,7 +11,7 @@ function startOfDay(date: Date) {
   return d
 }
 
-async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: string, localDate: unknown): Promise<string> {
+async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: string, localDate: unknown, localTime?: unknown): Promise<string> {
   const dayStart = startOfDay(timestamp)
   const dayEnd = new Date(dayStart)
   dayEnd.setDate(dayEnd.getDate() + 1)
@@ -26,7 +26,7 @@ async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: 
     },
   })
 
-  const note = `Mental mastery module ${moduleId} completed at ${timestamp.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
+  const note = `Mental mastery module ${moduleId} completed at ${formatNoteTime(localTime, timestamp)}`
 
   if (existing) {
     let entryData: any = {}
@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    const journalNote = await appendModuleToJournal(user.id, new Date(), moduleId, localDate)
+    const journalNote = await appendModuleToJournal(user.id, new Date(), moduleId, localDate, localTime)
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work) — this route also appends a note to
     // today's journal entry, so sync that too

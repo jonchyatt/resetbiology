@@ -134,3 +134,19 @@ export function dayKeyToLocalDate(key: string): Date {
   const [y, m, d] = key.split('-').map(Number)
   return new Date(y, m - 1, d)
 }
+
+/**
+ * The ONE "h:mm AM/PM" label for journal note lines (meals, workouts, breath,
+ * modules, doses). Uses the member's own clock ("HH:MM[:SS...]" as sent by the
+ * client as localTime) so a 2:48 PM event never reads 8:48 PM (server = UTC).
+ * Only when the client sent no usable clock does it fall back to the server's
+ * clock for `fallback`.
+ */
+export function formatNoteTime(localTime: unknown, fallback: Date = new Date()): string {
+  const m = typeof localTime === 'string' ? localTime.trim().match(/^(\d{1,2}):(\d{2})/) : null
+  if (m && Number(m[1]) < 24 && Number(m[2]) < 60) {
+    const h = Number(m[1])
+    return `${h % 12 || 12}:${m[2]} ${h < 12 ? 'AM' : 'PM'}`
+  }
+  return fallback.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+}
