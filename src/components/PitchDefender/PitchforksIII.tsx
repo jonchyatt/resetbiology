@@ -10,6 +10,7 @@ import { PitchforksVillageLesson } from './PitchforksVillageLesson'
 import PitchforksBellTowerLesson from './PitchforksBellTowerLesson'
 import { renderBossChamber } from './PitchforksBossChamberView'
 import PitchforksMasteryPanel from './PitchforksMasteryPanel'
+import PitchforksSoundConstellation from './PitchforksSoundConstellation'
 import PitchforksCampaignJournal from './PitchforksCampaignJournal'
 import PitchforksWorldUnlockProgress from './PitchforksWorldUnlockProgress'
 import PitchforksSongcraft, { observePitchforksSongcraftGeneration, type PitchforksSongcraftGenerationState } from './PitchforksSongcraft'
@@ -11392,6 +11393,18 @@ export default function PitchforksIII() {
               />
             )}
           </div>
+          {!demoMode && !fsrsDebugMode && (
+            <PitchforksSoundConstellation
+              projection={projectPitchforksMastery({
+                admittedNotes: rangeProfile ? unlockedNotes : [],
+                voiceMemory: fsrsRef.current,
+                earMemory: earFsrsRef.current,
+                masteryRecords: masteryProgressRef.current,
+                nowMs: Date.now(),
+              })}
+              onStartDuePractice={() => enterPracticeArcade('dungeon')}
+            />
+          )}
           {!demoMode && !fsrsDebugMode && <button type="button" data-testid="pf3-play-selected-world"
             disabled={!assetsReady}
             onClick={() => {
