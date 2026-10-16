@@ -6,6 +6,7 @@ import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Tra
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
+import { MealTemplatesPanel } from "./MealTemplatesPanel"
 import { createFoodLogRequestId, getLocalDateTime } from "@/lib/nutrition/localEntry"
 
 interface FoodEntry {
@@ -653,7 +654,7 @@ export function NutritionTracker() {
           <span className="text-secondary-400">Nutrition</span> Tracker
         </h2>
         <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">
-          Track macros, fuel your protocols, optimize for peptide effectiveness
+          Record your own meals and review your personal history.
         </p>
       </div>
 
@@ -679,6 +680,7 @@ export function NutritionTracker() {
 
         {activeTab === 'today' && (
           <div className="max-w-6xl mx-auto">
+            <MealTemplatesPanel />
             {/* Active Meal Plans Section */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
