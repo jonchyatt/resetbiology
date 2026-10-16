@@ -20,7 +20,7 @@ export function SignInButton({ className = "", showUserInfo = false }: SignInBut
       className={`flex items-center gap-2 px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors ${className}`}
     >
       <User className="w-4 h-4" />
-      Sign In
+      Log in
     </button>
   )
 }

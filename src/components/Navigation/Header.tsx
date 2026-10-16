@@ -146,7 +146,7 @@ function HeaderContent() {
                         href="/auth/logout"
                         className="flex items-center px-4 py-2 text-red-300 hover:bg-white/5 transition-colors"
                       >
-                        Logout
+                        Log out
                       </a>
                     </div>
                   )}
@@ -211,7 +211,7 @@ function HeaderContent() {
                       href="/auth/logout"
                       className="block px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-center"
                     >
-                      Logout
+                      Log out
                     </a>
                   </div>
                 </>

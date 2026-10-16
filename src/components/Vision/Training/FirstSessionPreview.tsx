@@ -24,7 +24,7 @@ export function visionEnrollmentActionLabel(
   requiresSignIn: boolean,
   completedPreview: boolean,
 ): string {
-  if (requiresSignIn) return completedPreview ? 'Sign In to Continue' : 'Sign In to Start'
+  if (requiresSignIn) return completedPreview ? 'Log in to Continue' : 'Log in to Start'
   return completedPreview ? 'Continue into the Program' : 'Start 12-Week Program'
 }
 
