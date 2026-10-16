@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { listGurus, listAllDomains } from '@/data/gurus/generated';
 
 export const metadata = {
-  title: 'Expert Library — Reset Biology',
+  title: 'Expert Library',
   description: 'The practitioners and researchers Reset Biology cites across health and longevity — peptides, hormones, mitochondrial health, longevity protocols. Each profile links to the peptides and topics they cover with verbatim citations.',
   alternates: { canonical: '/education/gurus' },
 };

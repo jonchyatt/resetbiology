@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowLeft, Shield, Mail } from "lucide-react"
 
 export const metadata = {
-  title: "Privacy Policy - Reset Biology",
+  title: "Privacy Policy",
   description: "How Reset Biology, a free wellness-tracking and education service, collects, stores and shares your data, including our optional Google Drive integration.",
 }
 

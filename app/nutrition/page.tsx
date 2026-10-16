@@ -12,6 +12,6 @@ export default function NutritionPage() {
 }
 
 export const metadata = {
-  title: "Nutrition Tracker - Reset Biology",
+  title: "Nutrition Tracker",
   description: "Track meals, macros, and the daily targets you set.",
 }

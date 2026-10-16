@@ -4,7 +4,7 @@ import { ConnectDriveSetup } from "@/components/Vault/ConnectDriveSetup"
 
 export const dynamic = "force-dynamic"
 export const metadata = {
-  title: "Vault Setup — Reset Biology",
+  title: "Vault Setup",
   description:
     // src: RULING-2026-10-11 Drive option A
     "Optional: connect Google Drive to keep your own copy of your data, save progress photos, and take your data with you.",

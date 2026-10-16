@@ -4,7 +4,7 @@ import { peptideIndex } from '@/data/peptide-education/generated';
 import PeptideLibraryBrowser from './PeptideLibraryBrowser';
 
 export const metadata = {
-  title: 'Peptide Library — Hunter, Taylor, Bachmeyer | Reset Biology',
+  title: 'Peptide Library — Hunter, Taylor, Bachmeyer',
   description: 'Cross-expert peptide library indexing what Hunter Williams, Taylor Williams, and Dr Trevor Bachmeyer teach about each compound — dosing, acute vs chronic, female-specific guidance, and Reset Biology synthesis.',
 };
 

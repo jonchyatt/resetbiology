@@ -13,9 +13,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   const guru = getGuru(slug);
-  if (!guru) return { title: 'Expert not found | Reset Biology' };
+  if (!guru) return { title: 'Expert not found' };
   return {
-    title: `${guru.name} — ${guru.title} | Reset Biology`,
+    title: `${guru.name} — ${guru.title}`,
     description: `${guru.name}: ${guru.bio.slice(0, 200)}…`,
     alternates: { canonical: `/education/gurus/${slug}` },
   };

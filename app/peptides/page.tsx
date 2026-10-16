@@ -12,6 +12,6 @@ export default function PeptidesPage() {
 }
 
 export const metadata = {
-  title: "Peptide Tracker - Reset Biology",
+  title: "Peptide Tracker",
   description: "Comprehensive peptide management system. Track peptide protocols and doses, set reminders, and note how you feel.",
 }

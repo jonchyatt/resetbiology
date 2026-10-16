@@ -903,7 +903,7 @@ console.log("\n--- DEV-P0-04: persisted slot identity and zero-side-effect valid
   assertTrue(
     validationAt >= 0
       && invalidReturnAt > validationAt
-      && mutationOffsets.length === 4
+      && mutationOffsets.length === 5 // create, task upsert, points, journal append, Drive enqueue
       && mutationOffsets.every((offset) => offset > invalidReturnAt),
     "DEV-P0-04 production POST returns 400 before every dose, task, points, journal, or Drive mutation",
   );
@@ -916,11 +916,22 @@ console.log("\n--- DEV-P0-04: persisted slot identity and zero-side-effect valid
   );
   const guardAt = trackerSource.indexOf("!selectedProtocol.hasNoScheduledRow && !pendingSlot?.slotKey");
   const dosePostAt = trackerSource.indexOf('const response = await fetch("/api/peptides/doses"');
+  // RB-FIX-1: a missing/changed scheduled row no longer aborts silently. logDose
+  // re-opens the "Extra dose (off schedule)" box (hasNoScheduledRow: true) and
+  // returns BEFORE any POST. The POST slotKey is normalised through
+  // slotKeyForPost (UI "::slot-0" -> server "::0"), and the persisted identity
+  // returned by the server is normalised back through normalizeSlotKey.
+  const offScheduleReopenAt = trackerSource.indexOf("hasNoScheduledRow: true,", guardAt);
   assertTrue(
     guardAt >= 0 && dosePostAt > guardAt
-      && trackerSource.includes("slotKey: pendingSlot?.slotKey")
-      && trackerSource.includes('typeof data.dose?.slotKey === "string" ? data.dose.slotKey : undefined'),
-    "DEV-P0-04 client aborts missing scheduled keys before POST and trusts returned persisted identity",
+      && offScheduleReopenAt > guardAt && offScheduleReopenAt < dosePostAt
+      && trackerSource.slice(guardAt, dosePostAt).includes("setSelectedProtocol({")
+      && trackerSource.slice(offScheduleReopenAt, dosePostAt).includes("return;")
+      && trackerSource.includes('? "Extra dose (off schedule)"')
+      && trackerSource.includes("slotKey: slotKeyForPost")
+      && trackerSource.includes('pendingSlot?.slotKey?.replace(/::slot-0$/, "::0")')
+      && trackerSource.includes("? normalizeSlotKey(data.dose.slotKey)"),
+    "DEV-P0-04 client re-opens the Extra dose (off schedule) box for missing scheduled keys before POST and trusts returned persisted identity (normalised)",
   );
 
   const markdown = formatPeptideDoses([

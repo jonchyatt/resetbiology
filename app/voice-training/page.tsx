@@ -235,6 +235,6 @@ export default function VoiceTrainingPage() {
 }
 
 export const metadata = {
-  title: "Voice Training | Reset Biology",
+  title: "Voice Training",
   description: "Vocal production, part practice, pitch lock, and song mastery tools in Reset Biology.",
 }

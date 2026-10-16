@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Mail, Phone, ArrowLeft, MessageCircle } from 'lucide-react';
 
 export const metadata = {
-  title: 'Contact Us - Reset Biology',
+  title: 'Contact Us',
   description: 'Contact Reset Biology for tools and education.',
 };
 

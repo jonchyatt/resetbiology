@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowLeft, FileText, Mail } from "lucide-react"
 
 export const metadata = {
-  title: "Terms of Service - Reset Biology",
+  title: "Terms of Service",
   description: "Terms of Service for Reset Biology, a free wellness-tracking and education service.",
 }
 

@@ -1,7 +1,7 @@
 import { VisionTraining } from "@/components/Vision/VisionTraining";
 
 export const metadata = {
-  title: "Vision Training | Reset Biology",
+  title: "Vision Training",
 };
 
 export default function VisionTrainingPage() {
