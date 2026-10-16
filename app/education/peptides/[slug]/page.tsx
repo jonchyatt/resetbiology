@@ -2,6 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPeptide, listPeptideSlugs } from '@/data/peptide-education/generated';
+import { auth0 } from '@/lib/auth0';
+import { cleanCitation } from '@/lib/cleanCitation';
 import PeptideChatBox from '@/components/PeptideChat/PeptideChatBox';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -29,6 +31,10 @@ export default async function PeptidePage({ params }: Props) {
   const { slug } = await params;
   const card = getPeptide(slug);
   if (!card) notFound();
+
+  // Member chrome (portal link, tracker link) only for signed-in members.
+  let signedIn = false;
+  try { signedIn = !!(await auth0.getSession())?.user; } catch { signedIn = false; }
 
   const hunter = card.experts['hunter-williams'];
   const taylor = card.experts['taylor-williams'];
@@ -114,9 +120,11 @@ export default async function PeptidePage({ params }: Props) {
                   <span className="text-lg text-gray-200 drop-shadow-sm">• Peptide Education</span>
                 </div>
               </div>
-              <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
-                ← Back to Portal
-              </a>
+              {signedIn && (
+                <a href="/portal" className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm">
+                  ← Back to Portal
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -137,10 +145,10 @@ export default async function PeptidePage({ params }: Props) {
               )}
             </div>
             <Link
-              href={`/peptides?peptide=${card.slug}`}
+              href={signedIn ? `/peptides?peptide=${card.slug}` : '/get-started'}
               className="inline-block bg-gradient-to-r from-[#3FBFB5] to-[#72C247] text-black font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
             >
-              Start Protocol →
+              {signedIn ? 'Start Protocol →' : 'Start free →'}
             </Link>
           </div>
         </div>
@@ -159,7 +167,7 @@ export default async function PeptidePage({ params }: Props) {
           <section className="bg-gradient-to-r from-[#3FBFB5]/10 to-[#72C247]/10 backdrop-blur-md border border-[#3FBFB5]/30 rounded-2xl p-6">
             <h2 className="text-2xl font-bold text-[#3FBFB5] mb-3">Reset Biology Synthesis</h2>
             {card.reset_biology_synthesis.recommendation ? (
-              <p className="text-white/90">{card.reset_biology_synthesis.recommendation}</p>
+              <p className="text-white/90">{cleanCitation(card.reset_biology_synthesis.recommendation)}</p>
             ) : (
               <p className="text-white/60 italic">
                 A combined summary is being prepared. Below are each practitioner's findings.
@@ -168,13 +176,13 @@ export default async function PeptidePage({ params }: Props) {
             {card.reset_biology_synthesis.cross_expert_consensus && (
               <div className="mt-4">
                 <h3 className="font-semibold text-white">Where they agree</h3>
-                <p className="text-white/80">{card.reset_biology_synthesis.cross_expert_consensus}</p>
+                <p className="text-white/80">{cleanCitation(card.reset_biology_synthesis.cross_expert_consensus)}</p>
               </div>
             )}
             {card.reset_biology_synthesis.cross_expert_disagreement && (
               <div className="mt-4">
                 <h3 className="font-semibold text-white">Where they differ</h3>
-                <p className="text-white/80">{card.reset_biology_synthesis.cross_expert_disagreement}</p>
+                <p className="text-white/80">{cleanCitation(card.reset_biology_synthesis.cross_expert_disagreement)}</p>
               </div>
             )}
           </section>
@@ -221,7 +229,7 @@ export default async function PeptidePage({ params }: Props) {
               {taylor && (
                 <>
                   <div className="mb-4 p-3 bg-pink-500/10 border border-pink-500/30 rounded-lg text-xs text-pink-200">
-                    {taylor.female_specific_note}
+                    {cleanCitation(taylor.female_specific_note)}
                   </div>
                   <DoseList doses={taylor.summary.top_doses} />
                   <SourceList sources={taylor.summary.top_sources} maxItems={4} />
@@ -240,7 +248,7 @@ export default async function PeptidePage({ params }: Props) {
               {bachmeyer && (
                 <>
                   <div className="mb-4 p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg text-xs text-orange-200">
-                    {bachmeyer.acute_vs_chronic_note}
+                    {cleanCitation(bachmeyer.acute_vs_chronic_note)}
                   </div>
                   <DoseList doses={bachmeyer.summary.top_doses} />
                   {bachmeyer.summary.acute_signals.length > 0 && (
@@ -355,7 +363,7 @@ function SignalSection({ title, tone, signals }: { title: string; tone: 'red' | 
         {signals.slice(0, 3).map((s, i) => (
           <li key={i}>
             <div className="text-white/50 text-xs">{s.source_date} {s.timestamp ? `@ ${s.timestamp}` : ''}</div>
-            <div className="italic text-white/80">&ldquo;{s.snippet?.slice(0, 200)}&rdquo;</div>
+            <div className="italic text-white/80">&ldquo;{cleanCitation(s.snippet?.slice(0, 200))}&rdquo;</div>
           </li>
         ))}
       </ul>

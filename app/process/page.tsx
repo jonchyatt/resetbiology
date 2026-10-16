@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, ClipboardList, Compass, Users, Waypoints } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'How it works',
+  description: 'Start with the free intake, use the daily tools, and build toward independence.',
+};
 
 const steps = [
   { icon: ClipboardList, title: 'Start with the intake', copy: 'Begin with the free intake: share where you are and choose your next step.' },

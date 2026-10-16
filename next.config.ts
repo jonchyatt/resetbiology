@@ -28,6 +28,9 @@ const nextConfig: NextConfig = {
         destination: '/modules',
         permanent: true,
       },
+      { source: '/order/success', destination: '/order', permanent: true },
+      { source: '/not-eligible', destination: '/get-started', permanent: true },
+      { source: '/product', destination: '/order', permanent: true },
       {
         source: '/cellular-peptide',
         destination: '/order',

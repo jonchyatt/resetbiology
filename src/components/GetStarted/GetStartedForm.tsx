@@ -25,6 +25,10 @@ export function GetStartedForm() {
     e.preventDefault()
     if (submitting) return
 
+    if (!email.trim()) {
+      setError("Enter your email")
+      return
+    }
     if (!name.trim()) {
       setError("Please tell us what to call you.")
       return
