@@ -19,6 +19,7 @@ interface JournalHistoryDay {
   workouts: any[]
   breathSessions: any[]
   mentalSessions?: any[]
+  checkIns?: any[]
   peptideDoses: any[]
   modules: any[]
   eventCount: number
@@ -1196,13 +1197,27 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
           icon={<Dumbbell className="h-4 w-4" />}
           colorClass="text-green-300"
           borderClass="border-green-400/30"
-          items={day.workouts.map((workout: any) => ({
-            id: workout.id,
-            primary: workout.exercises?.[0]?.name || 'Workout session',
-            secondary: `${Math.round((workout.duration ?? 0) / 60)} min • ${new Date(workout.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
-            meta: workout.notes || '',
-            data: workout
-          }))}
+          items={[
+            ...day.workouts.map((workout: any) => ({
+              id: workout.id,
+              primary: workout.exercises?.[0]?.name || 'Workout session',
+              secondary: `${Math.round((workout.duration ?? 0) / 60)} min • ${new Date(workout.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
+              meta: workout.notes || '',
+              data: workout
+            })),
+            ...(day.checkIns ?? []).map((c: any) => ({
+              id: `checkin-${c.id}`,
+              primary: 'Readiness check-in',
+              secondary: [
+                typeof c.readinessScore === 'number' ? `Readiness ${Math.round(c.readinessScore)}` : null,
+                typeof c.energyLevel === 'number' ? `energy ${c.energyLevel}` : null,
+                typeof c.sorenessLevel === 'number' ? `soreness ${c.sorenessLevel}` : null,
+              ].filter(Boolean).join(' • '),
+              meta: new Date(c.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+              data: c,
+              noDetails: true
+            }))
+          ]}
           onViewDetails={(item) => setDetailsModal({ type: 'workout', data: item.data })}
           onEdit={(item) => setEditModal({ type: 'workout', data: item.data })}
         />
@@ -1410,7 +1425,7 @@ function ActivityList({
                       <Eye className="h-4 w-4" />
                     </button>
                   )}
-                  {onEdit && (
+                  {onEdit && !item.noDetails && (
                     <button
                       onClick={() => onEdit(item)}
                       className="p-1 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 transition-colors"

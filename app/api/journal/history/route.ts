@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const queryEnd = new Date(end)
     queryEnd.setDate(queryEnd.getDate() + 1)
 
-    const [journalEntries, foodLogs, foodEntries, dailyTasks, workouts, breathSessions, peptideDoses, nbackSessions, earSessions, moduleCompletions] = await Promise.all([
+    const [journalEntries, foodLogs, foodEntries, dailyTasks, workouts, breathSessions, peptideDoses, nbackSessions, earSessions, moduleCompletions, readinessCheckIns] = await Promise.all([
       prisma.journalEntry.findMany({
         where: {
           userId: user.id,
@@ -139,6 +139,10 @@ export async function GET(request: NextRequest) {
         },
         orderBy: { completedAt: 'asc' },
       }),
+      prisma.workoutCheckIn.findMany({
+        where: { userId: user.id, createdAt: { gte: queryStart, lt: queryEnd } },
+        orderBy: { createdAt: 'asc' },
+      }),
     ])
 
     // Unified shape for both nutrition sources (NEW-7) — FoodLog and
@@ -172,6 +176,7 @@ export async function GET(request: NextRequest) {
       peptideDoses: typeof peptideDoses
       modules: typeof moduleCompletions
       mentalSessions: any[]
+      checkIns: any[]
       eventCount: number
     }
 
@@ -202,6 +207,7 @@ export async function GET(request: NextRequest) {
           peptideDoses: [],
           modules: [],
           mentalSessions: [],
+          checkIns: [],
           eventCount: 0,
         })
       }
@@ -325,6 +331,12 @@ export async function GET(request: NextRequest) {
     earSessions.forEach((s: any) => {
       const bucket = ensureDay(s.createdAt instanceof Date ? s.createdAt : new Date(s.createdAt), s.localDate)
       bucket.mentalSessions.push({ ...s, kind: 'ear' })
+      bucket.eventCount += 1
+    })
+
+    readinessCheckIns.forEach((c: any) => {
+      const bucket = ensureDay(c.createdAt instanceof Date ? c.createdAt : new Date(c.createdAt), c.localDate)
+      bucket.checkIns.push(c)
       bucket.eventCount += 1
     })
 

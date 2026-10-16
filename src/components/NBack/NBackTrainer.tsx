@@ -268,9 +268,10 @@ function generateSequence(
 
 // ─── Accuracy Helpers ─────────────────────────────────────────────────────────
 
-function calcAccuracy(hits: number, misses: number, falseAlarms: number): number {
+// null = nothing to score in this channel (no matches, no presses): show a dash, not 100%.
+function calcAccuracy(hits: number, misses: number, falseAlarms: number): number | null {
   const total = hits + misses + falseAlarms
-  return total === 0 ? 100 : (hits / total) * 100
+  return total === 0 ? null : (hits / total) * 100
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -385,6 +386,12 @@ export default function NBackTrainer() {
     setCountdown(3)
   }, [nLevel, trialsPerSession, gameMode, interference])
 
+  // On a phone the Start button sits below the fold; bring the game into view when it starts.
+  const gameTopRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (gameState === 'countdown') gameTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [gameState])
+
   // ── Countdown ───────────────────────────────────────────────────────────────
   useEffect(() => {
     if (gameState !== 'countdown') return
@@ -427,8 +434,10 @@ export default function NBackTrainer() {
         // Process this trial's responses
         if (currentTrialIndex >= nLevel) {
           const newFbk: typeof feedback = {}
-          setStats(prev => {
-            const s = { ...prev }
+          {
+            // Computed from the ref synchronously (a state updater runs later, so the last trial
+            // was missing from what finishSession saved: 6 misses on screen vs 5 sent).
+            const s = { ...statsRef.current }
             if (cfg.hasPosition) {
               if (trial.isPositionMatch) {
                 if (posR) { s.positionHits++; newFbk.position = 'correct' }
@@ -454,8 +463,8 @@ export default function NBackTrainer() {
               } else if (colR) { s.colorFalse++; newFbk.color = 'incorrect' }
             }
             statsRef.current = s
-            return s
-          })
+            setStats(s)
+          }
           setFeedback(newFbk)
         }
 
@@ -906,6 +915,7 @@ export default function NBackTrainer() {
                 </div>
               )}
 
+              <div ref={gameTopRef} className="scroll-mt-20" />
               {/* ── COUNTDOWN ─────────────────────────────────────────────── */}
               {gameState === 'countdown' && (
                 <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl border border-primary-400/20 p-16 text-center">
@@ -1349,7 +1359,7 @@ function StatCard({
   hits: number
   misses: number
   falses: number
-  accuracy: number
+  accuracy: number | null
 }) {
   return (
     <div className="bg-gray-800/50 rounded-xl p-4">
@@ -1359,9 +1369,9 @@ function StatCard({
           <h3 className="font-semibold text-white">{label}</h3>
         </div>
         <span className={`text-lg font-bold ${
-          accuracy >= 80 ? 'text-green-400' : accuracy >= 60 ? 'text-yellow-400' : 'text-red-400'
+          accuracy === null ? 'text-gray-400' : accuracy >= 80 ? 'text-green-400' : accuracy >= 60 ? 'text-yellow-400' : 'text-red-400'
         }`}>
-          {Math.round(accuracy)}%
+          {accuracy === null ? '–' : `${Math.round(accuracy)}%`}
         </span>
       </div>
       <div className="grid grid-cols-3 gap-2 text-sm">

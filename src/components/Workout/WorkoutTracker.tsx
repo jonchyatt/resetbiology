@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Activity,
   Brain,
@@ -224,10 +224,16 @@ export function WorkoutTracker() {
     })();
   }, []);
 
+  const firstPrefsPassDone = useRef(false);
   // Persist prefs whenever changed, once the hydrate-from-profile read above has
   // finished (guards against overwriting saved prefs with defaults on first paint).
   useEffect(() => {
     if (!prefsHydrated) return;
+    // The first pass after hydration just echoes what was loaded; save only on a real change.
+    if (!firstPrefsPassDone.current) {
+      firstPrefsPassDone.current = true;
+      return;
+    }
     fetch("/api/workout/exercises", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

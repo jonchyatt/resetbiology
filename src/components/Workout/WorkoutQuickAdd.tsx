@@ -195,7 +195,7 @@ export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuick
         <div>
           <p className="text-xs uppercase tracking-widest text-secondary-300">Quick Add</p>
           <h2 className="text-lg font-semibold text-white">Professional workout lookup</h2>
-          <p className="text-sm text-slate-300">Search the WGER exercise library, capture your set, and log it instantly.</p>
+          <p className="text-sm text-slate-300">Search the exercise library, capture your set, and log it instantly.</p>
         </div>
       </div>
 
@@ -216,7 +216,7 @@ export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuick
       <div className="mt-4 max-h-48 overflow-y-auto space-y-2">
         {status === "searching" && (
           <div className="flex items-center gap-2 text-sm text-slate-300">
-            <Loader2 className="h-4 w-4 animate-spin" /> Searching WGER...
+            <Loader2 className="h-4 w-4 animate-spin" /> Searching exercises...
           </div>
         )}
 
@@ -332,7 +332,8 @@ export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuick
               <input
                 type="number"
                 min={0}
-                value={weight}
+                value={weight > 0 ? weight : ''}
+                placeholder="Add weight"
                 onChange={(event) => setWeight(Math.max(0, Number(event.target.value) || 0))}
                 className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 focus:border-secondary-400 focus:outline-none"
               />
@@ -354,7 +355,7 @@ export function WorkoutQuickAdd({ onLogged }: { onLogged?: (result: WorkoutQuick
               <p className="text-[11px] uppercase tracking-wide text-secondary-300">Volume summary</p>
               <div className="mt-2 text-slate-100 text-sm flex items-center gap-2">
                 <ListChecks className="h-4 w-4 text-secondary-300" />
-                <span>{totalVolume.totalReps} total reps • {weight > 0 ? `${roundNumber(totalVolume.totalWeight, 1)} lbs lifted` : 'Bodyweight'}</span>
+                <span>{totalVolume.totalReps} total reps • {weight > 0 ? `${roundNumber(totalVolume.totalWeight, 1)} lbs lifted` : selected.equipment.length === 0 || selected.equipment.every((e) => /body/i.test(e)) ? 'Bodyweight' : 'Weight not entered'}</span>
               </div>
             </div>
             <div className="rounded-lg border border-slate-700/50 bg-slate-800/40 p-3">
