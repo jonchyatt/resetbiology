@@ -6,6 +6,7 @@ import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Tra
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
+import { RecipeBuilder } from "./RecipeBuilder"
 
 interface FoodEntry {
   id: string
@@ -634,6 +635,8 @@ export function NutritionTracker() {
           Track macros, fuel your protocols, optimize for peptide effectiveness
         </p>
       </div>
+
+      <RecipeBuilder />
 
       {/* Tabs */}
       <div className="container mx-auto px-4 pb-8">
