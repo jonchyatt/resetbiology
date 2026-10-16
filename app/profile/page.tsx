@@ -1,5 +1,6 @@
 "use client"
 
+import { validateUsername, USERNAME_RULE } from '@/lib/inputValidators'
 import { useState, useEffect, Suspense } from "react"
 import { User, Settings, Calendar, TrendingUp, Shield, CreditCard, Download, LogOut, Bell, Lock, Eye, EyeOff, Cloud, ExternalLink, RefreshCw, CheckCircle, AlertCircle, AlertTriangle, Trash2 } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
@@ -34,6 +35,8 @@ function ProfilePageContent() {
     username: ""
   })
 
+  const [usernameError, setUsernameError] = useState<string | null>(null)
+
   // Google Drive sync state
   const [driveConnected, setDriveConnected] = useState(false)
   const [driveLoading, setDriveLoading] = useState(false)
@@ -60,11 +63,11 @@ function ProfilePageContent() {
   // Load user data when available
   useEffect(() => {
     if (user) {
-      setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        username: (user as any).username || ""
-      })
+      setFormData({ name: "", email: user.email || "", username: "" })
+      // The session name is just the email; load the stored name/username instead.
+      fetch("/api/profile/update").then(r => r.ok ? r.json() : null).then(d => {
+        if (d) setFormData(f => ({ ...f, name: d.name || "", username: d.username || "" }))
+      }).catch(() => {})
       // Check if Google Drive is connected
       checkDriveConnection()
       loadProgress()
@@ -142,6 +145,9 @@ function ProfilePageContent() {
 
   // Handle save changes
   const handleSaveChanges = async () => {
+    const err = validateUsername(formData.username)
+    setUsernameError(err)
+    if (err) return
     try {
       const response = await fetch("/api/profile/update", {
         method: "POST",
@@ -152,7 +158,9 @@ function ProfilePageContent() {
       if (response.ok) {
         toast.success("Profile updated successfully!")
       } else {
-        toast.error("Failed to update profile")
+        const d = await response.json().catch(() => null)
+        if (d?.error) setUsernameError(d.error)
+        toast.error(d?.error || "Failed to update profile")
       }
     } catch (error) {
       console.error("Error updating profile:", error)
@@ -185,7 +193,6 @@ function ProfilePageContent() {
 
   const tabs = [
     { id: "account", name: "Account", icon: User },
-    { id: "subscription", name: "Subscription", icon: CreditCard },
     { id: "progress", name: "Progress", icon: TrendingUp },
     { id: "settings", name: "Settings", icon: Settings },
     { id: "privacy", name: "Privacy", icon: Shield }
@@ -259,7 +266,7 @@ function ProfilePageContent() {
                   className="action-btn-primary w-full sm:w-auto px-6 py-3 text-sm sm:text-base whitespace-nowrap flex items-center justify-center"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  Sign Out
+                  Log out
                 </button>
               </div>
             </div>
@@ -271,7 +278,7 @@ function ProfilePageContent() {
               <div className="flex items-start gap-4">
                 <CheckCircle className="w-8 h-8 text-secondary-300 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-white mb-2">Your Vault is connected</h3>
+                  <h3 className="text-lg font-bold text-white mb-2">Your Google Drive is connected</h3>
                   <p className="text-gray-100 mb-4">{CONNECTED_CONFIRMATION_COPY}</p>
                   {driveFolderUrl && (
                     <a
@@ -384,11 +391,11 @@ function ProfilePageContent() {
                       <input
                         type="text"
                         value={formData.username}
-                        onChange={(e) => setFormData({...formData, username: e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '')})}
+                        onChange={(e) => { setFormData({...formData, username: e.target.value}); setUsernameError(validateUsername(e.target.value)) }}
                         className="input-primary text-gray-900 placeholder:text-gray-500"
                         placeholder="Choose a username"
                       />
-                      <p className="text-xs text-gray-400 mt-1">Lowercase letters, numbers, and underscores only</p>
+                      <p className={`text-xs mt-1 ${usernameError ? 'text-red-400' : 'text-gray-400'}`} role={usernameError ? 'alert' : undefined}>{usernameError || USERNAME_RULE}</p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
@@ -629,7 +636,7 @@ function ProfilePageContent() {
                             <p className="text-xs text-primary-300 mb-4">
                               First time?{" "}
                               <a href="/connect-drive" className="underline hover:text-primary-200">
-                                Visit Vault Setup for the full walk-through →
+                                Visit the Google Drive setup page for the full walk-through →
                               </a>
                             </p>
                           )}
@@ -751,10 +758,6 @@ function ProfilePageContent() {
                   <div className="flex justify-between">
                     <span className="text-gray-300">Account Type</span>
                     <span className="text-primary-400 font-medium">Member</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-300">Auth Provider</span>
-                    <span className="text-white">Auth0</span>
                   </div>
                 </div>
               </div>

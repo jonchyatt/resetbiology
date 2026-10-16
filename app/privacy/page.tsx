@@ -9,9 +9,9 @@ export const metadata = {
 const sections = [
   { id: "overview", label: "Overview" },
   { id: "information-we-collect", label: "Information We Collect" },
-  { id: "google-drive-vault", label: "The Google Drive Vault" },
+  { id: "google-drive-vault", label: "Your Google Drive copy" },
   { id: "how-we-use-information", label: "How We Use Your Information" },
-  { id: "ai-coaching", label: "AI Coaching & Your Vault Data" },
+  { id: "ai-coaching", label: "AI Coaching & Your Google Drive Data" },
   { id: "cookies", label: "Cookies & Analytics" },
   { id: "storage-security", label: "Data Storage & Security" },
   { id: "sharing", label: "Data Sharing" },
@@ -119,7 +119,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section id="google-drive-vault">
-              <h2 className="text-2xl font-bold text-white mb-3">The Google Drive Vault</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">Your Google Drive copy</h2>
               <div className="bg-gradient-to-br from-primary-900/30 to-secondary-900/30 border border-primary-400/30 rounded-2xl p-6 mb-4">
                 <p className="text-white font-medium">
                   Your data is yours. Everything you log is saved in your
@@ -130,7 +130,7 @@ export default function PrivacyPolicyPage() {
                 </p>
               </div>
               <p className="mb-3">
-                Reset Biology offers an optional "Vault" feature that lets you
+                Reset Biology offers an optional Google Drive feature that lets you
                 sync your own program data — journal entries, nutrition logs,
                 workout summaries, breath and vision-training sessions, and
                 peptide/medication dosing records — to a folder named "Reset
@@ -175,7 +175,7 @@ export default function PrivacyPolicyPage() {
             </section>
 
             <section id="ai-coaching">
-              <h2 className="text-2xl font-bold text-white mb-3">AI Coaching & Your Vault Data</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">AI Coaching & Your Google Drive Data</h2>
               <p>
                 Our voice coaches can tailor their answers to your own
                 history. If you have connected Google Drive, a coach reads the
@@ -253,7 +253,7 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-2xl font-bold text-white mb-3">Your Rights & Choices</h2>
               <ul className="list-disc list-inside space-y-2">
                 <li>
-                  <strong className="text-white">Disconnect the Vault anytime</strong> from
+                  <strong className="text-white">Disconnect your Google Drive anytime</strong> from
                   Profile → Privacy → Google Drive Sync, or by revoking access
                   directly at{" "}
                   <a

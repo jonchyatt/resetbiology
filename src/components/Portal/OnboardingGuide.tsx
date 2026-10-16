@@ -103,7 +103,7 @@ export function OnboardingGuide({ reason, firstName, taskCount, status, onComple
         <div className="p-4 bg-gray-700/30 rounded-lg border border-gray-600/30">
           <div className="flex items-center gap-2 mb-1">
             <Cloud className="w-4 h-4 text-teal-300" />
-            <p className="text-white font-semibold">Attach your vault</p>
+            <p className="text-white font-semibold">Connect your Google Drive</p>
             {driveDone && <Check className="w-4 h-4 text-green-400" />}
           </div>
           {driveDone ? (
@@ -114,7 +114,7 @@ export function OnboardingGuide({ reason, firstName, taskCount, status, onComple
             // exists in the app today, so this one honest, non-blocking copy covers
             // both spec states (actionable retry + skip-for-now).
             <p className="text-gray-400 text-sm">
-              Vault status temporarily unavailable —{' '}
+              Google Drive status temporarily unavailable —{' '}
               <button type="button" onClick={() => vault.refresh()} className="text-teal-300 underline">retry</button>
               {' '}or skip for now and keep going.
             </p>

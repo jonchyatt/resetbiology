@@ -110,7 +110,7 @@ export function ConnectDriveSetup() {
     >
       <div className="relative z-10">
         <PortalHeader
-          section="Vault Setup"
+          section="Google Drive setup"
           subtitle="Optional: keep your own copy in Google Drive"
           showPeptideInfo={false}
         />
@@ -122,7 +122,7 @@ export function ConnectDriveSetup() {
               <Cloud className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 text-shadow-lg">
-              {connected ? "Your Vault is connected" : "Keep your own copy in Google Drive"}
+              {connected ? "Your Google Drive is connected" : "Keep your own copy in Google Drive"}
             </h1>
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
               {connected
@@ -158,7 +158,7 @@ export function ConnectDriveSetup() {
             <div className="mb-8 flex items-center gap-3 bg-secondary-600/20 border border-secondary-400/40 rounded-xl p-4 backdrop-blur-sm">
               <CheckCircle className="w-6 h-6 text-secondary-300 flex-shrink-0" />
               <p className="text-secondary-100 font-medium">
-                Drive connected successfully. Your Vault is ready.
+                Drive connected successfully. Your Google Drive copy is ready.
               </p>
             </div>
           )}
@@ -201,7 +201,7 @@ export function ConnectDriveSetup() {
                     className="action-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 font-semibold rounded-lg transition-all"
                   >
                     <ExternalLink className="w-5 h-5" />
-                    Open my Vault in Google Drive
+                    Open my folder in Google Drive
                   </a>
                   <button
                     onClick={() => router.push("/portal")}
