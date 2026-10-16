@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const queryEnd = new Date(end)
     queryEnd.setDate(queryEnd.getDate() + 1)
 
-    const [journalEntries, foodLogs, foodEntries, dailyTasks, workouts, breathSessions, peptideDoses, moduleCompletions] = await Promise.all([
+    const [journalEntries, foodLogs, foodEntries, dailyTasks, workouts, breathSessions, peptideDoses, nbackSessions, earSessions, moduleCompletions] = await Promise.all([
       prisma.journalEntry.findMany({
         where: {
           userId: user.id,
@@ -121,6 +121,14 @@ export async function GET(request: NextRequest) {
         },
         orderBy: { doseDate: 'asc' },
       }),
+      prisma.nBackSession.findMany({
+        where: { userId: user.id, createdAt: { gte: queryStart, lt: queryEnd } },
+        orderBy: { createdAt: 'asc' },
+      }),
+      prisma.earTrainingSession.findMany({
+        where: { userId: user.id, createdAt: { gte: queryStart, lt: queryEnd } },
+        orderBy: { createdAt: 'asc' },
+      }),
       prisma.moduleCompletion.findMany({
         where: {
           userId: user.id,
@@ -163,6 +171,7 @@ export async function GET(request: NextRequest) {
       breathSessions: typeof breathSessions
       peptideDoses: typeof peptideDoses
       modules: typeof moduleCompletions
+      mentalSessions: any[]
       eventCount: number
     }
 
@@ -192,6 +201,7 @@ export async function GET(request: NextRequest) {
           breathSessions: [],
           peptideDoses: [],
           modules: [],
+          mentalSessions: [],
           eventCount: 0,
         })
       }
@@ -303,6 +313,18 @@ export async function GET(request: NextRequest) {
           ? { ...dose, user_peptide_protocols: { ...dose.user_peptide_protocols, peptides: peptide } }
           : dose,
       )
+      bucket.eventCount += 1
+    })
+
+    // N-Back and ear-training sessions: shown under "Mental Modules" in daily history.
+    nbackSessions.forEach((s: any) => {
+      const bucket = ensureDay(s.createdAt instanceof Date ? s.createdAt : new Date(s.createdAt), s.localDate)
+      bucket.mentalSessions.push({ ...s, kind: 'nback' })
+      bucket.eventCount += 1
+    })
+    earSessions.forEach((s: any) => {
+      const bucket = ensureDay(s.createdAt instanceof Date ? s.createdAt : new Date(s.createdAt), s.localDate)
+      bucket.mentalSessions.push({ ...s, kind: 'ear' })
       bucket.eventCount += 1
     })
 

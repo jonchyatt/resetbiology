@@ -1121,10 +1121,30 @@ model NBackSession {
   levelAdvanced   Boolean  // Did user advance to next level?
   levelDecreased  Boolean  @default(false) // Did user drop a level?
   createdAt       DateTime @default(now())
+  localDate       String?  // member's local YYYY-MM-DD, for daily-history bucketing
+  localTime       String?  // member's local HH:MM:SS
   user            User     @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
   @@map("nback_sessions")
+}
+
+// Ear training (pitch identify / pitch n-back / resonance maze) finished sessions.
+// Same shape of idea as BreathSession: one row per finished session, bucketed by the member's own day.
+model EarTrainingSession {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String   @db.ObjectId
+  mode            String   // "identify" | "nback" | "maze"
+  totalQuestions  Int
+  correct         Int
+  accuracy        Float    // 0-100
+  durationSeconds Int      @default(0)
+  localDate       String?
+  localTime       String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("ear_training_sessions")
 }
 
 model NBackProgress {

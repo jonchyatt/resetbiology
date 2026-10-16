@@ -18,6 +18,7 @@ interface JournalHistoryDay {
   dailyTasks: Array<{ id: string; taskName: string; completed: boolean }>
   workouts: any[]
   breathSessions: any[]
+  mentalSessions?: any[]
   peptideDoses: any[]
   modules: any[]
   eventCount: number
@@ -1228,13 +1229,25 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
           icon={<BrainCircuit className="h-4 w-4" />}
           colorClass="text-purple-300"
           borderClass="border-purple-400/30"
-          items={day.modules.map((module: any) => ({
-            id: module.id,
-            primary: module.moduleId,
-            secondary: `${module.fullCompletion ? 'Completed' : 'Partial'}${module.audioDuration ? ` • ${Math.round(module.audioDuration / 60)} min audio` : ''}`,
-            meta: new Date(module.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-            data: module
-          }))}
+          items={[
+            ...day.modules.map((module: any) => ({
+              id: module.id,
+              primary: module.moduleId,
+              secondary: `${module.fullCompletion ? 'Completed' : 'Partial'}${module.audioDuration ? ` • ${Math.round(module.audioDuration / 60)} min audio` : ''}`,
+              meta: new Date(module.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+              data: module
+            })),
+            ...(day.mentalSessions ?? []).map((m: any) => ({
+              id: `${m.kind}-${m.id}`,
+              primary: m.kind === 'nback' ? `N-Back ${m.nLevel}-back (${m.gameMode})` : `Ear training (${m.mode})`,
+              secondary: m.kind === 'nback'
+                ? `${Math.round(m.overallAccuracy)}% accuracy • ${m.totalTrials} trials${m.levelAdvanced ? ' • level up' : ''}`
+                : `${Math.round(m.accuracy)}% • ${m.correct} of ${m.totalQuestions} correct`,
+              meta: new Date(m.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+              data: m,
+              noDetails: true
+            }))
+          ]}
           onViewDetails={(item) => setDetailsModal({ type: 'module', data: item.data })}
         />
       </section>
@@ -1254,10 +1267,13 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
           {entry.breathNotes && (
             <p><strong>Breath:</strong> {entry.breathNotes}</p>
           )}
+          {entry.mentalTrainingNotes && (
+            <p><strong>Mental Training:</strong> {entry.mentalTrainingNotes}</p>
+          )}
           {entry.moduleNotes && (
             <p><strong>Mental Modules:</strong> {entry.moduleNotes}</p>
           )}
-          {!entry.peptideNotes && !entry.workoutNotes && !entry.nutritionNotes && !entry.breathNotes && !entry.moduleNotes && (
+          {!entry.peptideNotes && !entry.workoutNotes && !entry.nutritionNotes && !entry.breathNotes && !entry.moduleNotes && !entry.mentalTrainingNotes && (
             <p className="text-slate-400">No activity notes logged yet. Entries will appear here automatically as you complete tasks.</p>
           )}
         </div>
@@ -1363,7 +1379,7 @@ function ActivityList({
   icon: React.ReactNode;
   colorClass: string;
   borderClass: string;
-  items: Array<{ id: string; primary: string; secondary?: string; meta?: string; data?: any }>
+  items: Array<{ id: string; primary: string; secondary?: string; meta?: string; data?: any; noDetails?: boolean }>
   onViewDetails?: (item: any) => void
   onEdit?: (item: any) => void
 }) {
@@ -1385,7 +1401,7 @@ function ActivityList({
                   {item.meta && <p className="text-[11px] text-slate-500 mt-1 uppercase tracking-wide">{item.meta}</p>}
                 </div>
                 <div className="flex items-center gap-2 ml-3 opacity-0 group-hover:opacity-100 focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
-                  {onViewDetails && (
+                  {onViewDetails && !item.noDetails && (
                     <button
                       onClick={() => onViewDetails(item)}
                       className="p-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 transition-colors"

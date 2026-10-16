@@ -515,6 +515,7 @@ export default function NBackTrainer() {
           levelAdvanced,
           levelDecreased,
           localDate: localDayKey(new Date()),
+          localTime: new Date().toTimeString().slice(0, 8),
         }),
       })
       const data = await res.json()

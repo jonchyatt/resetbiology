@@ -34,6 +34,16 @@ interface UserBreathExercise extends BreathExercise {
   updatedAt: string
 }
 
+// Descriptions can quote a length ("2-minute"); show the real length from the pacing instead.
+function actualMinutes(ex: BreathExercise): number {
+  const ms = (ex.inhaleMs + ex.exhaleMs + (ex.inhaleHoldMs || 0) + (ex.exhaleHoldMs || 0)) * ex.breathsPerCycle * ex.cyclesTarget
+    + (ex.postCycleExhaleHoldMs || 0) + (ex.postCycleInhaleHoldMs || 0)
+  return Math.max(1, Math.round(ms / 60000))
+}
+function describe(ex: BreathExercise): string {
+  return (ex.description || '').replace(/[0-9]+[- ]minutes?/i, `${actualMinutes(ex)}-minute`)
+}
+
 export function BreathPage() {
   const [activeTab, setActiveTab] = useState<"my-protocols" | "library" | "training">("my-protocols")
   const [userExercises, setUserExercises] = useState<UserBreathExercise[]>([])
@@ -42,6 +52,7 @@ export function BreathPage() {
   const [loadingLibrary, setLoadingLibrary] = useState(true)
   const [selectedExercise, setSelectedExercise] = useState<UserBreathExercise | null>(null)
   const [filterCategory, setFilterCategory] = useState<string>("all")
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null)
 
   // Keep header/subnav visible when switching tabs
   useEffect(() => {
@@ -106,7 +117,7 @@ export function BreathPage() {
 
   // Remove exercise
   const removeExercise = async (id: string) => {
-    if (!confirm('Remove this exercise from your active list?')) return
+    setConfirmRemoveId(null)
     try {
       const response = await fetch(`/api/breath/user-exercises?id=${id}`, {
         method: 'DELETE'
@@ -263,20 +274,28 @@ export function BreathPage() {
                             {exercise.category}
                           </span>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            removeExercise(exercise.id)
-                          }}
-                          className="p-2 text-gray-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
-                          title="Remove from My Protocols"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
+                        {confirmRemoveId === exercise.id ? (
+                          <div className="flex flex-wrap items-center gap-2 text-sm text-gray-200" role="alert" onClick={(e) => e.stopPropagation()}>
+                            <span>Remove from My Protocols?</span>
+                            <button onClick={() => removeExercise(exercise.id)} className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Yes, remove</button>
+                            <button onClick={() => setConfirmRemoveId(null)} className="px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Cancel</button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setConfirmRemoveId(exercise.id)
+                            }}
+                            className="px-3 py-1 text-sm rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 transition-colors"
+                            title="Remove from My Protocols"
+                          >
+                            Remove
+                          </button>
+                        )}
                       </div>
 
                       <p className="text-gray-400 text-sm mb-4 line-clamp-2">
-                        {exercise.description}
+                        {describe(exercise)}
                       </p>
 
                       {/* Quick Stats */}
@@ -369,7 +388,7 @@ export function BreathPage() {
                                 </span>
                               )}
                             </div>
-                            <p className="text-gray-300 text-sm mb-3">{exercise.description}</p>
+                            <p className="text-gray-300 text-sm mb-3">{describe(exercise)}</p>
                             <div className="flex flex-wrap gap-3 text-xs text-gray-400">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
@@ -383,15 +402,26 @@ export function BreathPage() {
                           </div>
                           <div className="flex gap-2 ml-4">
                             {added ? (
+                              confirmRemoveId === exercise.id ? (
+                                <div className="flex flex-col gap-2 text-sm text-gray-200" role="alert">
+                                  <span>Remove it?</span>
+                                  <button
+                                    onClick={() => {
+                                      const userEx = userExercises.find(ue => ue.exerciseId === exercise.id)
+                                      if (userEx) removeExercise(userEx.id)
+                                    }}
+                                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                                  >Yes, remove</button>
+                                  <button onClick={() => setConfirmRemoveId(null)} className="px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">Cancel</button>
+                                </div>
+                              ) : (
                               <button
-                                onClick={() => {
-                                  const userEx = userExercises.find(ue => ue.exerciseId === exercise.id)
-                                  if (userEx) removeExercise(userEx.id)
-                                }}
+                                onClick={() => setConfirmRemoveId(exercise.id)}
                                 className="px-4 py-2 rounded-lg font-medium bg-red-600/20 hover:bg-red-600/40 text-red-300 transition-colors"
                               >
                                 Remove
                               </button>
+                              )
                             ) : (
                               <button
                                 onClick={() => addExercise(exercise.id)}

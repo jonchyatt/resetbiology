@@ -293,7 +293,7 @@ export function Dashboard() {
             <Link href="/modules" className="quick-access-card">
               <div className="p-4 bg-purple-600/20 rounded-lg border border-purple-400/30 hover:bg-purple-600/30 transition-colors text-center">
                 <Brain className="w-8 h-8 text-purple-300 mx-auto mb-2" />
-                <span className="text-sm text-white">Modules</span>
+                <span className="text-sm text-white">Guided Audio</span>
               </div>
             </Link>
             

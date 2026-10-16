@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
 import { WhisperService } from '@/lib/speech'
+import { localDayKey } from '@/lib/localDay'
 import {
   NOTE_COLORS, SEED_DIFFICULTY as _SEED_D, createNote, reviewNote,
   autoGrade, currentR, pickNextNote, calcXP, type NoteMemory, type FsrsGrade,
@@ -525,6 +526,25 @@ export default function PitchRecognition({ section = 'Mental Training' }: { sect
 
   // Maze computed display values
   const mazeAccPct = mazeTotal > 0 ? Math.round((mazeCorrect / mazeTotal) * 100) : 0
+
+  // Save each finished session once (fires when a mode reaches its summary screen), so it
+  // shows in daily history. Logged-out visitors get a 401, which is ignored.
+  useEffect(() => {
+    const done =
+      screen === 'identify' && iPhase === 'summary' ? { mode: 'identify', totalQuestions: iTotal, correct: iCorrect } :
+      screen === 'nback' && nbPhase === 'summary' ? { mode: 'nback', totalQuestions: nbTotal, correct: nbCorrect } :
+      screen === 'maze' && mazePhase === 'summary' ? { mode: 'maze', totalQuestions: mazeTotal, correct: mazeCorrect } :
+      null
+    if (!done || done.totalQuestions < 1) return
+    const now = new Date()
+    fetch('/api/ear-training/sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ ...done, localDate: localDayKey(now), localTime: now.toTimeString().slice(0, 8) }),
+    }).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, iPhase, nbPhase, mazePhase])
   const mazeColor  = NOTE_COLORS[mazeCurrent ?? 'C4'] ?? { hue: 180, name: '' }
   const mazeMem    = mazeCurrent ? (mazeMemory[mazeCurrent] ?? createNote(mazeCurrent)) : null
   const mazeR      = mazeMem ? currentR(mazeMem) : 1

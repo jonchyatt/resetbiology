@@ -3,7 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
-import { todayLocalKey, dayKeyToUtcMidnight } from '@/lib/localDay'
+import { todayLocalKey, dayKeyToUtcMidnight, isValidDayKey } from '@/lib/localDay'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -118,7 +118,8 @@ export async function POST(req: NextRequest) {
       durationSeconds,
       levelAdvanced,
       levelDecreased,
-      localDate
+      localDate,
+      localTime
     } = body
 
     const hasLetter = gameMode === 'triple' || gameMode === 'quad'
@@ -158,7 +159,9 @@ export async function POST(req: NextRequest) {
         colorAccuracy: hasColor ? (colorAccuracy || 0) : null,
         durationSeconds: durationSeconds || 0,
         levelAdvanced: levelAdvanced || false,
-        levelDecreased: levelDecreased || false
+        levelDecreased: levelDecreased || false,
+        localDate: isValidDayKey(localDate) ? localDate : null,
+        localTime: typeof localTime === 'string' ? localTime.slice(0, 8) : null
       }
     })
 

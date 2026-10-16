@@ -22,6 +22,7 @@ interface BreathTrainingAppProps {
     exhaleMs?: number
     breathsPerCycle?: number
     cyclesTarget?: number
+    category?: string
   } | null
 }
 
@@ -44,6 +45,9 @@ function settingsFromExercise(
 }
 
 export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainingAppProps) {
+  // The hold-based "How It Works" steps and autophagy note describe the autophagy
+  // protocol only; calming protocols get their own short text.
+  const isCalmProtocol = !!exercise && (/calm/i.test(exercise.name ?? '') || ['relaxation', 'vagal', 'sample'].includes((exercise.category ?? '').toLowerCase()))
   const toast = useToast()
   // Core state machine
   const [state, setState] = useState<BreathState>('idle')
@@ -617,6 +621,11 @@ export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainin
               {/* How It Works - moved to right side, always visible */}
               <div className="bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm p-6 rounded-xl border border-primary-400/30 shadow-2xl">
                   <h3 className="text-xl font-bold text-white mb-3 drop-shadow-sm">How It Works</h3>
+                  {isCalmProtocol ? (
+                    <p className="text-gray-200">
+                      Follow the orb and breathe in through your nose at an easy pace. Let each exhale run longer than the inhale, which helps the body settle.
+                    </p>
+                  ) : (<>
                   <ol className="space-y-2 text-gray-200">
                     <li className="flex items-start">
                       <span className="bg-primary-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5 flex-shrink-0">1</span>
@@ -641,7 +650,7 @@ export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainin
                         <a href="/education" className="text-primary-300 hover:text-primary-200 text-sm underline transition-colors">
                           *nerd stuff - studies and research papers
                         </a>
-                        <div className="absolute bottom-full left-0 mb-2 w-80 p-3 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-md rounded-lg border border-primary-400/40 shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-80 max-w-[calc(100vw-2rem)] p-3 bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-md rounded-lg border border-primary-400/40 shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
                           <p className="text-xs text-gray-200 leading-relaxed">
                             <strong>Low oxygen practice</strong> stimulates autophagy better than HIIT, while <strong>hypercarbia</strong> stimulates growth hormone - both crucial for reducing loose skin during weight loss.
                           </p>
@@ -649,6 +658,7 @@ export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainin
                       </div>
                     </div>
                   </div>
+                  </>)}
                 </div>
             </div>
           </div>
