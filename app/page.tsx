@@ -23,7 +23,21 @@ const website = {
   url: "https://resetbiology.com",
 }
 
-export default async function Home() {
+// Where /api/newsletter/{confirm,unsubscribe} land the member (?newsletter=<state>).
+const NEWSLETTER_BANNERS: Record<string, string> = {
+  confirmed: "You're confirmed. Free weekly notes, no selling, ever.",
+  unsubscribed: "You're unsubscribed.",
+  invalid: "That link has expired. Sign up again below.",
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const newsletterParam = (await searchParams)?.newsletter
+  const newsletterBanner =
+    typeof newsletterParam === "string" ? NEWSLETTER_BANNERS[newsletterParam] : undefined
   const session = await auth0.getSession()
 
   if (session?.user) {
@@ -45,6 +59,14 @@ export default async function Home() {
       <aside className="border-b border-primary-400/25 bg-slate-900 px-4 py-3 text-center text-sm text-slate-200">
         Free. Funded by the Satori Living Foundation. {/* src: LMP §00 */}
       </aside>
+      {newsletterBanner && (
+        <p
+          role="status"
+          className="border-b border-primary-400/25 bg-primary-950/60 px-4 py-2 text-center text-sm text-primary-100"
+        >
+          {newsletterBanner}
+        </p>
+      )}
 
       <section className="relative overflow-hidden border-b border-white/10 px-4 py-20 sm:py-28 lg:py-36">
         <div

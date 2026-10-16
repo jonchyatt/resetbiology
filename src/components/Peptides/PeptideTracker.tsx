@@ -1726,6 +1726,8 @@ export function PeptideTracker() {
   const openEditModal = (protocol: PeptideProtocol) => {
     setEditingProtocol(protocol);
     setCustomDosage(protocol.dosage);
+    // RB-FIX-2: seed the dropdown from the stored frequency (case/space
+    // tolerant, e.g. "daily" -> "Daily") so Save never sends a blank one.
     setCustomFrequency(
       [
         "Daily",
@@ -1734,9 +1736,10 @@ export function PeptideTracker() {
         "2x per week",
         "5 days on, 2 days off",
         "Once per week",
-      ].includes(protocol.frequency)
-        ? protocol.frequency
-        : "",
+      ].find(
+        (option) =>
+          option.toLowerCase() === (protocol.frequency ?? "").trim().toLowerCase(),
+      ) ?? "",
     );
     setCustomTiming(protocol.timing);
     setCustomDuration(protocol.duration);
@@ -1814,7 +1817,8 @@ export function PeptideTracker() {
         body: JSON.stringify({
           protocolId: editingProtocol.id,
           dosage: customDosage,
-          frequency: finalFrequency,
+          // RB-FIX-2: omit (never blank) when nothing is chosen.
+          frequency: finalFrequency || undefined,
           timing: timingString,
           timezone: getClientTimezone(),
         }),
@@ -2160,12 +2164,22 @@ export function PeptideTracker() {
     today.setHours(0, 0, 0, 0);
     const todayKey = dateToLocalKey(today);
 
-    const isCompletedToday = doseHistory.some((dose: any) => {
+    const hasLoggedToday = doseHistory.some((dose: any) => {
       const doseDate = dose?.doseDate || dose?.createdAt || dose?.updatedAt;
       if (!doseDate) return false;
       const doseDateKey = dose?.localDate || dateToLocalKey(new Date(doseDate));
       return doseDateKey === todayKey && dose?.protocolId === protocol.id;
     });
+    // RB-FIX-2: "Completed" means EVERY scheduled slot today is logged. Any
+    // pending slot (todaysDoses holds one row per slot) keeps the card open.
+    const pendingToday = todaysDoses
+      .filter((dose) => dose.peptideId === protocol.id && !dose.completed)
+      .sort(
+        (a, b) =>
+          scheduledTimeSortValue(a.scheduledTime) -
+          scheduledTimeSortValue(b.scheduledTime),
+      );
+    const isCompletedToday = hasLoggedToday && pendingToday.length === 0;
 
     // Extract next dose time from protocol timing
     const getNextDoseTime = () => {
@@ -2197,6 +2211,19 @@ export function PeptideTracker() {
         text: "Completed",
         className: "bg-green-500/20 text-green-300 border-green-400/40",
       };
+    } else if (pendingToday.length > 0) {
+      // Next due slot = earliest still-pending slot today.
+      const dueTime = pendingToday[0].scheduledTime;
+      const isOverdue = !!dueTime && dueTime < new Date().toTimeString().slice(0, 5);
+      statusBadge = isOverdue
+        ? {
+            text: `Overdue: ${dueTime}`,
+            className: "bg-red-500/20 text-red-300 border-red-400/40",
+          }
+        : {
+            text: dueTime ? `Coming Due: ${dueTime}` : "Coming Due Today",
+            className: "bg-amber-500/20 text-amber-300 border-amber-400/40",
+          };
     } else if (nextDoseDate) {
       const daysUntil = Math.floor(
         (nextDoseDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
