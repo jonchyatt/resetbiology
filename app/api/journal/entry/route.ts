@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { validateWeight } from '@/lib/inputValidators'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 import { mergeNoteLines } from '@/lib/peptideDoseJournal'
 import { localDayKey, dayKeyToUtcMidnight } from '@/lib/localDay'
@@ -62,6 +63,14 @@ export async function POST(request: NextRequest) {
     const dayStart = dayKeyToUtcMidnight(dayKey)
     const nextDay = new Date(dayStart)
     nextDay.setUTCDate(nextDay.getUTCDate() + 1)
+
+    if (body?.weight !== undefined && body?.weight !== null && body?.weight !== '') {
+      const w = Number(body.weight)
+      if (!Number.isNaN(w)) {
+        const werr = validateWeight(w, 'lb')
+        if (werr) return NextResponse.json({ error: werr }, { status: 400 })
+      }
+    }
 
     const entryPayload: EntryPayload = {
       reasonsValidation: normalizeString(body?.reasonsValidation),

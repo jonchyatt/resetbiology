@@ -7,7 +7,7 @@ export function LoginButton() {
       onClick={() => console.log('Login clicked')}
       className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
     >
-      Sign in
+      Log in
     </button>
   );
 }

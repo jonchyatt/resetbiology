@@ -306,9 +306,6 @@ export default function AdminDashboard() {
               <h2 className="text-2xl font-bold text-white mb-1">Developer tools</h2>
               <p className="text-gray-300 mb-4">Internal pages. Admin login required.</p>
               <ul className="space-y-2">
-              <li><a href="/auth/debug" className="text-primary-300 hover:text-primary-200">Auth debug</a> <span className="text-gray-500 text-sm">/auth/debug</span></li>
-              <li><a href="/test-session" className="text-primary-300 hover:text-primary-200">Test session</a> <span className="text-gray-500 text-sm">/test-session</span></li>
-              <li><a href="/portal-test" className="text-primary-300 hover:text-primary-200">Design preview (sample data)</a> <span className="text-gray-500 text-sm">/portal-test</span></li>
               <li><a href="/admin/test" className="text-primary-300 hover:text-primary-200">Admin test</a> <span className="text-gray-500 text-sm">/admin/test</span></li>
               <li><a href="/admin/db" className="text-primary-300 hover:text-primary-200">Database tools</a> <span className="text-gray-500 text-sm">/admin/db</span></li>
               <li><a href="/pitch-defender/crepe-benchmark" className="text-primary-300 hover:text-primary-200">Pitch benchmark</a> <span className="text-gray-500 text-sm">/pitch-defender/crepe-benchmark</span></li>

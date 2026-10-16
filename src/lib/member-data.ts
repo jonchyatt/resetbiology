@@ -15,6 +15,7 @@
  * tests/member-data-isolation-check.ts.
  */
 import { Prisma } from '@prisma/client'
+import { shapeMemberExport } from '@/lib/memberExport'
 
 type ModelMeta = { name: string; fields: ReadonlyArray<{ name: string; kind: string; type: string; relationFromFields?: ReadonlyArray<string> | null }> }
 
@@ -78,7 +79,15 @@ export async function exportMemberData(db: Db, userId: string, models = memberDa
   for (const model of models) {
     data[model] = await db[delegateName(model)].findMany({ where: scopedWhere(model, userId, protocolIds) })
   }
-  return { exportedAt: new Date().toISOString(), account: user ? account : null, data }
+  // Peptide names for the readable export (protocols only carry the catalog id).
+  const peptideNames: Record<string, string> = {}
+  try {
+    const ids = [...new Set((data[PROTOCOLS_MODEL] as Array<{ peptideId?: string }>).map((p) => p.peptideId).filter(Boolean))]
+    if (ids.length && db.peptide?.findMany) {
+      for (const p of await db.peptide.findMany({ where: { id: { in: ids } }, select: { id: true, name: true } })) peptideNames[p.id] = p.name
+    }
+  } catch { /* names are a nicety; the export still works without them */ }
+  return { exportedAt: new Date().toISOString(), account: user ? account : null, data, peptideNames }
 }
 
 /** Deletes every member-data row for this user, then the User row. One transaction. */
@@ -104,7 +113,7 @@ export function createMemberDataHandlers(deps: MemberDataDeps) {
     async GET(): Promise<Response> {
       const user = await deps.getUser()
       if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
-      const body = await exportMemberData(deps.db, user.id)
+      const body = shapeMemberExport(await exportMemberData(deps.db, user.id) as any)
       const day = new Date().toISOString().slice(0, 10)
       return new Response(JSON.stringify(body, null, 2), {
         headers: {

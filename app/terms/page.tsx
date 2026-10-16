@@ -12,7 +12,7 @@ const sections = [
   { id: "not-medical-advice", label: "Not Medical Advice" },
   { id: "accounts", label: "Account Responsibilities" },
   { id: "acceptable-use", label: "Acceptable Use" },
-  { id: "vault-integration", label: "Google Drive Vault Integration" },
+  { id: "vault-integration", label: "Google Drive Integration" },
   { id: "payments", label: "No Payments" },
   { id: "intellectual-property", label: "Intellectual Property" },
   { id: "termination", label: "Termination" },
@@ -144,7 +144,7 @@ export default function TermsOfServicePage() {
             </section>
 
             <section id="vault-integration">
-              <h2 className="text-2xl font-bold text-white mb-3">Google Drive Vault Integration</h2>
+              <h2 className="text-2xl font-bold text-white mb-3">Google Drive Integration</h2>
               <p>
                 The Service offers an optional integration that syncs your
                 program data to a folder our application creates in your own

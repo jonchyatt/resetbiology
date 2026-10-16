@@ -5,6 +5,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { encryptToken } from '@/lib/vault-encryption'
 import { migratePeptidesToVault } from '@/lib/migratePeptidesToVault'
+import { backfillOnConnect } from '@/lib/driveSyncQueue'
 import { resolveVaultRootFolder } from '@/lib/google-drive'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
@@ -204,6 +205,13 @@ export async function GET(req: NextRequest) {
       console.log('[oauth-callback] post-connect migration:', migration)
     } catch (migrationError: any) {
       console.error('[oauth-callback] migration failed (non-fatal):', migrationError?.message)
+    }
+
+    // RB-FIX-7 I-2: copy everything the member already has, retry old "not connected" failures.
+    try {
+      console.log('[oauth-callback] post-connect backfill:', await backfillOnConnect(state))
+    } catch (backfillError: any) {
+      console.error('[oauth-callback] backfill failed (non-fatal; the cron sweep retries):', backfillError?.message)
     }
 
     // Redirect back to the requested return path with success

@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { auth0 } from '@/lib/auth0'
+import { validateUsername } from '@/lib/inputValidators'
+
+// Stored profile for the form (the Auth0 session name is the email, not the stored name).
+export async function GET(request: NextRequest) {
+  const session = await auth0.getSession(request)
+  if (!session?.user?.sub) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+  const u = await prisma.user.findUnique({ where: { auth0Sub: session.user.sub }, select: { name: true, username: true } })
+  return NextResponse.json({ name: u?.name ?? '', username: u?.username ?? '' })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,13 +21,11 @@ export async function POST(request: NextRequest) {
     }
     
     const body = await request.json()
-    const { name, email, username } = body
+    const { name, username } = body
 
-    // Validate username format if provided
-    if (username && !/^[a-z0-9_]+$/.test(username)) {
-      return NextResponse.json({
-        error: 'Username can only contain lowercase letters, numbers, and underscores'
-      }, { status: 400 })
+    const usernameError = validateUsername(username || '')
+    if (usernameError) {
+      return NextResponse.json({ error: usernameError }, { status: 400 })
     }
 
     // Check username uniqueness if changed
@@ -41,7 +48,6 @@ export async function POST(request: NextRequest) {
       where: { auth0Sub: session.user.sub },
       data: {
         name: name || null,
-        email: email || null,
         username: username || null,
       }
     })

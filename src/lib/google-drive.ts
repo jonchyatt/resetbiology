@@ -1,3 +1,4 @@
+import { journalToMarkdown } from '@/lib/journalMarkdown'
 import { google, drive_v3 } from 'googleapis'
 import { prisma } from '@/lib/prisma'
 import { decryptToken, encryptToken, isVaultKeyConfigured } from '@/lib/vault-encryption'
@@ -917,23 +918,17 @@ async function syncDomainForDateWithResult(
 
       const journalFolderId = await requireSubfolderId(drive, driveFolder, 'Journal')
       for (const journalEntry of journalEntries) {
-        // Parse the entry JSON string if it exists
-        let parsedEntry: { content?: string; goals?: string } = {}
+        let parsedEntry: Record<string, unknown> = {}
         try {
-          if (journalEntry.entry) {
-            parsedEntry = JSON.parse(journalEntry.entry)
-          }
+          if (journalEntry.entry) parsedEntry = JSON.parse(journalEntry.entry)
         } catch {
-          // If parsing fails, treat entry as plain text content
           parsedEntry = { content: journalEntry.entry }
         }
-
-        const content = formatJournalEntry({
-          createdAt: journalEntry.createdAt,
-          content: parsedEntry.content || '',
-          mood: journalEntry.mood || undefined,
-          weight: journalEntry.weight || undefined,
-          goals: parsedEntry.goals || undefined,
+        const content = journalToMarkdown({
+          date: journalEntry.date,
+          mood: journalEntry.mood,
+          weight: journalEntry.weight,
+          entry: parsedEntry,
         })
         const fileName = `journal-${dateStr}.md`
         await uploadRequiredTextFile(drive, journalFolderId, fileName, content, 'text/markdown')
