@@ -68,6 +68,7 @@ model User {
   workoutCheckIns         WorkoutCheckIn[]
   journalEntries          JournalEntry[]
   journalRecords           JournalRecord[]
+  moodEnergyEntries       MoodEnergyEntry[]
   notificationPreferences NotificationPreference[]
   scheduledNotifications  ScheduledNotification[]
   pushSubscriptions       PushSubscription[]
@@ -452,6 +453,26 @@ model JournalRecord {
   @@unique([userId, clientKey])
   @@index([userId, localDate])
   @@map("journal_records")
+}
+
+model MoodEnergyEntry {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  clientKey  String
+  mood       Int
+  energy     Int
+  note       String?
+  tags       String[]
+  localDate  String
+  recordedAt DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, clientKey])
+  @@index([userId, localDate])
+  @@index([userId, recordedAt])
+  @@map("mood_energy_entries")
 }
 
 model MealPlan {

@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { Bookmark, Pencil, Plus, Search, Trash2, X } from "lucide-react"
+import { MoodEnergyTimeline } from "@/components/Journal/MoodEnergyTimeline"
 
 type JournalRecord = { id: string; title: string; body: string; tags: string[]; localDate: string; isPinned: boolean; updatedAt: string }
 type Activity = { id: string; kind: string; localDate: string; label: string; href: string }
@@ -74,6 +75,7 @@ export function JournalExplorer() {
 
   return <main className="min-h-screen bg-slate-950 px-4 py-24 text-slate-100 sm:px-8">
     <div className="mx-auto max-w-6xl space-y-6">
+      <MoodEnergyTimeline />
       <header><p className="text-xs uppercase tracking-[.3em] text-cyan-300">Private history</p><h1 className="mt-2 text-3xl font-bold sm:text-5xl">Daily Journal</h1><p className="mt-3 max-w-2xl text-slate-300">Search and organize your own notes alongside the meals, peptides, and hypnosis records you actually logged. This page does not diagnose, interpret, or generate treatment advice.</p></header>
 
       <section className="grid gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 md:grid-cols-5">
