@@ -720,8 +720,10 @@ model FoodLog {
   confidence Float? // AI confidence score (0-1)
   aiSource   String? // "vision" | "voice" | "chat" | null
 
+
   @@index([userId, loggedAt], map: "foodlog_user_loggedAt")
   @@index([userId, localDate], map: "foodlog_user_localDate")
+
   @@map("food_logs")
 }
 

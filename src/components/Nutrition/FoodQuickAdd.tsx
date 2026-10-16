@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Search, Loader2, CheckCircle2, PlusCircle, Star, Camera } from "lucide-react";
 import type { CachedFoodResult, Nutrients } from "@/lib/nutrition/types";
 import { CameraUpload } from "./CameraUpload";
+import { BarcodeMealLookup } from "./BarcodeMealLookup";
 
 type Result = CachedFoodResult & { nutrients: Nutrients | null };
 type Status = "idle" | "logging" | "success" | "error";
@@ -389,6 +390,8 @@ export function FoodQuickAdd({ onLogged }: { onLogged?: (result: FoodQuickAddRes
           </button>
         </div>
       </div>
+
+      <BarcodeMealLookup onLogged={onLogged ? () => onLogged({ pointsAwarded: 0, dailyTaskCompleted: true }) : undefined} />
 
       {/* Search Input - Only show on Search tab */}
       {activeTab === 'search' && (

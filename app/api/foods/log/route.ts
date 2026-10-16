@@ -40,10 +40,24 @@ export async function POST(req: Request) {
       loggedAt = null,
       localDate = null,
       localTime = null,
+      barcode = null,
+      sourceSnapshot = null,
+      idempotencyKey = null,
     } = body ?? {};
 
     if (!itemName || typeof nutrients !== 'object' || nutrients === null) {
       return NextResponse.json({ ok: false, error: 'Missing itemName or nutrients' }, { status: 400 });
+    }
+
+    if (idempotencyKey && typeof idempotencyKey === 'string') {
+      const recentLogs = await prisma.foodLog.findMany({
+        where: { userId: user.id, loggedAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+        select: { id: true, aiMetadata: true },
+      });
+      const duplicate = recentLogs.find((entry) => (entry.aiMetadata as any)?.idempotencyKey === idempotencyKey);
+      if (duplicate) {
+        return NextResponse.json({ ok: true, duplicate: true, logId: duplicate.id, pointsAwarded: 0, dailyTaskCompleted: true });
+      }
     }
 
     const logTimestamp = loggedAt ? new Date(loggedAt) : new Date();
@@ -79,6 +93,7 @@ export async function POST(req: Request) {
         localTime, // User's local time HH:MM:SS
         loggedAt: logTimestamp,
         mealType,
+        aiMetadata: (barcode || sourceSnapshot || idempotencyKey) ? { barcode, sourceSnapshot, idempotencyKey } : undefined,
       },
       select: { id: true },
     });

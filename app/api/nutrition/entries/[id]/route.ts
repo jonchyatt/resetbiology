@@ -72,6 +72,10 @@ export async function PATCH(
     // Prepare update data
     const updateData: any = {}
 
+    if (data.barcode !== undefined || data.sourceSnapshot !== undefined || data.idempotencyKey !== undefined) {
+      return NextResponse.json({ error: 'Barcode source snapshots are immutable after save' }, { status: 409 })
+    }
+
     // Update basic fields
     if (data.itemName !== undefined) updateData.itemName = data.itemName
     if (data.mealType !== undefined) updateData.mealType = data.mealType

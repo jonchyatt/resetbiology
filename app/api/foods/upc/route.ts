@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
 import { getCached } from '@/lib/nutrition/db';
 import { offByBarcode } from '@/lib/nutrition/search';
+import { normalizeBarcode } from '@/lib/nutrition/barcode';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const code = (searchParams.get('code') ?? '').trim();
+  const normalized = normalizeBarcode(searchParams.get('code') ?? '');
 
-  if (!code) {
-    return NextResponse.json({ ok: false, error: 'Missing barcode' }, { status: 400 });
+  if (!normalized) {
+    return NextResponse.json({ ok: false, error: 'Enter a valid 12- or 13-digit UPC/EAN with a correct check digit.' }, { status: 400 });
   }
+  const code = normalized.code;
 
   const cached = await getCached('openfoodfacts', code);
   if (cached) {
@@ -25,6 +27,8 @@ export async function GET(req: Request) {
         servingGram: cached.servingGram ?? null,
         nutrients: (cached.nutrientsJson as any) ?? null,
         per: (cached.per as '100g' | 'serving') ?? '100g',
+        barcode: code,
+        sourceSnapshot: { source: 'openfoodfacts', sourceId: code, fetchedAt: new Date().toISOString() },
       },
     });
   }
@@ -34,5 +38,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: false, error: 'Not found' }, { status: 404 });
   }
 
-  return NextResponse.json({ ok: true, item });
+  return NextResponse.json({
+    ok: true,
+    item: { ...item, barcode: code, sourceSnapshot: { source: item.source, sourceId: item.sourceId, fetchedAt: new Date().toISOString() } },
+  });
 }
