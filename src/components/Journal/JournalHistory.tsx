@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react"
 import Link from "next/link"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell, X, Edit2, Eye } from "lucide-react"
-import { localDayKey, weekdayOfDayKey, dayOfMonthFromKey } from "@/lib/localDay"
+import { localDayKey, weekdayOfDayKey, dayOfMonthFromKey, dayKeyToLocalDate } from "@/lib/localDay"
 import { useToast } from "@/components/ui/Toast"
 
 interface JournalHistoryDay {
@@ -397,7 +397,7 @@ function startOfMonth(date: Date) {
 }
 
 function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => void | Promise<void> }) {
-  const displayDate = useMemo(() => new Date(day.iso), [day.iso])
+  const displayDate = useMemo(() => dayKeyToLocalDate(day.date), [day.date])
   const entry = day.journalEntry?.entry ?? {}
   const [detailsModal, setDetailsModal] = useState<{ type: string; data: any } | null>(null)
   const [editModal, setEditModal] = useState<{ type: string; data: any } | null>(null)
@@ -1328,7 +1328,7 @@ function WeightChart({ data }: { data: Array<{ date: string; weight: number; iso
         {points.map((p, i) => (
           <g key={i}>
             <circle cx={p.x} cy={p.y} r="5" fill="#f59e0b" stroke="#1e293b" strokeWidth="2" />
-            <title>{`${new Date(p.iso).toLocaleDateString()}: ${p.weight} lbs`}</title>
+            <title>{`${dayKeyToLocalDate(p.date).toLocaleDateString()}: ${p.weight} lbs`}</title>
           </g>
         ))}
 
@@ -1342,7 +1342,7 @@ function WeightChart({ data }: { data: Array<{ date: string; weight: number; iso
             fontSize="11"
             textAnchor="middle"
           >
-            {new Date(p.iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            {dayKeyToLocalDate(p.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
           </text>
         ))}
       </svg>

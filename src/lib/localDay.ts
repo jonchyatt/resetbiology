@@ -128,3 +128,9 @@ export function buildMonthCalendarDays(start: Date, end: Date): Array<{ date: st
   }
   return days
 }
+
+/** Local-midnight Date for a YYYY-MM-DD key, for display formatting only (never `new Date(key)`, which is UTC and rolls back a day west of UTC). */
+export function dayKeyToLocalDate(key: string): Date {
+  const [y, m, d] = key.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
