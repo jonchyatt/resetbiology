@@ -1,5 +1,12 @@
 import { prisma } from '@/lib/prisma';
-import type { NormalizedFood } from './types';
+import { repairStaleKj } from './kcal';
+import type { NormalizedFood, Nutrients } from './types';
+
+// Every cache read re-derives kcal (see kcal.ts) so rows saved before the kJ fix never surface 371.
+const repairRow = <R extends { nutrientsJson: unknown }>(row: R): R => ({
+  ...row,
+  nutrientsJson: repairStaleKj(row.nutrientsJson as Nutrients | null),
+} as R);
 
 export async function cacheFoods(items: NormalizedFood[]): Promise<void> {
   for (const item of items) {
@@ -41,7 +48,7 @@ export async function searchCacheByText(query: string, take = 15) {
           sourceId: food.sourceId,
         },
       });
-      return { ...food, usageCount: count };
+      return { ...repairRow(food), usageCount: count };
     })
   );
 
@@ -57,5 +64,6 @@ export async function searchCacheByText(query: string, take = 15) {
 }
 
 export async function getCached(source: string, sourceId: string) {
-  return prisma.foodRef.findFirst({ where: { source, sourceId } });
+  const row = await prisma.foodRef.findFirst({ where: { source, sourceId } });
+  return row ? repairRow(row) : row;
 }

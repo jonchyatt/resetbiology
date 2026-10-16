@@ -4,77 +4,8 @@ import { prisma } from '@/lib/prisma'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 import { validatePeptideDoseSlotKey } from '@/lib/peptide-dose-slot'
-
-function startOfDay(date: Date) {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
-
-async function appendPeptideDoseToJournal(userId: string, timestamp: Date, payload: { peptideName: string; dosage: string; timeLabel: string }) {
-  const dayStart = startOfDay(timestamp)
-  const dayEnd = new Date(dayStart)
-  dayEnd.setDate(dayEnd.getDate() + 1)
-
-  const existing = await prisma.journalEntry.findFirst({
-    where: {
-      userId,
-      date: {
-        gte: dayStart,
-        lt: dayEnd,
-      },
-    },
-  })
-
-  const note = `${payload.peptideName} dose ${payload.dosage} at ${payload.timeLabel}`
-
-  if (existing) {
-    let entryData: any = {}
-    try {
-      entryData = existing.entry ? JSON.parse(existing.entry as string) : {}
-    } catch {
-      entryData = {}
-    }
-
-    const previous = typeof entryData.peptideNotes === 'string' && entryData.peptideNotes.length > 0 ? `${entryData.peptideNotes}
-` : ''
-    entryData.peptideNotes = `${previous}${note}`
-
-    const tasksCompleted = typeof entryData.tasksCompleted === 'object' && entryData.tasksCompleted !== null
-      ? { ...entryData.tasksCompleted }
-      : {}
-    tasksCompleted.peptides = true
-    entryData.tasksCompleted = tasksCompleted
-
-    await prisma.journalEntry.update({
-      where: { id: existing.id },
-      data: { entry: JSON.stringify(entryData) },
-    })
-  } else {
-    const entryData = {
-      reasonsValidation: '',
-      affirmationGoal: '',
-      affirmationBecause: '',
-      affirmationMeans: '',
-      peptideNotes: note,
-      workoutNotes: '',
-      nutritionNotes: '',
-      breathNotes: '',
-      moduleNotes: '',
-      tasksCompleted: { peptides: true },
-    }
-
-    await prisma.journalEntry.create({
-      data: {
-        userId,
-        entry: JSON.stringify(entryData),
-        mood: null,
-        weight: null,
-        date: timestamp,
-      },
-    })
-  }
-}
+import { appendPeptideDoseToJournal } from '@/lib/peptideDoseJournal'
+import { dayKeyToUtcMidnight, isValidDayKey, localDayKey } from '@/lib/localDay'
 
 // POST: Log a peptide dose
 export async function POST(request: Request) {
@@ -152,7 +83,7 @@ export async function POST(request: Request) {
     })
 
     try {
-      await appendPeptideDoseToJournal(user.id, dose.doseDate, {
+      await appendPeptideDoseToJournal(prisma, user.id, dose.doseDate, localDate, {
         peptideName: protocol.peptides.name,
         dosage,
         timeLabel: localTime || time || dose.doseDate.toISOString().slice(11, 16),
@@ -162,7 +93,8 @@ export async function POST(request: Request) {
     }
 
     // Mark 'peptides' daily task as completed
-    const today = startOfDay(new Date())
+    // RB-FIX-2: the member's day, not the server's (UTC on Vercel).
+    const today = dayKeyToUtcMidnight(isValidDayKey(localDate) ? localDate : localDayKey(dose.doseDate))
     await prisma.dailyTask.upsert({
       where: {
         userId_date_taskName: {

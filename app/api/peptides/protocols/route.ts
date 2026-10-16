@@ -1,3 +1,4 @@
+import { ignoreEmptyString } from '@/lib/protocolPatch'
 import { NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { prisma } from '@/lib/prisma'
@@ -156,12 +157,12 @@ export async function PATCH(request: Request) {
 
     const result = await updateProtocol(user.id, protocolId, {
       isActive: typeof body.isActive === 'boolean' ? body.isActive : undefined,
-      dosage: body.dosage,
-      frequency: body.frequency,
-      timing: body.timing,
+      dosage: ignoreEmptyString(body.dosage),
+      frequency: ignoreEmptyString(body.frequency),
+      timing: ignoreEmptyString(body.timing),
       notes: body.notes,
       endDate: body.endDate === undefined ? deriveEndDate(body.startDate, body.duration) : body.endDate,
-      administrationType: body.administrationType,
+      administrationType: ignoreEmptyString(body.administrationType),
     })
 
     if (!result.ok) {

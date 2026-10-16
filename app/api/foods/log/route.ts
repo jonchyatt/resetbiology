@@ -100,10 +100,15 @@ export async function POST(req: Request) {
     const award = await awardNutritionPoints({ userId: user.id, dayKey });
     const pointsAwarded = award.points;
 
-    const timestamp = logTimestamp.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-    });
+    // RB-FIX-2: label with the member's own clock (localTime "HH:MM[:SS]"), not
+    // the server's (UTC on Vercel: a 6:47 PM meal read "12:47 AM").
+    const localClock = typeof localTime === 'string' ? localTime.match(/^(\d{1,2}):(\d{2})/) : null;
+    const timestamp = localClock && Number(localClock[1]) < 24
+      ? `${Number(localClock[1]) % 12 || 12}:${localClock[2]} ${Number(localClock[1]) < 12 ? 'AM' : 'PM'}`
+      : logTimestamp.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+        });
     const nutritionNote = `Nutrition tracked at ${timestamp}`;
 
     const existingJournal = await prisma.journalEntry.findFirst({

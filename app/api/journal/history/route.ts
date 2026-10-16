@@ -296,7 +296,13 @@ export async function GET(request: NextRequest) {
     peptideDoses.forEach((dose: any) => {
       const date = dose.doseDate instanceof Date ? dose.doseDate : new Date(dose.doseDate)
       const bucket = ensureDay(date, dose.localDate)
-      bucket.peptideDoses.push(dose)
+      // RB-FIX-2: storefront price/stock never leave via the signed-in history.
+      const { price: _price, inStock: _inStock, ...peptide } = dose.user_peptide_protocols?.peptides ?? {}
+      bucket.peptideDoses.push(
+        dose.user_peptide_protocols
+          ? { ...dose, user_peptide_protocols: { ...dose.user_peptide_protocols, peptides: peptide } }
+          : dose,
+      )
       bucket.eventCount += 1
     })
 

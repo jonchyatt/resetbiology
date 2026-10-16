@@ -726,7 +726,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                     return (
                       <>
                         {storefront.length > 0 && (
-                          <optgroup label="Storefront Products">{storefront.map(renderOption)}</optgroup>
+                          <optgroup label="Peptides">{storefront.map(renderOption)}</optgroup>
                         )}
                         <optgroup label={`Peptide Library (${library.length})`}>{library.map(renderOption)}</optgroup>
                         {custom.length > 0 && (
@@ -755,7 +755,7 @@ export const DosageCalculator: React.FC<DosageCalculatorProps> = ({
                 )}
 
                 <p className="text-xs text-white/50">
-                  {groupedPeptideLibrary.storefront.length} store product{groupedPeptideLibrary.storefront.length === 1 ? '' : 's'}
+                  {groupedPeptideLibrary.storefront.length} peptide{groupedPeptideLibrary.storefront.length === 1 ? '' : 's'}
                   {groupedPeptideLibrary.library.length > 0 ? ` + ${groupedPeptideLibrary.library.length} peptide library cards` : ''} + Custom option available
                 </p>
 
