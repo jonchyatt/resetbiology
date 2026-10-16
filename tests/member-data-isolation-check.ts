@@ -7,7 +7,7 @@
  * against an in-memory fake database holding two members, A and B.
  */
 import assert from 'node:assert/strict'
-import { createMemberDataHandlers, memberDataModels, scopedWhere, delegateName } from '../src/lib/member-data'
+import { exportMemberData, createMemberDataHandlers, memberDataModels, scopedWhere, delegateName } from '../src/lib/member-data'
 
 const A = 'aaaaaaaaaaaaaaaaaaaaaaaa'
 const B = 'bbbbbbbbbbbbbbbbbbbbbbbb'
@@ -85,7 +85,10 @@ async function main() {
   const res = await asA.GET()
   assert.equal(res.status, 200)
   assert.match(res.headers.get('Content-Disposition') ?? '', /attachment/)
-  const dump = await res.json()
+  // RB-FIX-7: the download is now a readable shape (no ids); isolation is asserted on the raw export it is built from.
+  const dump = (await exportMemberData(db, A)) as any
+  const shaped = JSON.stringify(await res.json())
+  assert.ok(!shaped.includes(B), "readable export never mentions B's id")
   assert.equal(dump.account.id, A)
   assert.ok(!('googleDriveRefreshToken' in dump.account), 'export must not include the Drive token')
   for (const [model, rows] of Object.entries(dump.data) as Array<[string, Row[]]>) {
