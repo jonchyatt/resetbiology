@@ -182,7 +182,7 @@ export function JournalHistory() {
         {/* Title Section - Matching Tracker Pages */}
         <div className="text-center py-8">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 text-shadow-lg animate-fade-in">
-            <span className="text-primary-400">Holistic Research</span> Protocol Tracker
+            <span className="text-primary-400">Daily</span> history
           </h2>
           <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow-sm mb-4">
             Review everything you completed - peptides, nutrition, workouts, breath practice, mindset modules, and journal reflections.
@@ -368,7 +368,7 @@ export function JournalHistory() {
 
                   <div className="rounded-2xl border border-primary-400/30 bg-primary-500/10 backdrop-blur-md p-10 text-center text-slate-300 shadow-xl shadow-black/30">
 
-                    Select a day on the calendar to view the full history.
+                    {selectedDayKey ? 'Nothing logged on this day.' : 'Select a day on the calendar to view the full history.'}
 
                   </div>
 
@@ -540,10 +540,11 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
                     closeEditModal()
                     await onSaved()
                   } else {
-                    throw new Error('Failed to update')
+                    const d = await response.json().catch(() => null)
+                    throw new Error(d?.error || 'Failed to update')
                   }
                 } catch (error) {
-                  toast.error('Failed to update journal entry')
+                  toast.error(error instanceof Error && error.message !== 'Failed to update' ? error.message : 'Failed to update journal entry')
                 } finally {
                   setSaving(false)
                 }
@@ -1061,17 +1062,22 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
               {confirmDeleteEntry ? (
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-slate-200" role="alert">
                   <span>Delete this day&apos;s journal entry?</span>
-                  <button onClick={deleteJournalEntry} disabled={saving} className="px-3 py-1 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white rounded-lg transition-colors">
+                  <button onClick={deleteJournalEntry} disabled={saving} className="min-h-[44px] px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-800 text-white rounded-lg transition-colors">
                     {saving ? 'Deleting...' : 'Yes, delete'}
                   </button>
-                  <button onClick={() => setConfirmDeleteEntry(false)} disabled={saving} className="px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
+                  <button onClick={() => setConfirmDeleteEntry(false)} disabled={saving} className="min-h-[44px] px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors">
                     Cancel
                   </button>
                 </div>
               ) : (
-                <button onClick={() => setConfirmDeleteEntry(true)} className="mt-3 px-3 py-1 text-sm rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 transition-colors">
-                  Delete entry
-                </button>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button onClick={() => setEditModal({ type: 'journal', data: day.journalEntry })} className="min-h-[44px] px-4 py-2 text-sm rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-200 transition-colors">
+                    Edit entry
+                  </button>
+                  <button onClick={() => setConfirmDeleteEntry(true)} className="min-h-[44px] px-4 py-2 text-sm rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-300 transition-colors">
+                    Delete entry
+                  </button>
+                </div>
               )}
               <ul className="mt-3 space-y-2 text-sm text-slate-200">
                 {entry.reasonsValidation && <li><strong>Success Today:</strong> {entry.reasonsValidation}</li>}

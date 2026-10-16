@@ -11,6 +11,7 @@ import { VaultBanner } from "@/components/Vault/VaultBanner"
 import { OnboardingGuide, type OnboardingStatus } from "@/components/Portal/OnboardingGuide"
 import { useToast } from "@/components/ui/Toast"
 import { localDayKey } from "@/lib/localDay"
+import { validateWeight } from "@/lib/inputValidators"
 
 const iconMap: Record<string, LucideIcon> = {
   Target, Dumbbell, Apple, Brain, Wind, BookOpen, Eye, Zap, Music, Sparkles, HeartPulse,
@@ -229,7 +230,14 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
   }
 
   // Save journal data
+  const [savingJournal, setSavingJournal] = useState(false)
+  const [weightError, setWeightError] = useState<string | null>(null)
   const saveJournalEntry = async () => {
+    if (savingJournal) return // one in-flight save only (stops the doubled "saved" toast)
+    const werr = typeof journalData.weight === 'number' && !Number.isNaN(journalData.weight) ? validateWeight(journalData.weight, 'lb') : null
+    setWeightError(werr)
+    if (werr) return
+    setSavingJournal(true)
     try {
       const payload = {
         ...journalData,
@@ -264,6 +272,8 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
     } catch (error) {
       console.error('Failed to save journal - exception:', error)
       toast.error(`Failed to save journal entry: ${error instanceof Error ? error.message : 'Please try again.'}`)
+    } finally {
+      setSavingJournal(false)
     }
   }
 
@@ -809,7 +819,9 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
                   onChange={(e) => setJournalData({ ...journalData, weight: parseFloat(e.target.value) })}
                   className="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-white"
                   placeholder="Enter weight"
+                  aria-invalid={!!weightError}
                 />
+                {weightError && <p className="text-xs text-red-400 mt-1" role="alert">{weightError}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">Current Mood</label>
@@ -916,6 +928,7 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
               {/* Save Button */}
               <button
                 onClick={saveJournalEntry}
+                disabled={savingJournal}
                 className="lg:col-span-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 rounded-lg transition-colors"
               >
                 Save Daily Journal Entry

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
+import { validateWeight } from '@/lib/inputValidators'
+import { journalAfterDelete } from '@/lib/journalDelete'
+import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 import { hasEntryJsonChanges, mergeJournalEntryJson } from '@/lib/journalEntryMerge'
 
 export async function PATCH(
@@ -37,6 +40,11 @@ export async function PATCH(
         { error: 'Journal entry not found or unauthorized' },
         { status: 404 }
       )
+    }
+
+    if (typeof data.weight === 'number') {
+      const werr = validateWeight(data.weight, 'lb')
+      if (werr) return NextResponse.json({ error: werr }, { status: 400 })
     }
 
     // Prepare update data
@@ -85,13 +93,26 @@ export async function DELETE(
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-    // deleteMany scoped to userId: only the owner's entry can match
-    const result = await prisma.journalEntry.deleteMany({
-      where: { id: params.id, userId: user.id }
-    })
-    if (result.count === 0) {
+    const existing = await prisma.journalEntry.findFirst({ where: { id: params.id, userId: user.id } })
+    if (!existing) {
       return NextResponse.json({ error: 'Journal entry not found or unauthorized' }, { status: 404 })
     }
+    const after = journalAfterDelete(existing.entry as string | null)
+    if (after.keep) {
+      await prisma.journalEntry.update({
+        where: { id: existing.id },
+        data: { entry: after.entryJson, mood: null, weight: null },
+      })
+    } else {
+      await prisma.journalEntry.deleteMany({ where: { id: existing.id, userId: user.id } })
+    }
+    // Journal tick clears; Peptides tick stays only if dose lines remain.
+    const names = after.keep ? ['journal'] : ['journal', 'peptides']
+    await prisma.dailyTask.updateMany({
+      where: { userId: user.id, date: existing.date, taskName: { in: names } },
+      data: { completed: false },
+    })
+    await enqueueDriveSync(user.id, existing.date, ['journal']).catch(err => console.error('Drive enqueue failed:', err))
     return NextResponse.json({ ok: true })
   } catch (error: any) {
     console.error('Error deleting journal entry:', error)
