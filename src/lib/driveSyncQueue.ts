@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { getDriveClient, syncDomainForDate } from '@/lib/google-drive'
+import { getDriveClient, syncDomainForDate, syncUserProfile } from '@/lib/google-drive'
 
 const CLAIM_LEASE_MS = 300 * 1000 // 5 min — must exceed worst-case single-domain Drive sync so the reconciler doesn't reclaim a still-running row
 const MAX_ATTEMPTS = 8
@@ -243,6 +243,17 @@ export async function enqueueDriveSync(
 ): Promise<void> {
   const dateStr = toDateStr(date)
 
+  // RB-FIX-7 I-2: a member with no Drive connected gets no sync jobs at all
+  // (they used to pile up and fail 8 times with "Google Drive not connected").
+  const owner = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { googleDriveSyncEnabled: true },
+  })
+  if (!owner?.googleDriveSyncEnabled) {
+    console.log('Drive sync skipped: member has no Drive connected', { userId, domains })
+    return
+  }
+
   for (const domain of domains) {
     // A fresh enqueue = a fresh intent, so reset attempts/status to give the row
     // a full retry budget even if a prior same-day run had exhausted it (Argus HIGH).
@@ -439,4 +450,25 @@ export async function reconcileDriveSyncOutbox(): Promise<void> {
       leaseUntil: null,
     },
   })
+}
+
+// RB-FIX-7 I-2: run right after a member connects Drive. (1) Give jobs that failed
+// or are waiting on "not connected" a fresh retry budget. (2) Enqueue one job per
+// data type per day for ALL existing data (the normal sweep only looks back 48h).
+export async function backfillOnConnect(userId: string): Promise<{ reset: number; created: number }> {
+  const reset = await prisma.driveSyncOutbox.updateMany({
+    where: {
+      userId,
+      status: { in: ['failed', 'pending'] },
+      lastError: { contains: 'not connected' },
+    },
+    data: { status: 'pending', attempts: 0, leaseUntil: null, lastError: null },
+  })
+  // ponytail: capped at 500 new rows per call; the 6-hourly sweep with a 48h window won't
+  // reach older days, so a very large history needs a second connect or a forced ?backfill=1.
+  const { created } = await backfillDriveSyncOutbox({ userId, windowHours: 24 * 365 * 100 })
+  // Profile is not an outbox domain (nothing else ever wrote the Profile folder): write it once now.
+  const profile = await syncUserProfile(userId).catch(e => ({ success: false, error: String(e) }))
+  if (!profile.success) console.error('[backfillOnConnect] profile copy failed:', profile.error)
+  return { reset: reset.count, created }
 }
