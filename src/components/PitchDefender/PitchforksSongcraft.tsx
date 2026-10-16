@@ -46,6 +46,9 @@ import { loadSongcraftPresets } from './pitchforksSongcraftPresets'
 import { SONGCRAFT_PRESET_CATALOG } from './pitchforksSongcraftPresetCatalog'
 import type { PitchforksMasteryProjection } from './pitchforksMasteryProjection'
 import { canEnterTempoEncore } from './pitchforksTempoEncore'
+import type { PitchforksPresentationJourney } from './pitchforksCurriculum'
+import PitchforksCathedralFinalePanel from './PitchforksCathedralFinalePanel'
+import { createPitchforksCathedralSongcraftFinale } from './pitchforksCathedralSongcraftFinale'
 
 // Keep the untimed Songcraft route free of the optional panel's runtime cycle:
 // PitchforksTempoEncorePanel imports Songcraft's detector helpers. Loading it
@@ -72,6 +75,8 @@ export interface PitchforksSongcraftConnectorProps {
   readonly masteryProjection?: PitchforksMasteryProjection
   /** The parent's already-admitted comfortable-range notes, snapshotted at Begin. */
   readonly admittedNotes: readonly string[]
+  /** Existing earned journey; Songcraft never creates a second progression store. */
+  readonly journey?: PitchforksPresentationJourney | null
   /** Existing family persistence ports; the connector never grades or writes directly. */
   readonly storage: PitchforksBossRecitalStorage
   readonly microphone: PitchforksSongcraftMicrophone
@@ -1345,6 +1350,12 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
     onNextSong: nextSong,
   }
 
+  const finale = createPitchforksCathedralSongcraftFinale({
+    journey: props.journey,
+    phrase: practiceState?.phrase,
+    practice: practiceState,
+  })
+
   if (tempoEncore && practiceState) return <Suspense fallback={<main className="fixed inset-0 overflow-y-auto bg-[#070914] p-4 text-white"><p className="mx-auto max-w-2xl rounded-2xl border border-amber-400/40 bg-slate-950 p-4">Loading optional Tempo Encore…</p></main>}>
     <PitchforksTempoEncore
       completedPractice={practiceState}
@@ -1357,8 +1368,12 @@ export function PitchforksSongcraft(props: PitchforksSongcraftConnectorProps): R
   </Suspense>
 
   const encoreEligible = practiceState && canEnterTempoEncore(practiceState.phrase, practiceState, props.masteryProjection)
-  if (!encoreEligible) return <PitchforksSongcraftPanel {...panelProps} />
+  if (!encoreEligible) return <>
+    {finale && <PitchforksCathedralFinalePanel state={finale} onContinuePractice={replayPhrase} onSaveQuit={returnToMenu} />}
+    <PitchforksSongcraftPanel {...panelProps} />
+  </>
   return <div className="fixed inset-0 overflow-y-auto bg-[#070914] [&>main]:static">
+    {finale && <PitchforksCathedralFinalePanel state={finale} onContinuePractice={replayPhrase} onSaveQuit={returnToMenu} />}
     <PitchforksSongcraftPanel {...panelProps} />
     {practiceState && canEnterTempoEncore(practiceState.phrase, practiceState, props.masteryProjection) && <div className="mx-auto max-w-2xl p-4 text-center">
       <button type="button" onClick={() => {

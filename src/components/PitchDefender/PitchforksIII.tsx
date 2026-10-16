@@ -11182,6 +11182,7 @@ export default function PitchforksIII() {
     return (
       <PitchforksSongcraft
         admittedNotes={unlockedNotes}
+        journey={presentationJourney}
         masteryProjection={projectPitchforksMastery({ admittedNotes: unlockedNotes, voiceMemory: fsrsRef.current,
           masteryRecords: masteryProgressRef.current, nowMs: Date.now() })}
         storage={songcraftStorage}
