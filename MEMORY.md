@@ -22,3 +22,7 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+## 2026-10-17 render pass
+- Chromium at 390/1280 on #52 #53 #55 #57 #60 #61 (+#51 on master): no horizontal page scroll, no console errors. Two findings: #55 `/modules` redirect loop (freeLaunch sends it to `/audio`, `next.config.ts` sends `/audio` back to `/modules`); #57 report table clips at 390px. Details and screenshots: `docs/RENDER-PASS-2026-10-17.md`.
+- Playwright from node_modules works with `executablePath: /opt/pw-browsers/chromium-1194/chrome-linux/chrome`; `npm ci` then `npx prisma generate` is enough for `next dev` with no `.env`. Do not `pkill -f "next dev"` inside the same shell command (it kills the shell).
