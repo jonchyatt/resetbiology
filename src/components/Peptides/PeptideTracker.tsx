@@ -102,6 +102,13 @@ export function computeSyringeUnitsFromPrep(
   });
   return results.insulinUnits ?? 0;
 }
+import { peptideProtocolReferences as allPeptideProtocolReferences } from "@/data/peptideProtocolReferences";
+
+// The source-attributed reference library (picker supplement + reference cards)
+// stays off until the local seat sets NEXT_PUBLIC_RB_PEPTIDE_REFERENCES=1.
+const peptideProtocolReferences =
+  process.env.NEXT_PUBLIC_RB_PEPTIDE_REFERENCES === "1" ? allPeptideProtocolReferences : [];
+
 
 // Convert base64 VAPID key to Uint8Array format required by Push API
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -176,6 +183,9 @@ interface PeptideProtocol {
   currentCycle?: number;
   isActive: boolean;
   administrationType?: string;
+  source?: string;
+  sourcePath?: string;
+  doseRange?: string;
 }
 
 export type DoseSlot = {
@@ -1171,7 +1181,7 @@ export function PeptideTracker() {
         // pick a real prep in the calculator (RegimenSourcePicker / manual
         // entry), never inherit a placeholder as if it were real.
         // RB-FIX-1 I-6: picker lists tracker peptides only (live storefront: Bacteriostatic Water category=null, isTrackable=false)
-        const formattedLibrary = products.filter((product: any) => product.isTrackable === true).map((product: any) => ({
+        const formattedLibrary: Omit<PeptideProtocol, "startDate" | "currentCycle" | "isActive">[] = products.filter((product: any) => product.isTrackable === true).map((product: any) => ({
           id: product.id,
           name: product.name,
           purpose: product.description?.substring(0, 50) || "General",
@@ -1183,6 +1193,27 @@ export function PeptideTracker() {
           reconstitution: "",
           syringeUnits: 0,
         }));
+
+        // Keep the storefront catalog, then supplement it with the source-attributed
+        // references that are already in the education corpus.
+        for (const reference of peptideProtocolReferences) {
+          if (formattedLibrary.some((item) => item.name.toLowerCase() === reference.name.toLowerCase())) continue;
+          formattedLibrary.push({
+            id: reference.id,
+            name: reference.name,
+            purpose: reference.purpose,
+            dosage: reference.doseRange,
+            timing: reference.timing,
+            frequency: reference.frequency,
+            duration: reference.duration,
+            vialAmount: reference.vialAmount,
+            reconstitution: reference.reconstitution,
+            syringeUnits: 0,
+            source: reference.source,
+            sourcePath: reference.sourcePath,
+            doseRange: reference.doseRange,
+          });
+        }
 
         // Add "Other (Custom)" option at the end
         formattedLibrary.push({
@@ -1301,6 +1332,23 @@ export function PeptideTracker() {
       reconstitution: "",
       syringeUnits: 0,
     },
+    ...peptideProtocolReferences
+      .filter((reference) => !["Semaglutide", "BPC-157"].includes(reference.name))
+      .map((reference) => ({
+      id: reference.id,
+      name: reference.name,
+      purpose: reference.purpose,
+      dosage: reference.doseRange,
+      timing: reference.timing,
+      frequency: reference.frequency,
+      duration: reference.duration,
+      vialAmount: reference.vialAmount,
+      reconstitution: reference.reconstitution,
+      syringeUnits: 0,
+      source: reference.source,
+      sourcePath: reference.sourcePath,
+      doseRange: reference.doseRange,
+      })),
   ];
 
   const handleSaveProtocol = async (protocolData: {
@@ -2467,6 +2515,14 @@ export function PeptideTracker() {
                 </div>
               </div>
               <div className="flex items-center gap-4">
+                {process.env.NEXT_PUBLIC_RB_REPORTS === "1" && (
+                  <a
+                    href="/peptides/history"
+                    className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
+                  >
+                    Personal Report
+                  </a>
+                )}
                 <a
                   href="/daily-history"
                   className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
@@ -2642,6 +2698,27 @@ export function PeptideTracker() {
                         </button>
                       </div>
                     </div>
+
+                    {peptideProtocolReferences.length > 0 && (
+                      <section aria-labelledby="protocol-reference-library" className="mb-6 rounded-2xl border border-white/20 bg-gray-900/95 backdrop-blur-md p-4">
+                        <h4 id="protocol-reference-library" className="text-base font-semibold text-white">
+                          Protocol reference library
+                        </h4>
+                        <p className="mt-1 text-xs text-white/60">
+                          Source-attributed dose ranges are reference material, not individualized recommendations.
+                        </p>
+                        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                          {peptideProtocolReferences.map((reference) => (
+                            <article key={reference.id} className="rounded-lg border border-white/15 bg-black/20 p-3 text-sm">
+                              <h5 className="font-semibold text-white">{reference.name}</h5>
+                              <p className="mt-1 text-primary-200">Reference dose range: {reference.doseRange}</p>
+                              <p className="mt-1 text-xs text-white/70">Source: {reference.source}</p>
+                              <p className="mt-1 text-xs text-white/50">Corpus record: {reference.sourcePath}</p>
+                            </article>
+                          ))}
+                        </div>
+                      </section>
+                    )}
 
                     <div className="grid gap-6 md:grid-cols-2">
                       {sortedProtocols.map((protocol) => (
