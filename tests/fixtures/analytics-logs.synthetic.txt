@@ -1,0 +1,9 @@
+{"event":"store_click","sellerKey":"Seller A","at":"2026-10-12T09:00:00.000Z"}
+{"event":"store_click","sellerKey":"Seller A","at":"2026-10-18T23:59:59.000Z"}
+{"event":"store_click","sellerKey":"Seller B | pipe","at":"2026-10-19T00:00:00.000Z"}
+{"message":"{\"event\":\"tool_view\",\"slug\":\"breath\",\"at\":\"2026-10-20T10:00:00.000Z\"}","level":"info"}
+2026-10-20T10:01:00Z INFO {"event":"tool_view","slug":"breath","at":"2026-10-20T10:01:00.000Z"}
+{"event":"unknown_thing","at":"2026-10-20T10:01:00.000Z"}
+{"event":"store_click","sellerKey":"No time"}
+not json at all
+
