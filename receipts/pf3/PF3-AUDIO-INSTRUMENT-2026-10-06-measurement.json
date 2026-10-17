@@ -1,0 +1,62 @@
+{
+  "measurementId": "PF3-AUDIO-INSTRUMENT-2026-10-06",
+  "measuredAtIso": "2026-10-07T05:17:42.652Z",
+  "route": "http://127.0.0.1:4317/pitch-defender/pitchforks-3?pfdebug=1",
+  "browser": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 4,
+    "visibilityState": "visible"
+  },
+  "source": {
+    "type": "WebAudio sine sweep through system speaker",
+    "startHz": 220,
+    "endHz": 440,
+    "gain": 0.25
+  },
+  "requestedDurationMs": 60000,
+  "observedDurationMs": 60017.5,
+  "summary": {
+    "estimateCount": 3602,
+    "dropoutCount": 3602,
+    "frameStallCount": 0,
+    "sampleAgeMedianMs": 85.4333333571758,
+    "sampleAgeP95Ms": 85.53333338101947,
+    "estimateIntervalMedianMs": 16.699999928474426,
+    "estimateIntervalP95Ms": 17.100000023841858,
+    "computeMedianMs": 0.10000002384185791,
+    "computeP95Ms": 0.20000004768371582
+  },
+  "counts": {
+    "events": 3602,
+    "estimates": 3602,
+    "valid": 0,
+    "invalid": 3602,
+    "stalls": 0
+  },
+  "stalls": [],
+  "firstEstimate": {
+    "sequence": 1,
+    "sampleAgeMs": 85.4333333571758,
+    "estimateIntervalMs": 27.800000071525574,
+    "computeMs": 0.10000002384185791,
+    "valid": false,
+    "dropout": true,
+    "frameIntervalMs": 27.799999952316284,
+    "frameStallMs": null
+  },
+  "lastEstimate": {
+    "sequence": 3602,
+    "sampleAgeMs": 85.43333335717034,
+    "estimateIntervalMs": 16.399999976158142,
+    "computeMs": 0.10000002384185791,
+    "valid": false,
+    "dropout": true,
+    "frameIntervalMs": 16.399999976158142,
+    "frameStallMs": null
+  },
+  "limitations": [
+    "All observations were invalid/dropout; the selected microphone did not deliver the speaker sweep above detector activity gates.",
+    "Sample age is analyser-window age plus compute time, not acoustic speaker-to-screen latency.",
+    "The run establishes the scheduling and dropout instrumentation path, not valid-tone tracking or physical-device microphone quality."
+  ]
+}

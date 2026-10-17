@@ -16,6 +16,13 @@ import PitchforksSongcraft, { observePitchforksSongcraftGeneration, type Pitchfo
 import { advancePitchforksCampaignProgress, bindPitchforksVillageCurriculum, advancePitchforksVillageProgress, advancePitchforksExaminationProgress, projectPitchforksWorldGates } from './pitchforksCampaignProgress'
 import { projectPitchforksMastery } from './pitchforksMasteryProjection'
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
+import {
+  createPitchforksAudioDebugBuffer,
+  interpolatePitchforksMarker,
+  pitchforksMarkerOpacity,
+  type PitchforksAudioDebugBuffer,
+  type PitchforksEstimateMeasurement,
+} from './pitchforksAudioDiagnostics'
 import { createPitchforksMicrophoneOwner, type PitchforksMicrophoneOwner } from './pitchforksMicrophoneOwner'
 import { PITCHFORKS_AUDIO_CONSTRAINTS, PITCHFORKS_PITCH_PROFILE } from './pitchDetectionSmoothing'
 import {
@@ -1488,6 +1495,7 @@ type TunerView = Readonly<{
   canUseSource: boolean
   dotDeviation: number | null
   renderDeviation: number | null
+  markerOpacity: number
   onTarget: boolean
   trail: ReadonlyArray<TrailPointView>
   feedback: PitchforksTunerFeedback
@@ -1501,6 +1509,7 @@ const EMPTY_TUNER_VIEW: TunerView = {
   canUseSource: false,
   dotDeviation: null,
   renderDeviation: null,
+  markerOpacity: 0,
   onTarget: false,
   trail: [],
   feedback: pitchforksTunerFeedback({
@@ -1700,6 +1709,7 @@ interface Pf3DebugState {
 
 declare global {
   interface Window {
+    __pitchforksAudioDebug?: PitchforksAudioDebugBuffer
     __pf3?: {
       getState: () => Readonly<Pf3DebugState>
       readonly viewState: Readonly<ViewState> | null
@@ -3488,7 +3498,9 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
     ctx.restore()
   }
 
-  if (tuner.canUseSource && tuner.renderDeviation !== null) {
+  if (tuner.markerOpacity > 0 && tuner.renderDeviation !== null) {
+    ctx.save()
+    ctx.globalAlpha = tuner.markerOpacity
     const dotX = xForDeviation(tuner.renderDeviation)
     const dotColor = colorForCents(semisToCents(tuner.renderDeviation)) ?? '#f87171'
     if (tuner.onTarget) {
@@ -3507,6 +3519,7 @@ function drawPitchBarView(ctx: CanvasRenderingContext2D, tuner: TunerView) {
     ctx.font = 'bold 9px monospace'
     ctx.textAlign = 'center'
     ctx.fillText(tuner.sourceNote || '', dotX, PITCH_BAR_Y - 4)
+    ctx.restore()
   } else {
     ctx.fillStyle = '#555'
     ctx.font = '8px monospace'
@@ -3730,7 +3743,7 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
   if (
     source &&
     activeVillager &&
-    view.tuner.canUseSource &&
+    view.tuner.markerOpacity > 0 &&
     view.tuner.renderDeviation !== null &&
     activeVillager.burned < queue.length
   ) {
@@ -3748,6 +3761,7 @@ function drawStaffNotationView(ctx: CanvasRenderingContext2D, view: ViewState) {
     const color = colorForCents(cents) ?? '#f87171'
     if (sourceY === rawSourceY) drawLedgerLines(ctx, targetX, source)
     ctx.save()
+    ctx.globalAlpha = view.tuner.markerOpacity
     ctx.fillStyle = color
     ctx.strokeStyle = '#071018'
     ctx.lineWidth = 1.5
@@ -4610,6 +4624,7 @@ export default function PitchforksIII() {
   const pitchTrailRef = useRef<TrailPoint[]>([])
   const barDotDeviationRef = useRef<number | null>(null)
   const smoothDevRef = useRef(0)
+  const tunerLastInterpolationAtRef = useRef(0)
   const tunerTargetKeyRef = useRef('')
   const tunerNeedsRebaseRef = useRef(false)
   const tunerFeedbackKeyRef = useRef('')
@@ -4666,6 +4681,8 @@ export default function PitchforksIII() {
   const [sfxVolume, setSfxVolume] = useState(100)
   const [demoMode, setDemoMode] = useState(false)
   const [fsrsDebugMode, setFsrsDebugMode] = useState(false)
+  const [pfDebugEnabled, setPfDebugEnabled] = useState(false)
+  const audioDebugRef = useRef<PitchforksAudioDebugBuffer | null>(null)
   const [artReviewMode, setArtReviewMode] = useState(false)
   const [artReviewBody, setArtReviewBody] = useState<ArtReviewBodyState>('walk')
   const [artReviewStorm, setArtReviewStorm] = useState<ArtReviewStormState>('dormant')
@@ -4748,6 +4765,10 @@ export default function PitchforksIII() {
     containerHeight: 0,
   }))
 
+  const recordPitchforksEstimate = useCallback((measurement: PitchforksEstimateMeasurement) => {
+    audioDebugRef.current?.recordEstimate(measurement)
+  }, [])
+
   const {
     isListening,
     pitch,
@@ -4762,7 +4783,26 @@ export default function PitchforksIII() {
     profile: PITCHFORKS_PITCH_PROFILE,
     audioConstraints: PITCHFORKS_AUDIO_CONSTRAINTS,
     observationGainPct: microphoneGain,
+    onEstimate: pfDebugEnabled ? recordPitchforksEstimate : undefined,
   })
+
+  useEffect(() => {
+    const enabled = new URLSearchParams(window.location.search).get('pfdebug') === '1'
+    setPfDebugEnabled(enabled)
+    if (!enabled) {
+      audioDebugRef.current = null
+      delete window.__pitchforksAudioDebug
+      return
+    }
+
+    const debugBuffer = createPitchforksAudioDebugBuffer()
+    audioDebugRef.current = debugBuffer
+    window.__pitchforksAudioDebug = debugBuffer
+    return () => {
+      if (window.__pitchforksAudioDebug === debugBuffer) delete window.__pitchforksAudioDebug
+      if (audioDebugRef.current === debugBuffer) audioDebugRef.current = null
+    }
+  }, [])
 
   // The detector publishes a new PitchInfo object for every analyser frame.
   // These effects only need scalar observations; depending on the object
@@ -9512,11 +9552,16 @@ export default function PitchforksIII() {
     const visible = phaseRef.current === 'playing' && inputModeRef.current === 'voice'
     barVisibleRef.current = visible
     const now = performance.now()
+    const interpolationElapsedMs = tunerLastInterpolationAtRef.current > 0
+      ? Math.max(0, now - tunerLastInterpolationAtRef.current)
+      : 0
+    tunerLastInterpolationAtRef.current = now
     const nextTargetKey = active?.key ?? ''
     const targetChanged = tunerTargetKeyRef.current !== nextTargetKey
     if (targetChanged) {
       tunerTargetKeyRef.current = nextTargetKey
       tunerNeedsRebaseRef.current = !!nextTargetKey
+      tunerLastInterpolationAtRef.current = now
       tunerDropoutFramesRef.current = 0
       pitchTrailRef.current = []
       barDotDeviationRef.current = null
@@ -9563,6 +9608,7 @@ export default function PitchforksIII() {
     let sourceNote: string | null = null
     let renderDeviation: number | null = null
     let deviationSemis: number | null = null
+    let markerOpacity = 0
 
     if (canUseSource && active && source) {
       const deviation = pitchDeviationSemis(source, active.note)
@@ -9571,10 +9617,10 @@ export default function PitchforksIII() {
       const onTarget = Math.abs(deviation) <= MATCH_TOLERANCE_CENTS / 100
       barDotDeviationRef.current = clampedDeviation
       barOnTargetRef.current = onTarget
-      // Ease the readout toward the detected pitch so it glides instead of jittering frame-to-frame.
+      // Equivalent elapsed time now produces equivalent response at every frame rate.
       smoothDevRef.current = tunerNeedsRebaseRef.current
         ? clampedDeviation
-        : smoothDevRef.current + (clampedDeviation - smoothDevRef.current) * 0.28
+        : interpolatePitchforksMarker(smoothDevRef.current, clampedDeviation, interpolationElapsedMs)
       tunerNeedsRebaseRef.current = false
       pitchTrailRef.current.push({
         at: now,
@@ -9585,9 +9631,19 @@ export default function PitchforksIII() {
       })
       sourceNote = source.note || ''
       renderDeviation = smoothDevRef.current
+      markerOpacity = 1
     } else {
       barDotDeviationRef.current = null
       barOnTargetRef.current = false
+      const lastUsablePoint = pitchTrailRef.current[pitchTrailRef.current.length - 1]
+      if (active && !matchingSuppressed && lastUsablePoint) {
+        const ageMs = now - lastUsablePoint.at
+        markerOpacity = pitchforksMarkerOpacity(ageMs, TRAIL_MS)
+        if (markerOpacity > 0) {
+          sourceNote = lastUsablePoint.note
+          renderDeviation = smoothDevRef.current
+        }
+      }
     }
 
     const lastUsablePoint = pitchTrailRef.current[pitchTrailRef.current.length - 1]
@@ -9659,6 +9715,7 @@ export default function PitchforksIII() {
       canUseSource,
       dotDeviation: barDotDeviationRef.current,
       renderDeviation,
+      markerOpacity,
       onTarget: barOnTargetRef.current,
       trail: pitchTrailRef.current,
       feedback: thunderheadReadyFeedback ?? presentationFeedback,
@@ -9828,7 +9885,9 @@ export default function PitchforksIII() {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    const dt = lastTimeRef.current ? Math.min(0.05, (ts - lastTimeRef.current) / 1000) : 0
+    const frameIntervalMs = lastTimeRef.current ? ts - lastTimeRef.current : 0
+    if (frameIntervalMs > 32) audioDebugRef.current?.recordFrameStall(ts, frameIntervalMs)
+    const dt = Math.min(0.05, frameIntervalMs / 1000)
     lastTimeRef.current = ts
     if (pausedRef.current) {
       rafRef.current = requestAnimationFrame(nextTs => loop(nextTs, fence))
@@ -10108,6 +10167,7 @@ export default function PitchforksIII() {
     firstLockGraceRef.current = true
     pitchTrailRef.current = []
     barDotDeviationRef.current = null
+    tunerLastInterpolationAtRef.current = 0
     barOnTargetRef.current = false
     barVisibleRef.current = false
     lockWhileSuppressedRef.current = false
