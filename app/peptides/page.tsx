@@ -1,3 +1,4 @@
+import { SameBuilderRow } from "@/components/Outbound/SameBuilderRow"
 import { EmailCaptureCard } from "@/components/Newsletter/EmailCaptureCard"
 import { PeptideTracker } from "@/components/Peptides/PeptideTracker"
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
@@ -9,6 +10,7 @@ export default function PeptidesPage() {
       <VaultPromptModal trackerName="Peptide Tracker" trackerVerb="track your protocols and doses" />
       <PeptideTracker />
       <EmailCaptureCard source="tool-peptides" />
+      <SameBuilderRow />
     </ProtectedRoute>
   )
 }

@@ -1,3 +1,4 @@
+import { SameBuilderRow } from "@/components/Outbound/SameBuilderRow"
 import { EmailCaptureCard } from "@/components/Newsletter/EmailCaptureCard"
 import { NutritionTracker } from "@/components/Nutrition/NutritionTracker"
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
@@ -9,6 +10,7 @@ export default function NutritionPage() {
       <VaultPromptModal trackerName="Nutrition Tracker" trackerVerb="log meals and track macros" />
       <NutritionTracker />
       <EmailCaptureCard source="tool-nutrition" />
+      <SameBuilderRow />
     </ProtectedRoute>
   )
 }

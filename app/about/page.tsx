@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { SameBuilderRow } from '@/components/Outbound/SameBuilderRow';
 
 export const metadata: Metadata = {
   title: { absolute: 'About Reset Biology' },
@@ -43,6 +44,7 @@ export default function AboutPage() {
             Peptide education
           </Link>
         </div>
+        <SameBuilderRow />
       </div>
     </main>
   );
