@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { PortalHeader } from '@/components/Navigation/PortalHeader'
 import { localDayKey } from '@/lib/localDay'
+import { formatAccuracy } from '@/lib/formatAccuracy'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -1371,7 +1372,7 @@ function StatCard({
         <span className={`text-lg font-bold ${
           accuracy === null ? 'text-gray-400' : accuracy >= 80 ? 'text-green-400' : accuracy >= 60 ? 'text-yellow-400' : 'text-red-400'
         }`}>
-          {accuracy === null ? '–' : `${Math.round(accuracy)}%`}
+          {formatAccuracy(accuracy)}
         </span>
       </div>
       <div className="grid grid-cols-3 gap-2 text-sm">

@@ -29,7 +29,7 @@ export async function findJournalEntryForDay(db: JournalDb, userId: string, dayK
   const { dayStart, dayEnd } = journalDayWindow(dayKey)
   return db.journalEntry.findFirst({
     where: { userId, date: { gte: dayStart, lt: dayEnd } },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'asc' },
   })
 }
 

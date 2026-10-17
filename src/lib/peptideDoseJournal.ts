@@ -45,6 +45,7 @@ export async function appendPeptideDoseToJournal(
 
   const existing = await db.journalEntry.findFirst({
     where: { userId, date: { gte: dayStart, lt: dayEnd } },
+    orderBy: { createdAt: 'asc' },
   })
 
   const note = `${payload.peptideName} dose ${payload.dosage} at ${payload.timeLabel}`

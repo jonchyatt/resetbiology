@@ -273,7 +273,7 @@ export async function POST(req: NextRequest) {
           userId: user.id,
           date: { gte: dayStart, lt: nextDay }
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'asc' }
       })
 
       if (existingJournal) {

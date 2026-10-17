@@ -938,13 +938,14 @@ async function syncDomainForDateWithResult(
     }
 
     case 'workouts': {
+      // The member's day (localDate) wins; rows without one fall back to the UTC-day window.
       const workoutSessions = await prisma.workoutSession.findMany({
         where: {
           userId,
-          completedAt: {
-            gte: startOfDay,
-            lte: endOfDay,
-          },
+          OR: [
+            { localDate: dateStr },
+            { localDate: null, completedAt: { gte: startOfDay, lte: endOfDay } },
+          ],
         },
       })
 
