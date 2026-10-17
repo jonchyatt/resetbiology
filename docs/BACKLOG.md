@@ -52,6 +52,8 @@ Open: #44 funder page `/community/womens-health` (draft, flag `NEXT_PUBLIC_FUNDE
 | Flag flips for email capture or link-outs | 3 | Both built, off |
 | Production Mongo, env, Vercel | 4 or 5 | Not touched (rule 2) |
 
+Approval cards for the red items are in `approvals/` (funder flag, branch retirements, credits application, operator line).
+
 ## Source gaps (rule 10)
 
 - Revenue band from the Verizon application: not in this repo or any thread. Needed as exact wording.
