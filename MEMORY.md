@@ -22,3 +22,7 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+## 2026-10-17 patron wall thread
+- Built /patrons behind NEXT_PUBLIC_RB_PATRON_WALL (off); PATRONS empty, consent filter, synthetic names only in tests/preview. Source gap: tiers, payment path, consent process (docs/patrons/PATRON-WALL-SPEC.md). Card: approvals/2026-10-17-patron-wall-flag-on.md.
+- Local checks need `npm ci --ignore-scripts` then `npx prisma generate` before tsc; tests with JSX need `import React`.
