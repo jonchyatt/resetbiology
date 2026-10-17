@@ -14,5 +14,5 @@ Source (read only): `harden/rb-free-lanes-20261006` and `card/rb-15-restyled-fre
 
 ## Seat notes
 - Turning the flag on is a publish (red 3): Jonathan's seat only.
-- `/education` and `/breath` are hidden by the final boundary commit; confirm that is still wanted.
-- Verified: the test ran and passed (`npx tsx`). Not run: `tsc`, `next build`, or the page in a browser (no dependencies installed).
+- `/education` and `/breath` are hidden by the final boundary commit; see approvals/2026-10-17-free-launch-education-breath.md.
+- Verified: the gate test, `tsc --noEmit` and `npm run build` pass. Not verified: the page in a browser.

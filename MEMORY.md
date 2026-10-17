@@ -18,3 +18,9 @@ Dated digest of what Project threads learned. Newest first.
 - 96 remote branches besides master. 41 are fully in master (retire), 13 clean merges (mostly Pitchforks), 12 rebase-then-merge, 29 need Jonathan. Table: `docs/BRANCH-TRIAGE-2026-10.md`.
 - All October feature branches (`t_*`, `card/rb-*`, `woden/*`, `harden/*`) stack on `harden/2026-09-06` and are ~540 commits behind master; the free-launch stack tip is `t_2f743162`. Direction of the free-first launch is an open question for Jonathan.
 - The cloud clone is shallow by default; ahead/behind counts are wrong until `git fetch --unshallow`.
+
+## 2026-10-17 - Free-launch replay (PR #55)
+- Free-first stack lives on `harden/rb-free-lanes-20261006` / `card/rb-15-restyled-free-candidate` (commits `325e5b08`, `a43b9c25`). Ported only the middleware gate: `src/lib/freeLaunch.ts`, flag `NEXT_PUBLIC_FREE_LAUNCH=on`, default off.
+- Not ported: `auth0.ts` signup grant removal (member creation, seat), Header/homepage, FoodQuickAdd camera removal, Workers AI routing. Each is its own PR.
+- `/education` and `/breath` hide decision is on a second-look card; #52 links to breath.
+- tsc and `npm run build` pass on master + this change; `npm ci` takes ~1 min.
