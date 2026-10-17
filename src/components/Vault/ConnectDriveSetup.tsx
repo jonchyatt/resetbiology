@@ -306,6 +306,9 @@ export function ConnectDriveSetup() {
                       </>
                     )}
                   </button>
+                  <p className="mt-3 text-sm text-gray-300">
+                    On Google&apos;s second screen, tick the Google Drive box before you press Continue.
+                  </p>
                   <p className="mt-4 text-xs text-gray-400">
                     Already have an account connected?{" "}
                     <button
