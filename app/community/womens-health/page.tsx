@@ -36,7 +36,10 @@ export default function WomensHealthPage() {
             <p className="mt-3">
               A one-person anesthesia practice in Saint George, Utah is adding women&apos;s health to the care it offers.
             </p>
-            <Todo>Name the applicant and how it relates to Reset Biology. The application names Satori Enterprises, Inc.; this waits on your answer about who owns the existing equipment today, because the equipment follows whoever&apos;s money buys it.</Todo>
+            <p className="mt-3">
+              The women&apos;s health line is operated by Satori Enterprises, Inc.
+            </p>
+            <Todo>Say how Satori Enterprises, Inc. relates to Reset Biology. This waits on your answer about who owns the existing equipment today, because the equipment follows whoever&apos;s money buys it.</Todo>
           </section>
 
           <section aria-labelledby="who-for">
