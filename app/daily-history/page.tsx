@@ -1,3 +1,4 @@
+import { EmailCaptureCard } from "@/components/Newsletter/EmailCaptureCard"
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
 import { JournalHistory } from "@/components/Journal/JournalHistory"
 
@@ -10,6 +11,7 @@ export default function DailyHistoryPage() {
   return (
     <ProtectedRoute>
       <JournalHistory />
+      <EmailCaptureCard source="tool-journal" />
     </ProtectedRoute>
   )
 }

@@ -4,11 +4,12 @@ import { useState, type FormEvent } from 'react'
 
 type NewsletterSignupProps = {
   source: string
+  idPrefix?: string
 }
 
 type NewsletterState = 'idle' | 'sent' | 'error'
 
-export function NewsletterSignup({ source }: NewsletterSignupProps) {
+export function NewsletterSignup({ source, idPrefix = 'newsletter' }: NewsletterSignupProps) {
   const [email, setEmail] = useState('')
   const [state, setState] = useState<NewsletterState>('idle')
 
@@ -35,11 +36,11 @@ export function NewsletterSignup({ source }: NewsletterSignupProps) {
         Free weekly notes on running your own biology. No selling, ever.
       </h2>
       <form onSubmit={handleSubmit} className="mt-4 flex flex-col sm:flex-row gap-2">
-        <label htmlFor="newsletter-email" className="sr-only">
+        <label htmlFor={`${idPrefix}-email`} className="sr-only">
           Email address
         </label>
         <input
-          id="newsletter-email"
+          id={`${idPrefix}-email`}
           type="email"
           value={email}
           onChange={(event) => {
