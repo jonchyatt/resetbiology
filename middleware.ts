@@ -1,9 +1,19 @@
 // middleware.ts
 import { NextResponse, type NextRequest } from 'next/server';
 import { auth0Edge } from '@/lib/auth0-edge';
+import { decideFreeLaunch, isFreeLaunchOn } from '@/lib/freeLaunch';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Free-first launch gate: inert unless NEXT_PUBLIC_FREE_LAUNCH=on.
+  const launch = decideFreeLaunch(pathname, isFreeLaunchOn());
+  if (launch.action === 'block') {
+    return NextResponse.json({ error: launch.error }, { status: launch.status });
+  }
+  if (launch.action === 'redirect') {
+    return NextResponse.redirect(new URL(launch.to, request.url));
+  }
 
   // Log domain check for auth routes (helps debug "state parameter invalid" errors)
   if (pathname.startsWith('/auth/') || pathname.startsWith('/admin/')) {
