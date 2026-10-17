@@ -9,6 +9,7 @@ import {
   createPitchStabilizer,
   type PitchStabilizationProfile,
 } from './pitchDetectionSmoothing'
+import type { PitchforksEstimateMeasurement } from './pitchforksAudioDiagnostics'
 
 // ─���─ Detection Constants ────────────────────────────────────────────────────
 // Noise gate: -40dB is good for most mics. Cheap mics / quiet children may need
@@ -113,6 +114,7 @@ export interface PitchDetectionOptions {
   profile?: Readonly<PitchStabilizationProfile>
   audioConstraints?: Readonly<MediaTrackConstraints>
   observationGainPct?: number // analysis-only gain, 0-200; never routed to speakers
+  onEstimate?: (measurement: PitchforksEstimateMeasurement) => void
 }
 
 export function normalizeObservationGain(value: number | undefined): number {
@@ -131,6 +133,8 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   audioConstraintsRef.current = options?.audioConstraints
   const observationGainPctRef = useRef(options?.observationGainPct)
   observationGainPctRef.current = options?.observationGainPct
+  const onEstimateRef = useRef(options?.onEstimate)
+  onEstimateRef.current = options?.onEstimate
   const [state, setState] = useState<PitchDetectionState>({
     isListening: false,
     pitch: null,
@@ -149,6 +153,8 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
   const signalDbRef = useRef(-200)
   const micSourceHealthRef = useRef<MicSourceHealthSnapshot>({ ...FAIL_CLOSED_MIC_SOURCE_HEALTH })
   const pitchGenerationRef = useRef(0)
+  const lastEstimateAtRef = useRef(0)
+  const lastAnalyzeFrameAtRef = useRef(0)
   const sourceObserverCleanupRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
@@ -225,6 +231,8 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
       consecutiveRef.current = { note: '', count: 0 }
       lastStableNoteRef.current = ''
       signalDbRef.current = -200
+      lastEstimateAtRef.current = 0
+      lastAnalyzeFrameAtRef.current = 0
       stabilizerRef.current?.reset()
 
       setState({ isListening: true, pitch: null, error: null })
@@ -233,6 +241,40 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
 
       function analyze() {
         if (!analyserRef.current || !detectorRef.current) return
+
+        const diagnosticSink = onEstimateRef.current
+        const estimateStartedAt = diagnosticSink ? performance.now() : 0
+        const frameIntervalMs = diagnosticSink && lastAnalyzeFrameAtRef.current > 0
+          ? estimateStartedAt - lastAnalyzeFrameAtRef.current
+          : null
+        if (diagnosticSink) lastAnalyzeFrameAtRef.current = estimateStartedAt
+        const capturedAtMs = diagnosticSink
+          ? estimateStartedAt - (buffer.length / ctx.sampleRate) * 1000
+          : 0
+
+        const publish = (info: PitchInfo) => {
+          pitchRef.current = info
+          setState(prev => ({ ...prev, pitch: info }))
+          if (diagnosticSink) {
+            const estimatedAtMs = performance.now()
+            const estimateIntervalMs = lastEstimateAtRef.current > 0
+              ? estimatedAtMs - lastEstimateAtRef.current
+              : null
+            lastEstimateAtRef.current = estimatedAtMs
+            diagnosticSink(Object.freeze({
+              capturedAtMs,
+              estimatedAtMs,
+              sampleAgeMs: estimatedAtMs - capturedAtMs,
+              estimateIntervalMs,
+              computeMs: estimatedAtMs - estimateStartedAt,
+              valid: info.isActive && info.frequency > 0,
+              dropout: !info.isActive || info.frequency <= 0,
+              frameIntervalMs,
+              frameStallMs: frameIntervalMs !== null && frameIntervalMs > 32 ? frameIntervalMs : null,
+            }))
+          }
+          rafRef.current = requestAnimationFrame(analyze)
+        }
 
         syncMicSourceHealth()
         pitchGenerationRef.current += 1
@@ -261,9 +303,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
               confidence: 0,
               isActive: false,
             }
-            pitchRef.current = info
-            setState(prev => ({ ...prev, pitch: info }))
-            rafRef.current = requestAnimationFrame(analyze)
+            publish(info)
             return
           }
         }
@@ -284,9 +324,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
             confidence: 0,
             isActive: false,
           }
-          pitchRef.current = info
-          setState(prev => ({ ...prev, pitch: info }))
-          rafRef.current = requestAnimationFrame(analyze)
+          publish(info)
           return
         }
 
@@ -308,9 +346,7 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
             confidence: clarity,
             isActive: stabilized.active,
           }
-          pitchRef.current = info
-          setState(prev => ({ ...prev, pitch: info }))
-          rafRef.current = requestAnimationFrame(analyze)
+          publish(info)
           return
         }
 
@@ -354,8 +390,8 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
             confidence: clarity,
             isActive: isStable,
           }
-          pitchRef.current = info
-          setState(prev => ({ ...prev, pitch: info }))
+          publish(info)
+          return
         } else {
           // Low confidence — not a clear pitch
           consecutiveRef.current = { note: '', count: 0 }
@@ -366,11 +402,9 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
             confidence: clarity,
             isActive: false,
           }
-          pitchRef.current = info
-          setState(prev => ({ ...prev, pitch: info }))
+          publish(info)
+          return
         }
-
-        rafRef.current = requestAnimationFrame(analyze)
       }
 
       rafRef.current = requestAnimationFrame(analyze)
@@ -403,6 +437,8 @@ export function usePitchDetection(options?: PitchDetectionOptions) {
     stabilizerRef.current = null
     pitchRef.current = null
     signalDbRef.current = -200
+    lastEstimateAtRef.current = 0
+    lastAnalyzeFrameAtRef.current = 0
     smoothedFreqRef.current = 0
     consecutiveRef.current = { note: '', count: 0 }
     lastStableNoteRef.current = ''
