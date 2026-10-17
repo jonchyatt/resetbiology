@@ -21,6 +21,7 @@ import { NOTE_COLORS } from '@/lib/fsrs'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
 import { initAudio, playPianoNote } from './audioEngine'
 import { computeLayout, renderStaff, drawNoteHeadWithStem, staffPositionToY, type StaffLayout } from './staffRenderer'
+import PitchforksChargeBar from './PitchforksChargeBar'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -417,15 +418,6 @@ export default function SightReading() {
         ctx.fillStyle = glow
         ctx.fillRect(x - glowR, y - glowR, glowR * 2, glowR * 2)
 
-        // Match progress ring
-        if (matchProgress > 0) {
-          const ringR = layout.noteHeadRx + 6
-          ctx.strokeStyle = `hsla(140, 80%, 55%, ${0.8 * matchProgress})`
-          ctx.lineWidth = 3
-          ctx.beginPath()
-          ctx.arc(x, y, ringR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * matchProgress)
-          ctx.stroke()
-        }
       }
 
       drawNoteHeadWithStem(ctx, x, y, layout, fillColor, strokeColor, {
@@ -728,26 +720,13 @@ export default function SightReading() {
               {current.name}
             </div>
 
-            {/* Match progress bar */}
-            {matchProgress > 0 && (
-              <div className="w-40 h-2 rounded-full overflow-hidden mb-3" style={{ background: 'rgba(40,40,60,0.4)' }}>
-                <div className="h-full rounded-full transition-all" style={{
-                  width: `${matchProgress * 100}%`,
-                  background: isOnPitch ? '#64ffa0' : `hsl(${currentHue}, 60%, 50%)`,
-                }} />
-              </div>
-            )}
+            <PitchforksChargeBar progress={matchProgress} className="mb-3 mx-auto" />
 
             {/* Voice feedback */}
             <div className="h-6 text-sm">
               {voicePitch?.isActive ? (
-                <span style={{ color: isOnPitch ? '#64ffa0' : '#f87171' }}>
-                  {voicePitch.note} {voicePitch.cents > 0 ? '+' : ''}{voicePitch.cents}¢
-                  {!isOnPitch && (
-                    <span className="text-gray-500 ml-2">
-                      {(voicePitch.staffPosition ?? 0) < current.semitones ? '↑' : '↓'}
-                    </span>
-                  )}
+                <span style={{ color: isOnPitch ? '#64ffa0' : '#9ca3af' }}>
+                  Voice detected
                 </span>
               ) : (
                 <span className="text-gray-600">Sing...</span>
