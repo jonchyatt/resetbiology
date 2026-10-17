@@ -1,3 +1,4 @@
+import { EmailCaptureCard } from "@/components/Newsletter/EmailCaptureCard"
 import { NutritionTracker } from "@/components/Nutrition/NutritionTracker"
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
 import { VaultPromptModal } from "@/components/Vault/VaultPromptModal"
@@ -7,6 +8,7 @@ export default function NutritionPage() {
     <ProtectedRoute>
       <VaultPromptModal trackerName="Nutrition Tracker" trackerVerb="log meals and track macros" />
       <NutritionTracker />
+      <EmailCaptureCard source="tool-nutrition" />
     </ProtectedRoute>
   )
 }

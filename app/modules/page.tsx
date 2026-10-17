@@ -1,3 +1,4 @@
+import { EmailCaptureCard } from "@/components/Newsletter/EmailCaptureCard"
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
 import { ModuleLibrary } from "@/components/Audio/ModuleLibrary"
 import { isAdminRequest } from "@/lib/adminGuard"
@@ -37,6 +38,7 @@ export default async function ModulesPage() {
               <ModuleLibrary isAdmin={isAdmin} />
             </div>
           </div>
+          <EmailCaptureCard source="tool-modules" />
         </div>
       </div>
     </ProtectedRoute>
