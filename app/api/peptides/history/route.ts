@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth0 } from "@/lib/auth0";
 import { prisma } from "@/lib/prisma";
+import { exportMemberData } from "@/lib/member-data";
 import { getUserFromSession } from "@/lib/getUserFromSession";
 import {
   filterHistory,
@@ -53,15 +54,14 @@ export async function GET(request: Request) {
     const protocolId = searchParams.get("protocolId") || undefined;
     const administrationType = searchParams.get("administrationType") || undefined;
     const status = searchParams.get("status") as "all" | "completed" | "pending" | "missed" | null;
-    const protocols = await prisma.user_peptide_protocols.findMany({
-      where: { userId: user.id, ...(protocolId ? { id: protocolId } : {}) },
-      include: { peptides: true },
-    });
-    const protocolIds = protocols.map((protocol) => protocol.id);
-    const doses = await prisma.peptide_doses.findMany({
-      where: { protocolId: { in: protocolIds } },
-      orderBy: { doseDate: "asc" },
-    });
+    // Rows come only from the member-data isolation layer (session user id, scopedWhere).
+    const { data, peptideNames } = await exportMemberData(prisma as any, user.id);
+    const peptideName = (protocol: any): string => peptideNames?.[protocol.peptideId] || "Personal protocol";
+    const protocols = ((data.user_peptide_protocols ?? []) as any[]).filter((protocol) => !protocolId || protocol.id === protocolId);
+    const protocolIds = new Set(protocols.map((protocol) => protocol.id));
+    const doses = ((data.peptide_doses ?? []) as any[])
+      .filter((dose) => protocolIds.has(dose.protocolId))
+      .sort((a, b) => new Date(a.doseDate).getTime() - new Date(b.doseDate).getTime());
     const protocolById = new Map(protocols.map((protocol) => [protocol.id, protocol]));
     const records: PeptideHistoryRecord[] = doses.map((dose) => {
       const protocol = protocolById.get(dose.protocolId);
@@ -69,9 +69,9 @@ export async function GET(request: Request) {
         id: dose.id,
         userId: user.id,
         protocolId: dose.protocolId,
-        protocolName: dose.protocolName || protocol?.peptides.name || "Personal protocol",
+        protocolName: dose.protocolName || (protocol ? peptideName(protocol) : "Personal protocol"),
         administrationType: protocol?.administrationType || "unspecified",
-        localDate: localDateFromStored(dose.doseDate, dose.localDate),
+        localDate: localDateFromStored(new Date(dose.doseDate), dose.localDate),
         localTime: dose.localTime || dose.time || "",
         dosage: dose.dosage,
         notes: dose.notes || "",
@@ -92,7 +92,7 @@ export async function GET(request: Request) {
             id: `scheduled-${protocol.id}-${date}-${time}`,
             userId: user.id,
             protocolId: protocol.id,
-            protocolName: protocol.peptides.name,
+            protocolName: peptideName(protocol),
             administrationType: protocol.administrationType || "unspecified",
             localDate: date,
             localTime: time,
@@ -101,7 +101,7 @@ export async function GET(request: Request) {
             sideEffects: [],
             status: date < today ? "missed" : "pending",
             protocolSnapshot: {
-              peptideName: protocol.peptides.name,
+              peptideName: peptideName(protocol),
               dosage: protocol.dosage,
               frequency: protocol.frequency,
               timing: protocol.timing,
