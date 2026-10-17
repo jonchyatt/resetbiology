@@ -133,6 +133,13 @@ export async function GET(req: NextRequest) {
       return redirectToReturn(returnTo, 'drive=error&reason=no_refresh_token')
     }
 
+    // RB-FIX-10: Google's granular consent lets the member leave the Drive box unticked; the
+    // token then has no drive.file scope and every Drive call 403s (rerun 8: step=resolve).
+    if (typeof tokens.scope === 'string' && !tokens.scope.split(' ').includes('https://www.googleapis.com/auth/drive.file')) {
+      console.warn('[oauth-callback] token missing drive.file scope:', tokens.scope)
+      return redirectToReturn(returnTo, 'drive=error&reason=drive_scope_missing')
+    }
+
     // Wave J4.4: encrypt once, before touching Drive. Without a valid
     // VAULT_TOKEN_KEY we refuse to store the token unencrypted.
     let encryptedRefreshToken: string
@@ -171,10 +178,22 @@ export async function GET(req: NextRequest) {
       select: { driveFolder: true, driveAccountEmail: true },
     })
 
-    const resolution = await resolveVaultRootFolder(drive, state, existingUser?.driveFolder, {
-      stored: existingUser?.driveAccountEmail,
-      current: currentAccountEmail,
-    })
+    // RB-FIX-10: a freshly granted token can 403/404 on its first Drive calls for a few seconds
+    // (rerun 8: first connect fails at step=resolve, an immediate retry works). Retry before failing.
+    let resolution!: Awaited<ReturnType<typeof resolveVaultRootFolder>>
+    for (let attempt = 1; ; attempt++) {
+      try {
+        resolution = await resolveVaultRootFolder(drive, state, existingUser?.driveFolder, {
+          stored: existingUser?.driveAccountEmail,
+          current: currentAccountEmail,
+        })
+        break
+      } catch (resolveError: any) {
+        console.warn('[oauth-callback] resolve attempt failed:', { attempt, message: resolveError?.message, code: resolveError?.code })
+        if (attempt >= 4) throw resolveError
+        await new Promise(r => setTimeout(r, 1500 * attempt))
+      }
+    }
 
     if (resolution.status === 'ambiguous') {
       // Zero unambiguous candidates to reuse and refuse to guess or create
