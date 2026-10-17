@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { moduleTitle } from '@/data/audio-library'
+import { moduleTitle, retitleModuleNotes } from '@/data/audio-library'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
@@ -225,6 +225,7 @@ export async function GET(request: NextRequest) {
       } catch {
         parsed = {}
       }
+      if (parsed && typeof parsed.moduleNotes === 'string') parsed.moduleNotes = retitleModuleNotes(parsed.moduleNotes)
       // JournalEntry has no localDate column (schema.prisma:426-438) — the
       // writer stores it inside the entry JSON blob instead (NEW-8).
       const bucket = ensureDay(date, typeof parsed?.localDate === 'string' ? parsed.localDate : undefined)
