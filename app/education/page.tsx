@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
 import { Book, ExternalLink, Search, Filter, ChevronDown, ChevronUp } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
@@ -1813,7 +1814,7 @@ export default function EducationPage() {
         {/* Peptide Library Hub Card */}
         <div className="container mx-auto px-4 mb-12">
           <div className="max-w-4xl mx-auto">
-            <a
+            <Link
               href="/education/peptides"
               className="block bg-gradient-to-r from-[#3FBFB5]/20 to-[#72C247]/20 backdrop-blur-md border border-[#3FBFB5]/40 rounded-2xl p-6 hover:from-[#3FBFB5]/30 hover:to-[#72C247]/30 hover:border-[#3FBFB5]/60 transition-all duration-300 group"
             >
@@ -1831,7 +1832,7 @@ export default function EducationPage() {
                   <span className="text-[#3FBFB5] text-2xl group-hover:translate-x-1 transition-transform">→</span>
                 </div>
               </div>
-            </a>
+            </Link>
           </div>
         </div>
 

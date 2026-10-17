@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getStripe } from '@/lib/stripe';
 import { reduceInventory } from '@/lib/inventory';
 
@@ -45,9 +46,9 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
                 This page confirms orders placed through checkout. We couldn&apos;t find one here.
               </p>
               <div className="space-y-4">
-                <a href="/portal" className="inline-block bg-primary-400 text-slate-950 font-bold py-3 px-8 rounded-lg">Go to portal</a>
+                <Link href="/portal" className="inline-block bg-primary-400 text-slate-950 font-bold py-3 px-8 rounded-lg">Go to portal</Link>
                 <div>
-                  <a href="/" className="inline-block text-primary-400 hover:text-primary-300 font-medium transition-colors">Back to home</a>
+                  <Link href="/" className="inline-block text-primary-400 hover:text-primary-300 font-medium transition-colors">Back to home</Link>
                 </div>
               </div>
             </div>

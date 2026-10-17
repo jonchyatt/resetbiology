@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
   Syringe,
@@ -2516,12 +2517,12 @@ export function PeptideTracker() {
               </div>
               <div className="flex items-center gap-4">
                 {process.env.NEXT_PUBLIC_RB_REPORTS === "1" && (
-                  <a
+                  <Link
                     href="/peptides/history"
                     className="text-primary-300 hover:text-primary-200 font-medium text-sm transition-colors drop-shadow-sm"
                   >
                     Personal Report
-                  </a>
+                  </Link>
                 )}
                 <a
                   href="/daily-history"
