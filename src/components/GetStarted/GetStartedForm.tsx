@@ -72,7 +72,7 @@ export function GetStartedForm() {
         </h1>
         <p className="mt-4 text-pretty leading-7 text-slate-300">
           Two questions, thirty seconds. Everything inside is free — funded by the Satori Living
-          Foundation. We sell nothing. {/* src: LMP §00 */}
+          Foundation. {/* src: LMP §00 */}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-10 space-y-8">

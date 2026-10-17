@@ -18,7 +18,7 @@ export default function ContactPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-white mb-4">Contact <span className="text-primary-400">Reset Biology</span></h1>
-            <p className="text-xl text-gray-300">Reset Biology provides tools and education, and sells nothing. {/* src: LMP §00 */}</p>
+            <p className="text-xl text-gray-300">Reset Biology provides tools and education. {/* src: LMP §00 */}</p>
           </div>
           <div className="grid md:grid-cols-2 gap-8 mb-12">
             <a href="mailto:support@resetbiology.com" className="group bg-gradient-to-br from-primary-900/40 to-secondary-900/40 backdrop-blur-md border border-primary-400/30 rounded-2xl p-8 hover:border-primary-400/60 transition-all hover:shadow-2xl hover:shadow-primary-400/20">

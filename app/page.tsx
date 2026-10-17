@@ -13,7 +13,7 @@ const organization = {
   name: "Reset Biology",
   url: "https://resetbiology.com",
   logo: "https://resetbiology.com/apple-touch-icon.png",
-  description: "Free account, check-in, nutrition, breath and mind training, journal. Reset Biology sells nothing, takes no payment. Education and tools, not medical advice.",
+  description: "Free account, check-in, nutrition, breath and mind training, journal. Education and tools, not medical advice.",
 }
 
 const website = {
@@ -90,9 +90,6 @@ export default async function Home({
               >
                 Start free
               </Link>
-              <p className="max-w-xl text-pretty text-base leading-7 text-slate-300">
-                We sell nothing. {/* src: LMP §00 */}
-              </p>
             </div>
             <p className="rb-hero-rise mt-8 inline-flex items-center gap-2 rounded-full border border-primary-400/30 bg-primary-950/40 px-3 py-1 text-sm text-primary-100">
               <span className="font-semibold text-primary-300">Sign in with ChatGPT:</span> integration coming soon
@@ -128,7 +125,6 @@ export default async function Home({
               <h3 className="mt-2 text-lg font-semibold text-primary-300">Fair access</h3>
               <div className="mt-3 space-y-3 text-pretty leading-7 text-slate-300">
                 <p>For members whose path includes peptides, we connect you to a member-owned co-op run by an independent licensed provider. {/* src: LMP §2.2 */}</p>
-                <p>Reset Biology sells nothing and takes no payment. {/* src: LMP §2.2 */}</p>
               </div>
             </li>
           </ol>

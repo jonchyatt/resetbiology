@@ -5,7 +5,7 @@ import { PortalHeader } from '@/components/Navigation/PortalHeader';
 export const metadata: Metadata = {
   title: 'The peptide co-op connection',
   description:
-    'Reset Biology sells nothing and takes no payment on this site. Ordering and management happen through a member-owned peptide co-op run by Adam Hyatt, FNP, at Zion Direct Care under his own license.',
+    'Ordering and management happen through a member-owned peptide co-op run by Adam Hyatt, FNP, at Zion Direct Care under his own license.',
   alternates: { canonical: '/order' },
 };
 
@@ -29,9 +29,6 @@ export default function PeptideCoopPage() {
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent">
               A Clear Connection to the Co-op
             </h1>
-            <p className="text-xl md:text-2xl text-gray-200 leading-relaxed max-w-3xl mx-auto mb-4">
-              Reset Biology sells nothing and takes no payment on this site. {/* src: LMP §2.2 */}
-            </p>
             <p className="text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto">
               Ordering and management happen through a member-owned peptide co-op run by Adam Hyatt, FNP, at Zion Direct Care under his own license. {/* src: LMP §2.2 */}
             </p>

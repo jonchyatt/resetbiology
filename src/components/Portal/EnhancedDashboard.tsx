@@ -778,7 +778,7 @@ export function EnhancedDashboard({ intakeName }: { intakeName?: string | null }
                 <HeartPulse className="w-5 h-5 text-teal-300 mr-3" />
                 <div className="flex-1">
                   <span className="font-medium text-white">Co-op connection</span>
-                  <p className="text-sm text-teal-100/80">If your path includes peptides, we connect you to a member-owned co-op. Reset Biology sells nothing.</p>
+                  <p className="text-sm text-teal-100/80">If your path includes peptides, we connect you to a member-owned co-op.</p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-teal-300" />
               </Link>

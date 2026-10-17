@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: { absolute: 'About Reset Biology' },
   description:
-    'Free account, check-in, nutrition, breath and mind training, journal. Reset Biology sells nothing, takes no payment. Education and tools, not medical advice.',
+    'Free account, check-in, nutrition, breath and mind training, journal. Education and tools, not medical advice.',
   alternates: { canonical: '/about' },
 };
 
@@ -19,7 +19,7 @@ export default function AboutPage() {
             Reset Biology offers free tools: free sign-up, peptide tracker, meal tracker, daily journal, and hypnosis modules.
           </p>
           <p>
-            Reset Biology sells nothing and takes no payment on this site. Reset Biology provides education and tools, not medical advice.
+            Reset Biology takes no payment on this site. It provides education and tools, not medical advice.
           </p>
           <p>
             Ordering and management happen through a member-owned peptide co-op run by Adam Hyatt, FNP, at Zion Direct Care under his own license.

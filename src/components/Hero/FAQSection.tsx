@@ -15,7 +15,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What does it cost?",
-    answer: <p>Nothing. {/* src: LMP §00 */} Free access is funded by the Satori Living Foundation. {/* src: LMP §00 */} Reset Biology sells nothing. {/* src: LMP §00 */}</p>,
+    answer: <p>Nothing. {/* src: LMP §00 */} Free access is funded by the Satori Living Foundation. {/* src: LMP §00 */}</p>,
   },
   {
     question: "Who runs the co-op?",

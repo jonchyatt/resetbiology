@@ -13,7 +13,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
 
 const ROOT_DEFAULT_TITLE = 'Reset Biology: free tools to run your own biology';
-const ROOT_DEFAULT_DESCRIPTION = 'Free account, check-in, nutrition, breath and mind training, journal. Reset Biology sells nothing, takes no payment. Education and tools, not medical advice.';
+const ROOT_DEFAULT_DESCRIPTION = 'Free account, check-in, nutrition, breath and mind training, journal. Education and tools, not medical advice.';
 
 export const viewport: Viewport = {
   themeColor: '#020617',

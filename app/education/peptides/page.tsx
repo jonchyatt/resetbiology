@@ -61,7 +61,7 @@ export default function PeptideLibraryHub() {
         <div className="bg-blue-500/20 backdrop-blur-sm border-b border-blue-400/30">
           <div className="container mx-auto px-4 py-4">
             <p className="text-blue-100 text-center">
-              <strong>Note:</strong> Educational synthesis of three independent practitioners. Dosing references are research-context only. Reset Biology sells nothing; see the <Link href="/order">member co-op</Link> if you want access.
+              <strong>Note:</strong> Educational synthesis of three independent practitioners. Dosing references are research-context only. See the <Link href="/order">member co-op</Link> if you want access.
             </p>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function PeptideLibraryHub() {
             <p className="text-white/80 text-sm leading-relaxed">
               All content on this page is for research and educational purposes only and is not intended as medical advice.
               Always consult a qualified healthcare provider before starting any peptide or hormone protocol.
-              Reset Biology sells nothing. Members who want access can read about the member-owned co-op on our <Link href="/order">co-op page</Link>.
+              Members who want access can read about the member-owned co-op on our <Link href="/order">co-op page</Link>.
             </p>
           </div>
         </div>
