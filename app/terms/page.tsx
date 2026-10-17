@@ -1,4 +1,5 @@
 import Link from "next/link"
+import OperatorLine from "@/components/Legal/OperatorLine"
 import { ArrowLeft, FileText, Mail } from "lucide-react"
 
 export const metadata = {
@@ -80,6 +81,7 @@ export default function TermsOfServicePage() {
                 Terms. If you do not agree, do not use the Service.
               </p>
               {/* entity form deliberately unstated — no RB legal entity documented; Satori Enterprises d/b/a link unverified (entity-specialist 2026-07-15) */}
+              <OperatorLine />
             </section>
 
             <section id="the-service">
