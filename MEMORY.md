@@ -22,3 +22,7 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+## 2026-10-17 - Free-tool landing pages
+- `/tools/[slug]` (breath, journal, nutrition, workout, ear-training) behind `NEXT_PUBLIC_RB_TOOL_PAGES=true`; 404 and absent from the sitemap when off. Copy lives in `src/config/toolPages.ts`, each line lifted from existing page metadata; `tests/tool-pages-contract.test.ts` checks that.
+- Vision training has no description anywhere in the repo, so it has no page yet (rule 10 gap).
