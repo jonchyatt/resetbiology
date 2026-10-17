@@ -1,4 +1,5 @@
 "use client"
+import { SameBuilderRow } from "@/components/Outbound/SameBuilderRow"
 
 import { EmailCaptureCard } from "@/components/Newsletter/EmailCaptureCard"
 import { BreathPage } from "@/components/Breath/BreathPage"
@@ -10,6 +11,7 @@ export default function BreathPageRoute() {
       <VaultPromptModal trackerName="Breath Sessions" trackerVerb="save your breath session history" />
       <BreathPage />
       <EmailCaptureCard source="tool-breath" />
+      <SameBuilderRow />
     </>
   )
 }

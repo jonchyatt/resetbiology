@@ -1,3 +1,4 @@
+import { SameBuilderRow } from "@/components/Outbound/SameBuilderRow"
 import { EmailCaptureCard } from "@/components/Newsletter/EmailCaptureCard"
 import { ProtectedRoute } from "@/components/Auth/ProtectedRoute"
 import { ModuleLibrary } from "@/components/Audio/ModuleLibrary"
@@ -39,6 +40,7 @@ export default async function ModulesPage() {
             </div>
           </div>
           <EmailCaptureCard source="tool-modules" />
+          <SameBuilderRow />
         </div>
       </div>
     </ProtectedRoute>
