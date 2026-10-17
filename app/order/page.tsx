@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { COOP_JOIN_URL } from "@/config/sellerLinks";
 import { PortalHeader } from '@/components/Navigation/PortalHeader';
 
 export const metadata: Metadata = {
@@ -80,6 +81,12 @@ export default function PeptideCoopPage() {
                 className="inline-block bg-primary-600 hover:bg-primary-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors shadow-lg hover:shadow-primary-600/30"
               >
                 Get started
+              </Link>
+              <Link
+                href={COOP_JOIN_URL}
+                className="inline-block ml-0 sm:ml-3 mt-3 sm:mt-0 border border-primary-400/50 hover:bg-primary-600/20 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+              >
+                Join the co-op
               </Link>
             </div>
           </div>

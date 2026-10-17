@@ -24,3 +24,7 @@ export function getSellerUrl(key: string | undefined | null): string | null {
   const url = (SELLER_LINKS[key] || "").trim()
   return /^https?:\/\//i.test(url) ? url : null
 }
+
+// Where "Join the co-op" on /order points. Swap for the co-op's own site (e.g. Southern Utah
+// Peptides) when it exists; until then members reach the co-op through the contact page.
+export const COOP_JOIN_URL = "/contact?topic=co-op"
