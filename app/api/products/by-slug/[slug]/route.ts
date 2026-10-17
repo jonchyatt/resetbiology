@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { isAdminRequest } from '@/lib/adminGuard';
 
 export const dynamic = 'force-dynamic';
 
@@ -7,6 +8,10 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  // /product/* pages redirect to /order and the site sells nothing: prices + Stripe ids stay admin-only (RB-FIX-8).
+  if (!(await isAdminRequest())) {
+    return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+  }
   try {
     const { slug } = await params;
 

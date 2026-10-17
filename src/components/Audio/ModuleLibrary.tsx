@@ -74,10 +74,15 @@ export function ModuleLibrary({ isAdmin: isAdminFromServer = false }: { isAdmin?
     setIsSaving(true)
     try {
       const moduleMeta = modules.find(m => m.id === moduleId)
+      const now = new Date()
+      const pad = (n: number) => String(n).padStart(2, '0')
       const payload = {
         moduleId,
         audioDuration: moduleMeta?.duration ? Math.round(moduleMeta.duration) : undefined,
         fullCompletion: true,
+        // Member's own day/time, so the journal line lands on their day after UTC midnight (RB-FIX-8 F-1).
+        localDate: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
+        localTime: `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`,
       }
       console.log('Saving module completion:', payload)
 
