@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { FUNDER_FACTS } from '@/config/funderFacts';
 
 // Funder page. Hidden until Jonathan sets NEXT_PUBLIC_FUNDER_PAGE=on (project rule 15).
 export const metadata: Metadata = {
@@ -39,6 +40,18 @@ export default function WomensHealthPage() {
         <h1 className="mt-2 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
           Women&apos;s health in Southern Utah
         </h1>
+
+        <dl
+          aria-label="At a glance"
+          className="mt-8 grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 sm:grid-cols-2"
+        >
+          {FUNDER_FACTS.map((fact) => (
+            <div key={fact.label} className="bg-slate-950 px-4 py-3">
+              <dt className="text-sm uppercase tracking-wide text-slate-400">{fact.label}</dt>
+              <dd className="mt-1 text-base font-semibold text-white">{fact.value}</dd>
+            </div>
+          ))}
+        </dl>
 
         <div className="mt-8 space-y-10 text-lg leading-8 text-slate-300">
           <section aria-labelledby="who">

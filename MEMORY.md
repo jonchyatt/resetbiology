@@ -22,3 +22,8 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+## 2026-10-17 funder page evidence strip
+- `/community/womens-health` now opens with a six-row "at a glance" strip from `src/config/funderFacts.ts`; every row restates an application fact (Q14.2, Q29, Q30, Q31). `tests/funder-page.test.ts` (`npx tsx`) fails on any figure besides $10,000 and 1,200, and checks 404-unless-flag-is-`on`, noindex/nofollow, and no sitemap entry.
+- Fresh clone gotcha: `npm ci --ignore-scripts` skips Prisma codegen, which gives ~160 false tsc errors and a failed `next build` on `app/admin/store/page.backup.*.tsx`. Run `npx prisma generate` first (local codegen only); then tsc is 0 and the build passes.
+- Still open on this page: the 1,200 needs the S-corp check; amounts, location, operator, measure are source gaps. Flag flip stays red 3.
