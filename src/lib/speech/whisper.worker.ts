@@ -13,7 +13,7 @@ async function loadModel() {
   try {
     self.postMessage({ type: 'status', status: 'loading', message: 'Loading voice model...' })
 
-    transcriber = await (pipeline as Function)(
+    transcriber = await (pipeline as (...args: unknown[]) => Promise<unknown>)(
       'automatic-speech-recognition',
       'onnx-community/whisper-tiny.en',
       {
