@@ -9,6 +9,7 @@ import { useUser } from "@auth0/nextjs-auth0"
 import { useRouter, useSearchParams } from "next/navigation"
 import { localDayKey } from "@/lib/localDay"
 import { useToast } from "@/components/ui/Toast"
+import { driveErrorMessage } from "@/lib/driveConnectMessages"
 
 const CONNECTED_CONFIRMATION_COPY =
   "A copy of your data now goes to your Google Drive, in a folder you own. This app can only touch files it created; it cannot see the rest of your Drive. Disconnect anytime — your files stay yours."
@@ -321,7 +322,7 @@ function ProfilePageContent() {
             <div className="mb-8 flex items-start gap-3 bg-red-600/20 border border-red-400/40 rounded-xl p-5 backdrop-blur-sm">
               <AlertCircle className="w-6 h-6 text-red-300 flex-shrink-0 mt-0.5" />
               <p className="text-red-100">
-                Something went wrong connecting Drive. Try again below, or email{" "}
+                {driveErrorMessage(searchParams.get("reason"))} Try again below, or email{" "}
                 <a href="mailto:support@resetbiology.com" className="underline hover:text-red-50">
                   support@resetbiology.com
                 </a>{" "}

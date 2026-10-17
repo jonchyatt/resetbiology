@@ -413,3 +413,18 @@ export const RELEASED_COUNT = AUDIO_LIBRARY.filter(m => m.available && m.release
 export function moduleTitle(moduleId: string): string {
   return AUDIO_LIBRARY.find(m => m.id === moduleId)?.title ?? moduleId
 }
+
+/**
+ * Read-time repair for journal lines written before module titles were stored: swaps any
+ * library module id inside the text for its title. Stored rows are never rewritten.
+ */
+export function retitleModuleNotes(text: unknown): unknown {
+  if (typeof text !== 'string' || !text) return text
+  let out = text
+  for (const m of [...AUDIO_LIBRARY].sort((a, b) => b.id.length - a.id.length)) {
+    if (!out.includes(m.id)) continue
+    const escaped = m.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    out = out.replace(new RegExp(`(?<![\\w-])${escaped}(?![\\w-])`, 'g'), () => m.title)
+  }
+  return out
+}

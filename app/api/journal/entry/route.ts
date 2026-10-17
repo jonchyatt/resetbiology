@@ -6,6 +6,7 @@ import { validateWeight } from '@/lib/inputValidators'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
 import { mergeNoteLines } from '@/lib/peptideDoseJournal'
 import { localDayKey, dayKeyToUtcMidnight } from '@/lib/localDay'
+import { retitleModuleNotes } from '@/data/audio-library'
 
 type TasksPayload = Record<string, boolean>
 
@@ -250,9 +251,13 @@ export async function GET(request: NextRequest) {
     })
 
     if (journalEntry) {
+      const parsedEntry = journalEntry.entry ? JSON.parse(journalEntry.entry as string) : null
+      if (parsedEntry && typeof parsedEntry.moduleNotes === 'string') {
+        parsedEntry.moduleNotes = retitleModuleNotes(parsedEntry.moduleNotes)
+      }
       return NextResponse.json({
         ...journalEntry,
-        entry: journalEntry.entry ? JSON.parse(journalEntry.entry as string) : null,
+        entry: parsedEntry,
       })
     }
 

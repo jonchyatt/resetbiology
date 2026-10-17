@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { useVaultStatus } from "@/hooks/useVaultStatus"
+import { driveErrorMessage } from "@/lib/driveConnectMessages"
 
 const FOLDER_PREVIEW: Array<{ icon: string; label: string }> = [
   { icon: "💉", label: "Peptides" },
@@ -177,11 +178,7 @@ export function ConnectDriveSetup() {
             <div className="mb-8 flex items-center gap-3 bg-red-600/20 border border-red-400/40 rounded-xl p-4 backdrop-blur-sm">
               <AlertCircle className="w-6 h-6 text-red-300 flex-shrink-0" />
               <p className="text-red-100 font-medium">
-                {isScopeMissing
-                  ? "Google asked which access to share and the Google Drive box was left unticked. Try again and tick the Drive box so we can save your files there."
-                  : isCallbackFailed
-                  ? "Google didn't finish connecting this time. This usually clears up on a second try."
-                  : "Something went wrong connecting Drive. Try again or contact support."}
+                {driveErrorMessage(searchParams.get("reason"))}
               </p>
               {canRetry && (
                 <button
