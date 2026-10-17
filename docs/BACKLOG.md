@@ -25,7 +25,7 @@ Open: #44 funder page `/community/womens-health` (draft, flag `NEXT_PUBLIC_FUNDE
 | Gated member-data paths waiting on seat diff review | waiting | **Green to build, review gate by rule 6** | Not a red. Build the diff, open the PR, mark ready; the seat reads it before merge. Nothing to wait on while building. |
 | Free-launch stack direction (PR #27 stack, 540 commits behind) | open question | **Green** | The branch triage already shows master took a different path. Build the replay as one small PR per surface instead of asking (thread 8 below). |
 | 29 "ask Jonathan" branches in triage | waiting | **Green to prepare, red 4 to delete** | Preparing keep or retire notes and rebase-by-copy PRs is green. Deleting a remote branch is red 4 and rule 7 forbids it for me. Recommend only. |
-| Cloudflare Pages check failing on #44 | waiting | **Green** | Logs not readable from here. Can be diagnosed from the repo (build config) in thread 9. |
+| Cloudflare Pages check failing on every PR | card filed | **Second-look** | Not repo-fixable: no wrangler.toml, workflow or Pages config exists; the check comes from the Cloudflare GitHub app and fails with "Build failed" in ~1s. See approvals/2026-10-17-cloudflare-pages-check.md. |
 | Deploys, env, flag flips, production Mongo | seat only | **Red 3, 4 or 5 as named** | Flag flips publish (3); env holds credentials (5); production data writes may be irreversible (4). |
 
 ## Queued: ten threads, ordered by revenue (nearest dollar first)
