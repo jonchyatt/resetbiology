@@ -50,7 +50,10 @@ export default function WomensHealthPage() {
             <p className="mt-3">
               This work is for free co-op members with those needs.
             </p>
-            <Todo>The application says the practice serves about 1,200 people a year. Confirm that against the last S-corp return before it goes on this page.</Todo>
+            <p className="mt-3">
+              The practice serves about 1,200 people a year. That figure is taken from the grant application.
+            </p>
+            <Todo>Confirm the 1,200 against the last S-corp return before the flag goes on. The application&apos;s revenue band is not in the repo, so it is not on the page; paste the exact wording if it should be shown.</Todo>
           </section>
 
           <section aria-labelledby="what">

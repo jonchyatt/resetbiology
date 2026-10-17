@@ -27,7 +27,7 @@ The co-op wording ("member-owned co-op run by an independent licensed provider",
 
 ## TODOs for Jonathan (shown on the page as amber boxes; remove each before publishing)
 - Applicant name and Satori Enterprises link: waits on Jonathan's answer about who owns the existing equipment (equipment follows whoever's money buys it; data/grants/website-first-2026-10/CONSENSUS-satori-enterprises-site-2026-10-17.md in the jarvis repo).
-- Community size: the application says about 1,200 served a year (Q14.2); confirm against the last S-corp return before showing it.
+- Community size: the page now states about 1,200 served a year, taken from the application (Q14.2). Confirm against the last S-corp return before the flag goes on. The revenue band is not in the repo and is not shown.
 - Status and dates for co-op, vouchers, practice expansion; optional Zion Direct Care link.
 - Budget lines, amounts, equipment location, operator, success measure.
 
