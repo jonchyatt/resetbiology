@@ -3,79 +3,13 @@ import { auth0 } from '@/lib/auth0'
 import { resolveUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync, drainDriveSyncRowsNow } from '@/lib/driveSyncQueue'
-import { dayKeyToUtcMidnight, formatNoteTime, todayLocalKey } from '@/lib/localDay'
-
-function startOfDay(date: Date) {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
+import { dayKeyToUtcMidnight, formatNoteTime } from '@/lib/localDay'
+import { appendJournalNote, resolveDayKey } from '@/lib/journalDay'
 
 async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: string, localDate: unknown, localTime?: unknown): Promise<string> {
-  const dayStart = startOfDay(timestamp)
-  const dayEnd = new Date(dayStart)
-  dayEnd.setDate(dayEnd.getDate() + 1)
-
-  const existing = await prisma.journalEntry.findFirst({
-    where: {
-      userId,
-      date: {
-        gte: dayStart,
-        lt: dayEnd,
-      },
-    },
-  })
-
   const note = `Mental mastery module ${moduleId} completed at ${formatNoteTime(localTime, timestamp)}`
-
-  if (existing) {
-    let entryData: any = {}
-    try {
-      entryData = existing.entry ? JSON.parse(existing.entry as string) : {}
-    } catch {
-      entryData = {}
-    }
-
-    const previous = typeof entryData.moduleNotes === 'string' && entryData.moduleNotes.length > 0 ? `${entryData.moduleNotes}
-` : ''
-    entryData.moduleNotes = `${previous}${note}`
-
-    const tasksCompleted = typeof entryData.tasksCompleted === 'object' && entryData.tasksCompleted !== null
-      ? { ...entryData.tasksCompleted }
-      : {}
-    tasksCompleted.module = true
-    entryData.tasksCompleted = tasksCompleted
-
-    await prisma.journalEntry.update({
-      where: { id: existing.id },
-      data: { entry: JSON.stringify(entryData) },
-    })
-    return note
-  } else {
-    const entryData = {
-      reasonsValidation: '',
-      affirmationGoal: '',
-      affirmationBecause: '',
-      affirmationMeans: '',
-      peptideNotes: '',
-      workoutNotes: '',
-      nutritionNotes: '',
-      breathNotes: '',
-      moduleNotes: note,
-      tasksCompleted: { module: true },
-    }
-
-    await prisma.journalEntry.create({
-      data: {
-        userId,
-        entry: JSON.stringify(entryData),
-        mood: null,
-        weight: null,
-        date: dayKeyToUtcMidnight(typeof localDate === 'string' && localDate ? localDate : todayLocalKey()),
-      },
-    })
-    return note
-  }
+  await appendJournalNote(prisma, userId, resolveDayKey(localDate), 'moduleNotes', note, 'module')
+  return note
 }
 
 // POST: Mark a Mental Mastery module as completed
@@ -115,18 +49,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if module already completed today (prevent duplicate points)
-    const today = startOfDay(new Date())
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+    const dayKey = resolveDayKey(localDate)
+    const today = dayKeyToUtcMidnight(dayKey)
 
     const existingCompletion = await prisma.moduleCompletion.findFirst({
       where: {
         userId: user.id,
         moduleId,
-        completedAt: {
-          gte: today,
-          lt: tomorrow
-        }
+        localDate: dayKey
       }
     })
 
@@ -145,7 +75,7 @@ export async function POST(request: NextRequest) {
         moduleId,
         audioDuration: audioDuration || null,
         fullCompletion,
-        localDate: localDate || null,
+        localDate: dayKey,
         localTime: localTime || null,
       }
     })

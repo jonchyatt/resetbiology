@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
 import { awardWorkoutPoints } from '@/lib/workoutPoints';
+import { appendJournalNote } from '@/lib/journalDay';
 import { dayKeyToUtcMidnight, formatNoteTime } from '@/lib/localDay';
 
 export async function POST(request: Request) {
@@ -112,70 +113,10 @@ export async function POST(request: Request) {
       },
     });
 
-    // Journal-entry lookup range stays server-clock-anchored (unchanged) —
-    // out of scope for this fix, which is the DailyTask/award day mismatch.
-    const startOfDay = new Date(now);
-    startOfDay.setHours(0, 0, 0, 0);
-    const nextDay = new Date(startOfDay);
-    nextDay.setDate(nextDay.getDate() + 1);
-
     const timestamp = formatNoteTime(localTime, now);
     const workoutNote = `Workout logged (${exerciseName || 'Workout'}) at ${timestamp}`;
 
-    const existingJournal = await prisma.journalEntry.findFirst({
-      where: {
-        userId: user.id,
-        date: {
-          gte: startOfDay,
-          lt: nextDay,
-        },
-      },
-    });
-
-    if (existingJournal) {
-      let entryData: any = {};
-      try {
-        entryData = existingJournal.entry ? JSON.parse(existingJournal.entry as string) : {};
-      } catch (err) {
-        entryData = {};
-      }
-
-      const previous = entryData.workoutNotes ? `${entryData.workoutNotes}\n` : '';
-      entryData.workoutNotes = `${previous}${workoutNote}`;
-      const tasksCompleted = entryData.tasksCompleted || {};
-      tasksCompleted.workout = true;
-      entryData.tasksCompleted = tasksCompleted;
-
-      await prisma.journalEntry.update({
-        where: { id: existingJournal.id },
-        data: {
-          entry: JSON.stringify(entryData),
-        },
-      });
-    } else {
-      const entryData = {
-        reasonsValidation: '',
-        affirmationGoal: '',
-        affirmationBecause: '',
-        affirmationMeans: '',
-        peptideNotes: '',
-        workoutNotes: workoutNote,
-        nutritionNotes: '',
-        breathNotes: '',
-        moduleNotes: '',
-        tasksCompleted: { workout: true },
-      };
-
-      await prisma.journalEntry.create({
-        data: {
-          userId: user.id,
-          entry: JSON.stringify(entryData),
-          mood: null,
-          weight: null,
-          date: taskDay,
-        },
-      });
-    }
+    await appendJournalNote(prisma, user.id, award.dayKey, 'workoutNotes', workoutNote, 'workout');
 
     return NextResponse.json({
       ok: true,

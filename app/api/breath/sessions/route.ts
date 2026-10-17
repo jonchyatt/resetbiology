@@ -3,82 +3,14 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
-import { dayKeyToUtcMidnight, formatNoteTime, todayLocalKey } from '@/lib/localDay'
-
-function startOfDay(date: Date) {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
+import { dayKeyToUtcMidnight, formatNoteTime } from '@/lib/localDay'
+import { appendJournalNote, resolveDayKey } from '@/lib/journalDay'
 
 async function appendBreathToJournal(userId: string, timestamp: Date, summary: { cycles: number; durationSeconds: number }, localDate: unknown, localTime?: unknown): Promise<string> {
-  const dayStart = startOfDay(timestamp)
-  const dayEnd = new Date(dayStart)
-  dayEnd.setDate(dayEnd.getDate() + 1)
-
-  const existing = await prisma.journalEntry.findFirst({
-    where: {
-      userId,
-      date: {
-        gte: dayStart,
-        lt: dayEnd,
-      },
-    },
-  })
-
   const minutes = Math.max(1, Math.round(summary.durationSeconds / 60))
   const note = `Breath session - ${summary.cycles} cycles - ${minutes} min at ${formatNoteTime(localTime, timestamp)}`
-
-  if (existing) {
-    let entryData: any = {}
-    try {
-      entryData = existing.entry ? JSON.parse(existing.entry as string) : {}
-    } catch {
-      entryData = {}
-    }
-
-    const previous = typeof entryData.breathNotes === 'string' && entryData.breathNotes.length > 0 ? `${entryData.breathNotes}
-` : ''
-    entryData.breathNotes = `${previous}${note}`
-
-    const tasksCompleted = typeof entryData.tasksCompleted === 'object' && entryData.tasksCompleted !== null
-      ? { ...entryData.tasksCompleted }
-      : {}
-    tasksCompleted.breath = true
-    entryData.tasksCompleted = tasksCompleted
-
-    await prisma.journalEntry.update({
-      where: { id: existing.id },
-      data: {
-        entry: JSON.stringify(entryData),
-      },
-    })
-    return note
-  } else {
-    const entryData = {
-      reasonsValidation: '',
-      affirmationGoal: '',
-      affirmationBecause: '',
-      affirmationMeans: '',
-      peptideNotes: '',
-      workoutNotes: '',
-      nutritionNotes: '',
-      breathNotes: note,
-      moduleNotes: '',
-      tasksCompleted: { breath: true },
-    }
-
-    await prisma.journalEntry.create({
-      data: {
-        userId,
-        entry: JSON.stringify(entryData),
-        mood: null,
-        weight: null,
-        date: dayKeyToUtcMidnight(typeof localDate === 'string' && localDate ? localDate : todayLocalKey()),
-      },
-    })
-    return note
-  }
+  await appendJournalNote(prisma, userId, resolveDayKey(localDate), 'breathNotes', note, 'breath')
+  return note
 }
 
 // POST: Save completed breath session from client
@@ -124,15 +56,15 @@ export async function POST(request: NextRequest) {
         duration: Math.round(totalDuration / 1000), // Convert ms to seconds
         cycles: sessionData.cyclesCompleted,
         progressScore: longestExhaleHold / 1000, // Use longest exhale as progress metric (in seconds)
-        localDate: sessionData.localDate || null,
+        localDate: dayKey,
         localTime: sessionData.localTime || null,
       }
     })
 
     // Mark 'breath' daily task as completed
-    const today = startOfDay(new Date())
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
+    // Member's local day (not the server's): keyed the same as the journal entry.
+    const dayKey = resolveDayKey(sessionData.localDate)
+    const today = dayKeyToUtcMidnight(dayKey)
 
     await prisma.dailyTask.upsert({
       where: {
@@ -157,10 +89,7 @@ export async function POST(request: NextRequest) {
     const sessionsToday = await prisma.breathSession.count({
       where: {
         userId: user.id,
-        createdAt: {
-          gte: today,
-          lt: tomorrow
-        }
+        localDate: dayKey
       }
     })
 
