@@ -32,7 +32,7 @@ import {
 } from './engine/masteryQueue'
 import { ActivePool } from './engine/types'
 import { usePitchDetection } from './usePitchDetection'
-import { initAudio, loadPianoSamples, playPianoNote, playSfx } from './audioEngine'
+import { initAudio, loadPianoSamples, playPianoNote, playSfx, setPianoVolume } from './audioEngine'
 import { noteToFreq, octaveFoldedCents } from './pitchMath'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -327,6 +327,7 @@ export default function NoteTutor() {
   const [lockProgress, setLockProgress] = useState(0)
   const [expandedNote, setExpandedNote] = useState<string | null>(null)
   const [gateClearedBanner, setGateClearedBanner] = useState(false)
+  const [guideVolume, setGuideVolume] = useState(100)
 
   const processingRef = useRef(false)
   const lockStartRef = useRef(0)
@@ -347,6 +348,8 @@ export default function NoteTutor() {
   // Mic only activates in sing mode
   const { isListening, pitch, startListening, stopListening, pitchRef } =
     usePitchDetection({ noiseGateDb: -45 })
+
+  useEffect(() => { setPianoVolume(guideVolume) }, [guideVolume])
 
   // ─── Load persisted ─────────────────────────────────────────────────────
   useEffect(() => {
@@ -854,6 +857,18 @@ export default function NoteTutor() {
           </span>
         </label>
 
+        <label className="flex items-center gap-3 mb-4">
+          <span className="text-xs text-gray-500 w-20">Guide Vol</span>
+          <input
+            type="range"
+            min={0}
+            max={200}
+            value={guideVolume}
+            onChange={e => setGuideVolume(Number(e.target.value))}
+            className="w-36 h-1 accent-purple-500"
+          />
+          <span className="text-xs text-purple-300 font-mono w-10 text-right">{guideVolume}%</span>
+        </label>
 
         <button onClick={startSession}
           className="px-10 py-4 rounded-2xl text-xl font-bold text-white transition-all active:scale-95 mt-2"

@@ -24,7 +24,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { PitchFusion, type FusedPitch } from './pitchFusion'
-import { initAudio, playPianoNote } from './audioEngine'
+import { initAudio, playPianoNote, setPianoVolume } from './audioEngine'
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
@@ -168,6 +168,7 @@ export default function PitchforksII() {
   const [pitchHint, setPitchHint] = useState<'low' | 'on' | 'high' | null>(null)
   const [assetsReady, setAssetsReady] = useState(false)
   const [assetError, setAssetError] = useState<string | null>(null)
+  const [cueVolume, setCueVolume] = useState(100)
 
   // Asset cache
   const assetsRef = useRef<{
@@ -247,6 +248,7 @@ export default function PitchforksII() {
   // Sync ref → state
   useEffect(() => { phaseRef.current = phase }, [phase])
   useEffect(() => { viewRef.current = view }, [view])
+  useEffect(() => { setPianoVolume(cueVolume) }, [cueVolume])
 
   // ─── Spawn a villager ─────────────────────────────────────────────────────
   const spawnVillager = useCallback(() => {
@@ -789,6 +791,19 @@ export default function PitchforksII() {
           </div>
         )}
       </div>
+
+      <label className="mt-3 flex items-center gap-3 text-[11px] text-gray-400">
+        Cue Vol
+        <input
+          type="range"
+          min={0}
+          max={200}
+          value={cueVolume}
+          onChange={e => setCueVolume(Number(e.target.value))}
+          className="w-36 h-1 accent-cyan-400"
+        />
+        <span className="text-cyan-300 font-mono w-10 text-right">{cueVolume}%</span>
+      </label>
 
       <div className="mt-3 text-[11px] text-gray-500 max-w-md text-center">
         <strong className="text-gray-300">PitchforksII</strong> is the new sprite-based version.
