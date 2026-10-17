@@ -19,6 +19,9 @@ export function Footer() {
 
   if (shouldHideFooter(pathname)) return null
 
+  // The funder page describes the applicant practice's care, so its footer keeps the two entities separate.
+  const isFunderPage = process.env.NEXT_PUBLIC_FUNDER_PAGE === 'on' && pathname === '/community/womens-health'
+
   return (
     <footer className="border-t border-white/10 bg-slate-950 px-4 py-12 text-slate-300">
       <div className="mx-auto mb-8 max-w-xl">
@@ -27,8 +30,14 @@ export function Footer() {
       <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1fr_auto] md:items-start">
         <div className="max-w-2xl">
           <img src="/reset-logo-pro.png" alt="Reset Biology" draggable={false} decoding="async" width={64} height={64} className="h-16 w-auto object-contain mix-blend-lighten" />
-          <p className="mt-6 text-sm leading-6">Educational content only. Not medical advice. Reset Biology sells no products and provides no medical care.</p>
-          <p className="mt-2 text-sm leading-6">Free access funded by the Satori Living Foundation. {/* src: LMP §00 */}</p>
+          {isFunderPage ? (
+            <p className="mt-6 text-sm leading-6">Educational content only. Not medical advice. Reset Biology is a free education site. Clinical services described on this page are provided by the applicant practice.</p>
+          ) : (
+            <>
+              <p className="mt-6 text-sm leading-6">Educational content only. Not medical advice. Reset Biology sells no products and provides no medical care.</p>
+              <p className="mt-2 text-sm leading-6">Free access funded by the Satori Living Foundation. {/* src: LMP §00 */}</p>
+            </>
+          )}
         </div>
         <div className="grid gap-8 sm:grid-cols-2">
           <nav aria-label="Footer navigation">
