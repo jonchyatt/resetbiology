@@ -586,6 +586,7 @@ function ProfilePageContent() {
                           <ul className="list-disc list-inside text-sm text-gray-200 space-y-1 mb-3">
                             <li>Your protocols, doses, reminders, journal, workouts, meals, sessions, progress and profile are removed from our database. This can&apos;t be undone.</li>
                             <li>Files in your Google Drive are <span className="font-semibold">not</span> touched. They stay yours; delete them in Drive if you want them gone. We stop our access to your Drive.</li>
+                            <li>Your newsletter subscription and intake quiz answers are removed too.</li>
                             <li>Your sign-in stays. Signing in again starts a fresh, empty account.</li>
                           </ul>
                           <p className="text-sm text-gray-300 mb-2">Want a copy first? Use Download my data above.</p>

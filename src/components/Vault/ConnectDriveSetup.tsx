@@ -166,6 +166,14 @@ export function ConnectDriveSetup() {
               </p>
             </div>
           )}
+          {driveQueryStatus === "needs_reconciliation" && (
+            <div className="mb-8 flex items-center gap-3 bg-amber-600/20 border border-amber-400/40 rounded-xl p-4 backdrop-blur-sm">
+              <AlertCircle className="w-6 h-6 text-amber-300 flex-shrink-0" />
+              <p className="text-amber-100 font-medium">
+                We found more than one Reset Biology folder in this Google Drive, so syncing is paused until we sort out which one is yours. Email support@resetbiology.com and we will fix it.
+              </p>
+            </div>
+          )}
           {isDenied && (
             <div className="mb-8 flex items-center gap-3 bg-amber-600/20 border border-amber-400/40 rounded-xl p-4 backdrop-blur-sm">
               <AlertCircle className="w-6 h-6 text-amber-300 flex-shrink-0" />

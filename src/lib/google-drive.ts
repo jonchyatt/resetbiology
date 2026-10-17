@@ -58,7 +58,7 @@ export const VAULT_SUBFOLDERS = [
 ]
 
 export type VaultRootResolution =
-  | { status: 'reused'; folderId: string; method: 'pointer' | 'appProperties' }
+  | { status: 'reused'; folderId: string; method: 'pointer' | 'appProperties' | 'orphan' }
   | { status: 'created'; folderId: string; method: 'created' }
   | { status: 'ambiguous'; candidateFolderIds: string[] }
 
@@ -133,10 +133,27 @@ export async function resolveVaultRootFolder(
 
   const broad = await drive.files.list({
     q: broadQuery,
-    fields: 'files(id)',
+    fields: 'files(id, appProperties)',
     spaces: 'drive',
   })
   const broadMatches = (broad.data.files ?? []).filter((f) => f.id)
+
+  // Case 4b: exactly one stamped root whose owner no longer exists. That is this Drive
+  // account's own folder from a member who used "Delete my data" and signed back in with a
+  // new id (DELETE-MY-DATA-E2E F-1). drive.file means it is in the connecting account's own
+  // Drive. Re-stamp it to the new id and reuse it. A live other owner still goes to reconciliation.
+  if (broadMatches.length === 1) {
+    const only = broadMatches[0]
+    const oldOwner = only.appProperties?.rbVaultRoot === 'true' ? only.appProperties?.rbUserId : undefined
+    if (oldOwner && oldOwner !== userId && /^[a-f0-9]{24}$/i.test(oldOwner)) {
+      const ownerExists = await prisma.user.findUnique({ where: { id: oldOwner }, select: { id: true } })
+      if (!ownerExists) {
+        await drive.files.update({ fileId: only.id!, requestBody: { appProperties: { rbVaultRoot: 'true', rbUserId: userId } } })
+        return { status: 'reused', folderId: only.id!, method: 'orphan' }
+      }
+    }
+  }
+
   if (broadMatches.length > 0) {
     return {
       status: 'ambiguous',

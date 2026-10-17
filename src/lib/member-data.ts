@@ -94,10 +94,15 @@ export async function exportMemberData(db: Db, userId: string, models = memberDa
 export async function deleteMemberData(db: Db, userId: string, models = memberDataModels()) {
   const protocolIds = await protocolIdsFor(db, userId)
   const ops = models.map((model) => db[delegateName(model)].deleteMany({ where: scopedWhere(model, userId, protocolIds) }))
+  // Rows keyed only by the member's email that the member gave us themselves: the newsletter
+  // subscription and intake quiz answers (DELETE-MY-DATA-E2E F-2). Orders are not touched.
+  const email = (await db.user.findUnique({ where: { id: userId }, select: { email: true } }))?.email?.trim().toLowerCase()
+  const byEmail = email ? ['newsletterSubscriber', 'nEPQSubmission'].filter((d) => db[d]) : []
+  for (const d of byEmail) ops.push(db[d].deleteMany({ where: { email: { equals: email, mode: 'insensitive' } } }))
   ops.push(db.user.deleteMany({ where: { id: userId } }))
   const results: Array<{ count: number }> = await db.$transaction(ops)
   const deleted: Record<string, number> = {}
-  ;[...models, 'User'].forEach((m, i) => { if (results[i]?.count) deleted[m] = results[i].count })
+  ;[...models, ...byEmail, 'User'].forEach((m, i) => { if (results[i]?.count) deleted[m] = results[i].count })
   return deleted
 }
 
