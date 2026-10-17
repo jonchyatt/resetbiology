@@ -36,3 +36,7 @@ Every sentence was checked against JON-APPLICATION-RECOVERED-2026-10-05.md (jarv
 
 ## Render check (2026-10-17)
 Run with `NEXT_PUBLIC_FUNDER_PAGE=on next dev`: HTTP 200, no horizontal scroll at 390px and 1280px, budget table and slots visible. Without the flag the page is 404 (unchanged). Not checked: tsc across the repo (existing errors elsewhere).
+
+## At-a-glance strip (2026-10-17)
+The page opens with a six-row strip fed by `src/config/funderFacts.ts`: where, practice size, people served (about 1,200 a year), grant ($10,000), what it would buy, who benefits. Every row restates a fact already on the page; each names its application question. `tests/funder-page.test.ts` fails if a figure other than $10,000 or 1,200 appears, and also checks: 404 unless the flag is exactly `on`, noindex and nofollow, and no sitemap entry. Run: `npx tsx tests/funder-page.test.ts`. The 1,200 still needs the S-corp check above.
+
