@@ -123,7 +123,8 @@ export async function POST(request: Request) {
     })
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
-    await enqueueDriveSync(user.id, new Date(), ['peptides']).catch(err => console.error('Drive enqueue failed:', err))
+    // The Drive peptides file is keyed by the dose's member-local day (rerun 11: after UTC midnight the UTC day found no doses).
+    await enqueueDriveSync(user.id, today, ['peptides']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,
