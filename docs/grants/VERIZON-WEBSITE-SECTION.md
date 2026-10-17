@@ -29,7 +29,10 @@ The co-op wording ("member-owned co-op run by an independent licensed provider",
 - Applicant name and Satori Enterprises link: waits on Jonathan's answer about who owns the existing equipment (equipment follows whoever's money buys it; data/grants/website-first-2026-10/CONSENSUS-satori-enterprises-site-2026-10-17.md in the jarvis repo).
 - Community size: the page now states about 1,200 served a year, taken from the application (Q14.2). Confirm against the last S-corp return before the flag goes on. The revenue band is not in the repo and is not shown.
 - Status and dates for co-op, vouchers, practice expansion; optional Zion Direct Care link.
-- Budget lines, amounts, equipment location, operator, success measure.
+- Budget amounts, equipment location, operator, success measure: the page now has a budget table and three labelled slots. Item names (HIFEM chair, red-light equipment) are from the application; the amounts, location, operator and measure are NOT in the repo, so they render as TODO. Fill the `BUDGET`, `EQUIPMENT_LOCATION`, `OPERATOR`, `SUCCESS_MEASURE` constants at the top of the page.
 
 ## Not verified
 Every sentence was checked against JON-APPLICATION-RECOVERED-2026-10-05.md (jarvis repo, data/grants/verizon-digital-ready/) on 2026-10-17. Not yet checked against tax records: the 1,200 figure and the revenue band.
+
+## Render check (2026-10-17)
+Run with `NEXT_PUBLIC_FUNDER_PAGE=on next dev`: HTTP 200, no horizontal scroll at 390px and 1280px, budget table and slots visible. Without the flag the page is 404 (unchanged). Not checked: tsc across the repo (existing errors elsewhere).

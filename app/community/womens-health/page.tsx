@@ -11,6 +11,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Use-of-funds facts. Only the item names come from the application (Q29, Q31).
+// Fill an `amount` (a string, e.g. "$6,000") once the exact figure is supplied; null shows a TODO, never a guess.
+const BUDGET: { item: string; amount: string | null }[] = [
+  { item: 'HIFEM chair', amount: null },
+  { item: 'Red-light therapy equipment', amount: null },
+];
+const EQUIPMENT_LOCATION: string | null = null;
+const OPERATOR: string | null = null;
+const SUCCESS_MEASURE: string | null = null;
+
 function Todo({ children }: { children: React.ReactNode }) {
   return (
     <p className="mt-3 rounded-lg border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-base leading-7 text-amber-200">
@@ -74,7 +84,44 @@ export default function WomensHealthPage() {
             <p className="mt-3">
               The plan is to grow this into a service line that can employ a second clinician within a year.
             </p>
-            <Todo>Budget lines and amounts, where the equipment is housed, who operates it, and how success is measured.</Todo>
+            <div className="mt-6 overflow-x-auto rounded-xl border border-white/10">
+              <table className="w-full text-left text-base">
+                <caption className="sr-only">Planned use of the $10,000 grant</caption>
+                <thead className="bg-white/5 text-sm uppercase tracking-wide text-slate-400">
+                  <tr>
+                    <th scope="col" className="px-4 py-3">Item</th>
+                    <th scope="col" className="px-4 py-3 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/10">
+                  {BUDGET.map((row) => (
+                    <tr key={row.item}>
+                      <th scope="row" className="px-4 py-3 font-normal text-slate-200">{row.item}</th>
+                      <td className="px-4 py-3 text-right text-slate-200">
+                        {row.amount ?? <span className="text-amber-200">TODO</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {BUDGET.some((row) => row.amount === null) && (
+              <Todo>Amount for each line above, from the application budget. The amounts are not in the repo, so none is shown.</Todo>
+            )}
+            <dl className="mt-6 space-y-4">
+              <div>
+                <dt className="font-semibold text-white">Where the equipment is housed</dt>
+                <dd className="mt-1">{EQUIPMENT_LOCATION ?? <Todo>Location of the equipment.</Todo>}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-white">Who operates it</dt>
+                <dd className="mt-1">{OPERATOR ?? <Todo>Name and role of the operator.</Todo>}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-white">How success is measured</dt>
+                <dd className="mt-1">{SUCCESS_MEASURE ?? <Todo>The measure and when it is reported.</Todo>}</dd>
+              </div>
+            </dl>
           </section>
 
           <section aria-labelledby="free">
