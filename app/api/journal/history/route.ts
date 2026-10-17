@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { moduleTitle } from '@/data/audio-library'
 import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
@@ -47,6 +48,8 @@ export async function GET(request: NextRequest) {
             lt: queryEnd,
           },
         },
+        // Oldest first: duplicate-day rows resolve to the oldest, same as the writers.
+        orderBy: { createdAt: 'asc' },
       }),
       prisma.foodLog.findMany({
         where: {
@@ -225,6 +228,7 @@ export async function GET(request: NextRequest) {
       // JournalEntry has no localDate column (schema.prisma:426-438) — the
       // writer stores it inside the entry JSON blob instead (NEW-8).
       const bucket = ensureDay(date, typeof parsed?.localDate === 'string' ? parsed.localDate : undefined)
+      if (bucket.journalEntry) return // duplicate day: keep the oldest row
       bucket.journalEntry = {
         ...entry,
         entry: parsed,
@@ -343,7 +347,7 @@ export async function GET(request: NextRequest) {
     moduleCompletions.forEach((completion: any) => {
       const date = completion.completedAt instanceof Date ? completion.completedAt : new Date(completion.completedAt)
       const bucket = ensureDay(date, completion.localDate)
-      bucket.modules.push(completion)
+      bucket.modules.push({ ...completion, moduleTitle: moduleTitle(completion.moduleId) })
       bucket.eventCount += 1
     })
 

@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0'
 import { getUserFromSession } from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync } from '@/lib/driveSyncQueue'
+import { isValidDayKey } from '@/lib/localDay'
 import { awardWorkoutPoints } from '@/lib/workoutPoints'
 
 // GET: Load user's workout history
@@ -96,7 +97,8 @@ export async function POST(request: Request) {
         exercises: exercises, // Store as JSON
         duration: duration || 0,
         programId: programId || null,
-        completedAt: completedAt ? new Date(completedAt) : new Date()
+        completedAt: completedAt ? new Date(completedAt) : new Date(),
+        localDate: isValidDayKey(localDate) ? localDate : null,
       }
     })
 
@@ -130,7 +132,9 @@ export async function POST(request: Request) {
     }
 
     // Queue Google Drive sync (awaited — Vercel freezes the lambda after the response, killing un-awaited work)
-    await enqueueDriveSync(user.id, new Date(), ['workouts']).catch(err => console.error('Drive enqueue failed:', err))
+    // Key the Drive file/outbox day by the member's day, not the UTC date (an Oct 16 evening workout is Oct 17 UTC).
+    const driveDay = isValidDayKey(localDate) ? new Date(`${localDate}T00:00:00.000Z`) : new Date()
+    await enqueueDriveSync(user.id, driveDay, ['workouts']).catch(err => console.error('Drive enqueue failed:', err))
 
     return NextResponse.json({
       success: true,

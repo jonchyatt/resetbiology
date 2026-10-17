@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
       // Deterministic merge target (NEW-2 belt-and-suspenders) — other
       // writers (e.g. nback) can create additional same-day rows; without
       // an orderBy, which one this merges into is arbitrary.
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'asc' }
     })
 
     let tasksMerged = { ...entryPayload.tasksCompleted }
@@ -246,7 +246,7 @@ export async function GET(request: NextRequest) {
           lt: tomorrow
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'asc' }
     })
 
     if (journalEntry) {

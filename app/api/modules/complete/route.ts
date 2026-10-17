@@ -5,9 +5,10 @@ import { prisma } from '@/lib/prisma'
 import { enqueueDriveSync, drainDriveSyncRowsNow } from '@/lib/driveSyncQueue'
 import { dayKeyToUtcMidnight, formatNoteTime } from '@/lib/localDay'
 import { appendJournalNote, resolveDayKey } from '@/lib/journalDay'
+import { moduleTitle } from '@/data/audio-library'
 
 async function appendModuleToJournal(userId: string, timestamp: Date, moduleId: string, localDate: unknown, localTime?: unknown): Promise<string> {
-  const note = `Mental mastery module ${moduleId} completed at ${formatNoteTime(localTime, timestamp)}`
+  const note = `Mental mastery module ${moduleTitle(moduleId)} completed at ${formatNoteTime(localTime, timestamp)}`
   await appendJournalNote(prisma, userId, resolveDayKey(localDate), 'moduleNotes', note, 'module')
   return note
 }

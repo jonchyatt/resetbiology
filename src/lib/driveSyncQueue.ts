@@ -377,7 +377,7 @@ export async function backfillDriveSyncOutbox(
     // journal: scan by touch-time (createdAt OR updatedAt — historical edits bump
     // updatedAt) but key the sync day by the entry's authoritative `date`.
     ['journal', (await prisma.journalEntry.findMany({ where: { ...userFilter, OR: [{ createdAt: { gte: since } }, { updatedAt: { gte: since } }] }, select: { userId: true, date: true } })).map(r => ({ userId: r.userId, when: r.date }))],
-    ['workouts', (await prisma.workoutSession.findMany({ where: { ...userFilter, completedAt: { gte: since } }, select: { userId: true, completedAt: true } })).map(r => ({ userId: r.userId, when: r.completedAt }))],
+    ['workouts', (await prisma.workoutSession.findMany({ where: { ...userFilter, completedAt: { gte: since } }, select: { userId: true, completedAt: true, localDate: true } })).map(r => ({ userId: r.userId, when: r.completedAt, dateStr: r.localDate ?? undefined }))],
     ['nutrition', (await prisma.foodEntry.findMany({ where: { ...userFilter, loggedAt: { gte: since } }, select: { userId: true, loggedAt: true } })).map(r => ({ userId: r.userId, when: r.loggedAt }))],
     // RB-FIX-8 F-3: members log into FoodLog (not the legacy FoodEntry above); key by the member's localDate.
     ['nutrition', (await prisma.foodLog.findMany({ where: { ...userFilter, loggedAt: { gte: since } }, select: { userId: true, loggedAt: true, localDate: true } })).map(r => ({ userId: r.userId, when: r.loggedAt, dateStr: r.localDate ?? undefined }))],

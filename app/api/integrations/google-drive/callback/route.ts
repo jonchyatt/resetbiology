@@ -15,10 +15,31 @@ const GOOGLE_REDIRECT_URI = process.env.NEXT_PUBLIC_BASE_URL + '/api/integration
 // Token save + migration + backfill (up to 500 rows + a profile copy) can run past the default limit.
 export const maxDuration = 60
 
+type Step = 'state' | 'session' | 'token' | 'userinfo' | 'resolve' | 'save' | 'migrate' | 'backfill'
+
+// Another hit on this URL (browser retry/prefetch) may be finishing the connect while this one
+// fails on the already-used one-time code. Wait up to ~15 s for that hit to land.
+async function waitForConnected(userId: string, timeoutMs = 15000): Promise<boolean> {
+  if (!/^[a-f0-9]{24}$/i.test(userId)) return false
+  const deadline = Date.now() + timeoutMs
+  while (true) {
+    const u = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { googleDriveSyncEnabled: true, googleDriveConnectedAt: true },
+    })
+    if (u?.googleDriveSyncEnabled && u.googleDriveConnectedAt && Date.now() - u.googleDriveConnectedAt.getTime() < 2 * 60 * 1000) {
+      return true
+    }
+    if (Date.now() >= deadline) return false
+    await new Promise(r => setTimeout(r, 1000))
+  }
+}
+
 export async function GET(req: NextRequest) {
   // Hoisted so the catch below can still return the member to where they started.
   let fallbackReturnTo = '/profile'
   let fallbackUserId: string | null = null
+  let step: Step = 'state'
   // Validate returnTo can't trigger an open-redirect.
   function isSafeReturnTo(value: unknown): value is string {
     if (typeof value !== 'string' || !value) return false
@@ -79,6 +100,7 @@ export async function GET(req: NextRequest) {
     // crafted state param can't redirect another user's tokens into our DB.
     // The connect route signed state with the *current session* user.id;
     // verify the same session is in play here.
+    step = 'session'
     const session = await auth0.getSession()
     const sessionUser = await getUserFromSession(session)
     if (!sessionUser) {
@@ -103,6 +125,7 @@ export async function GET(req: NextRequest) {
       GOOGLE_REDIRECT_URI
     )
 
+    step = 'token'
     const { tokens } = await oauth2Client.getToken(code)
 
     if (!tokens.refresh_token) {
@@ -129,6 +152,7 @@ export async function GET(req: NextRequest) {
     // to detect an account-swap against the stored pointer's owning account
     // (case 0 of resolveVaultRootFolder) — a failure here just means we
     // skip that specific check, not that the connect fails.
+    step = 'userinfo'
     let currentAccountEmail: string | null = null
     try {
       const userinfo = await google.oauth2({ version: 'v2', auth: oauth2Client }).userinfo.get()
@@ -141,6 +165,7 @@ export async function GET(req: NextRequest) {
     // fall back to appProperties-based discovery before ever creating a new
     // tree. See resolveVaultRootFolder() in google-drive.ts for the full
     // contract — this is the shared path every caller routes through.
+    step = 'resolve'
     const existingUser = await prisma.user.findUnique({
       where: { id: state },
       select: { driveFolder: true, driveAccountEmail: true },
@@ -191,6 +216,7 @@ export async function GET(req: NextRequest) {
 
     // Update user with Drive credentials. Refresh token is encrypted at rest
     // via VAULT_TOKEN_KEY (AES-256-GCM); never stored as plaintext (Wave J4.4).
+    step = 'save'
     await prisma.user.update({
       where: { id: state },
       data: {
@@ -208,6 +234,7 @@ export async function GET(req: NextRequest) {
     // (the user can retry from a future tracker visit, or hit the explicit
     // POST /api/vault/migrate-peptides endpoint). Awaited because serverless
     // tears down after the response, no fire-and-forget option.
+    step = 'migrate'
     try {
       const migration = await migratePeptidesToVault(state)
       console.log('[oauth-callback] post-connect migration:', migration)
@@ -216,6 +243,7 @@ export async function GET(req: NextRequest) {
     }
 
     // RB-FIX-7 I-2: copy everything the member already has, retry old "not connected" failures.
+    step = 'backfill'
     try {
       console.log('[oauth-callback] post-connect backfill:', await backfillOnConnect(state))
     } catch (backfillError: any) {
@@ -226,7 +254,8 @@ export async function GET(req: NextRequest) {
     return redirectToReturn(returnTo, 'drive=connected')
 
   } catch (error) {
-    console.error('Google Drive callback error:', error)
+    const err = error as any
+    console.error('Google Drive callback error:', { step, message: err?.message, code: err?.code ?? err?.response?.data?.error }, error)
     // RB-FIX-8 F-4: a duplicate hit on this URL (browser retry/prefetch) re-uses the one-time
     // Google code and throws AFTER the first hit already saved tokens and ran the backfill.
     // If this member got connected moments ago, report success, not an error.
@@ -239,10 +268,14 @@ export async function GET(req: NextRequest) {
         if (u?.googleDriveSyncEnabled && u.googleDriveConnectedAt && Date.now() - u.googleDriveConnectedAt.getTime() < 5 * 60 * 1000) {
           return redirectToReturn(fallbackReturnTo, 'drive=connected')
         }
+        // invalid_grant / any token-step failure: the first hit may still be running, so poll for it.
+        if (step === 'token' && await waitForConnected(fallbackUserId)) {
+          return redirectToReturn(fallbackReturnTo, 'drive=connected')
+        }
       }
     } catch (checkError) {
       console.error('[oauth-callback] post-failure connected check failed:', checkError)
     }
-    return redirectToReturn(fallbackReturnTo, 'drive=error&reason=callback_failed')
+    return redirectToReturn(fallbackReturnTo, `drive=error&reason=callback_failed&step=${step}`)
   }
 }

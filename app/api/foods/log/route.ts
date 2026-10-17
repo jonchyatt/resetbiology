@@ -114,7 +114,7 @@ export async function POST(req: Request) {
           lt: nextDay,
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' },
     });
 
     if (existingJournal) {

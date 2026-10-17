@@ -408,3 +408,8 @@ export const AUDIO_LIBRARY: AudioLibraryEntry[] = [
 ]
 
 export const RELEASED_COUNT = AUDIO_LIBRARY.filter(m => m.available && m.released).length
+
+/** Member-facing title for a module id; falls back to the id for anything not in the library. */
+export function moduleTitle(moduleId: string): string {
+  return AUDIO_LIBRARY.find(m => m.id === moduleId)?.title ?? moduleId
+}

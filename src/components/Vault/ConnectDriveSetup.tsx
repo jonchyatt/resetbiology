@@ -84,6 +84,7 @@ export function ConnectDriveSetup() {
   const isJustConnected = driveQueryStatus === "connected"
   const isError = driveQueryStatus === "error"
   const isDenied = driveQueryStatus === "denied"
+  const isCallbackFailed = isError && searchParams.get("reason") === "callback_failed"
 
   useEffect(() => {
     if (driveQueryStatus) {
@@ -174,8 +175,19 @@ export function ConnectDriveSetup() {
             <div className="mb-8 flex items-center gap-3 bg-red-600/20 border border-red-400/40 rounded-xl p-4 backdrop-blur-sm">
               <AlertCircle className="w-6 h-6 text-red-300 flex-shrink-0" />
               <p className="text-red-100 font-medium">
-                Something went wrong connecting Drive. Try again or contact support.
+                {isCallbackFailed
+                  ? "Google didn't finish connecting this time. This usually clears up on a second try."
+                  : "Something went wrong connecting Drive. Try again or contact support."}
               </p>
+              {isCallbackFailed && (
+                <button
+                  onClick={handleConnect}
+                  disabled={connecting}
+                  className="action-btn-primary ml-auto flex-shrink-0 px-4 py-2 font-semibold rounded-lg disabled:opacity-50"
+                >
+                  Try again
+                </button>
+              )}
             </div>
           )}
 

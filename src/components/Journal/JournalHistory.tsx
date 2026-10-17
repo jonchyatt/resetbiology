@@ -5,6 +5,7 @@ import Link from "next/link"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { ChevronsLeft, ChevronsRight, Flame, NotebookPen, Utensils, Droplets, Activity, BrainCircuit, Wind, Dumbbell, X, Edit2, Eye } from "lucide-react"
 import { localDayKey, weekdayOfDayKey, dayOfMonthFromKey, dayKeyToLocalDate } from "@/lib/localDay"
+import { formatAccuracy } from "@/lib/formatAccuracy"
 import { useToast } from "@/components/ui/Toast"
 
 interface JournalHistoryDay {
@@ -503,7 +504,7 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
               )}
               {detailsModal.type === 'module' && (
                 <>
-                  <p><strong className="text-primary-300">Module ID:</strong> {detailsModal.data.moduleId}</p>
+                  <p><strong className="text-primary-300">Module:</strong> {detailsModal.data.moduleTitle ?? detailsModal.data.moduleId}</p>
                   <p><strong className="text-primary-300">Status:</strong> {detailsModal.data.fullCompletion ? 'Fully Completed' : 'Partially Completed'}</p>
                   {detailsModal.data.audioDuration && <p><strong className="text-primary-300">Audio Duration:</strong> {Math.round(detailsModal.data.audioDuration / 60)} minutes</p>}
                   <p><strong className="text-primary-300">Completed At:</strong> {new Date(detailsModal.data.completedAt).toLocaleString()}</p>
@@ -1253,7 +1254,7 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
           items={[
             ...day.modules.map((module: any) => ({
               id: module.id,
-              primary: module.moduleId,
+              primary: module.moduleTitle ?? module.moduleId,
               secondary: `${module.fullCompletion ? 'Completed' : 'Partial'}${module.audioDuration ? ` • ${Math.round(module.audioDuration / 60)} min audio` : ''}`,
               meta: new Date(module.completedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
               data: module
@@ -1262,7 +1263,7 @@ function DayDetail({ day, onSaved }: { day: JournalHistoryDay; onSaved: () => vo
               id: `${m.kind}-${m.id}`,
               primary: m.kind === 'nback' ? `N-Back ${m.nLevel}-back (${m.gameMode})` : `Ear training (${m.mode})`,
               secondary: m.kind === 'nback'
-                ? `${Math.round(m.overallAccuracy)}% accuracy • ${m.totalTrials} trials${m.levelAdvanced ? ' • level up' : ''}`
+                ? `${formatAccuracy(m.overallAccuracy)} accuracy • ${m.totalTrials} trials${m.levelAdvanced ? ' • level up' : ''}`
                 : `${Math.round(m.accuracy)}% • ${m.correct} of ${m.totalQuestions} correct`,
               meta: new Date(m.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
               data: m,
