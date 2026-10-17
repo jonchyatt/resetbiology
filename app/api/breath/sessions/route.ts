@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
+    // Member's local day (not the server's): keyed the same as the journal entry.
+    const dayKey = resolveDayKey(sessionData.localDate)
+
     // Calculate session metrics
     const totalDuration = sessionData.cycles.reduce((total: number, cycle: any) => {
       return total +
@@ -62,8 +65,6 @@ export async function POST(request: NextRequest) {
     })
 
     // Mark 'breath' daily task as completed
-    // Member's local day (not the server's): keyed the same as the journal entry.
-    const dayKey = resolveDayKey(sessionData.localDate)
     const today = dayKeyToUtcMidnight(dayKey)
 
     await prisma.dailyTask.upsert({
