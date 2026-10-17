@@ -16,6 +16,7 @@ import {
   gradeSpan, canAdvance, advance, advanceHalf, completeLine,
   lineId, transId, knownRange, lineText, isPartial,
 } from './engine/backwardChain'
+import { savePitchScore, usePitchScoreSync } from './scoreSync'
 
 const STORAGE_KEY = 'lt_v1_state'
 
@@ -342,6 +343,20 @@ export default function LyricsTrainer() {
   // from the phone's remote-devtools session.
   const debugRef = useRef(false)
 
+  usePitchScoreSync({
+    keys: [STORAGE_KEY],
+    onHydrate: (scores) => {
+      const payload = scores[STORAGE_KEY]?.payload
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return
+      const parsed = payload as Persisted
+      if (parsed.monologue) {
+        if (!parsed.monologue.partialStart) parsed.monologue.partialStart = {}
+        if (typeof parsed.monologue.rampRemaining !== 'number') parsed.monologue.rampRemaining = 0
+      }
+      setState(parsed)
+    },
+  })
+
   // ─── Persistence ────────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -361,7 +376,7 @@ export default function LyricsTrainer() {
 
   const persist = useCallback((s: Persisted) => {
     if (typeof window === 'undefined') return
-    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(s)) }
+    try { savePitchScore(STORAGE_KEY, s) }
     catch { /* quota */ }
   }, [])
 

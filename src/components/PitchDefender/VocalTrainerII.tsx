@@ -28,6 +28,7 @@ import { recordResult, pickDepth, reinsert, createItem } from './engine/masteryQ
 import { usePitchDetection, type PitchInfo } from './usePitchDetection'
 import { PITCH_ON_TOLERANCE_CENTS } from './pitchMath'
 import type { RawNote } from './extractNotesFromAudio'
+import { savePitchScore, usePitchScoreSync } from './scoreSync'
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -253,6 +254,16 @@ export default function VocalTrainerII() {
   // Sync live pitch state from hook
   useEffect(() => { setLivePitch(pitch) }, [pitch])
 
+  usePitchScoreSync({
+    keys: [STORAGE_KEY],
+    onHydrate: (scores) => {
+      const payload = scores[STORAGE_KEY]?.payload
+      if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+        setPersisted(payload as Persisted)
+      }
+    },
+  })
+
   // ─── Persistence ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -265,7 +276,7 @@ export default function VocalTrainerII() {
   const persist = useCallback((next: Persisted) => {
     setPersisted(next)
     if (typeof window === 'undefined') return
-    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch { /* quota */ }
+    try { savePitchScore(STORAGE_KEY, next) } catch { /* quota */ }
   }, [])
 
   // ─── Library fetch ────────────────────────────────────────────────────────
