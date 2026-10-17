@@ -512,10 +512,10 @@ export function BreathTrainingApp({ onSessionComplete, exercise }: BreathTrainin
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
             {/* Left Side: Breath Count and Settings side by side on top, then keyboard shortcuts */}
-            <div className="space-y-4 flex flex-col items-center">
+            <div className="space-y-4 flex flex-col items-center min-w-0 max-w-full">
               {/* Keyboard Shortcuts - properly balanced without awkward gaps */}
-              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-primary-400/30">
-                <div className="flex items-center justify-center gap-3 text-lg text-gray-200">
+              <div className="bg-gradient-to-r from-primary-600/20 to-secondary-600/20 backdrop-blur-sm rounded-xl p-4 sm:p-6 shadow-2xl border border-primary-400/30 max-w-full">
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-lg text-gray-200">
                   <div className="flex items-center gap-2">
                     <kbd className="bg-primary-600/30 text-primary-100 px-3 py-2 rounded border border-primary-400/40 font-mono font-bold shadow-lg text-sm">Space</kbd>
                     <span className="text-white text-sm font-medium">advance</span>

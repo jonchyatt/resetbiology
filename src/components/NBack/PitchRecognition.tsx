@@ -846,7 +846,7 @@ export default function PitchRecognition({ section = 'Mental Training' }: { sect
             <p className="text-center text-gray-400 mb-6">{iCorrect} correct of {iTotal}</p>
             {Object.keys(iStats).length > 0 && (
               <div className="mb-6">
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">This session — lifetime in [ ]</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">This session, with your all-time accuracy on the right</p>
                 <div className="space-y-2">
                   {KEYBOARD_ORDER.filter(n => iStats[n]).map(note => {
                     const s = iStats[note]; const sp = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0
@@ -863,7 +863,7 @@ export default function PitchRecognition({ section = 'Mental Training' }: { sect
                             style={{ width: `${sp}%` }} />
                         </div>
                         <span className="text-xs text-gray-300 w-8 text-right">{sp}%</span>
-                        {lPct !== null && <span className="text-xs text-gray-600 w-16 text-right">[{lPct}%]</span>}
+                        {lPct !== null && <span className="text-xs text-gray-500 w-20 text-right">all-time {lPct}%</span>}
                         <button onClick={() => resetNote(note)} title="Reset progress"
                           className="text-gray-700 hover:text-red-400 transition">
                           <RefreshCw className="w-3 h-3" />

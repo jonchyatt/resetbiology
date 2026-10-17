@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { isAdminRequest } from '@/lib/adminGuard'
 
 /**
  * GET: List all products
@@ -7,7 +8,9 @@ import { prisma } from '@/lib/prisma'
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
-    const includeInactive = searchParams.get('includeInactive') === 'true'
+    const admin = await isAdminRequest()
+    // Non-admins only ever see active products and never prices/Stripe ids (same rule as /api/products/storefront).
+    const includeInactive = admin && searchParams.get('includeInactive') === 'true'
     const bundlesOnly = searchParams.get('bundlesOnly') === 'true'
     const excludeBundles = searchParams.get('excludeBundles') === 'true'
 
@@ -17,11 +20,22 @@ export async function GET(req: NextRequest) {
         ...(bundlesOnly ? { isBundle: true } : {}),
         ...(excludeBundles ? { isBundle: false } : {})
       },
-      include: {
-        prices: true
-      },
+      ...(admin ? { include: { prices: true } } : {}),
       orderBy: { name: 'asc' }
     })
+
+    if (!admin) {
+      return NextResponse.json({
+        products: products.map((p: any) => ({
+          id: p.id,
+          name: p.name,
+          slug: p.slug,
+          description: p.description,
+          category: p.category,
+          isTrackable: p.isTrackable,
+        })),
+      })
+    }
 
     return NextResponse.json({ products })
   } catch (error: any) {
