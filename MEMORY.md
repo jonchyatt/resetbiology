@@ -22,3 +22,8 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+## 2026-10-17 weekly Reset report preview (backlog 10)
+- `/dev/reset-report-preview` renders the existing report with synthetic data (`src/lib/weeklyResetReportFixture.ts`), no login, no DB. Returns 404 in production unless `NEXT_PUBLIC_RB_REPORT_PREVIEW=1`; always open under `next dev`. `WeeklyResetReport` takes an optional `previewReport` prop that skips the API fetch.
+- Client-component props are serialised into page source, so the page strips `privateText` before passing the report in. Test: `npx tsx tests/weekly-reset-report-preview.test.ts`.
+- No gated files touched. The real `/reports/reset` route and `NEXT_PUBLIC_RB_REPORTS` flag are unchanged.

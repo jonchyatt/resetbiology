@@ -39,7 +39,7 @@ Open: #44 funder page `/community/womens-health` (draft, flag `NEXT_PUBLIC_FUNDE
 7. **Store outbound links, measured.** PR #39 moved checkout off-site. Add click counting on Visit-seller with a TTL-indexed collection from the first commit (CLAUDE.md Atlas rule) or, simpler, server logs only. Revenue: proof of referral volume to show sellers.
 8. **Free-launch replay.** The October free-first stack (`harden/rb-free-lanes`, `card/rb-11`) never merged and is 540 commits behind. Port the surface-hiding as small flagged PRs onto current master, reading the old branches without touching them. Gated files (`schema.prisma`, `next.config.ts`) are left for seat review.
 9. **Public-ready sweep.** Fix the Cloudflare Pages backup build on #44 from the repo config, run tsc and lint on master and list the existing errors the funder thread found, and add a smoke test per public route. Green.
-10. **Weekly Reset report, member-facing preview.** PR #41 landed the report. Add a synthetic-fixture preview route behind a flag so Jonathan can read it without member data (rule 4). Revenue: retention, which supports the co-op.
+10. **Weekly Reset report, member-facing preview. SHIPPED (preview route `/dev/reset-report-preview`, 404 in production unless `NEXT_PUBLIC_RB_REPORT_PREVIEW=1`).** PR #41 landed the report. Add a synthetic-fixture preview route behind a flag so Jonathan can read it without member data (rule 4). Revenue: retention, which supports the co-op.
 
 ## Red (named) and what I built up to the line
 

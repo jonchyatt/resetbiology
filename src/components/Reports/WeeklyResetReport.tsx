@@ -2,23 +2,24 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Download, Printer } from "lucide-react";
-import { reportToCsv, type WeeklyResetReport } from "@/lib/weeklyResetReport";
+import { reportToCsv, type WeeklyResetReport as WeeklyResetReportData } from "@/lib/weeklyResetReport";
 
 const today = new Date().toISOString().slice(0, 10);
 const prior = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
 
-export function WeeklyResetReport() {
+export function WeeklyResetReport({ previewReport }: { previewReport?: WeeklyResetReportData } = {}) {
   const [startDate, setStartDate] = useState(prior);
   const [endDate, setEndDate] = useState(today);
   const [shareSafe, setShareSafe] = useState(true);
-  const [report, setReport] = useState<WeeklyResetReport | null>(null);
+  const [report, setReport] = useState<WeeklyResetReportData | null>(previewReport ?? null);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (previewReport) return;
     void fetch(`/api/reports/reset?startDate=${startDate}&endDate=${endDate}`, { credentials: "include" })
       .then(async (response) => { const body = await response.json(); if (!response.ok) throw new Error(body.error); setReport(body.report); })
       .catch((loadError) => setError(loadError instanceof Error ? loadError.message : "Unable to load report"));
-  }, [startDate, endDate]);
+  }, [startDate, endDate, previewReport]);
 
   const csv = useMemo(() => report ? reportToCsv(report, shareSafe) : "", [report, shareSafe]);
   function exportCsv() {
