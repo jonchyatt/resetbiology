@@ -22,3 +22,8 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+## 2026-10-17 analytics loop (backlog item 10)
+- `scripts/analytics/tally-logs.mjs` tallies `store_click` (PR #54) and `tool_view` (spec only, not written yet) JSON log lines into a weekly markdown table. No new package, no Mongo. Spec: `docs/ANALYTICS-LOOP.md`. Test: `npx tsx tests/analytics-tally.test.ts` (synthetic fixture only; never run on real logs).
+- `tool_view` logging still needs adding to `/tools/[slug]` after #52 merges. Third-party analytics script = red 5, card `approvals/2026-10-17-analytics-third-party-script.md`.
+- Fresh clone: `npm ci` and `npx prisma generate` before tsc/build; `tsc` 0 errors, `next build` passes with a dummy DATABASE_URL.
