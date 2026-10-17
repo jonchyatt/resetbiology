@@ -22,3 +22,8 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+## 2026-10-17 - Flag-flip approval cards
+- Five cards in `approvals/`: tool pages (#52), same-builder link-outs (#51), email capture (#50), free launch (#55), store clicks (#54). Four are red 3; store clicks is second-look (server log only, /privacy silent on it).
+- Flags: `NEXT_PUBLIC_RB_TOOL_PAGES`, `NEXT_PUBLIC_RB_SAME_BUILDER` plus `_URL` (https), `NEXT_PUBLIC_RB_EMAIL_CAPTURE`, `NEXT_PUBLIC_FREE_LAUNCH`, `NEXT_PUBLIC_RB_STORE_CLICKS`.
+- Email capture: `/api/newsletter` already sends the confirmation mail; the card only shows to signed-in, unsubscribed members. Docs only; `tsc` 0 errors, `npm run build` passes.
