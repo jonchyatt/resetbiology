@@ -2,6 +2,10 @@
 
 Dated digest of what Project threads learned. Newest first.
 
+## 2026-10-17 - Backlog refill 2
+- Master holds #38-#51 (#44 closed, folded into #46). #52-#57 are open and ready, awaiting the seat; docs/BACKLOG.md lists them with their flags.
+- Credits entity facts file never reached the repo (push denied); re-queued. Patron wall and analytics have no source in the repo; both marked as source gaps.
+
 ## 2026-10-17 - RBP-6 (live rerun 9 polish)
 - /profile now shows the same friendly Drive reason text as /connect-drive (shared `src/lib/driveConnectMessages.ts`).
 - N-Back: each of the four channel accuracies (position, audio, letter, color) is null when that channel had nothing to score; the en dash is now proven by a render test on `StatCard`. Saved payload still writes 0 for position/audio and null for letter/color when empty (unchanged).
