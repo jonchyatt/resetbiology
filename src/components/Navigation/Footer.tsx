@@ -38,6 +38,9 @@ export function Footer() {
               <li><Link href="/education" className="transition-colors hover:text-primary-300">Education</Link></li>
               <li><Link href="/about" className="transition-colors hover:text-primary-300">About</Link></li>
               <li><Link href="/process" className="transition-colors hover:text-primary-300">How it works</Link></li>
+              {process.env.NEXT_PUBLIC_FUNDER_PAGE === 'on' && (
+                <li><Link href="/community/womens-health" className="transition-colors hover:text-primary-300">Community</Link></li>
+              )}
               <li><Link href="/contact" className="transition-colors hover:text-primary-300">Contact</Link></li>
               <li><Link href="/portal" className="transition-colors hover:text-primary-300">Portal</Link></li>
             </ul>
