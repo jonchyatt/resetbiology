@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const { start, end, startKey, endKey } = getMonthRange(searchParams.get('month'))
 
-    const [journalEntries, foodLogs, workouts, breathSessions, peptideDoses, moduleCompletions] = await Promise.all([
+    const [journalEntries, foodLogs, hydrationEntries, workouts, breathSessions, peptideDoses, moduleCompletions] = await Promise.all([
       prisma.journalEntry.findMany({
         where: {
           userId: user.id,
@@ -75,6 +75,10 @@ export async function GET(request: NextRequest) {
             { localDate: null, loggedAt: { gte: start, lt: end } },
           ],
         },
+        orderBy: { loggedAt: 'asc' },
+      }),
+      prisma.hydrationEntry.findMany({
+        where: { userId: user.id, localDate: { gte: startKey, lt: endKey }, deletedAt: null },
         orderBy: { loggedAt: 'asc' },
       }),
       prisma.workoutSession.findMany({
@@ -136,6 +140,7 @@ export async function GET(request: NextRequest) {
         logs: typeof foodLogs
         totals: { calories: number; protein: number; carbs: number; fats: number }
       }
+      hydration: { entries: typeof hydrationEntries; totalMl: number }
       workouts: typeof workouts
       breathSessions: typeof breathSessions
       peptideDoses: typeof peptideDoses
@@ -164,6 +169,7 @@ export async function GET(request: NextRequest) {
             logs: [],
             totals: { calories: 0, protein: 0, carbs: 0, fats: 0 },
           },
+          hydration: { entries: [], totalMl: 0 },
           workouts: [],
           breathSessions: [],
           peptideDoses: [],
@@ -203,6 +209,13 @@ export async function GET(request: NextRequest) {
       bucket.nutrition.totals.protein += protein
       bucket.nutrition.totals.carbs += carbs
       bucket.nutrition.totals.fats += fats
+      bucket.eventCount += 1
+    })
+
+    hydrationEntries.forEach((entry: any) => {
+      const bucket = ensureDay(new Date(entry.loggedAt), entry.localDate)
+      bucket.hydration.entries.push(entry)
+      bucket.hydration.totalMl += entry.amountMl
       bucket.eventCount += 1
     })
 

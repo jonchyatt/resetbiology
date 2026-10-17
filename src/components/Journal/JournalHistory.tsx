@@ -14,6 +14,7 @@ interface JournalHistoryDay {
     logs: any[]
     totals: { calories: number; protein: number; carbs: number; fats: number }
   }
+  hydration: { entries: any[]; totalMl: number }
   workouts: any[]
   breathSessions: any[]
   peptideDoses: any[]
@@ -391,6 +392,7 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                 {detailsModal.type === 'breath' && 'Breath Session Details'}
                 {detailsModal.type === 'peptide' && 'Peptide Dose Details'}
                 {detailsModal.type === 'module' && 'Mental Module Details'}
+                {detailsModal.type === 'hydration' && 'Hydration Details'}
               </h3>
               <button onClick={() => setDetailsModal(null)} className="p-2 rounded-lg hover:bg-slate-700/50 transition-colors">
                 <X className="h-5 w-5 text-slate-300" />
@@ -919,6 +921,10 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
                   <dd className="text-white font-semibold">{day.modules.length}</dd>
                 </div>
                 <div>
+                  <dt className="text-slate-400">Hydration</dt>
+                  <dd className="text-white font-semibold">{day.hydration.totalMl.toLocaleString()} mL</dd>
+                </div>
+                <div>
                   <dt className="text-slate-400">Calories</dt>
                   <dd className="text-white font-semibold">{Math.round(day.nutrition.totals.calories)} kcal</dd>
                 </div>
@@ -950,6 +956,22 @@ function DayDetail({ day }: { day: JournalHistoryDay }) {
           })}
           onViewDetails={(item) => setDetailsModal({ type: 'nutrition', data: item.data })}
           onEdit={(item) => setEditModal({ type: 'nutrition', data: item.data })}
+        />
+
+        <ActivityList
+          title="Hydration"
+          icon={<Droplets className="h-4 w-4" />}
+          colorClass="text-cyan-300"
+          borderClass="border-cyan-400/30"
+          items={[...day.hydration.entries].sort((a: any, b: any) => new Date(b.loggedAt).getTime() - new Date(a.loggedAt).getTime()).map((entry: any) => ({
+            id: entry.id,
+            primary: entry.drinkName,
+            secondary: `${entry.amount} ${entry.unit} (${entry.amountMl} mL)`,
+            meta: entry.localTime,
+            data: entry
+          }))}
+          onViewDetails={(item) => setDetailsModal({ type: 'hydration', data: item.data })}
+          onEdit={() => undefined}
         />
 
         <ActivityList

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { Trophy, Target, Calendar, TrendingUp, ChevronRight, Dumbbell, Apple, Brain, Wind, ShoppingBag, BookOpen } from "lucide-react"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
+import { HydrationTracker } from "@/components/Hydration/HydrationTracker"
 import { useUser } from "@auth0/nextjs-auth0"
 
 export function Dashboard() {
@@ -95,6 +96,8 @@ export function Dashboard() {
               </div>
             </div>
           </div>
+
+          <HydrationTracker compact title="Daily Reset hydration" />
 
           {/* Main Daily Check-in Section */}
           <div className="card-hover-primary mb-8">

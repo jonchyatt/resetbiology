@@ -6,6 +6,7 @@ import { Apple, Target, Plus, X, Calendar, TrendingUp, Utensils, Copy, Edit, Tra
 import { FoodQuickAdd, FoodQuickAddResult } from "./FoodQuickAdd"
 import { RecentFoods } from "./RecentFoods"
 import { MacroGoals } from "./MacroGoals"
+import { HydrationTracker } from "@/components/Hydration/HydrationTracker"
 import { createFoodLogRequestId, getLocalDateTime } from "@/lib/nutrition/localEntry"
 
 interface FoodEntry {
@@ -679,6 +680,7 @@ export function NutritionTracker() {
 
         {activeTab === 'today' && (
           <div className="max-w-6xl mx-auto">
+            <HydrationTracker />
             {/* Active Meal Plans Section */}
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
