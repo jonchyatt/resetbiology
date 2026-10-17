@@ -124,7 +124,7 @@ export default async function Home({
               <span className="text-sm font-semibold tracking-[0.08em] text-primary-300/60">03</span>
               <h3 className="mt-2 text-lg font-semibold text-primary-300">Fair access</h3>
               <div className="mt-3 space-y-3 text-pretty leading-7 text-slate-300">
-                <p>For members whose path includes peptides, we connect you to a member-owned co-op run by an independent licensed provider. {/* src: LMP §2.2 */}</p>
+                <p>For members whose path includes peptides, we connect you to a member-owned co-op run by an independent licensed provider, where you buy for yourself and take responsibility for your own body. {/* src: LMP §2.2 */}</p>
               </div>
             </li>
           </ol>

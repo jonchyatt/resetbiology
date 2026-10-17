@@ -30,7 +30,7 @@ export default function PeptideCoopPage() {
               A Clear Connection to the Co-op
             </h1>
             <p className="text-lg text-gray-300 leading-relaxed max-w-3xl mx-auto">
-              Ordering and management happen through a member-owned peptide co-op run by Adam Hyatt, FNP, at Zion Direct Care under his own license. {/* src: LMP §2.2 */}
+              Members buy for themselves through a member-owned peptide co-op run by Adam Hyatt, FNP, at Zion Direct Care under his own license. Reset Biology gives you the tools and education; you take responsibility for your own body. {/* src: LMP §2.2 */}
             </p>
           </div>
         </section>

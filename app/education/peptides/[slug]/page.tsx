@@ -271,7 +271,7 @@ export default async function PeptidePage({ params }: Props) {
             <h3 className="text-xl font-bold text-red-300 mb-3">Disclaimer — For Research Purposes Only</h3>
             <p className="text-white/80 text-sm leading-relaxed">
               All content on this page is for research and educational purposes only and is not intended as medical advice.
-              Always consult a qualified healthcare provider before starting any peptide or hormone protocol.
+              Always consult a qualified healthcare provider before starting any peptide or hormone protocol. You take responsibility for your own protocol.
               Members who want access can read about the member-owned co-op on our <Link href="/order">co-op page</Link>.
             </p>
           </section>
