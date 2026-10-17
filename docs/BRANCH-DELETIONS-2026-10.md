@@ -56,3 +56,11 @@ Status: NOT YET DELETED. The cloud proxy blocks branch deletion (HTTP 403, "Writ
 | `wip-autosave-` | commits not in master (1 ahead); deleting would lose them |
 
 Also untouched: master, preserve/rb-vision-worktree-scripts, and every branch not marked retire in docs/BRANCH-TRIAGE-2026-10.md.
+
+## Blocker receipt, 2026-10-17 (second attempt, cloud thread)
+
+Re-verified all 33 via `gh api repos/jonchyatt/resetbiology/compare/master...<branch>`: every one is `ahead_by=0`, and each branch tip SHA matches the table above. None is the head of an open PR. (Local `git rev-list` counts are wrong in the cloud clone because it is shallow.)
+
+Command: `bash scripts/delete-retired-branches.sh` (also `git push origin --delete fix/rb-fix-1` alone).
+Error: `error: RPC failed; HTTP 403 curl 22 The requested URL returned error: 403` / `fatal: the remote end hung up unexpectedly`. Nothing was deleted. Not routed around.
+Next: the local seat runs the script; the card stays WAITING_ON_JON until then.
