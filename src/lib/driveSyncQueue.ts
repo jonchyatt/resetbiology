@@ -398,9 +398,9 @@ export async function backfillDriveSyncOutbox(
     const protocolOwner = new Map(protocols.map(p => [p.id, p.userId]))
     const doses = await prisma.peptide_doses.findMany({
       where: { protocolId: { in: protocols.map(p => p.id) }, doseDate: { gte: since } },
-      select: { protocolId: true, doseDate: true },
+      select: { protocolId: true, doseDate: true, localDate: true },
     })
-    sources.push(['peptides', doses.map(d => ({ userId: protocolOwner.get(d.protocolId)!, when: d.doseDate }))])
+    sources.push(['peptides', doses.map(d => ({ userId: protocolOwner.get(d.protocolId)!, when: d.doseDate, dateStr: d.localDate ?? undefined }))])
   }
 
   const wanted = new Map<string, { userId: string; domain: string; dateStr: string }>()
