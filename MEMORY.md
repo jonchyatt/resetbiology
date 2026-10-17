@@ -27,3 +27,4 @@ Dated digest of what Project threads learned. Newest first.
 - `/dev/reset-report-preview` renders the existing report with synthetic data (`src/lib/weeklyResetReportFixture.ts`), no login, no DB. Returns 404 in production unless `NEXT_PUBLIC_RB_REPORT_PREVIEW=1`; always open under `next dev`. `WeeklyResetReport` takes an optional `previewReport` prop that skips the API fetch.
 - Client-component props are serialised into page source, so the page strips `privateText` before passing the report in. Test: `npx tsx tests/weekly-reset-report-preview.test.ts`.
 - No gated files touched. The real `/reports/reset` route and `NEXT_PUBLIC_RB_REPORTS` flag are unchanged.
+- 2026-10-17 follow-up: at 390px the report table clipped Details with no scroll cue, so below `sm` the records render as stacked cards (table stays at sm+ and in print). Checked with Playwright at 390 and 1200: no horizontal page scroll.
