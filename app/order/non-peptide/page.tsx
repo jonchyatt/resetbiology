@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import { VisitSellerButton } from "@/components/Store/VisitSellerButton"
 import { PortalHeader } from "@/components/Navigation/PortalHeader"
 import { Shield, HeartPulse, Activity, CheckCircle2, ArrowRight, Sparkles, Loader2 } from "lucide-react"
 
@@ -93,7 +94,6 @@ export default function NonPeptideOrderPage() {
   const [catalog, setCatalog] = useState<StorefrontProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -211,30 +211,6 @@ export default function NonPeptideOrderPage() {
   const displayStemregen = hasLiveProducts ? stemregenProducts : fallbackStemRegen
   const displayEnergyBits = hasLiveProducts ? energybitsProducts : fallbackEnergyBits
 
-  const handleCheckout = async (productId: string, priceId: string) => {
-    setCheckoutLoading(productId)
-    try {
-      // Non-peptide carts bypass age gate
-      sessionStorage.setItem("nonPeptideOnlyCart", "true")
-
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, priceId }),
-      })
-
-      const data = await res.json()
-      if (data?.ok && data.url) {
-        window.location.href = data.url
-      } else {
-        alert(data?.error || "Checkout failed. Please try again.")
-        setCheckoutLoading(null)
-      }
-    } catch (err: any) {
-      alert(err?.message || "Checkout failed. Please try again.")
-      setCheckoutLoading(null)
-    }
-  }
 
   const ProductGrid = ({
     title,
@@ -289,30 +265,10 @@ export default function NonPeptideOrderPage() {
                   </div>
                   <div className="pt-2 mt-auto">
                     {priceLabel && <p className="text-lg font-semibold text-primary-200 mb-2">Price: {priceLabel}</p>}
-                    {price?.id && product.id ? (
-                      <button
-                        type="button"
-                        className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-primary-500/30 transition-all flex items-center justify-center gap-2"
-                        onClick={() => handleCheckout(product.id, price.id)}
-                        disabled={checkoutLoading === product.id}
-                      >
-                        {checkoutLoading === product.id && <Loader2 className="w-4 h-4 animate-spin" />}
-                        Buy now
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="w-full bg-white/10 hover:bg-white/20 text-white font-semibold py-3 rounded-xl shadow-lg transition-all"
-                        onClick={() => alert("We will notify you as soon as checkout is live for this item.")}
-                      >
-                        Join waitlist
-                      </button>
-                    )}
-                    {!price?.stripePriceId && price?.id && product.id && (
-                      <p className="text-xs text-gray-400 text-center mt-2">
-                        Syncing Stripe price on first click
-                      </p>
-                    )}
+                    <VisitSellerButton
+                      sellerKey={product.slug}
+                      className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-primary-500/30 transition-all"
+                    />
                   </div>
                 </div>
               </div>

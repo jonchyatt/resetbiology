@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { VisitSellerButton } from '@/components/Store/VisitSellerButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -112,9 +113,10 @@ function PackageCard({ title, originalPrice, price, period, features, isPopular,
           </div>
         </div>
         
-        <button className="w-full bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 shadow-lg">
-          Get Started
-        </button>
+        <VisitSellerButton
+          sellerKey={title}
+          className="w-full bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 shadow-lg"
+        />
       </div>
     </div>
   );
