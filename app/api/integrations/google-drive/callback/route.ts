@@ -12,7 +12,13 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
 const GOOGLE_REDIRECT_URI = process.env.NEXT_PUBLIC_BASE_URL + '/api/integrations/google-drive/callback'
 
+// Token save + migration + backfill (up to 500 rows + a profile copy) can run past the default limit.
+export const maxDuration = 60
+
 export async function GET(req: NextRequest) {
+  // Hoisted so the catch below can still return the member to where they started.
+  let fallbackReturnTo = '/profile'
+  let fallbackUserId: string | null = null
   // Validate returnTo can't trigger an open-redirect.
   function isSafeReturnTo(value: unknown): value is string {
     if (typeof value !== 'string' || !value) return false
@@ -55,6 +61,8 @@ export async function GET(req: NextRequest) {
     const error = searchParams.get('error')
     const stateDecoded = decodeState(stateRaw)
     const returnTo = stateDecoded?.returnTo ?? '/profile'
+    fallbackReturnTo = returnTo
+    fallbackUserId = stateDecoded?.userId ?? null
 
     // Handle user denial
     if (error) {
@@ -219,9 +227,22 @@ export async function GET(req: NextRequest) {
 
   } catch (error) {
     console.error('Google Drive callback error:', error)
-    // returnTo not in scope here — fall back to profile so this still resolves.
-    return NextResponse.redirect(
-      new URL('/profile?drive=error&reason=callback_failed', process.env.NEXT_PUBLIC_BASE_URL!)
-    )
+    // RB-FIX-8 F-4: a duplicate hit on this URL (browser retry/prefetch) re-uses the one-time
+    // Google code and throws AFTER the first hit already saved tokens and ran the backfill.
+    // If this member got connected moments ago, report success, not an error.
+    try {
+      if (fallbackUserId && /^[a-f0-9]{24}$/i.test(fallbackUserId)) {
+        const u = await prisma.user.findUnique({
+          where: { id: fallbackUserId },
+          select: { googleDriveSyncEnabled: true, googleDriveConnectedAt: true },
+        })
+        if (u?.googleDriveSyncEnabled && u.googleDriveConnectedAt && Date.now() - u.googleDriveConnectedAt.getTime() < 5 * 60 * 1000) {
+          return redirectToReturn(fallbackReturnTo, 'drive=connected')
+        }
+      }
+    } catch (checkError) {
+      console.error('[oauth-callback] post-failure connected check failed:', checkError)
+    }
+    return redirectToReturn(fallbackReturnTo, 'drive=error&reason=callback_failed')
   }
 }

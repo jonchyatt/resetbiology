@@ -1065,15 +1065,31 @@ async function syncDomainForDateWithResult(
     }
 
     case 'nutrition': {
-      const foodEntries = await prisma.foodEntry.findMany({
-        where: {
-          userId,
-          loggedAt: {
-            gte: startOfDay,
-            lte: endOfDay,
-          },
-        },
+      // RB-FIX-8 F-3: members log into FoodLog (keyed by their localDate); FoodEntry is the legacy table.
+      const legacyEntries = await prisma.foodEntry.findMany({
+        where: { userId, loggedAt: { gte: startOfDay, lte: endOfDay } },
       })
+      const foodLogs = await prisma.foodLog.findMany({
+        where: { userId, OR: [{ localDate: dateStr }, { localDate: null, loggedAt: { gte: startOfDay, lte: endOfDay } }] },
+        orderBy: { loggedAt: 'asc' },
+      })
+      const dayNoon = new Date(startOfDay.getTime() + 12 * 3600 * 1000) // header date must be the member's day, not a UTC-shifted instant
+      const foodEntries = [
+        ...legacyEntries,
+        ...foodLogs.map(l => {
+          const n = (l.nutrients ?? {}) as Record<string, unknown>
+          const num = (v: unknown) => (typeof v === 'number' ? v : 0)
+          return {
+            name: l.itemName,
+            calories: num(n.kcal),
+            protein: num(n.protein_g),
+            carbs: num(n.carb_g),
+            fats: num(n.fat_g),
+            mealType: l.mealType || 'snack',
+            loggedAt: dayNoon,
+          }
+        }),
+      ]
 
       if (foodEntries.length === 0) return null
 

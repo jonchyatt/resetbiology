@@ -367,18 +367,20 @@ export async function drainDriveSyncRowsNow(
 const BACKFILL_CREATE_CAP = 500 // ponytail: per-run cap; the next scheduled run picks up the rest
 
 export async function backfillDriveSyncOutbox(
-  options: { windowHours?: number; userId?: string } = {}
-): Promise<{ scanned: number; created: number }> {
+  options: { windowHours?: number; userId?: string; requeueExisting?: boolean } = {}
+): Promise<{ scanned: number; created: number; requeued: number }> {
   const windowHours = options.windowHours ?? 48
   const since = new Date(Date.now() - windowHours * 3600 * 1000)
   const userFilter = options.userId ? { userId: options.userId } : {}
 
-  const sources: Array<[string, Array<{ userId: string; when: Date }>]> = [
+  const sources: Array<[string, Array<{ userId: string; when: Date; dateStr?: string }>]> = [
     // journal: scan by touch-time (createdAt OR updatedAt — historical edits bump
     // updatedAt) but key the sync day by the entry's authoritative `date`.
     ['journal', (await prisma.journalEntry.findMany({ where: { ...userFilter, OR: [{ createdAt: { gte: since } }, { updatedAt: { gte: since } }] }, select: { userId: true, date: true } })).map(r => ({ userId: r.userId, when: r.date }))],
     ['workouts', (await prisma.workoutSession.findMany({ where: { ...userFilter, completedAt: { gte: since } }, select: { userId: true, completedAt: true } })).map(r => ({ userId: r.userId, when: r.completedAt }))],
     ['nutrition', (await prisma.foodEntry.findMany({ where: { ...userFilter, loggedAt: { gte: since } }, select: { userId: true, loggedAt: true } })).map(r => ({ userId: r.userId, when: r.loggedAt }))],
+    // RB-FIX-8 F-3: members log into FoodLog (not the legacy FoodEntry above); key by the member's localDate.
+    ['nutrition', (await prisma.foodLog.findMany({ where: { ...userFilter, loggedAt: { gte: since } }, select: { userId: true, loggedAt: true, localDate: true } })).map(r => ({ userId: r.userId, when: r.loggedAt, dateStr: r.localDate ?? undefined }))],
     ['breath', (await prisma.breathSession.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
     ['vision', (await prisma.visionSession.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
     ['nback', (await prisma.nBackSession.findMany({ where: { ...userFilter, createdAt: { gte: since } }, select: { userId: true, createdAt: true } })).map(r => ({ userId: r.userId, when: r.createdAt }))],
@@ -404,11 +406,11 @@ export async function backfillDriveSyncOutbox(
   const wanted = new Map<string, { userId: string; domain: string; dateStr: string }>()
   for (const [domain, rows] of sources) {
     for (const r of rows) {
-      const dateStr = toDateStr(r.when)
+      const dateStr = r.dateStr ?? toDateStr(r.when)
       wanted.set(`${r.userId}|${domain}|${dateStr}`, { userId: r.userId, domain, dateStr })
     }
   }
-  if (wanted.size === 0) return { scanned: 0, created: 0 }
+  if (wanted.size === 0) return { scanned: 0, created: 0, requeued: 0 }
 
   const userIds = [...new Set([...wanted.values()].map(t => t.userId))]
   const syncUsers = new Set(
@@ -424,9 +426,25 @@ export async function backfillDriveSyncOutbox(
   const recorded = new Set(existing.map(r => `${r.userId}|${r.domain}|${r.dateStr}`))
 
   let created = 0
+  let requeued = 0
   for (const [key, t] of wanted) {
-    if (!syncUsers.has(t.userId) || recorded.has(key)) continue
-    if (created >= BACKFILL_CREATE_CAP) break
+    if (!syncUsers.has(t.userId)) continue
+    if (created + requeued >= BACKFILL_CREATE_CAP) break
+    if (recorded.has(key)) {
+      // Default sweep: existing row = recorded intent, leave it. On reconnect (requeueExisting) a
+      // `done` row may be stale (data changed while disconnected), so push it back to pending.
+      if (!options.requeueExisting) continue
+      try {
+        await prisma.driveSyncOutbox.update({
+          where: { userId_domain_dateStr: { userId: t.userId, domain: t.domain, dateStr: t.dateStr } },
+          data: { status: 'pending', leaseUntil: null, lastError: null, attempts: 0 },
+        })
+        requeued += 1
+      } catch (e) {
+        console.error('[backfill] requeue failed:', errorMessage(e))
+      }
+      continue
+    }
     try {
       await prisma.driveSyncOutbox.create({ data: t })
       created += 1
@@ -434,7 +452,7 @@ export async function backfillDriveSyncOutbox(
       // unique-key race with a live enqueue — intent already recorded, exactly what we want
     }
   }
-  return { scanned: wanted.size, created }
+  return { scanned: wanted.size, created, requeued }
 }
 
 export async function reconcileDriveSyncOutbox(): Promise<void> {
@@ -455,7 +473,7 @@ export async function reconcileDriveSyncOutbox(): Promise<void> {
 // RB-FIX-7 I-2: run right after a member connects Drive. (1) Give jobs that failed
 // or are waiting on "not connected" a fresh retry budget. (2) Enqueue one job per
 // data type per day for ALL existing data (the normal sweep only looks back 48h).
-export async function backfillOnConnect(userId: string): Promise<{ reset: number; created: number }> {
+export async function backfillOnConnect(userId: string): Promise<{ reset: number; created: number; requeued: number }> {
   const reset = await prisma.driveSyncOutbox.updateMany({
     where: {
       userId,
@@ -464,11 +482,13 @@ export async function backfillOnConnect(userId: string): Promise<{ reset: number
     },
     data: { status: 'pending', attempts: 0, leaseUntil: null, lastError: null },
   })
-  // ponytail: capped at 500 new rows per call; the 6-hourly sweep with a 48h window won't
-  // reach older days, so a very large history needs a second connect or a forced ?backfill=1.
-  const { created } = await backfillDriveSyncOutbox({ userId, windowHours: 24 * 365 * 100 })
+  // ponytail: capped at 500 rows per call (created + re-queued together); the 6-hourly sweep with a
+  // 48h window won't reach older days, so a very large history needs a second connect or a forced ?backfill=1.
+  // requeueExisting: every day in the window goes back to pending (idempotent Drive upsert) so a
+  // `done` row whose data changed while disconnected is re-synced, not skipped.
+  const { created, requeued } = await backfillDriveSyncOutbox({ userId, windowHours: 24 * 365 * 100, requeueExisting: true })
   // Profile is not an outbox domain (nothing else ever wrote the Profile folder): write it once now.
   const profile = await syncUserProfile(userId).catch(e => ({ success: false, error: String(e) }))
   if (!profile.success) console.error('[backfillOnConnect] profile copy failed:', profile.error)
-  return { reset: reset.count, created }
+  return { reset: reset.count, created, requeued }
 }

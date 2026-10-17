@@ -3,6 +3,7 @@ import { auth0 } from '@/lib/auth0';
 import { getUserFromSession} from '@/lib/getUserFromSession'
 import { prisma } from '@/lib/prisma';
 import { dayKeyToUtcMidnight, formatNoteTime, isValidDayKey, localDayKey } from '@/lib/localDay';
+import { enqueueDriveSync } from '@/lib/driveSyncQueue';
 import { awardNutritionPoints } from '@/lib/nutritionPoints';
 
 export const runtime = 'nodejs';
@@ -164,6 +165,9 @@ export async function POST(req: Request) {
         },
       });
     }
+
+    // RB-FIX-8 F-3: food logs never reached Drive (no enqueue). Awaited: Vercel freezes the lambda after the response.
+    await enqueueDriveSync(user.id, dayStart, ['nutrition', 'journal']).catch(err => console.error('Drive enqueue failed:', err));
 
     return NextResponse.json({
       ok: true,
