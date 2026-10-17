@@ -1,8 +1,7 @@
-# Turn on the funder page (NEXT_PUBLIC_FUNDER_PAGE=on)
+# Turn on the funder page
+status: WAITING_ON_JON
+red: 3
+project: Reset Biology
+one_click: yes funder page on
 
-- Red: 3 (publishes under a business name)
-- Ask: set `NEXT_PUBLIC_FUNDER_PAGE=on` in Vercel and mark PR #44 ready, after the amber TODOs are cleared.
-- Built so far: page `/community/womens-health`, footer link, docs, Satori Enterprises sentence, 1,200 figure attributed to the application. Flag off, noindex, draft.
-- Needs from Jonathan: exact revenue-band wording (not in the repo), confirmation of 1,200 against the S-corp return, how Satori Enterprises relates to Reset Biology, equipment owner.
-- Not verified: page never rendered.
-- If approved: merge #44 at the local seat, set the flag, open the page once.
+The women's health funder page (PR #44, route /community/womens-health) is built but hidden. Turning it on publishes it under the Reset Biology name, which is yours to do. Built up to the line: page, footer link, Satori Enterprises sentence, 1,200 figure attributed to the application, all behind NEXT_PUBLIC_FUNDER_PAGE and noindex. Still open: the revenue band wording, S-corp confirmation of 1,200, and how Satori relates to Reset Biology. Not rendered yet. On yes: the local seat merges #44, sets the flag and checks the page. On no: it stays hidden and draft.
