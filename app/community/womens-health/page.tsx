@@ -36,23 +36,26 @@ export default function WomensHealthPage() {
             <p className="mt-3">
               A one-person anesthesia practice in Saint George, Utah is adding women&apos;s health to the care it offers.
             </p>
-            <Todo>Name the applicant and how it relates to Reset Biology (Satori Enterprises, Inc. is unverified on this site).</Todo>
+            <Todo>Name the applicant and how it relates to Reset Biology. The application names Satori Enterprises, Inc.; this waits on your answer about who owns the existing equipment today, because the equipment follows whoever&apos;s money buys it.</Todo>
           </section>
 
           <section aria-labelledby="who-for">
             <h2 id="who-for" className="text-2xl font-semibold text-white">Who it is for</h2>
             <p className="mt-3">
-              Free co-op members in Southern Utah who have perimenopausal pelvic-floor symptoms.
+              Women in Southern Utah, especially in perimenopause and after childbirth, have very few affordable options for pelvic floor and reproductive health care. Most of what exists means travelling to Salt Lake City or out of state.
             </p>
-            <Todo>How many people are in the community, and how this reaches under-resourced residents. No figure is stated here because none was supplied.</Todo>
+            <p className="mt-3">
+              This work is for free co-op members with those needs.
+            </p>
+            <Todo>The application says the practice serves about 1,200 people a year. Confirm that against the last S-corp return before it goes on this page.</Todo>
           </section>
 
           <section aria-labelledby="what">
             <h2 id="what" className="text-2xl font-semibold text-white">What is being built</h2>
             <ul className="mt-3 list-disc space-y-3 pl-6">
-              <li>The Southern Utah Peptides Co-op is being formed. It is a member-owned group run by an independent licensed provider. Reset Biology connects people to it and does not sell or fulfil anything. Members buy for themselves and take responsibility for their own body.</li>
-              <li>Zion direct care consultation vouchers for women&apos;s health in aging.</li>
-              <li>Women&apos;s health added to the practice.</li>
+              <li>The Southern Utah Peptides Co-op is being formed. It is a member-owned co-op run by an independent licensed provider. Reset Biology connects people to it; members buy for themselves and take responsibility for their own body.</li>
+              <li>Zion direct care consultation vouchers to help women&apos;s health in aging.</li>
+              <li>Women&apos;s health services are being added to the practice, offered locally through a direct-care co-op with transparent pricing.</li>
             </ul>
             <Todo>Current status and dates for each item (formed, forming, planned). Add a plain link to Zion Direct Care if wanted.</Todo>
           </section>
@@ -60,7 +63,10 @@ export default function WomensHealthPage() {
           <section aria-labelledby="funds">
             <h2 id="funds" className="text-2xl font-semibold text-white">How the grant would be used</h2>
             <p className="mt-3">
-              The grant would buy a HIFEM device and red-light therapy for free co-op members with perimenopausal pelvic-floor symptoms.
+              The $10,000 grant would buy a HIFEM chair and red-light therapy equipment to treat free co-op members with perimenopausal symptoms, including prolapse of the bladder and reproductive organs.
+            </p>
+            <p className="mt-3">
+              The plan is to grow this into a service line that can employ a second clinician within a year.
             </p>
             <Todo>Budget lines and amounts, where the equipment is housed, who operates it, and how success is measured.</Todo>
           </section>
