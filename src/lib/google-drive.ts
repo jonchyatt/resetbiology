@@ -945,6 +945,8 @@ async function syncDomainForDateWithResult(
           OR: [
             { localDate: dateStr },
             { localDate: null, completedAt: { gte: startOfDay, lte: endOfDay } },
+            // Mongo: older rows have no localDate key at all, and `null` does not match an unset field.
+            { localDate: { isSet: false }, completedAt: { gte: startOfDay, lte: endOfDay } },
           ],
         },
       })
