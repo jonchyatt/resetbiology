@@ -22,3 +22,5 @@ Dated digest of what Project threads learned. Newest first.
 ## 2026-10-17 public-ready sweep
 - `tsc --noEmit` on master: 0 errors. `eslint app src middleware.ts`: had 8 errors (7 `no-html-link-for-pages`, 1 `no-unsafe-function-type`), now 0; 981 warnings remain (unused vars/any), not touched.
 - `npm run smoke:public [baseUrl]` GETs 16 public routes (dev-mode run with no DB: all pass). It does not cover DB-backed pages or auth-gated routes.
+
+- 2026-10-17 favicon 500: `app/favicon.ico` and `public/favicon.ico` both existed, so Next threw "conflicting public file and page file" on /favicon.ico. Fixed by deleting the public copy; never keep both.
