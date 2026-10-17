@@ -24,3 +24,4 @@ Dated digest of what Project threads learned. Newest first.
 - Not ported: `auth0.ts` signup grant removal (member creation, seat), Header/homepage, FoodQuickAdd camera removal, Workers AI routing. Each is its own PR.
 - `/education` and `/breath` hide decision is on a second-look card; #52 links to breath.
 - tsc and `npm run build` pass on master + this change; `npm ci` takes ~1 min.
+- Render pass found a loop: gate sent /modules to /audio while next.config.ts sends /audio to /modules. Gate now sends /modules to /get-started; test fails if any gate target is a next.config redirect source. next.config.ts untouched (gated).

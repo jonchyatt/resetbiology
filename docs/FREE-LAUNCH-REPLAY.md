@@ -3,7 +3,7 @@
 Source (read only): `harden/rb-free-lanes-20261006` and `card/rb-15-restyled-free-candidate`, commits `325e5b08` and `a43b9c25`. Neither branch was touched.
 
 ## Ported here (flag `NEXT_PUBLIC_FREE_LAUNCH=on`, default off)
-- `src/lib/freeLaunch.ts`: hidden route families redirect to `/get-started` (`/store`, `/order`, `/product`, `/pricing`, `/subscription`, `/affiliates`, `/cellular-peptide`, `/education`, `/breath`); `/modules` redirects to `/audio`; the two OpenAI-keyed routes (`/api/foods/analyze-image`, `/api/voice/chat`) return 404.
+- `src/lib/freeLaunch.ts`: hidden route families redirect to `/get-started` (`/store`, `/order`, `/product`, `/pricing`, `/subscription`, `/affiliates`, `/cellular-peptide`, `/education`, `/breath`); `/modules` redirects to `/get-started` (not `/audio`: next.config.ts sends `/audio` to `/modules`, which looped); the two OpenAI-keyed routes (`/api/foods/analyze-image`, `/api/voice/chat`) return 404.
 - `middleware.ts` calls it first. With the flag off, behavior is unchanged.
 - `tests/free-launch-gate.test.ts` (run with `npx tsx`).
 

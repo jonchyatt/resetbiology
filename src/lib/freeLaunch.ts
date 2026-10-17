@@ -2,11 +2,15 @@
 // Pure and edge-safe: imported by middleware.ts, no Node or Prisma deps.
 // Everything here is inert unless NEXT_PUBLIC_FREE_LAUNCH === 'on'.
 
+// /modules is hidden too: next.config.ts redirects /audio to /modules, so
+// sending /modules to /audio would loop. Every target here must stay free of
+// next.config redirects (tests/free-launch-gate.test.ts enforces it).
 export const HIDDEN_SURFACE_PREFIXES = [
   '/affiliates',
   '/breath',
   '/cellular-peptide',
   '/education',
+  '/modules',
   '/order',
   '/pricing',
   '/product',
@@ -38,7 +42,6 @@ export function decideFreeLaunch(pathname: string, on: boolean): FreeLaunchDecis
   if (BLOCKED_PAID_AI_API_PATHS.has(pathname)) {
     return { action: 'block', status: 404, error: 'Paid AI is unavailable during the free-first launch.' }
   }
-  if (matchesPrefix(pathname, '/modules')) return { action: 'redirect', to: '/audio' }
   if (HIDDEN_SURFACE_PREFIXES.some((p) => matchesPrefix(pathname, p))) {
     return { action: 'redirect', to: '/get-started' }
   }
